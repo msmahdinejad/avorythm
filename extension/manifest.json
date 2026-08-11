@@ -3,7 +3,7 @@
   "name": "LingoDub — Live AI Dubbing",
   "short_name": "LingoDub",
   "description": "Translate and dub the current tab live with Gemini, with independent source and dubbed audio controls.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "tabCapture", "offscreen", "storage"],
   "host_permissions": ["http://127.0.0.1:8765/*"],

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>LingoDub · Audio setup</title>
+  <link rel="icon" href="/assets/lingodub-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css?v=0.2.0">
+  <style>
+    .guide-shell{max-width:1040px;margin:auto;padding:55px 24px 90px}.guide-hero{text-align:center;max-width:760px;margin:0 auto 34px}.guide-hero h1{font-size:clamp(30px,5vw,50px);margin:10px 0}.guide-hero p{color:var(--muted);line-height:1.9}.route-rule{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:12px;padding:22px;border:1px solid rgba(34,211,238,.2);border-radius:18px;background:linear-gradient(145deg,rgba(34,211,238,.06),rgba(139,92,246,.06));margin:28px 0}.route-node{min-height:94px;padding:15px;border:1px solid var(--line);border-radius:14px;background:#111522;display:flex;flex-direction:column;justify-content:center}.route-node small{color:var(--muted);font-size:10px}.route-node strong{font-size:13px;margin-top:5px}.route-arrow{color:var(--accent-2);font-size:24px;direction:ltr}.guide-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.guide-card{border:1px solid var(--line);background:var(--panel);border-radius:20px;padding:22px}.guide-card h2{font-size:18px;margin:0 0 6px}.guide-card>p{color:var(--muted);font-size:12px;line-height:1.9}.steps{list-style:none;padding:0;margin:19px 0}.steps li{display:grid;grid-template-columns:30px 1fr;gap:11px;margin:0 0 15px;color:#d8dbe5;font-size:12px;line-height:1.9}.steps b{width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:rgba(139,92,246,.12);color:#c4b5fd}.settings-shot{direction:ltr;border:1px solid rgba(255,255,255,.13);border-radius:15px;background:#f6f7fb;color:#171922;overflow:hidden;box-shadow:0 18px 45px rgba(0,0,0,.22);margin-top:18px}.window-bar{height:38px;background:#e9ebf2;display:flex;align-items:center;gap:6px;padding:0 12px}.window-bar i{width:8px;height:8px;border-radius:50%;background:#b8bdc9}.window-body{padding:18px}.crumb{font-size:10px;color:#636979}.window-body h3{font-size:17px;margin:4px 0 14px}.app-row{display:grid;grid-template-columns:1fr 190px;gap:12px;align-items:center;border-top:1px solid #e2e4eb;padding:12px 0}.app-row:first-of-type{border-top:0}.app-name{display:flex;align-items:center;gap:9px;font-size:11px}.app-icon{width:29px;height:29px;border-radius:8px;display:grid;place-items:center;background:#6d5ce7;color:white;font-weight:800}.fake-select{border:1px solid #cfd3de;border-radius:7px;padding:8px 10px;font-size:9px;background:white}.extension-note{margin-top:18px;border:1px solid rgba(55,211,153,.22);background:rgba(55,211,153,.07);border-radius:14px;padding:16px}.extension-note strong{color:#a7f3d0}.extension-note p{font-size:11px;line-height:1.9;color:#b9c8c3;margin:6px 0 0}.warning{border-inline-start:3px solid var(--accent-2);padding:11px 14px;background:rgba(34,211,238,.055);color:#c8cbd5;font-size:11px;line-height:1.9;margin:18px 0}.guide-actions{display:flex;gap:10px;flex-wrap:wrap}.guide-actions a{font-size:11px}.only-en[hidden],.only-fa[hidden]{display:none}.back-link{color:#c7cad5;text-decoration:none;font-size:12px}.back-link:hover{color:white}@media(max-width:800px){.guide-grid{grid-template-columns:1fr}.route-rule{grid-template-columns:1fr}.route-arrow{transform:rotate(90deg);text-align:center}.app-row{grid-template-columns:1fr}.guide-shell{padding:35px 14px 60px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="LingoDub">
+      <span class="brand-mark" aria-hidden="true"><img src="/assets/lingodub-logo.png" alt=""></span>
+      <span><b>LingoDub</b><small>Audio setup guide</small></span>
+    </a>
+    <div class="top-actions"><a class="back-link" href="/" data-fa="بازگشت به داشبورد" data-en="Back to dashboard">بازگشت به داشبورد</a><button id="localeToggle" class="icon-button" type="button">EN</button></div>
+  </header>
+
+  <main class="guide-shell">
+    <article class="only-fa">
+      <section class="guide-hero">
+        <span class="eyebrow">DESKTOP AUDIO ROUTING</span>
+        <h1>تنظیم درست صدا، بدون اکو</h1>
+        <p>این راهنما فقط برای برنامه‌های دسکتاپ مثل VLC و پخش‌کننده‌های دوره است. اگر از اکستنشن استفاده می‌کنی، هیچ Virtual Cable یا تغییری در Volume Mixer لازم نیست.</p>
+      </section>
+      <section class="route-rule" aria-label="مسیر صحیح صدا">
+        <div class="route-node"><small>خروجی VLC یا برنامهٔ مقصد</small><strong>CABLE Input (Virtual Cable)</strong></div><span class="route-arrow">→</span>
+        <div class="route-node"><small>Capture داخل LingoDub</small><strong>CABLE Input [Loopback]</strong></div><span class="route-arrow">→</span>
+        <div class="route-node"><small>Output داخل LingoDub</small><strong>هدفون یا اسپیکر واقعی</strong></div>
+      </section>
+      <div class="guide-grid">
+        <section class="guide-card">
+          <h2>مراحل تنظیم Windows</h2>
+          <p>اول برنامهٔ مقصد را باز کن و چند ثانیه صدا پخش کن تا در Volume Mixer نمایش داده شود.</p>
+          <ol class="steps">
+            <li><b>۱</b><span>اگر Virtual Cable نداری، یک درایور معتبر مثل <a href="https://vb-audio.com/Cable/" target="_blank" rel="noreferrer">VB-CABLE رسمی</a> نصب و Windows را Restart کن.</span></li>
+            <li><b>۲</b><span>Settings → System → Sound → Volume mixer را باز کن.</span></li>
+            <li><b>۳</b><span>در بخش Apps، خروجی <strong>فقط برنامهٔ فیلم یا دوره</strong> را روی <strong>CABLE Input</strong> بگذار.</span></li>
+            <li><b>۴</b><span>در داشبورد LingoDub، «ورودی صدای برنامه» را روی Loopback همان Virtual Cable بگذار.</span></li>
+            <li><b>۵</b><span>«خروجی شنیداری» LingoDub را هدفون/اسپیکر واقعی انتخاب کن؛ صدای اصلی ۰٪ و دوبله ۱۰۰٪.</span></li>
+          </ol>
+          <div class="warning"><strong>مهم:</strong> خروجی خود LingoDub را روی Virtual Cable نگذار؛ این کار حلقهٔ صوتی و اکو ایجاد می‌کند.</div>
+          <div class="guide-actions"><button id="openMixerFa" class="button secondary" type="button">باز کردن Volume Mixer</button><a class="button ghost" href="/">بازگشت به تنظیمات LingoDub</a></div>
+        </section>
+        <section class="guide-card">
+          <h2>نمای تقریبی Volume Mixer</h2>
+          <p>نام برنامه و دستگاه ممکن است روی سیستم تو کمی متفاوت باشد.</p>
+          <div class="settings-shot" role="img" aria-label="نمای آموزشی Windows Volume Mixer">
+            <div class="window-bar"><i></i><i></i><i></i></div>
+            <div class="window-body">
+              <div class="crumb">System › Sound › Volume mixer</div><h3>Apps</h3>
+              <div class="app-row"><div class="app-name"><span class="app-icon">▶</span><b>VLC / Course player</b></div><div class="fake-select">Output device · CABLE Input ▾</div></div>
+              <div class="app-row"><div class="app-name"><span class="app-icon">L</span><b>LingoDub</b></div><div class="fake-select">Output device · Headphones ▾</div></div>
+            </div>
+          </div>
+          <div class="extension-note"><strong>استفاده از اکستنشن؟</strong><p>هیچ‌کدام از مراحل بالا لازم نیست. خروجی Chrome/Edge را دست نزن؛ اکستنشن همان تب را مستقیم Capture می‌کند و حالت «فقط دوبله» صدای اصلی را قطع می‌کند.</p></div>
+        </section>
+      </div>
+    </article>
+
+    <article class="only-en" hidden>
+      <section class="guide-hero">
+        <span class="eyebrow">DESKTOP AUDIO ROUTING</span>
+        <h1>Clean audio, without feedback</h1>
+        <p>This guide is only for desktop players such as VLC. When you use the browser extension, you need no Virtual Cable and must not change Chrome or Edge in Volume Mixer.</p>
+      </section>
+      <section class="route-rule" aria-label="Correct audio route">
+        <div class="route-node"><small>VLC/source app output</small><strong>CABLE Input (Virtual Cable)</strong></div><span class="route-arrow">→</span>
+        <div class="route-node"><small>LingoDub capture</small><strong>CABLE Input [Loopback]</strong></div><span class="route-arrow">→</span>
+        <div class="route-node"><small>LingoDub output</small><strong>Physical headphones or speakers</strong></div>
+      </section>
+      <div class="guide-grid">
+        <section class="guide-card">
+          <h2>Windows setup</h2>
+          <p>Open the source app and play audio for a few seconds so it appears in Volume Mixer.</p>
+          <ol class="steps">
+            <li><b>1</b><span>If needed, install a trusted device such as the <a href="https://vb-audio.com/Cable/" target="_blank" rel="noreferrer">official VB-CABLE</a>, then restart Windows.</span></li>
+            <li><b>2</b><span>Open Settings → System → Sound → Volume mixer.</span></li>
+            <li><b>3</b><span>Under Apps, set the output of <strong>only the movie/course player</strong> to <strong>CABLE Input</strong>.</span></li>
+            <li><b>4</b><span>In LingoDub, select that Virtual Cable loopback as Application audio input.</span></li>
+            <li><b>5</b><span>Select physical headphones as Listening output; set Original to 0% and Dubbed to 100%.</span></li>
+          </ol>
+          <div class="warning"><strong>Important:</strong> never send LingoDub's own output to the Virtual Cable. That creates an audio feedback loop.</div>
+          <div class="guide-actions"><button id="openMixerEn" class="button secondary" type="button">Open Volume Mixer</button><a class="button ghost" href="/">Back to LingoDub settings</a></div>
+        </section>
+        <section class="guide-card">
+          <h2>Volume Mixer illustration</h2>
+          <p>App and device names can differ slightly on your computer.</p>
+          <div class="settings-shot" role="img" aria-label="Windows Volume Mixer illustration">
+            <div class="window-bar"><i></i><i></i><i></i></div>
+            <div class="window-body">
+              <div class="crumb">System › Sound › Volume mixer</div><h3>Apps</h3>
+              <div class="app-row"><div class="app-name"><span class="app-icon">▶</span><b>VLC / Course player</b></div><div class="fake-select">Output device · CABLE Input ▾</div></div>
+              <div class="app-row"><div class="app-name"><span class="app-icon">L</span><b>LingoDub</b></div><div class="fake-select">Output device · Headphones ▾</div></div>
+            </div>
+          </div>
+          <div class="extension-note"><strong>Using the extension?</strong><p>Skip every step above. Leave Chrome/Edge output unchanged: the extension captures the selected tab directly and Dub only mutes the source route.</p></div>
+        </section>
+      </div>
+    </article>
+  </main>
+  <script>
+    let locale=localStorage.getItem('lingodub.locale')||'fa';
+    const applyLocale=()=>{const fa=locale==='fa';document.documentElement.lang=locale;document.documentElement.dir=fa?'rtl':'ltr';document.querySelector('.only-fa').hidden=!fa;document.querySelector('.only-en').hidden=fa;document.getElementById('localeToggle').textContent=fa?'EN':'فا';const back=document.querySelector('.back-link');back.textContent=back.dataset[locale];};
+    document.getElementById('localeToggle').addEventListener('click',()=>{locale=locale==='fa'?'en':'fa';localStorage.setItem('lingodub.locale',locale);applyLocale();});
+    const openMixer=async()=>{const response=await fetch('/api/audio/open-mixer',{method:'POST'});if(!response.ok)alert(locale==='fa'?'باز کردن تنظیمات ممکن نشد.':'Could not open Windows settings.');};
+    document.getElementById('openMixerFa').addEventListener('click',openMixer);document.getElementById('openMixerEn').addEventListener('click',openMixer);applyLocale();
+  </script>
+</body>
+</html>

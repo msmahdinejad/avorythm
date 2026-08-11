@@ -46,6 +46,8 @@ Portable users can download `LingoDub-Windows-x64.zip`, extract it, and run `Lin
 
 If you cloned the repository, double-click [`install-extension.cmd`](install-extension.cmd). It copies the extension to a stable local folder, opens the extensions page, and puts that folder path on your clipboard. Browsers intentionally require the final **Load unpacked** click; an unpacked extension cannot bypass that security step.
 
+> **Can installation be one click?** Yes, after LingoDub is reviewed and published in the Chrome Web Store (and separately in Microsoft Edge Add-ons). [Chrome on Windows blocks direct installation of locally hosted CRX files](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). Until a store listing exists, Developer mode + Load unpacked is the shortest supported public installation path.
+
 See the [complete installation guide](docs/INSTALLATION.md) for API key, proxy, and desktop-audio routing.
 
 ## Quick use
@@ -53,8 +55,26 @@ See the [complete installation guide](docs/INSTALLATION.md) for API key, proxy, 
 1. Open the dashboard and save a [Gemini API key](https://aistudio.google.com/app/apikey).
 2. Keep the default proxy `http://127.0.0.1:10808`, or change it under Advanced settings.
 3. For a browser video, use the extension. The default mode is **Dub only**.
-4. For VLC or another Windows app, click **Automatic audio setup** in the dashboard and follow its Volume Mixer step.
+4. For VLC or another Windows app, follow the dashboard's **visual audio guide** and configure Windows Volume Mixer manually.
 5. Enable **Save four outputs** before starting, or use the dashboard recording control.
+
+## Audio routing: desktop app vs extension
+
+| Usage | Virtual Cable | Required route |
+| --- | --- | --- |
+| Chrome/Edge **extension** | No | Leave the browser output unchanged; the extension captures and remixes the active tab itself. |
+| VLC, desktop course player, or browser **without the extension** | Yes | Set that source application's output to the Virtual Cable. In LingoDub, capture the cable loopback and play the dub through physical headphones. |
+
+For desktop mode, this distinction is mandatory:
+
+```text
+VLC / source app output → CABLE Input → LingoDub cable loopback capture
+LingoDub listening output → physical headphones or speakers
+```
+
+Do not send LingoDub's output back into the same Virtual Cable; that creates feedback. Open the in-app guide at `http://127.0.0.1:8765/audio-guide.html` or read the [complete audio setup guide](docs/INSTALLATION.md).
+
+![LingoDub desktop audio routing guide](docs/images/audio-routing-guide.png)
 
 ## Architecture
 
@@ -105,6 +125,7 @@ The companion binds only to `127.0.0.1`. API keys are stored through the operati
 - Gemini Live Translate and Gemini TTS are preview services. Availability, latency, quotas, voice consistency, and translation accuracy cannot be guaranteed by this client.
 - Browser capture requires Chrome/Edge 116 or newer and works only after a user clicks the extension action.
 - Desktop-app isolation currently needs a virtual audio endpoint. The browser extension does not.
+- Per-app Windows routing is intentionally manual. LingoDub opens the correct Volume Mixer page but does not claim to change another application's output automatically.
 - Source music/noise separation and speaker identity are controlled by the upstream model and may vary.
 - Only audio you are authorized to process should be translated or recorded.
 

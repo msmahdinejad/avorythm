@@ -73,3 +73,13 @@ def test_recording_download_rejects_unknown_files(
         response = app.get("/api/recordings/session/secrets.txt")
 
     assert response.status_code == 404
+
+
+def test_unsupported_automatic_audio_routing_is_not_exposed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.post("/api/audio/auto-setup")
+
+    assert response.status_code == 405

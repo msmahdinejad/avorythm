@@ -13,7 +13,7 @@ from .config import ConfigStore
 from .constants import RTL_LANGUAGES, SUPPORTED_LANGUAGES, VOICES
 from .extension_bridge import ExtensionBridge
 from .models import ApiKeyInput, Settings
-from .routing import detect_audio_setup, open_windows_volume_mixer
+from .routing import open_windows_volume_mixer
 from .runtime import DubRuntime
 
 ALLOWED_RECORDINGS = {
@@ -43,7 +43,7 @@ def create_app(
 
     app = FastAPI(
         title="LingoDub Companion",
-        version="0.1.0",
+        version="0.2.0",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -134,23 +134,6 @@ def create_app(
     @app.post("/api/record/stop")
     def record_stop() -> dict[str, str | bool]:
         return {"ok": True, "folder": runtime.stop_recording()}
-
-    @app.post("/api/audio/auto-setup")
-    def auto_audio_setup() -> dict[str, object]:
-        result = detect_audio_setup(DeviceCatalog.scan())
-        settings = runtime.settings.model_copy(
-            update={
-                "capture_device": result.capture_device,
-                "output_device": result.output_device,
-                "original_volume": 0.0,
-                "dub_volume": 1.0,
-            }
-        )
-        try:
-            runtime.update_settings(settings)
-        except RuntimeError as error:
-            raise HTTPException(409, str(error)) from error
-        return {"ok": True, "result": result.to_dict(), "settings": settings.model_dump()}
 
     @app.post("/api/audio/open-mixer")
     def open_mixer() -> dict[str, bool]:

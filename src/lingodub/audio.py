@@ -68,16 +68,6 @@ class DeviceCatalog:
             "default_output": self.default_output,
         }
 
-    def auto_setup(self) -> tuple[int, int, bool]:
-        virtual = next(
-            (device.index for device in self.captures if is_virtual_device(device.name)),
-            self.default_capture,
-        )
-        found_virtual = any(
-            device.index == virtual and is_virtual_device(device.name) for device in self.captures
-        )
-        return virtual, self.default_output, found_virtual
-
 
 def to_input_pcm(raw: bytes, channels: int) -> bytes:
     samples = np.frombuffer(raw, dtype="<i2").reshape(-1, channels)

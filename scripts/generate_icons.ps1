@@ -1,4 +1,7 @@
-param([string]$OutputDirectory = "$PSScriptRoot\..\extension\icons")
+param(
+    [string]$OutputDirectory = "$PSScriptRoot\..\extension\icons",
+    [string]$SourceLogo = "$PSScriptRoot\..\assets\branding\lingodub-logo.png"
+)
 
 Add-Type -AssemblyName System.Drawing
 $resolvedOutput = [IO.Path]::GetFullPath($OutputDirectory)
@@ -15,26 +18,32 @@ function New-RoundedRectangle([Drawing.RectangleF]$rectangle, [float]$radius) {
     return $path
 }
 
-$master = [Drawing.Bitmap]::new(256, 256)
+$resolvedLogo = [IO.Path]::GetFullPath($SourceLogo)
+if (-not [IO.File]::Exists($resolvedLogo)) {
+    throw "Logo not found: $resolvedLogo"
+}
+
+$source = [Drawing.Bitmap]::FromFile($resolvedLogo)
+$master = [Drawing.Bitmap]::new(256, 256, [Drawing.Imaging.PixelFormat]::Format32bppArgb)
 $graphics = [Drawing.Graphics]::FromImage($master)
 $graphics.SmoothingMode = [Drawing.Drawing2D.SmoothingMode]::AntiAlias
+$graphics.InterpolationMode = [Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$graphics.Clear([Drawing.Color]::Transparent)
 $background = New-RoundedRectangle ([Drawing.RectangleF]::new(8, 8, 240, 240)) 54
 $gradient = [Drawing.Drawing2D.LinearGradientBrush]::new(
     [Drawing.PointF]::new(20, 20), [Drawing.PointF]::new(236, 236),
-    [Drawing.Color]::FromArgb(139, 92, 246), [Drawing.Color]::FromArgb(67, 97, 238)
+    [Drawing.Color]::FromArgb(17, 20, 33), [Drawing.Color]::FromArgb(9, 11, 19)
 )
 $graphics.FillPath($gradient, $background)
-$speaker = [Drawing.PointF[]]@(
-    [Drawing.PointF]::new(57, 96), [Drawing.PointF]::new(93, 96),
-    [Drawing.PointF]::new(139, 62), [Drawing.PointF]::new(139, 194),
-    [Drawing.PointF]::new(93, 160), [Drawing.PointF]::new(57, 160)
+$sourceRectangle = [Drawing.Rectangle]::new(160, 205, 935, 905)
+$destinationRectangle = [Drawing.Rectangle]::new(24, 23, 208, 210)
+$graphics.DrawImage(
+    $source,
+    $destinationRectangle,
+    $sourceRectangle,
+    [Drawing.GraphicsUnit]::Pixel
 )
-$graphics.FillPolygon([Drawing.Brushes]::White, $speaker)
-$pen = [Drawing.Pen]::new([Drawing.Color]::White, 14)
-$pen.StartCap = $pen.EndCap = [Drawing.Drawing2D.LineCap]::Round
-$graphics.DrawArc($pen, 131, 92, 64, 72, -55, 110)
-$graphics.DrawArc($pen, 137, 66, 102, 124, -55, 110)
-$pen.Dispose(); $gradient.Dispose(); $background.Dispose(); $graphics.Dispose()
+$gradient.Dispose(); $background.Dispose(); $graphics.Dispose(); $source.Dispose()
 
 foreach ($size in 16, 32, 48, 128) {
     $icon = [Drawing.Bitmap]::new($size, $size)
