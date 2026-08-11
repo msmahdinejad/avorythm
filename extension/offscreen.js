@@ -255,24 +255,28 @@ async function handleLiveMessage(message) {
 function openSocket() {
   return new Promise((resolve, reject) => {
     let connected = false;
+    let messages = Promise.resolve();
     const timeout = setTimeout(() => {
       if (!connected) reject(new Error('gemini_socket_timeout'));
     }, 15000);
     socket = new WebSocket(liveUrl(apiKey));
     socket.onopen = () => socket.send(JSON.stringify(setupMessage(config.targetLanguage)));
-    socket.onmessage = async (event) => {
-      try {
-        if (await handleLiveMessage(JSON.parse(event.data)) === 'ready') {
-          connected = true;
+    socket.onmessage = (event) => {
+      messages = messages.then(async () => {
+        try {
+          const payload = event.data instanceof Blob ? await event.data.text() : event.data;
+          if (await handleLiveMessage(JSON.parse(payload)) === 'ready') {
+            connected = true;
+            clearTimeout(timeout);
+            resolve();
+          }
+        } catch (error) {
           clearTimeout(timeout);
-          resolve();
+          await report({status: 'error', active: false, error: error.message});
+          socket?.close();
+          if (!connected) reject(error);
         }
-      } catch (error) {
-        clearTimeout(timeout);
-        await report({status: 'error', active: false, error: error.message});
-        socket?.close();
-        if (!connected) reject(error);
-      }
+      });
     };
     socket.onerror = () => {
       clearTimeout(timeout);
