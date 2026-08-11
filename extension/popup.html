@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="popup.css"><title>LingoDub</title></head>
+<body>
+  <header>
+    <div class="brand"><span class="logo"><svg viewBox="0 0 48 48"><path d="M11 15.5v17l15.5 9V6.5L11 15.5Z"/><path d="M31 17c3 3.5 3 10.5 0 14M36 12c6 6.5 6 17.5 0 24"/></svg></span><span><b>LingoDub</b><small data-i18n="tagline">دوبلهٔ زندهٔ همین تب</small></span></div>
+    <button id="localeToggle" class="mini-button" type="button">EN</button>
+  </header>
+
+  <main>
+    <div id="companionNotice" class="notice" hidden><b data-i18n="companionOffline">برنامهٔ LingoDub اجرا نیست</b><span data-i18n="companionHelp">اول Companion را روی لپ‌تاپ اجرا کن.</span><button id="retryButton" type="button" data-i18n="retry">تلاش دوباره</button></div>
+
+    <section class="status-card">
+      <div><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="ready">آمادهٔ دوبله</span></div>
+      <span id="languageBadge" class="language-badge">AUTO → FA</span>
+    </section>
+
+    <section class="transcripts">
+      <div><small data-i18n="source">متن اصلی</small><p id="sourceText" dir="auto" data-i18n="waiting">منتظر صدا…</p></div>
+      <div class="translated"><small data-i18n="translated">ترجمه</small><p id="translatedText" dir="auto" data-i18n="waitingTranslation">ترجمه اینجا می‌آید…</p></div>
+    </section>
+
+    <section class="controls">
+      <div class="field-row">
+        <label><span data-i18n="language">زبان مقصد</span><select id="targetLanguage"></select></label>
+        <label><span data-i18n="voice">گوینده</span><select id="voice"></select></label>
+      </div>
+      <label><span data-i18n="audioMode">صدایی که می‌شنوی</span><select id="audioMode"><option value="dub" data-i18n="dubOnly">فقط دوبله</option><option value="original" data-i18n="originalOnly">فقط صدای اصلی</option><option value="mix" data-i18n="smartMix">میکس هوشمند</option></select></label>
+
+      <div id="mixControls" class="mix-controls" hidden>
+        <label><span><b data-i18n="sourceVolume">صدای اصلی</b><output id="originalValue">20%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+        <label><span><b data-i18n="dubVolume">صدای دوبله</b><output id="dubValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+        <label class="check"><input id="autoDuck" type="checkbox"><span><b>Auto-duck</b><small data-i18n="duckHelp">هنگام صحبت دوبله، صدای اصلی خودکار کم شود</small></span></label>
+      </div>
+
+      <label class="check recording"><input id="recording" type="checkbox"><span><b data-i18n="saveOutputs">ذخیرهٔ چهار خروجی</b><small data-i18n="outputsHelp">دو فایل WAV و دو زیرنویس SRT</small></span></label>
+    </section>
+
+    <button id="toggleButton" class="primary" type="button" disabled><span>▶</span><b data-i18n="start">شروع دوبلهٔ این تب</b></button>
+    <a id="downloadLink" class="download" href="#" target="_blank" hidden data-i18n="download">دریافت چهار خروجی</a>
+    <button id="dashboardButton" class="dashboard" type="button"><span>⚙</span><span data-i18n="dashboard">تنظیمات کامل و API Key</span></button>
+    <p class="privacy" data-i18n="privacy">کلید API فقط در Companion امن ویندوز نگه‌داری می‌شود.</p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

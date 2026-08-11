@@ -1,0 +1,46 @@
+name: Bug report
+description: Report reproducible LingoDub behavior
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Never include an API key or private recording.
+  - type: input
+    id: version
+    attributes:
+      label: LingoDub version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Windows 11 24H2, Chrome 130, headphones model
+    validations:
+      required: true
+  - type: dropdown
+    id: path
+    attributes:
+      label: Audio path
+      options: [Browser extension, Desktop WASAPI, Dashboard, Recording]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized error or logs
+      render: shell

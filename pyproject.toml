@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lingodub"
+version = "0.1.0"
+description = "Real-time AI dubbing for Windows desktop audio and browser tabs"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "MIT"
+authors = [{ name = "Mohammad Saleh Mahdinejad" }]
+keywords = ["gemini", "live-translation", "dubbing", "accessibility", "browser-extension"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows :: Windows 10",
+  "Programming Language :: Python :: 3",
+  "Topic :: Multimedia :: Sound/Audio",
+]
+dependencies = [
+  "fastapi==0.141.1",
+  "google-genai==2.17.0",
+  "keyring==25.7.0",
+  "numpy==2.4.3",
+  "PyAudioWPatch==0.2.12.8; platform_system == 'Windows'",
+  "python-dotenv==1.2.2",
+  "uvicorn==0.52.1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx==0.28.1",
+  "mypy==1.18.2",
+  "pytest==8.4.2",
+  "pytest-asyncio==1.2.0",
+  "ruff==0.13.3",
+]
+build = ["pyinstaller==6.16.0"]
+
+[project.urls]
+Homepage = "https://github.com/msmahdinejad/lingodub"
+Documentation = "https://github.com/msmahdinejad/lingodub#readme"
+Issues = "https://github.com/msmahdinejad/lingodub/issues"
+
+[project.scripts]
+lingodub = "lingodub.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lingodub"]
+
+[tool.hatch.build]
+include = ["src/lingodub/static/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+packages = ["lingodub"]
