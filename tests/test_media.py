@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
+import pytest
+
 from lingodub.media import (
+    MediaTools,
     TimeWindow,
     fixed_windows,
     parse_silences,
@@ -45,3 +49,27 @@ def test_write_subtitles_supports_srt_and_vtt(tmp_path: Path) -> None:
     write_subtitles(vtt, entries, vtt=True)
     assert "00:00:01,250 --> 00:00:02,500" in srt.read_text(encoding="utf-8-sig")
     assert vtt.read_text(encoding="utf-8").startswith("WEBVTT\n\n1\n00:00:01.250")
+
+
+def test_media_tools_find_winget_package_without_alias(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    executable = (
+        tmp_path
+        / "Microsoft"
+        / "WinGet"
+        / "Packages"
+        / "Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
+        / "ffmpeg-9.0-full_build"
+        / "bin"
+        / "ffmpeg.exe"
+    )
+    executable.parent.mkdir(parents=True)
+    executable.touch()
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    monkeypatch.setenv("PROGRAMFILES", str(tmp_path / "Program Files"))
+    monkeypatch.setattr(sys, "_MEIPASS", str(tmp_path / "bundle"), raising=False)
+    monkeypatch.setattr("lingodub.media.shutil.which", lambda _: None)
+
+    assert MediaTools._find("ffmpeg") == str(executable)

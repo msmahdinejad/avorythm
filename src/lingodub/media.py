@@ -130,6 +130,20 @@ class MediaTools:
         if not found:
             found = next((str(path) for path in winget_candidates if path.is_file()), None)
         if not found:
+            package_roots = [
+                Path(local_app_data) / "Microsoft" / "WinGet" / "Packages",
+                Path(program_files) / "WinGet" / "Packages",
+            ]
+            found = next(
+                (
+                    str(path)
+                    for root in package_roots
+                    for path in root.glob(f"Gyan.FFmpeg*/**/bin/{executable}")
+                    if path.is_file()
+                ),
+                None,
+            )
+        if not found:
             raise RuntimeError(f"{name} is required for uploaded video processing")
         return found
 

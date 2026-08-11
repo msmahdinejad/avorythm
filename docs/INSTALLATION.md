@@ -85,7 +85,7 @@ Do not route LingoDub output to AMM Virtual. That feeds dubbed speech back into 
 
 ## Troubleshooting
 
-- **Extension shows a Blob/JSON error:** reload the unpacked `0.4.0` folder; older builds parsed WebSocket Blob objects as JSON directly.
+- **Extension shows a Blob/JSON error:** reload the unpacked `0.4.1` or newer folder; older builds parsed WebSocket Blob objects as JSON directly.
 - **Extension cannot connect:** verify model access/quota and confirm Chrome/Edge itself uses the required proxy.
 - **Extension asks for the key again:** expected after a full browser exit because the key is session-only.
 - **No tab audio:** use Chrome/Edge 116+, keep the target tab active when Start is clicked, and note that protected DRM pages may block capture.
