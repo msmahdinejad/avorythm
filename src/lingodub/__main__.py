@@ -13,12 +13,12 @@ from .api import create_app
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="LingoDub local companion")
+    parser = argparse.ArgumentParser(description="LingoDub desktop application")
     parser.add_argument("--no-browser", action="store_true")
     return parser.parse_args()
 
 
-def companion_is_running() -> bool:
+def app_is_running() -> bool:
     try:
         with urllib.request.urlopen("http://127.0.0.1:8765/api/health", timeout=0.6) as response:
             return bool(response.status == 200)
@@ -30,7 +30,7 @@ def main() -> None:
     if sys.platform != "win32":
         raise SystemExit("LingoDub desktop capture currently supports Windows 10/11.")
     args = parse_args()
-    if companion_is_running():
+    if app_is_running():
         if not args.no_browser:
             webbrowser.open("http://127.0.0.1:8765")
         return

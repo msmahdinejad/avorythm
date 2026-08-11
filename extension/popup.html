@@ -8,7 +8,13 @@
   </header>
 
   <main>
-    <div id="companionNotice" class="notice" hidden><b data-i18n="companionOffline">برنامهٔ LingoDub اجرا نیست</b><span data-i18n="companionHelp">اول Companion را روی لپ‌تاپ اجرا کن.</span><button id="retryButton" type="button" data-i18n="retry">تلاش دوباره</button></div>
+    <div id="keyNotice" class="notice" hidden><b data-i18n="keyMissing">Gemini API Key را وارد کن</b><span data-i18n="keyHelp">کلید فقط تا وقتی مرورگر باز است نگه‌داری می‌شود.</span></div>
+
+    <section class="key-card">
+      <label for="apiKey">Gemini API Key</label>
+      <div class="key-action"><input id="apiKey" type="password" autocomplete="off" placeholder="AIza…"><button id="saveKeyButton" type="button" data-i18n="saveKey">ذخیره</button></div>
+      <div class="key-meta"><small id="keyStatus" data-i18n="keyMissingShort">تنظیم نشده</small><button id="clearKeyButton" type="button" data-i18n="clearKey">حذف کلید</button></div>
+    </section>
 
     <section class="status-card">
       <div><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="ready">آمادهٔ دوبله</span></div>
@@ -37,10 +43,9 @@
     </section>
 
     <button id="toggleButton" class="primary" type="button" disabled><span>▶</span><b data-i18n="start">شروع دوبلهٔ این تب</b></button>
-    <a id="downloadLink" class="download" href="#" target="_blank" hidden data-i18n="download">دریافت چهار خروجی</a>
-    <button id="dashboardButton" class="dashboard" type="button"><span>⚙</span><span data-i18n="dashboard">تنظیمات کامل و API Key</span></button>
-    <p class="privacy" data-i18n="privacy">کلید API فقط در Companion امن ویندوز نگه‌داری می‌شود.</p>
+    <div id="downloadReady" class="download" hidden data-i18n="downloadReady">چهار فایل در Downloads ذخیره شدند.</div>
+    <p class="privacy" data-i18n="privacy">با شروع، صدای همین تب به Google Gemini فرستاده می‌شود؛ ضبط فقط با فعال‌کردن گزینهٔ بالا انجام می‌شود.</p>
   </main>
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

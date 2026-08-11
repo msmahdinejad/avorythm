@@ -9,9 +9,11 @@
 - [x] Independent source/dub volume and automatic ducking
 - [x] Four aligned recording outputs
 - [x] OS keyring, CI, Windows packages, and contributor documentation
+- [x] Independent app and standalone extension runtimes
 
 ## Next
 
+- [ ] Authenticated ephemeral-token broker for the public extension
 - [ ] Signed Chrome Web Store and Edge Add-ons packages
 - [ ] Native per-process Windows loopback capture without a virtual device
 - [ ] Signed installer and automatic update channel

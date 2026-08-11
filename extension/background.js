@@ -1,6 +1,6 @@
-const COMPANION = 'http://127.0.0.1:8765';
-const OFFSCREEN_PATH = 'offscreen.html';
+import {DEFAULT_SETTINGS, LANGUAGES, VOICES} from './core.mjs';
 
+const OFFSCREEN_PATH = 'offscreen.html';
 const defaultState = {
   active: false,
   status: 'idle',
@@ -8,7 +8,7 @@ const defaultState = {
   sourceText: '',
   translatedText: '',
   sourceLanguage: '',
-  recordingUrl: ''
+  recordingReady: false
 };
 
 async function getState() {
@@ -23,10 +23,9 @@ async function setState(update) {
 }
 
 async function hasOffscreenDocument() {
-  const url = chrome.runtime.getURL(OFFSCREEN_PATH);
   const contexts = await chrome.runtime.getContexts({
     contextTypes: ['OFFSCREEN_DOCUMENT'],
-    documentUrls: [url]
+    documentUrls: [chrome.runtime.getURL(OFFSCREEN_PATH)]
   });
   return contexts.length > 0;
 }
@@ -36,26 +35,34 @@ async function ensureOffscreenDocument() {
   await chrome.offscreen.createDocument({
     url: OFFSCREEN_PATH,
     reasons: ['USER_MEDIA'],
-    justification: 'Capture and reroute the active tab audio for live dubbing.'
+    justification: 'Capture and reroute user-selected tab audio for live translation.'
   });
 }
 
-async function companion(path = '/api/health') {
-  const response = await fetch(`${COMPANION}${path}`);
-  if (!response.ok) throw new Error(`companion_${response.status}`);
-  return response.json();
+async function bootstrap() {
+  const [{settings}, {apiKey}] = await Promise.all([
+    chrome.storage.local.get('settings'),
+    chrome.storage.session.get('apiKey')
+  ]);
+  return {
+    languages: LANGUAGES,
+    voices: VOICES,
+    settings: {...DEFAULT_SETTINGS, ...settings},
+    api_key_set: Boolean(apiKey)
+  };
 }
 
 async function start(config) {
   const current = await getState();
   if (current.active) return current;
-  await companion();
+  const {apiKey} = await chrome.storage.session.get('apiKey');
+  if (!apiKey) throw new Error('api_key_missing');
   await ensureOffscreenDocument();
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   if (!tab?.id) throw new Error('active_tab_missing');
   const streamId = await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
-  await setState({active: true, status: 'connecting', error: '', sourceText: '', translatedText: ''});
-  const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config});
+  await setState({active: true, status: 'connecting', error: '', sourceText: '', translatedText: '', recordingReady: false});
+  const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config, apiKey});
   if (!response?.ok) {
     if (await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
     await setState({active: false, status: 'error', error: response?.error || 'capture_failed'});
@@ -66,22 +73,17 @@ async function start(config) {
 
 async function stop() {
   if (await hasOffscreenDocument()) {
-    await chrome.runtime.sendMessage({target: 'offscreen', type: 'stop'});
+    const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'stop'});
     await chrome.offscreen.closeDocument();
+    if (!response?.ok) throw new Error(response?.error || 'stop_failed');
   }
   return setState({active: false, status: 'idle'});
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.session.set({state: defaultState});
-  const existing = await chrome.storage.local.get('settings');
-  if (!existing.settings) {
-    await chrome.storage.local.set({settings: {
-      locale: 'fa', targetLanguage: 'fa', voice: 'Native',
-      voiceStyle: 'Natural, clear, cinematic dubbing', audioMode: 'dub',
-      originalVolume: 0, dubVolume: 1, autoDuck: true, recording: false
-    }});
-  }
+  const {settings} = await chrome.storage.local.get('settings');
+  if (!settings) await chrome.storage.local.set({settings: DEFAULT_SETTINGS});
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -89,18 +91,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
     if (message.target === 'background') {
       if (message.type === 'bridge-state') await setState(message.update);
+      else if (message.type === 'download') {
+        const id = await chrome.downloads.download({url: message.url, filename: message.filename, saveAs: false});
+        sendResponse({ok: true, id});
+        return;
+      }
       sendResponse({ok: true});
       return;
     }
     if (message.type === 'state') sendResponse({ok: true, state: await getState()});
-    else if (message.type === 'bootstrap') sendResponse({ok: true, data: await companion('/api/bootstrap')});
-    else if (message.type === 'start') sendResponse({ok: true, state: await start(message.config)});
+    else if (message.type === 'bootstrap') sendResponse({ok: true, data: await bootstrap()});
+    else if (message.type === 'set-key') {
+      const apiKey = String(message.apiKey || '').trim();
+      if (apiKey.length < 10) throw new Error('api_key_invalid');
+      await chrome.storage.session.set({apiKey});
+      sendResponse({ok: true});
+    } else if (message.type === 'clear-key') {
+      if ((await getState()).active) await stop();
+      await chrome.storage.session.remove('apiKey');
+      sendResponse({ok: true});
+    } else if (message.type === 'start') sendResponse({ok: true, state: await start(message.config)});
     else if (message.type === 'stop') sendResponse({ok: true, state: await stop()});
     else if (message.type === 'audio') {
-      await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: message.config});
-      sendResponse({ok: true});
-    } else if (message.type === 'open-dashboard') {
-      await chrome.tabs.create({url: COMPANION});
+      if (await hasOffscreenDocument()) await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: message.config});
       sendResponse({ok: true});
     }
   })().catch(async (error) => {

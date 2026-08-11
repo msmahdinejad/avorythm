@@ -1,11 +1,13 @@
+import {DEFAULT_SETTINGS} from './core.mjs';
+
 const $ = (selector) => document.querySelector(selector);
 let settings = null;
 let bootstrap = null;
 let timer = null;
 
 const copy = {
-  fa:{tagline:'دوبلهٔ زندهٔ همین تب',companionOffline:'برنامهٔ LingoDub اجرا نیست',companionHelp:'اول Companion را روی لپ‌تاپ اجرا کن.',keyHelp:'از تنظیمات کامل، کلید Gemini را امن ذخیره کن.',retry:'تلاش دوباره',ready:'آمادهٔ دوبله',connecting:'در حال اتصال…',connected:'دوبلهٔ زنده فعال است',error:'خطا در اتصال',source:'متن اصلی',translated:'ترجمه',waiting:'منتظر صدا…',waitingTranslation:'ترجمه اینجا می‌آید…',language:'زبان مقصد',voice:'گوینده',audioMode:'صدایی که می‌شنوی',dubOnly:'فقط دوبله',originalOnly:'فقط صدای اصلی',smartMix:'میکس هوشمند',sourceVolume:'صدای اصلی',dubVolume:'صدای دوبله',duckHelp:'هنگام صحبت دوبله، صدای اصلی خودکار کم شود',saveOutputs:'ذخیرهٔ چهار خروجی',outputsHelp:'دو فایل WAV و دو زیرنویس SRT',start:'شروع دوبلهٔ این تب',stop:'توقف دوبله',download:'دریافت چهار خروجی',dashboard:'تنظیمات کامل و API Key',privacy:'کلید API فقط در Companion امن ویندوز نگه‌داری می‌شود.',keyMissing:'API Key را در داشبورد وارد کن',native:'صدای بومی Gemini'},
-  en:{tagline:'Dub this tab live',companionOffline:'LingoDub Companion is not running',companionHelp:'Start the Companion app on your laptop first.',keyHelp:'Store your Gemini key securely in full settings.',retry:'Retry',ready:'Ready to dub',connecting:'Connecting…',connected:'Live dubbing is active',error:'Connection error',source:'Source transcript',translated:'Translation',waiting:'Waiting for audio…',waitingTranslation:'Translation appears here…',language:'Target language',voice:'Speaker',audioMode:'What you hear',dubOnly:'Dubbed audio only',originalOnly:'Original audio only',smartMix:'Smart mix',sourceVolume:'Original audio',dubVolume:'Dubbed audio',duckHelp:'Lower source automatically while dubbed speech plays',saveOutputs:'Save four outputs',outputsHelp:'Two WAV files and two SRT subtitles',start:'Start dubbing this tab',stop:'Stop dubbing',download:'Download four outputs',dashboard:'Full settings and API Key',privacy:'Your API key stays inside the secure Windows Companion.',keyMissing:'Set your API key in the dashboard',native:'Native Gemini voice'}
+  fa:{tagline:'دوبلهٔ زندهٔ همین تب',keyHelp:'کلید فقط تا وقتی مرورگر باز است نگه‌داری می‌شود و مستقیم به Google فرستاده می‌شود.',ready:'آمادهٔ دوبله',connecting:'در حال اتصال…',connected:'دوبلهٔ زنده فعال است',error:'خطا در اتصال',source:'متن اصلی',translated:'ترجمه',waiting:'منتظر صدا…',waitingTranslation:'ترجمه اینجا می‌آید…',language:'زبان مقصد',voice:'گوینده',audioMode:'صدایی که می‌شنوی',dubOnly:'فقط دوبله',originalOnly:'فقط صدای اصلی',smartMix:'میکس هوشمند',sourceVolume:'صدای اصلی',dubVolume:'صدای دوبله',duckHelp:'هنگام صحبت دوبله، صدای اصلی خودکار کم شود',saveOutputs:'ذخیرهٔ چهار خروجی',outputsHelp:'دو WAV و دو SRT مستقیم در Downloads',start:'شروع دوبلهٔ این تب',stop:'توقف دوبله',downloadReady:'چهار فایل در Downloads ذخیره شدند.',privacy:'با شروع، صدای همین تب به Google Gemini فرستاده می‌شود؛ ضبط فقط با فعال‌کردن گزینهٔ بالا انجام می‌شود.',keyMissing:'Gemini API Key را وارد کن',keyMissingShort:'تنظیم نشده',keyReady:'برای این نشست مرورگر آماده است',saveKey:'ذخیره',clearKey:'حذف کلید',native:'صدای بومی Gemini',api_key_missing:'Gemini API Key را وارد کن',api_key_invalid:'API Key معتبر نیست',gemini_socket_failed:'اتصال مستقیم به Gemini ممکن نشد؛ پروکسی مرورگر را بررسی کن.',gemini_socket_closed:'اتصال Gemini بسته شد.',active_tab_missing:'تب فعالی پیدا نشد.',capture_failed:'Capture صدای تب ممکن نشد.'},
+  en:{tagline:'Dub this tab live',keyHelp:'The key is kept only for this browser session and sent directly to Google.',ready:'Ready to dub',connecting:'Connecting…',connected:'Live dubbing is active',error:'Connection error',source:'Source transcript',translated:'Translation',waiting:'Waiting for audio…',waitingTranslation:'Translation appears here…',language:'Target language',voice:'Speaker',audioMode:'What you hear',dubOnly:'Dubbed audio only',originalOnly:'Original audio only',smartMix:'Smart mix',sourceVolume:'Original audio',dubVolume:'Dubbed audio',duckHelp:'Lower source automatically while dubbed speech plays',saveOutputs:'Save four outputs',outputsHelp:'Two WAV and two SRT files in Downloads',start:'Start dubbing this tab',stop:'Stop dubbing',downloadReady:'Four files were saved to Downloads.',privacy:'Starting sends audio from this tab to Google Gemini; recording stays off unless you enable it above.',keyMissing:'Enter a Gemini API Key',keyMissingShort:'Not configured',keyReady:'Ready for this browser session',saveKey:'Save',clearKey:'Clear key',native:'Native Gemini voice',api_key_missing:'Enter a Gemini API Key.',api_key_invalid:'The API key is invalid.',gemini_socket_failed:'Could not connect directly to Gemini; check the browser proxy.',gemini_socket_closed:'The Gemini connection closed.',active_tab_missing:'No active tab was found.',capture_failed:'Could not capture tab audio.'}
 };
 
 function t(key){ return copy[settings?.locale || 'fa'][key] || key; }
@@ -13,7 +15,7 @@ function send(message){ return chrome.runtime.sendMessage(message); }
 
 async function loadSettings(){
   const stored = await chrome.storage.local.get('settings');
-  settings = stored.settings || {locale:'fa',targetLanguage:'fa',voice:'Native',voiceStyle:'Natural, clear, cinematic dubbing',audioMode:'dub',originalVolume:0,dubVolume:1,autoDuck:true,recording:false};
+  settings = {...DEFAULT_SETTINGS, ...stored.settings};
 }
 
 async function saveSettings(liveAudio = false){
@@ -34,6 +36,14 @@ function fill(element, items, selected, label){
   element.replaceChildren(...items.map((item)=>{const option=document.createElement('option');option.value=item;option.textContent=label(item);option.selected=item===selected;return option;}));
 }
 
+function renderKey(){
+  const ready=Boolean(bootstrap?.api_key_set);
+  $('#keyStatus').textContent=t(ready?'keyReady':'keyMissingShort');
+  $('#keyStatus').classList.toggle('ready',ready);
+  $('#keyNotice').hidden=ready;
+  $('#toggleButton').disabled=!ready;
+}
+
 function renderStatic(){
   translate();
   if (bootstrap){
@@ -46,16 +56,17 @@ function renderStatic(){
   $('#mixControls').hidden=settings.audioMode!=='mix';
   $('#originalValue').textContent=`${Math.round(settings.originalVolume*100)}%`; $('#dubValue').textContent=`${Math.round(settings.dubVolume*100)}%`;
   $('#languageBadge').textContent=`AUTO → ${settings.targetLanguage.toUpperCase()}`;
+  renderKey();
 }
 
 function renderState(state){
-  const status = state.status==='connected'?'connected':state.status==='connecting'?'connecting':state.status==='error'?'error':'ready';
-  $('#statusText').textContent=t(status); $('#statusDot').className=`status-dot ${state.active?'active':''} ${state.status==='error'?'error':''}`;
+  const status=state.status==='connected'?'connected':state.status==='connecting'?'connecting':state.status==='error'?'error':'ready';
+  $('#statusText').textContent=state.error?t(state.error):t(status); $('#statusDot').className=`status-dot ${state.active?'active':''} ${state.status==='error'?'error':''}`;
   $('#toggleButton').disabled=!bootstrap?.api_key_set; $('#toggleButton').classList.toggle('stopping',state.active);
   $('#toggleButton b').textContent=t(state.active?'stop':'start'); $('#toggleButton span').textContent=state.active?'■':'▶';
   $('#sourceText').textContent=state.sourceText||t('waiting'); $('#translatedText').textContent=state.translatedText||t('waitingTranslation');
   $('#languageBadge').textContent=`${(state.sourceLanguage||'AUTO').toUpperCase()} → ${settings.targetLanguage.toUpperCase()}`;
-  $('#downloadLink').hidden=!state.recordingUrl; if(state.recordingUrl) $('#downloadLink').href=state.recordingUrl;
+  $('#downloadReady').hidden=!state.recordingReady;
   document.querySelectorAll('.controls select,.controls input').forEach((node)=>{node.disabled=state.active && !['audioMode','originalVolume','dubVolume','autoDuck'].includes(node.id);});
 }
 
@@ -64,40 +75,31 @@ async function refresh(){
 }
 
 async function connect(){
-  try{
-    const response=await send({type:'bootstrap'}); if(!response?.ok) throw new Error(response?.error);
-    bootstrap=response.data; $('#companionNotice').hidden=true;
-    renderStatic();
-    if(!bootstrap.api_key_set){
-      $('#companionNotice').hidden=false;
-      $('#companionNotice b').dataset.i18n='keyMissing';
-      $('#companionNotice b').textContent=t('keyMissing');
-      $('#companionNotice span').dataset.i18n='keyHelp';
-      $('#companionNotice span').textContent=t('keyHelp');
-    }
-    $('#toggleButton').disabled=!bootstrap.api_key_set; await refresh();
-  }catch{
-    bootstrap=null;
-    $('#companionNotice').hidden=false;
-    $('#companionNotice b').dataset.i18n='companionOffline';
-    $('#companionNotice span').dataset.i18n='companionHelp';
-    translate();
-    $('#toggleButton').disabled=true;
-  }
+  const response=await send({type:'bootstrap'});
+  if(!response?.ok) throw new Error(response?.error);
+  bootstrap=response.data;
+  settings={...settings,...bootstrap.settings};
+  renderStatic();
+  await refresh();
 }
 
 $('#localeToggle').addEventListener('click',async()=>{settings.locale=settings.locale==='fa'?'en':'fa';await saveSettings();});
-$('#retryButton').addEventListener('click',connect);
-$('#dashboardButton').addEventListener('click',()=>send({type:'open-dashboard'}));
+$('#saveKeyButton').addEventListener('click',async()=>{
+  const apiKey=$('#apiKey').value.trim();
+  const response=await send({type:'set-key',apiKey});
+  if(response?.ok){bootstrap.api_key_set=true;$('#apiKey').value='';renderKey();}
+  else {$('#keyNotice').hidden=false;$('#keyNotice b').textContent=t(response?.error||'api_key_invalid');}
+});
+$('#clearKeyButton').addEventListener('click',async()=>{await send({type:'clear-key'});bootstrap.api_key_set=false;renderKey();});
 $('#toggleButton').addEventListener('click',async()=>{
   $('#toggleButton').disabled=true;
   const current=await send({type:'state'});
   const response=await send(current.state.active?{type:'stop'}:{type:'start',config:settings});
-  if(!response?.ok) {$('#companionNotice').hidden=false;}
+  if(!response?.ok){$('#keyNotice').hidden=false;$('#keyNotice b').textContent=t(response?.error||'error');}
   await refresh();
 });
 $('#targetLanguage').addEventListener('change',()=>saveSettings()); $('#voice').addEventListener('change',()=>saveSettings()); $('#recording').addEventListener('change',()=>saveSettings());
 $('#audioMode').addEventListener('change',()=>saveSettings(true)); $('#autoDuck').addEventListener('change',()=>saveSettings(true));
 ['originalVolume','dubVolume'].forEach((id)=>$(`#${id}`).addEventListener('input',()=>saveSettings(true)));
 
-(async()=>{await loadSettings();renderStatic();await connect();timer=setInterval(refresh,750);})();
+(async()=>{await loadSettings();renderStatic();await connect();timer=setInterval(refresh,750);})().catch((error)=>{$('#keyNotice').hidden=false;$('#keyNotice b').textContent=error.message;});

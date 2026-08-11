@@ -2,12 +2,13 @@
 
 [فارسی](INSTALLATION.fa.md)
 
-## Requirements
+## Two independent products
 
-- Windows 10 or 11 (64-bit)
-- Chrome or Edge 116+ for the extension
-- A Gemini API key with access to `gemini-3.5-live-translate-preview`
-- Internet connectivity; if required, an HTTP proxy such as `http://127.0.0.1:10808`
+Install only what you use:
+
+- **Browser tabs:** Chrome/Edge 116+, the extension ZIP, and a Gemini API key. The Windows app is not required.
+- **Desktop programs:** Windows 10/11 x64, the Windows app, a Gemini API key, and usually a Virtual Cable.
+- **Network:** internet access. The app has its own HTTP proxy field; the extension follows Chrome/Edge or system proxy settings.
 
 ## Companion
 
@@ -18,22 +19,31 @@
 
 The key is saved in Windows Credential Manager, not in `settings.json`. Developers may instead copy `.env.example` to `.env`; `.env` is ignored by Git.
 
-## Extension
+## Standalone extension
 
-1. Install and start the LingoDub companion first.
-2. Extract `LingoDub-Extension.zip` into a permanent folder. Do not select the ZIP itself.
-3. Open `chrome://extensions` or `edge://extensions`.
-4. Enable **Developer mode**.
-5. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
-6. Pin LingoDub, open the video tab, open the popup, and click **Start dubbing this tab**.
+1. Download and extract `LingoDub-Extension.zip` into a permanent folder. Do not select the ZIP itself.
+2. Open `chrome://extensions` or `edge://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
+5. Pin LingoDub and open its popup.
+6. Enter your Gemini API key and save it for the current browser session.
+7. Open the video tab and click **Start dubbing this tab**.
 
-The extension captures only the tab where you explicitly click Start. Capturing a tab disables its direct playback; LingoDub then recreates playback according to your selected mode. This is why **Dub only** does not overlap with source audio.
+No app, localhost service, Virtual Cable, or Python process is needed. The extension captures only the tab where you explicitly click Start, connects directly to Gemini, and recreates playback according to the selected mode. This is why **Dub only** does not overlap with source audio.
 
-The installer also adds **Set up browser extension** to the Start menu. It copies the extension to `%LOCALAPPDATA%\LingoDub\Extension`, opens the browser's extension page, and copies the folder path. Chrome still requires your final **Load unpacked** confirmation.
+The key is deliberately stored in `chrome.storage.session`: it is not synced or written as a persistent preference and must be entered again after Chrome/Edge fully exits. Preferences remain local. If recording is enabled, stopping creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads.
+
+### Proxy for the standalone extension
+
+JavaScript WebSockets cannot select an individual proxy URL. The extension follows the browser/system proxy. If your proxy listens on `127.0.0.1:10808`, enable that proxy in your proxy client for Chrome/Edge or as the Windows system proxy. The proxy field in the Windows app affects only the app.
+
+For a cloned repository, [`install-extension.cmd`](../install-extension.cmd) still prepares a stable unpacked folder. The Windows app installer intentionally no longer bundles or configures the extension.
 
 ### Why there is no true one-click GitHub install
 
 [Chrome on Windows and macOS only allows direct end-user installation for extensions hosted and signed by the Chrome Web Store](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). A local CRX or GitHub download cannot silently install itself. A real one-click **Add to Chrome** flow therefore requires publishing LingoDub in the Chrome Web Store; Edge needs its own Microsoft Edge Add-ons listing. Enterprise administrators have separate policy-based deployment options.
+
+See the current [Chrome Web Store publication checklist](CHROME_WEB_STORE.md) and [privacy policy](../PRIVACY.md) before submission.
 
 ## Desktop programs: manual audio setup
 
@@ -70,8 +80,10 @@ Installing a driver or changing another application's preferred output is intent
 
 ## Troubleshooting
 
-- **Companion offline:** start `LingoDub.exe`; verify `http://127.0.0.1:8765/api/health` returns `{"status":"ok"...}`.
-- **No translation:** verify the key, model access, quota, and proxy. Restart the session after changing language or voice.
+- **Extension asks for the key again:** expected after the browser fully exits; the extension intentionally uses session storage.
+- **Extension cannot connect:** verify model access and quota, then ensure Chrome/Edge itself is using the required proxy. The app proxy does not affect the extension.
+- **Desktop app is offline:** start `LingoDub.exe`; verify `http://127.0.0.1:8765/api/health` returns `{"status":"ok"}`.
+- **No translation:** verify the relevant product's key, model access, quota, and proxy.
 - **No tab audio:** Chrome/Edge must be 116+, the tab must be active when Start is clicked, and protected DRM pages may block capture.
 - **Desktop source app is missing from Volume Mixer:** start playback first, then reopen Volume Mixer.
 - **Desktop source is still audible directly:** its Windows output is still the physical device; change that source app to `CABLE Input`.

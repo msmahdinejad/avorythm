@@ -13,7 +13,7 @@
   </p>
 </div>
 
-LingoDub is an open-source Windows companion app and Chromium extension for low-latency speech-to-speech translation. It uses Google's `gemini-3.5-live-translate-preview`, supports 70+ target languages, renders bidirectional transcripts correctly, and can export the original audio, source subtitles, dubbed audio, and translated subtitles.
+LingoDub is an open-source Windows app and standalone Chromium extension for low-latency speech-to-speech translation. They are independent products: browser users install only the extension; desktop-player users install only the Windows app. Both use Google's `gemini-3.5-live-translate-preview`, support 70+ target languages, and export original/dubbed audio plus both subtitle tracks.
 
 ![LingoDub dashboard](docs/images/dashboard.png)
 
@@ -25,38 +25,39 @@ LingoDub is an open-source Windows companion app and Chromium extension for low-
 - Live source and translated transcripts with automatic RTL/LTR direction.
 - Native low-latency Gemini voice or 30 selectable Gemini TTS voices with style control.
 - Four aligned exports: `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt`.
-- API key stored in Windows Credential Manager; the extension never receives it.
+- Independent credentials: Windows Credential Manager for the app; browser-session-only BYOK for the extension.
 - Persian and English dashboard and extension UI, using a locally bundled Vazirmatn font.
 - No Node.js or frontend build step. Load the extension directly from its folder.
 
 ## Install
 
-### Companion app
+### Windows app — desktop players
 
 Download `LingoDub-Setup-x64.exe` from the [latest release](https://github.com/msmahdinejad/lingodub/releases/latest), run it, then launch LingoDub. The dashboard opens at `http://127.0.0.1:8765`.
 
 Portable users can download `LingoDub-Windows-x64.zip`, extract it, and run `LingoDub.exe`.
 
-### Chrome or Edge extension
+### Chrome or Edge extension — browser tabs
 
 1. Download and extract `LingoDub-Extension.zip` from the latest release, or clone this repository.
 2. Open `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode**, choose **Load unpacked**, and select the extracted `extension` folder.
-4. Pin LingoDub. Open a video tab and click **Start dubbing this tab**.
+4. Pin LingoDub, enter your Gemini API key in the popup, open a video tab, and click **Start dubbing this tab**.
+
+The extension connects directly to Gemini. It needs no Windows app, localhost service, Virtual Cable, or Python installation. Its key is kept only for the current browser session and clears when Chrome/Edge fully exits.
 
 If you cloned the repository, double-click [`install-extension.cmd`](install-extension.cmd). It copies the extension to a stable local folder, opens the extensions page, and puts that folder path on your clipboard. Browsers intentionally require the final **Load unpacked** click; an unpacked extension cannot bypass that security step.
 
 > **Can installation be one click?** Yes, after LingoDub is reviewed and published in the Chrome Web Store (and separately in Microsoft Edge Add-ons). [Chrome on Windows blocks direct installation of locally hosted CRX files](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). Until a store listing exists, Developer mode + Load unpacked is the shortest supported public installation path.
 
-See the [complete installation guide](docs/INSTALLATION.md) for API key, proxy, and desktop-audio routing.
+See the [complete installation guide](docs/INSTALLATION.md) for independent API key, proxy, recording, and desktop-audio instructions.
 
 ## Quick use
 
-1. Open the dashboard and save a [Gemini API key](https://aistudio.google.com/app/apikey).
-2. Keep the default proxy `http://127.0.0.1:10808`, or change it under Advanced settings.
-3. For a browser video, use the extension. The default mode is **Dub only**.
-4. For VLC or another Windows app, follow the dashboard's **visual audio guide** and configure Windows Volume Mixer manually.
-5. Enable **Save four outputs** before starting, or use the dashboard recording control.
+1. Get a [Gemini API key](https://aistudio.google.com/app/apikey).
+2. For a browser video, enter it in the extension popup. The extension uses the browser/system proxy and defaults to **Dub only**.
+3. For VLC or another Windows app, save a separate key in the app dashboard, set the app proxy, and follow the **visual audio guide**.
+4. Enable recording before Start to create the four outputs. The extension downloads four files; the app creates one convenience ZIP too.
 
 ## Audio routing: desktop app vs extension
 
@@ -80,18 +81,16 @@ Do not send LingoDub's output back into the same Virtual Cable; that creates fee
 
 ```mermaid
 flowchart LR
-    Tab["Chrome / Edge tab"] --> Ext["MV3 extension\nAudioWorklet"]
-    Desktop["Windows app"] --> Loopback["WASAPI loopback"]
-    Ext -->|"16 kHz PCM over localhost WS"| Companion["LingoDub Companion"]
-    Loopback --> Companion
-    Companion -->|"secure server-side key"| Gemini["Gemini Live Translate"]
-    Gemini -->|"24 kHz dubbed PCM + transcripts"| Companion
-    Companion --> Ext
-    Companion --> Dashboard["Bilingual dashboard"]
-    Companion --> Files["WAV + SRT exports"]
+    Tab["Chrome / Edge tab"] --> Ext["Standalone MV3 extension\nAudioWorklet + session BYOK"]
+    Ext -->|"Direct Live WSS / TTS HTTPS"| Gemini["Gemini APIs"]
+    Ext --> BrowserFiles["Browser WAV + SRT downloads"]
+    Desktop["Windows source app"] --> Loopback["WASAPI loopback"]
+    Loopback --> App["Independent Windows app\nKeyring + dashboard"]
+    App --> Gemini
+    App --> DesktopFiles["Desktop WAV + SRT + ZIP"]
 ```
 
-The core is deliberately split at hardware and cloud boundaries: `AudioEngine` owns WASAPI, `GeminiGateway` owns Google SDK details, `ExtensionBridge` owns the localhost protocol, and `DubRuntime` coordinates them. See [ARCHITECTURE.md](ARCHITECTURE.md).
+The app and extension share no runtime process or localhost protocol. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Develop
 
@@ -118,12 +117,14 @@ Build a portable app and extension archive with `scripts/build.ps1` and `scripts
 
 ## Security and privacy
 
-The companion binds only to `127.0.0.1`. API keys are stored through the operating-system keyring and are never returned by the API or sent to the extension. Audio is streamed to Google only while dubbing is active. Recordings stay on your computer. Review [SECURITY.md](SECURITY.md) and Google's [Gemini API terms](https://ai.google.dev/gemini-api/terms).
+The app binds only to `127.0.0.1` and stores its key in the OS keyring. The extension has no localhost access; it holds its user-provided key only in `chrome.storage.session` and connects directly to Google. Audio is sent only while dubbing is active, and recordings stay local. Review [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md), and Google's [Gemini API terms](https://ai.google.dev/gemini-api/terms).
 
 ## Current limitations
 
 - Gemini Live Translate and Gemini TTS are preview services. Availability, latency, quotas, voice consistency, and translation accuracy cannot be guaranteed by this client.
 - Browser capture requires Chrome/Edge 116 or newer and works only after a user clicks the extension action.
+- The standalone extension follows the browser/system proxy; the app's `127.0.0.1:10808` proxy field does not configure Chrome.
+- Google recommends ephemeral tokens backed by an authenticated server for production client-side Live API use. The current session-only BYOK mode is intended for user-owned keys; see the [store checklist](docs/CHROME_WEB_STORE.md) before public distribution.
 - Desktop-app isolation currently needs a virtual audio endpoint. The browser extension does not.
 - Per-app Windows routing is intentionally manual. LingoDub opens the correct Volume Mixer page but does not claim to change another application's output automatically.
 - Source music/noise separation and speaker identity are controlled by the upstream model and may vary.

@@ -40,28 +40,6 @@ class ApiKeyInput(BaseModel):
     api_key: str = Field(min_length=10, max_length=256)
 
 
-class ExtensionStart(BaseModel):
-    type: str
-    target_language: str = "fa"
-    voice: str = "Native"
-    voice_style: str = "Natural, clear, cinematic dubbing"
-    recording: bool = False
-
-    @field_validator("target_language")
-    @classmethod
-    def validate_language(cls, value: str) -> str:
-        if value not in SUPPORTED_LANGUAGES:
-            raise ValueError("unsupported target language")
-        return value
-
-    @field_validator("voice")
-    @classmethod
-    def validate_voice(cls, value: str) -> str:
-        if value not in VOICES:
-            raise ValueError("unsupported voice")
-        return value
-
-
 @dataclass(slots=True)
 class RuntimeState:
     running: bool = False
