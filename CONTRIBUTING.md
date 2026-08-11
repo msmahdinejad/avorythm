@@ -6,7 +6,7 @@ Thank you for improving LingoDub. English and Persian issues are both welcome.
 2. Fork the repository and branch from `main`.
 3. Keep changes focused. Preserve the module boundaries in `ARCHITECTURE.md`.
 4. Add or update tests for behavior changes.
-5. Run `pytest -q`, `ruff check src tests`, `mypy src`, and JavaScript syntax checks.
+5. Run `pytest -q`, `ruff check src tests scripts/*.py`, `mypy src`, JavaScript syntax checks, and `node --test tests/*.test.mjs`.
 6. Submit a pull request using the template and explain user-visible impact, risks, and verification.
 
 Use Conventional Commit subjects where practical, for example `fix(extension): restore source gain after ducking`.

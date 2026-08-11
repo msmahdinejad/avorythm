@@ -65,7 +65,7 @@ media-jobs/<job-id>/
 ```
 
 `manifest.json` is the single persisted state record. It contains sanitized file
-metadata, processing mode, language/voice settings, progress, cue metadata, output
+metadata, processing mode, language settings, progress, cue metadata, output
 paths, failure details, and resumable segment indexes. Writes use a temporary sibling
 and atomic rename to survive power loss.
 
@@ -120,7 +120,7 @@ Use `gemini-3.5-live-translate-preview` with:
 - input audio transcription;
 - output audio transcription;
 - `TranslationConfig.target_language_code`;
-- selected supported voice where the API accepts voice configuration;
+- automatic native Live Translate voice replication;
 - explicit source language when the user selects it, otherwise automatic detection;
 - 16 kHz signed 16-bit little-endian mono input;
 - 24 kHz signed 16-bit little-endian mono output;
@@ -192,7 +192,7 @@ Extend the existing bilingual dashboard rather than adding a second application.
 ### Media workspace
 
 - Drag-and-drop/file picker with supported-format and size guidance.
-- Source and target language selectors, voice selector, mode selector, and an explicit
+- Target language and mode selectors, an automatic-voice explanation, and an explicit
   “Precise (recommended)” default.
 - Progress stages, elapsed time, estimated remaining time, quota-wait countdown,
   cancel button, retry button, and concise recoverable errors.

@@ -2,16 +2,22 @@ param([switch]$SkipChecks)
 
 $ErrorActionPreference = "Stop"
 $repository = Split-Path -Parent $PSScriptRoot
+$venvPython = Join-Path $repository ".venv\Scripts\python.exe"
+$python = if (Test-Path -LiteralPath $venvPython) { $venvPython } else { "python" }
 Push-Location $repository
 try {
     if (-not $SkipChecks) {
-        python -m pytest -q
+        & $python -m pytest -q
         if ($LASTEXITCODE) { throw "Tests failed." }
-        python -m ruff check src tests scripts\*.py
+        & $python -m ruff check src tests scripts
         if ($LASTEXITCODE) { throw "Lint failed." }
+        & $python -m mypy src
+        if ($LASTEXITCODE) { throw "Type checking failed." }
+        node --test tests\extension.test.mjs tests\offscreen.test.mjs tests\background.test.mjs
+        if ($LASTEXITCODE) { throw "Extension tests failed." }
     }
 
-    python -m PyInstaller --noconfirm --clean --onedir `
+    & $python -m PyInstaller --noconfirm --clean --onedir `
         --name LingoDub `
         --icon extension\icons\LingoDub.ico `
         --paths src `

@@ -83,3 +83,28 @@ def test_unsupported_automatic_audio_routing_is_not_exposed(
         response = app.post("/api/audio/auto-setup")
 
     assert response.status_code == 405
+
+
+def test_media_upload_rejects_unknown_format(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.post(
+            "/api/media/jobs?filename=lesson.exe&target_language=fa&mode=precise",
+            content=b"not a video",
+            headers={"content-type": "application/octet-stream"},
+        )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "unsupported video format"
+
+
+def test_media_job_paths_reject_traversal(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.get("/api/media/jobs/not-a-job/video")
+
+    assert response.status_code == 404

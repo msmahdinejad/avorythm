@@ -8,7 +8,7 @@
 
 - برای نصب عمومی و یک‌کلیکی روی Windows و macOS باید اکستنشن در Chrome Web Store منتشر شود. `Load unpacked` فقط برای توسعه است و self-hosting روی این دو سیستم‌عامل فقط در محیط‌های مدیریت‌شدهٔ سازمانی پشتیبانی می‌شود. [روش‌های رسمی توزیع Chrome](https://developer.chrome.com/docs/extensions/how-to/distribute) و [روش‌های نصب جایگزین](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
 - اکستنشن جدید باید Manifest V3 باشد؛ Manifest V3 نسخهٔ لازم برای ارسال آیتم جدید است و Manifest V2 دیگر پذیرفته یا اجرا نمی‌شود. [Best practices رسمی Web Store](https://developer.chrome.com/docs/webstore/best-practices) و [خط زمانی حذف Manifest V2](https://developer.chrome.com/docs/extensions/develop/migrate/mv2-deprecation-timeline)
-- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.3.1` همین حالا مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
+- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.4.0` مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل self-hosted/prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
 
 معماری پیشنهادی برای نسخهٔ قابل انتشار:
 
@@ -47,9 +47,9 @@ Token service
 | `activeTab` | Identifies only the tab chosen by the user after an explicit extension action; the extension does not read every open website in the background. |
 | `tabCapture` | Captures the selected tab's audio only after the user presses Start so it can be translated and dubbed. Chrome restricts tab capture to a user invocation. |
 | `offscreen` | Hosts the Web Audio pipeline required for tab audio capture and playback because a Manifest V3 service worker has no DOM or AudioContext. |
-| `storage` | Stores language, voice, volume, locale, and consent preferences. It must not be used to persist a long-lived production Gemini secret. |
+| `storage` | Stores language, audio mix, volume, locale, and recording preferences. It must not be used to persist a long-lived production Gemini secret. |
 | `downloads` | Saves the user-requested local WAV/SRT exports after recording; it is not used for automatic or unrelated downloads. |
-| Gemini host permission | Connects only to Google's Gemini HTTPS/WSS endpoints to stream selected-tab audio, receive translated audio/transcripts, and request TTS. Scope this to the exact required origin(s). After the auth hardening, mention that Live WSS uses a short-lived token. |
+| Gemini host permission | Connects only to Google's Gemini WSS endpoint to stream selected-tab audio and receive translated audio/transcripts. Scope this to the exact required origin. After auth hardening, mention that Live WSS uses a short-lived token. |
 
 رفتار `tabCapture` و نیاز آن به اقدام کاربر و همچنین استفاده از stream ID در offscreen document از Chrome 116 مستند است. [tabCapture API](https://developer.chrome.com/docs/extensions/reference/api/tabCapture) و [offscreen API](https://developer.chrome.com/docs/extensions/reference/api/offscreen)
 
@@ -162,18 +162,18 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 
 | مورد | وضعیت فعلی | اقدام لازم پیش از submission |
 |---|---|---|
-| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.3.1`، description برابر ۱۰۲ کاراکتر و کمتر از سقف ۱۳۲ | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
+| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.4.0` و description کمتر از سقف ۱۳۲ کاراکتر | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
 | Service worker / offscreen | ✅ الگوی MV3 و فایل‌های local | justification دقیق در Privacy tab |
 | Remote executable code | ✅ `eval`، `new Function`، CDN script یا remote JS دیده نشد | در Dashboard گزینهٔ No انتخاب و package نهایی دوباره scan شود |
 | CSP | ✅ فقط `script-src 'self'` | حفظ شود |
-| استقلال از Desktop app | ✅ هیچ localhost/Companion bridge یا host permission محلی باقی نمانده؛ Live WSS و TTS HTTPS مستقیم به `generativelanguage.googleapis.com` می‌روند | تست عملی build بسته‌بندی‌شده روی پروفایلی که Desktop app نصب نیست |
+| استقلال از Desktop app | ✅ هیچ localhost/Companion bridge یا host permission محلی باقی نمانده؛ Live WSS مستقیم به `generativelanguage.googleapis.com` می‌رود | تست عملی build بسته‌بندی‌شده روی پروفایلی که Desktop app نصب نیست |
 | Permissions | ⚠️ `activeTab`, `tabCapture`, `offscreen`, `storage`, `downloads` همگی در کد جاری استفاده می‌شوند | justification بالا ثبت شود؛ چون recording اختیاری است، انتقال `downloads` به `optional_permissions` قبل از Store ارزش بررسی دارد. [Declare permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions) |
 | Host permission | ✅ فقط `https://generativelanguage.googleapis.com/*` است؛ `<all_urls>` وجود ندارد | بعد از افزودن broker فقط origin دقیق broker هم اضافه شود؛ scope گسترده اضافه نشود |
 | API credential | ⚠️ کلید خام persist نمی‌شود و فقط در `chrome.storage.session` تا پایان browser session می‌ماند؛ این از `storage.local` بهتر است، ولی کلید همچنان client-side و در Live WSS URL قابل استخراج است | برای Store production از token service + Gemini ephemeral token استفاده شود؛ key بلندمدت فقط server-side |
 | Data disclosure/consent | ⚠️ disclosure دوزبانه کنار Start پیاده شده و صریح می‌گوید صدای همین تب به Google Gemini می‌رود و recording پیش‌فرض خاموش است؛ خود Start اقدام مثبت کاربر است | Privacy Policy عمومی و declarationهای Dashboard هنوز لازم‌اند؛ Website content، authentication information و در صورت کاربرد personal communications اعلام شود |
 | Listing localization | ⚠️ popup فارسی/انگلیسی است، ولی Store localization به `_locales` نیاز دارد | `_locales/fa` و `_locales/en` و listingهای متناظر اضافه شوند |
 | 128 icon | ⚠️ `extension/icons/icon128.png` دقیقاً `128×128` است، اما محتوای غیرشفاف تقریباً از پیکسل ۴ تا ۱۲۴ را پر می‌کند | یک Store icon جدا با visual weight و padding نزدیک راهنمای ۱۶px Chrome روی زمینهٔ روشن/تیره QA شود |
-| Store screenshots | ❌ تصویر README اکنون `1280×900` است و ابعاد Store را ندارد | حداقل یک تصویر واقعی `1280×800`؛ بهتر است ۳ تا ۵ تصویر فارسی/انگلیسی |
+| Store screenshots | ❌ تصویر README اکنون `1265×712` است و ابعاد Store را ندارد | حداقل یک تصویر واقعی `1280×800`؛ بهتر است ۳ تا ۵ تصویر فارسی/انگلیسی |
 | Small promo tile | ❌ وجود ندارد | `440×280` بسازید |
 | Marquee | اختیاری | در صورت نیاز `1400×560` بسازید |
 | Test instructions | ❌ آماده نشده | مسیر Start/Stop و credential یا test access محدود برای reviewer |

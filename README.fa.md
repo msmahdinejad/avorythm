@@ -1,85 +1,119 @@
-<div dir="rtl" align="center">
-  <img src="extension/icons/icon128.png" width="92" alt="نشان LingoDub">
-  <h1>LingoDub</h1>
-  <p><strong>صدای هر تب مرورگر یا برنامهٔ ویندوز را زنده به زبان خودت بشنو.</strong></p>
-  <p><a href="README.md">English</a> · <a href="README.fa.md">فارسی</a></p>
-</div>
+# LingoDub
 
-<div dir="rtl">
+ترجمه و دوبلهٔ زنده و سینک‌شده با **Gemini 3.5 Live Translate**. پروژه دو محصول کاملاً مستقل دارد:
 
-LingoDub شامل یک اپ ویندوز و یک اکستنشن مستقل متن‌باز برای ترجمه و دوبلهٔ زنده است. این دو هیچ وابستگی اجرایی به هم ندارند: برای تب مرورگر فقط اکستنشن و برای Player دسکتاپ فقط اپ را نصب می‌کنی. موتور هر دو `gemini-3.5-live-translate-preview` است و چهار خروجی هماهنگ می‌سازند.
+- اپ ویندوز برای صدای برنامه‌های دسکتاپ و فایل ویدئویی؛
+- اکستنشن مستقل Manifest V3 برای تب‌های Chrome/Edge.
+
+[English](README.md) · [آموزش نصب](docs/INSTALLATION.fa.md) · [چک‌لیست Chrome Web Store](docs/CHROME_WEB_STORE.md) · [حریم خصوصی](PRIVACY.md)
 
 ![داشبورد LingoDub](docs/images/dashboard.png)
 
-## امکانات اصلی
+## قابلیت‌ها
 
-- در مرورگر صدای اصلی مستقیم قطع و مسیر صدا توسط اکستنشن بازسازی می‌شود؛ بنابراین حالت «فقط دوبله» واقعاً فقط دوبله پخش می‌کند.
-- سه حالت شنیداری: فقط دوبله، فقط اصلی، یا میکس هوشمند با Auto‑duck.
-- پشتیبانی از صدای برنامه‌های ویندوز با WASAPI Loopback و مسیر صوتی مجازی.
-- متن زندهٔ اصلی و ترجمه با تشخیص خودکار راست‌چین/چپ‌چین.
-- صدای بومی کم‌تأخیر Gemini یا ۳۰ گویندهٔ TTS با کنترل سبک اجرا.
-- ضبط `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` در یک فایل ZIP.
-- مدیریت مستقل Key: Windows Credential Manager در اپ و Session Storage موقت در اکستنشن.
-- رابط فارسی/انگلیسی با فونت محلی وزیرمتن.
+- ارسال PCM با نرخ 16kHz به `gemini-3.5-live-translate-preview` و پخش گفتار ترجمه‌شدهٔ 24kHz خود مدل؛
+- کنترل مستقل صدای اصلی و دوبله، با حالت پیش‌فرض «فقط دوبله»؛
+- نمایش متن اصلی و ترجمه با جهت درست RTL/LTR؛
+- ضبط چهار خروجی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt`؛
+- اتصال مجدد خودکار برای نشست‌های طولانی Live؛
+- پشتیبانی از بیش از ۷۰ زبان رسمی Live Translate؛
+- فقط یک مدل Live Translate؛ بدون TTS، STT، Batch یا Files API جداگانه.
+
+### استودیوی فایل ویدئویی
+
+فایل MP4، MKV، WebM، MOV، AVI، WMV، MPEG یا 3GP را داخل اپ رها کن. خود ویدئو روی لپ‌تاپ می‌ماند؛ LingoDub فقط PCM استخراج‌شده با FFmpeg را برای ترجمه می‌فرستد و این موارد را می‌سازد:
+
+- **سینک دقیق** (پیش‌فرض): برش ویدئوی بلند نزدیک سکوت و تنظیم طول گفتار دوبله؛
+- **سریع**: پنجره‌های ثابت و هم‌ترازی سبک‌تر؛
+- ویدئوپلیر محلی با صدای اصلی و دوبلهٔ مستقل؛
+- امکان نمایش هم‌زمان هر دو زیرنویس؛
+- چهار فایل جداگانه و `all-outputs.zip`.
+
+ویدئو ساعت اصلی پلیر است؛ اختلاف‌های کوچک با تغییر بسیار جزئی سرعت و اختلاف بیشتر از ۱۲۰ میلی‌ثانیه با seek اصلاح می‌شود. سهمیه‌بان محلی حداکثر ۱۵هزار توکن تخمینی در هر دقیقه رزرو می‌کند تا زیر سقف ۲۰هزار بماند. چون مدل Live فقط ورودی real-time می‌پذیرد، پردازش معمولاً هم‌اندازهٔ زمان گفتار یا بیشتر طول می‌کشد.
 
 ## نصب سریع
 
-### اپ ویندوز برای برنامه‌های دسکتاپ
+### اپ ویندوز
 
-فایل `LingoDub-Setup-x64.exe` را از [آخرین نسخه](https://github.com/msmahdinejad/lingodub/releases/latest) بگیر و نصب کن. بعد از اجرا، پنل در `http://127.0.0.1:8765` باز می‌شود. نسخهٔ Portable هم با نام `LingoDub-Windows-x64.zip` موجود است.
+1. `LingoDub-Setup-x64.exe` را از Releases بگیر.
+2. برای پردازش فایل، گزینهٔ پیشنهادی **Install FFmpeg** را روشن نگه دار.
+3. برنامه را باز کن، در تنظیمات پیشرفته Gemini API Key را ذخیره کن و در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
 
-### اکستنشن مستقل برای تب مرورگر
+کلید در Windows Credential Manager ذخیره می‌شود. نصب‌کننده FFmpeg را با WinGet نصب می‌کند. اگر WinGet موجود نبود بعداً این دستور را اجرا کن:
 
-1. فایل `LingoDub-Extension.zip` را از Release دانلود و Extract کن.
-2. آدرس `chrome://extensions` یا `edge://extensions` را باز کن.
-3. Developer mode را روشن کن، **Load unpacked** را بزن و پوشهٔ `extension` را انتخاب کن.
-4. اکستنشن را Pin کن، API Key را داخل Popup وارد کن، روی تب ویدیو برو و «شروع دوبلهٔ این تب» را بزن.
-
-اکستنشن مستقیم به Gemini وصل می‌شود و هیچ نیازی به اپ ویندوز، localhost، Virtual Cable یا Python ندارد. Key فقط تا پایان نشست مرورگر نگه‌داری و با بسته‌شدن کامل Chrome/Edge پاک می‌شود.
-
-اگر پروژه را Clone کرده‌ای، کافی است [`install-extension.cmd`](install-extension.cmd) را اجرا کنی. مسیر مناسب ساخته و در Clipboard کپی می‌شود. مرورگر به‌دلایل امنیتی اجازه نمی‌دهد مرحلهٔ نهایی Load unpacked به‌شکل مخفی یا خودکار انجام شود.
-
-> **نصب یک‌کلیکی ممکن است؟** بله؛ بعد از بررسی و انتشار LingoDub در Chrome Web Store و به‌صورت جداگانه Microsoft Edge Add-ons. [Chrome در Windows نصب مستقیم فایل CRX محلی را مسدود می‌کند](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). تا قبل از انتشار در Store، Developer mode و Load unpacked کوتاه‌ترین روش عمومی مورد پشتیبانی است.
-
-## استفاده
-
-1. از [Google AI Studio](https://aistudio.google.com/app/apikey) کلید بگیر.
-2. برای فیلم مرورگر، Key را داخل Popup اکستنشن وارد کن؛ اکستنشن از Proxy مرورگر/سیستم استفاده می‌کند.
-3. برای VLC و برنامه‌های ویندوز، Key و Proxy جداگانه را در داشبورد اپ ذخیره و آموزش تصویری صدا را دنبال کن.
-4. برای چهار خروجی، قبل از Start ضبط را روشن کن؛ اکستنشن چهار فایل را در Downloads می‌گذارد و اپ یک ZIP هم می‌سازد.
-
-راهنمای کامل در [docs/INSTALLATION.fa.md](docs/INSTALLATION.fa.md) قرار دارد.
-
-## تفاوت مهم اپ دسکتاپ و اکستنشن
-
-| روش استفاده | نیاز به Virtual Cable | تنظیم لازم |
-| --- | --- | --- |
-| **اکستنشن** Chrome/Edge | ندارد | خروجی مرورگر را تغییر نده؛ اکستنشن صدای همان تب را مستقیم Capture و بازپخش می‌کند. |
-| VLC، پخش‌کنندهٔ دسکتاپ یا مرورگر **بدون اکستنشن** | دارد | خروجی همان برنامهٔ منبع را روی Virtual Cable بگذار؛ LingoDub کابل را Capture و دوبله را از هدفون واقعی پخش کند. |
-
-در حالت دسکتاپ مسیر صحیح این است:
-
-```text
-خروجی VLC یا برنامهٔ منبع → CABLE Input → ورودی Loopback داخل LingoDub
-خروجی شنیداری LingoDub → هدفون یا اسپیکر واقعی
+```powershell
+winget install --id Gyan.FFmpeg --exact --scope user
 ```
 
-خروجی خود LingoDub را به Virtual Cable برنگردان؛ این کار اکو و حلقهٔ صوتی می‌سازد. راهنمای داخل برنامه در `http://127.0.0.1:8765/audio-guide.html` قرار دارد.
+### اکستنشن مستقل
 
-![راهنمای مسیر صدای دسکتاپ LingoDub](docs/images/audio-routing-guide.png)
+1. `LingoDub-Extension.zip` را دانلود و در یک پوشهٔ ثابت Extract کن.
+2. `chrome://extensions` یا `edge://extensions` را باز کن.
+3. **Developer mode** را روشن کن، **Load unpacked** را بزن و پوشه‌ای را انتخاب کن که `manifest.json` مستقیم داخل آن است.
+4. اکستنشن را Pin کن، یک تب ویدئو باز کن، Key را در Popup وارد کن و دوبله را شروع کن.
 
-## حریم خصوصی و محدودیت‌ها
+اکستنشن به اپ ویندوز، Python، localhost، FFmpeg یا Virtual Audio Device نیاز ندارد. نصب یک‌کلیکی اکستنشن unpacked از GitHub طبق سیاست Chrome ممکن نیست؛ دکمهٔ واقعی **Add to Chrome** فقط بعد از انتشار در Chrome Web Store ساخته می‌شود.
 
-اپ فقط روی `127.0.0.1` گوش می‌دهد و Key خودش را در Keyring نگه می‌دارد. اکستنشن هیچ دسترسی localhost ندارد، Key کاربر را فقط در `chrome.storage.session` نگه می‌دارد و مستقیم به Google وصل می‌شود. صدا فقط هنگام دوبله ارسال و ضبط‌ها محلی باقی می‌مانند. جزئیات در [PRIVACY.md](PRIVACY.md) است.
+کلید اکستنشن عمداً فقط در `chrome.storage.session` نگه‌داری می‌شود و با بسته‌شدن کامل مرورگر پاک می‌شود. کلید و صدای تب مستقیماً به Google می‌روند. برای انتشار production عمومی، معماری امن‌تر پیشنهادی Google یک سرویس HTTPS کوچک برای ساخت ephemeral token کوتاه‌عمر است.
 
-مدل‌های Live Translate و TTS در وضعیت Preview هستند؛ هیچ کلاینتی نمی‌تواند کیفیت ترجمه، تأخیر شبکه، سهمیه، دسترسی همیشگی یا ثبات صدای سرویس ابری را ۱۰۰٪ تضمین کند. جداسازی صدای برنامه‌های دسکتاپ فعلاً به Virtual Audio Device نیاز دارد؛ اکستنشن مرورگر بدون آن کار می‌کند.
+## تنظیم صدای دوبلهٔ زندهٔ دسکتاپ
 
-اکستنشن Proxy را از Chrome/Edge یا سیستم می‌گیرد؛ فیلد Proxy اپ روی آن اثری ندارد. Google برای محصول Client-side در مقیاس Production، توکن موقت صادرشده از Backend را توصیه می‌کند؛ قبل از انتشار عمومی [چک‌لیست Web Store](docs/CHROME_WEB_STORE.md) را ببین.
+Virtual Audio فقط برای دوبلهٔ زندهٔ یک برنامه توسط اپ ویندوز لازم است. اکستنشن و بخش فایل ویدئویی هیچ نیازی به آن ندارند.
 
-تغییر خروجی هر برنامه در Windows عمداً دستی است. LingoDub صفحهٔ درست Volume Mixer را باز می‌کند، اما دیگر ادعا نمی‌کند خروجی برنامه‌های دیگر را خودکار تغییر می‌دهد.
+مسیر درست مطابق تصویر ارسالی:
 
-پیاده‌سازی بر اساس مستندات به‌روز Google برای [Live Translate](https://ai.google.dev/gemini-api/docs/live-api/live-translate) و [Speech Generation](https://ai.google.dev/gemini-api/docs/speech-generation) است.
+1. **Output** برنامهٔ منبع/Chrome → `Speakers (AMM Virtual Audio Device)`؛
+2. **Input** داخل LingoDub → `Microphone (AMM Virtual Audio Device)` یا Loopback متناظر؛
+3. **Output** داخل LingoDub → `Default` یا هدفون واقعی؛
+4. صدای اصلی ۰٪ و دوبله ۱۰۰٪.
 
-برای مشارکت، [CONTRIBUTING.md](CONTRIBUTING.md) و [ROADMAP.md](ROADMAP.md) را ببین. پروژه تحت [مجوز MIT](LICENSE) منتشر می‌شود.
+خروجی LingoDub را هرگز روی AMM نگذار؛ این کار حلقهٔ صوتی و اکو می‌سازد.
 
-</div>
+![مسیر صحیح AMM](docs/images/audio-routing-guide.png)
+
+آموزش تصویری دو‌زبانه داخل خود اپ در `/audio-guide.html` هم در دسترس است.
+
+## توسعه و تست
+
+نیازمندی‌ها: Windows 10/11 x64، Python 3.11 تا 3.13، Node.js برای تست اکستنشن، و FFmpeg/FFprobe برای Media Studio.
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev,build]"
+python -m pytest -q
+python -m ruff check src tests scripts
+python -m mypy src
+node --test tests\extension.test.mjs tests\offscreen.test.mjs tests\background.test.mjs
+```
+
+اجرا:
+
+```powershell
+$env:HTTP_PROXY='http://127.0.0.1:10808'
+$env:HTTPS_PROXY='http://127.0.0.1:10808'
+python -m lingodub
+```
+
+ساخت خروجی انتشار:
+
+```powershell
+.\scripts\build.ps1
+.\scripts\package-extension.ps1
+iscc .\installer.iss
+```
+
+## امنیت، حریم خصوصی و محدودیت مدل
+
+- اپ فقط روی `127.0.0.1` گوش می‌دهد و ویدئو/خروجی‌ها محلی هستند.
+- اکستنشن فقط تبی را Capture می‌کند که کاربر صریحاً Start کرده است.
+- هیچ Analytics، تبلیغ، Remote Code یا Telemetry توسعه‌دهنده وجود ندارد.
+- فقط محتوایی را پردازش یا ضبط کن که اجازهٔ آن را داری.
+
+Gemini 3.5 Live Translate یک مدل Preview است؛ ثبات صدا، تشخیص گوینده/لهجه، تأخیر، سهمیه و دقت ترجمه تضمین صددرصدی ندارند. مدل انتخاب named voice ارائه نمی‌کند؛ به همین دلیل رابط «صدای خودکار Live» را نشان می‌دهد و TTS جداگانه‌ای جعل نمی‌کند. گفتار ترجمه‌شدهٔ خیلی بلند ممکن است برای حفظ سینک فشرده یا کوتاه شود.
+
+[SECURITY.md](SECURITY.md)، [PRIVACY.md](PRIVACY.md) و [ARCHITECTURE.md](ARCHITECTURE.md) جزئیات را توضیح می‌دهند. پیاده‌سازی بر اساس [راهنمای رسمی Live Translation](https://ai.google.dev/gemini-api/docs/live-api/live-translate)، [صفحهٔ مدل](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview) و [راهنمای ephemeral token](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens) است.
+
+## مجوز
+
+MIT. مجوز Vazirmatn و موارد ثالث در [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) آمده است.

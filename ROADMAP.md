@@ -13,6 +13,10 @@
 
 ## Next
 
+- [x] Uploaded-video processing, synchronized player, and four file outputs
+- [x] Rolling token governor, job recovery, and cancellation
+- [x] Long-session renewal for desktop and extension Live streams
+
 - [ ] Authenticated ephemeral-token broker for the public extension
 - [ ] Signed Chrome Web Store and Edge Add-ons packages
 - [ ] Native per-process Windows loopback capture without a virtual device

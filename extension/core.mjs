@@ -1,20 +1,13 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
-export const TTS_MODEL = 'gemini-3.1-flash-tts-preview';
 export const LIVE_ENDPOINT = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
 
 export const LANGUAGES = [
   'af','ak','sq','am','ar','hy','az','eu','be','bn','bg','my','ca','zh-Hans','zh-Hant','hr','cs','da','nl','en','et','fil','fi','fr','gl','ka','de','el','gu','ha','he','hi','hu','is','id','it','ja','jv','kn','kk','km','rw','ko','lo','lv','lt','mk','ms','ml','mr','mn','ne','no','nb','fa','pl','pt-BR','pt-PT','pa','ro','ru','sr','sd','si','sk','sl','es','su','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu'
 ];
 
-export const VOICES = [
-  'Native','Zephyr','Puck','Charon','Kore','Fenrir','Leda','Orus','Aoede','Callirrhoe','Autonoe','Enceladus','Iapetus','Umbriel','Algieba','Despina','Erinome','Algenib','Rasalgethi','Laomedeia','Achernar','Alnilam','Schedar','Gacrux','Pulcherrima','Achird','Zubenelgenubi','Vindemiatrix','Sadachbia','Sadaltager','Sulafat'
-];
-
 export const DEFAULT_SETTINGS = Object.freeze({
   locale: 'fa',
   targetLanguage: 'fa',
-  voice: 'Native',
-  voiceStyle: 'Natural, clear, cinematic dubbing',
   audioMode: 'dub',
   originalVolume: 0,
   dubVolume: 1,
@@ -32,13 +25,13 @@ export function setupMessage(targetLanguage) {
       model: `models/${LIVE_MODEL}`,
       generationConfig: {
         responseModalities: ['AUDIO'],
+        inputAudioTranscription: {},
+        outputAudioTranscription: {},
         translationConfig: {
-          target_language_code: targetLanguage,
-          echo_target_language: false
+          targetLanguageCode: targetLanguage,
+          echoTargetLanguage: false
         }
-      },
-      inputAudioTranscription: {},
-      outputAudioTranscription: {}
+      }
     }
   };
 }
@@ -103,14 +96,4 @@ export function srt(entries) {
     return `${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(secs).padStart(2,'0')},${String(milliseconds).padStart(3,'0')}`;
   };
   return entries.map((entry, index) => `${index + 1}\n${stamp(entry.start)} --> ${stamp(Math.max(entry.end, entry.start + 0.6))}\n${entry.text}\n`).join('\n');
-}
-
-export function interactionAudio(response) {
-  if (response.output_audio?.data) return base64ToBytes(response.output_audio.data);
-  for (const step of response.steps || []) {
-    for (const content of step.content || []) {
-      if (content.type === 'audio' && content.data) return base64ToBytes(content.data);
-    }
-  }
-  throw new Error('tts_audio_missing');
 }

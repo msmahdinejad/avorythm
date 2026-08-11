@@ -4,6 +4,30 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-11
+
+### Added
+
+- Local uploaded-video Media Studio with precise/fast processing modes.
+- Four synchronized outputs, ZIP archive, VTT tracks, and a dual-audio HTML5 player.
+- Rolling 15,000-token-per-minute governor, persisted job recovery, and real cancellation.
+- Automatic Live-session renewal in the desktop app and standalone extension.
+- Real AMM Volume Mixer screenshot and exact bilingual routing guide.
+- Automated background-service, reconnect, quota, media, job, and gateway tests.
+
+### Fixed
+
+- Use the official camelCase Live Translate WebSocket setup contract in the extension.
+- Preserve final transcripts marked `finished=true` during file processing.
+- Decode Blob-framed WebSocket messages serially before JSON parsing.
+- Keep long and short speech in processable windows instead of opening a Live session for tiny utterances.
+
+### Changed
+
+- Use only `gemini-3.5-live-translate-preview` across every workflow.
+- Remove the unsupported named-voice and separate TTS pipeline.
+- Make FFmpeg an optional recommended WinGet component in the Windows installer.
+
 ## [0.3.1] - 2026-08-11
 
 ### Fixed
@@ -14,7 +38,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- Standalone extension authentication, direct Gemini Live/TTS connections, and browser-local recording.
+- Standalone extension authentication, direct Gemini Live connections, and browser-local recording.
 - Four independent WAV/SRT downloads backed by temporary Origin Private File System storage.
 - Chrome Web Store publication checklist and bilingual privacy policy.
 
@@ -47,7 +71,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Added
 
 - Windows companion with a bilingual responsive dashboard.
-- Gemini 3.5 Live Translate streaming and optional Gemini 3.1 TTS voices.
+- Gemini 3.5 Live Translate streaming and automatic native translated speech.
 - Manifest V3 Chrome/Edge extension with AudioWorklet tab capture.
 - Dub-only, original-only, and auto-ducked smart-mix playback.
 - Secure keyring-backed API key management and configurable proxy.
@@ -55,7 +79,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/msmahdinejad/lingodub/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/msmahdinejad/lingodub/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/msmahdinejad/lingodub/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/msmahdinejad/lingodub/compare/v0.1.0...v0.2.0

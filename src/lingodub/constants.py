@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 LIVE_MODEL = "gemini-3.5-live-translate-preview"
-TTS_MODEL = "gemini-3.1-flash-tts-preview"
 INPUT_RATE = 16_000
 OUTPUT_RATE = 24_000
 CHUNK_MS = 100
@@ -91,37 +90,3 @@ SUPPORTED_LANGUAGES = {
 }
 
 RTL_LANGUAGES = {"ar", "fa", "he", "ur", "sd"}
-
-VOICES = [
-    "Native",
-    "Zephyr",
-    "Puck",
-    "Charon",
-    "Kore",
-    "Fenrir",
-    "Leda",
-    "Orus",
-    "Aoede",
-    "Callirrhoe",
-    "Autonoe",
-    "Enceladus",
-    "Iapetus",
-    "Umbriel",
-    "Algieba",
-    "Despina",
-    "Erinome",
-    "Algenib",
-    "Rasalgethi",
-    "Laomedeia",
-    "Achernar",
-    "Alnilam",
-    "Schedar",
-    "Gacrux",
-    "Pulcherrima",
-    "Achird",
-    "Zubenelgenubi",
-    "Vindemiatrix",
-    "Sadachbia",
-    "Sadaltager",
-    "Sulafat",
-]

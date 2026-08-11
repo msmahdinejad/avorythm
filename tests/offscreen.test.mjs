@@ -3,6 +3,7 @@ import test from 'node:test';
 
 test('serializes consecutive Blob-framed Gemini messages', async () => {
   let receive;
+  let worklet;
   const reports = [];
   let sourceReported;
   const sourceReport = new Promise((resolve) => { sourceReported = resolve; });
@@ -35,7 +36,13 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     async close() {}
   }
   globalThis.AudioContext = FakeAudioContext;
-  globalThis.AudioWorkletNode = class extends AudioNode { port = {}; };
+  globalThis.AudioWorkletNode = class extends AudioNode {
+    constructor() {
+      super();
+      this.port = {};
+      worklet = this;
+    }
+  };
   Object.defineProperty(globalThis, 'navigator', {
     configurable: true,
     value: {mediaDevices: {async getUserMedia() { return {getTracks: () => []}; }}}
@@ -43,15 +50,19 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
 
   globalThis.WebSocket = class {
     static OPEN = 1;
+    static instances = [];
     readyState = 0;
+    sent = [];
     constructor() {
+      WebSocket.instances.push(this);
       queueMicrotask(() => {
         this.readyState = WebSocket.OPEN;
         this.onopen();
       });
     }
     send(payload) {
-      if (!JSON.parse(payload).setup) return;
+      this.sent.push(JSON.parse(payload));
+      if (!this.sent.at(-1).setup) return;
       class DelayedBlob extends Blob {
         async text() {
           await new Promise((resolve) => setTimeout(resolve, 20));
@@ -65,7 +76,11 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
         })])});
       });
     }
-    close() { this.readyState = 3; }
+    close() {
+      if (this.readyState === 3) return;
+      this.readyState = 3;
+      queueMicrotask(() => this.onclose?.());
+    }
   };
 
   await import('../extension/offscreen.js');
@@ -76,7 +91,6 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     apiKey: 'test-key',
     config: {
       targetLanguage: 'fa',
-      voice: 'Native',
       audioMode: 'dub',
       originalVolume: 0,
       dubVolume: 1,
@@ -91,4 +105,18 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     'connected',
     'Hello'
   ]);
+
+  worklet.port.onmessage({data: Uint8Array.from([0, 1])});
+  assert.equal(WebSocket.instances[0].sent.at(-1).realtimeInput.audio.data, 'AAE=');
+
+  WebSocket.instances[0].onmessage({data: new Blob([JSON.stringify({goAway: {timeLeft: '10s'}})])});
+  await new Promise((resolve) => setTimeout(resolve, 700));
+  assert.equal(WebSocket.instances.length, 2);
+  assert.equal(WebSocket.instances[1].sent[0].setup.model, 'models/gemini-3.5-live-translate-preview');
+
+  const stopped = await new Promise((resolve) => receive({
+    target: 'offscreen',
+    type: 'stop'
+  }, {}, resolve));
+  assert.deepEqual(stopped, {ok: true});
 });

@@ -2,91 +2,97 @@
 
 [فارسی](INSTALLATION.fa.md)
 
-## Two independent products
+## Choose the product
 
-Install only what you use:
+| Use case | Install | Virtual audio needed? |
+|---|---|---|
+| Dub a Chrome/Edge tab | standalone extension | No |
+| Process an uploaded video | Windows app + FFmpeg | No |
+| Dub VLC, SpotPlayer, or another desktop app live | Windows app + virtual audio device | Yes |
 
-- **Browser tabs:** Chrome/Edge 116+, the extension ZIP, and a Gemini API key. The Windows app is not required.
-- **Desktop programs:** Windows 10/11 x64, the Windows app, a Gemini API key, and usually a Virtual Cable.
-- **Network:** internet access. The app has its own HTTP proxy field; the extension follows Chrome/Edge or system proxy settings.
+Both products require internet access, model access to `gemini-3.5-live-translate-preview`, and a Gemini API key. The Windows app has its own HTTP proxy field. The extension follows the Chrome/Edge or Windows system proxy; JavaScript WebSockets cannot select a per-request proxy.
 
-## Companion
+## Windows app
 
 1. Download `LingoDub-Setup-x64.exe` from Releases.
-2. Install without administrator privileges and launch LingoDub.
-3. In the dashboard, open **Advanced settings**, paste the Gemini API key, and save it.
-4. Set the proxy. Leave it blank for direct access.
+2. Install without administrator privileges.
+3. Keep **Install FFmpeg for uploaded-video processing** checked unless you only need live desktop audio.
+4. Launch LingoDub and open **Advanced settings**.
+5. Save the Gemini API key and set `http://127.0.0.1:10808` when that proxy is required.
 
-The key is saved in Windows Credential Manager, not in `settings.json`. Developers may instead copy `.env.example` to `.env`; `.env` is ignored by Git.
+The key is stored in Windows Credential Manager, not `settings.json`. A developer can copy `.env.example` to `.env`; `.env` is ignored by Git.
+
+If WinGet was unavailable during setup, install FFmpeg manually:
+
+```powershell
+winget install --id Gyan.FFmpeg --exact --scope user
+```
+
+Restart LingoDub after installing FFmpeg.
+
+## Uploaded-video Media Studio
+
+1. Open **Media Studio** in the dashboard.
+2. Select or drop a supported video (up to the local 8 GB limit).
+3. Choose the target language.
+4. Keep **Precise sync** for final output or select **Fast** for a lighter preview.
+5. Start processing. The video stays local; extracted 16 kHz PCM is streamed to Gemini in real time.
+6. When ready, use the synchronized player or download the four files/ZIP.
+
+Original audio, dubbed audio, source subtitles, and translated subtitles can be toggled independently. Processing survives app restarts by re-queuing an interrupted job. Cancel stops the current network/FFmpeg work; Delete removes the local video and all generated files.
+
+The local rolling governor reserves at most 15,000 estimated tokens per minute. It may pause a queued segment to remain below that ceiling.
 
 ## Standalone extension
 
-1. Download and extract `LingoDub-Extension.zip` into a permanent folder. Do not select the ZIP itself.
+1. Download `LingoDub-Extension.zip` and extract it into a permanent folder. Do not select the ZIP itself.
 2. Open `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
 5. Pin LingoDub and open its popup.
-6. Enter your Gemini API key and save it for the current browser session.
+6. Enter the Gemini API key for the current browser session.
 7. Open the video tab and click **Start dubbing this tab**.
 
-No app, localhost service, Virtual Cable, or Python process is needed. The extension captures only the tab where you explicitly click Start, connects directly to Gemini, and recreates playback according to the selected mode. This is why **Dub only** does not overlap with source audio.
+The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; LingoDub recreates only the selected original/dub mix. This prevents the two voices from overlapping in **Dubbed audio only** mode.
 
-The key is deliberately stored in `chrome.storage.session`: it is not synced or written as a persistent preference and must be entered again after Chrome/Edge fully exits. Preferences remain local. If recording is enabled, stopping creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads.
+The key lives only in `chrome.storage.session` and must be entered again after the browser fully exits. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
 
-### Proxy for the standalone extension
+### Proxy
 
-JavaScript WebSockets cannot select an individual proxy URL. The extension follows the browser/system proxy. If your proxy listens on `127.0.0.1:10808`, enable that proxy in your proxy client for Chrome/Edge or as the Windows system proxy. The proxy field in the Windows app affects only the app.
+If the proxy listens on `127.0.0.1:10808`, enable it for Chrome/Edge in the proxy client or Windows system proxy. The desktop app's proxy field has no effect on the independent extension.
 
-For a cloned repository, [`install-extension.cmd`](../install-extension.cmd) still prepares a stable unpacked folder. The Windows app installer intentionally no longer bundles or configures the extension.
+### Why GitHub cannot provide one-click install
 
-### Why there is no true one-click GitHub install
+[Chrome on Windows and macOS only allows direct end-user installation for extensions hosted and signed by the Chrome Web Store](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). GitHub cannot silently install a local CRX or unpacked folder. A real **Add to Chrome** button requires publishing LingoDub in the Chrome Web Store; Edge needs a separate Microsoft Edge Add-ons listing. Enterprise policy deployment is a separate administrator workflow.
 
-[Chrome on Windows and macOS only allows direct end-user installation for extensions hosted and signed by the Chrome Web Store](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). A local CRX or GitHub download cannot silently install itself. A real one-click **Add to Chrome** flow therefore requires publishing LingoDub in the Chrome Web Store; Edge needs its own Microsoft Edge Add-ons listing. Enterprise administrators have separate policy-based deployment options.
+See [CHROME_WEB_STORE.md](CHROME_WEB_STORE.md) and [PRIVACY.md](../PRIVACY.md) before submission.
 
-See the current [Chrome Web Store publication checklist](CHROME_WEB_STORE.md) and [privacy policy](../PRIVACY.md) before submission.
+## Live desktop audio: exact AMM route
 
-## Desktop programs: manual audio setup
+> Skip this entire section for the extension and uploaded-video Media Studio.
 
-Unlike a browser tab, a normal Windows program sends audio directly to the selected Windows endpoint. To hear only dubbing, its audio must be isolated before LingoDub plays the translated stream.
+Play source audio first so Windows shows both apps under **Settings → System → Sound → Volume mixer**. Then match the supplied reference screenshot:
 
-> **Do this only for desktop applications. When using the extension, leave Chrome/Edge output unchanged and skip this entire section.**
+1. Under **Google Chrome** (or the source app), set **Output device** to `Speakers (AMM Virtual Audio Device)`.
+2. Under **LingoDub.exe**, leave **Output device** on `Default` or a physical headset.
+3. Under **LingoDub.exe**, set **Input device** to `Microphone (AMM Virtual Audio Device)`.
+4. In the LingoDub dashboard, select the matching AMM loopback as **Application audio input**.
+5. Set Original to 0% and Dubbed to 100%.
 
-### Correct signal path
+![Exact Windows Volume Mixer routing](images/audio-routing-guide.png)
 
-```text
-VLC / source app output → CABLE Input → LingoDub cable loopback capture
-LingoDub listening output → physical headphones or speakers
-```
-
-### Step by step
-
-1. Install a trusted virtual audio endpoint such as the [official VB-CABLE](https://vb-audio.com/Cable/) or use an existing equivalent. Restart Windows if its installer asks you to.
-2. Open VLC, the course player, or the source app and play audio for a few seconds. Windows normally lists an app in Volume Mixer only after it starts an audio session.
-3. Open **Settings → System → Sound → Volume mixer**. The dashboard's **Open Windows volume mixer** button opens this page directly. This is also [Microsoft's documented place for choosing an app-specific output device](https://support.microsoft.com/en-US/Windows/Hardware/audio/fix-app-audio-not-working-while-system-sounds-work-in-windows).
-4. Under **Apps**, find the source app and change its **Output device** to `CABLE Input (VB-Audio Virtual Cable)` or the matching playback endpoint.
-5. In LingoDub, set **Application audio input** to that cable's WASAPI loopback, commonly named `CABLE Input ... [Loopback]`.
-6. Set **Listening output** to your physical headphones or speakers.
-7. Set **Original** to 0% and **Dubbed** to 100%, save settings, then start dubbing.
-
-![Desktop audio routing guide](images/audio-routing-guide.png)
-
-### What you should hear
-
-- Before LingoDub starts, the desktop source may become silent because its output now ends at the Virtual Cable.
-- After LingoDub connects, translated speech plays through the physical output.
-- If you choose a non-zero Original level, LingoDub mixes captured source audio back in deliberately.
-
-Installing a driver or changing another application's preferred output is intentionally not advertised as automatic. Driver installation requires elevation and trust, and robust per-app routing is controlled by Windows Volume Mixer. LingoDub opens the correct page and keeps its own capture/output selectors manual and visible.
+Do not route LingoDub output to AMM Virtual. That feeds dubbed speech back into capture and creates echo/feedback.
 
 ## Troubleshooting
 
-- **Extension asks for the key again:** expected after the browser fully exits; the extension intentionally uses session storage.
-- **Extension cannot connect:** verify model access and quota, then ensure Chrome/Edge itself is using the required proxy. The app proxy does not affect the extension.
-- **Desktop app is offline:** start `LingoDub.exe`; verify `http://127.0.0.1:8765/api/health` returns `{"status":"ok"}`.
-- **No translation:** verify the relevant product's key, model access, quota, and proxy.
-- **No tab audio:** Chrome/Edge must be 116+, the tab must be active when Start is clicked, and protected DRM pages may block capture.
-- **Desktop source app is missing from Volume Mixer:** start playback first, then reopen Volume Mixer.
-- **Desktop source is still audible directly:** its Windows output is still the physical device; change that source app to `CABLE Input`.
-- **No desktop input reaches LingoDub:** choose the Virtual Cable loopback, not your microphone, as Application audio input.
-- **Echo/feedback on desktop:** never capture the same endpoint used for dubbed playback. Route the source app to a virtual endpoint and LingoDub to physical headphones.
-- **Named voice is delayed:** named voices use a second Gemini TTS request. Select `Native` for the lowest latency.
+- **Extension shows a Blob/JSON error:** reload the unpacked `0.4.0` folder; older builds parsed WebSocket Blob objects as JSON directly.
+- **Extension cannot connect:** verify model access/quota and confirm Chrome/Edge itself uses the required proxy.
+- **Extension asks for the key again:** expected after a full browser exit because the key is session-only.
+- **No tab audio:** use Chrome/Edge 116+, keep the target tab active when Start is clicked, and note that protected DRM pages may block capture.
+- **Media Studio says FFmpeg is required:** install it with the WinGet command above and restart LingoDub.
+- **Uploaded job takes real time:** expected; Gemini Live Translate accepts streamed audio, not batch file input.
+- **Some dialogue was shortened:** the translated speech exceeded its video window and was compressed/trimmed to preserve sync.
+- **Desktop source remains audible:** its Windows output is still the physical device; change the source app to AMM Virtual.
+- **No desktop capture:** select AMM's matching loopback/input, not a physical microphone.
+- **Echo:** LingoDub output and capture must not use the same virtual endpoint.
+- **No voice selector:** the Live Translate model reproduces voice automatically and does not expose named voices.

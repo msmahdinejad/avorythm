@@ -14,6 +14,8 @@ The Windows app listens only on `127.0.0.1:8765`. Do not expose or reverse-proxy
 
 API keys are stored by the Windows keyring or loaded from a private `.env`. Never attach `.env`, logs containing credentials, or private recordings to an issue.
 
+Uploaded videos, extracted audio, subtitles, job manifests, and archives stay in the local LingoDub data directory. Media endpoints validate job IDs and allowlist filenames. Only extracted PCM is sent to Gemini after an explicit processing request. Delete a Media Studio job to remove its local source and outputs.
+
 ## Extension trust boundary
 
 The extension connects directly to `generativelanguage.googleapis.com` and has no arbitrary-site or localhost host permission. A user-provided Gemini key is held in `chrome.storage.session`, is not synced, and clears when the browser fully exits. It is sent only to Google's Gemini endpoints.

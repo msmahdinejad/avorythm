@@ -1,4 +1,4 @@
-import {DEFAULT_SETTINGS, LANGUAGES, VOICES} from './core.mjs';
+import {DEFAULT_SETTINGS, LANGUAGES} from './core.mjs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
 const defaultState = {
@@ -46,7 +46,6 @@ async function bootstrap() {
   ]);
   return {
     languages: LANGUAGES,
-    voices: VOICES,
     settings: {...DEFAULT_SETTINGS, ...settings},
     api_key_set: Boolean(apiKey)
   };

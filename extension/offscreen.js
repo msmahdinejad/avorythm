@@ -1,8 +1,6 @@
 import {
-  TTS_MODEL,
   audioMessage,
   base64ToBytes,
-  interactionAudio,
   liveUrl,
   mergeTranscript,
   setupMessage,
@@ -25,7 +23,7 @@ let contextStartedAt = 0;
 let sessionStartedAt = 0;
 let recorder = null;
 let stopping = false;
-let ttsQueue = Promise.resolve();
+let reconnecting = false;
 let sourceTracker = {partial: '', started: 0};
 let translatedTracker = {partial: '', started: 0};
 
@@ -176,43 +174,12 @@ function playDubbed(pcm) {
   player.start(begins);
 }
 
-async function googleError(response) {
-  try {
-    const payload = await response.json();
-    return payload.error?.message || `gemini_${response.status}`;
-  } catch {
-    return `gemini_${response.status}`;
-  }
-}
-
-async function synthesize(text) {
-  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json', 'x-goog-api-key': apiKey},
-    body: JSON.stringify({
-      model: TTS_MODEL,
-      input: `Synthesize speech in this style: ${config.voiceStyle}.\nTranscript:\n${text}`,
-      response_format: {type: 'audio'},
-      generation_config: {speech_config: [{voice: config.voice}]}
-    })
-  });
-  if (!response.ok) throw new Error(await googleError(response));
-  return interactionAudio(await response.json());
-}
-
-function enqueueTts(text) {
-  ttsQueue = ttsQueue.then(async () => playDubbed(await synthesize(text))).catch(async (error) => {
-    await report({status: 'error', error: error.message});
-  });
-}
-
 async function handleTranscript(translated, transcription) {
   const tracker = translated ? translatedTracker : sourceTracker;
   const completed = mergeTranscript(tracker, transcription.text || '', transcription.finished, elapsed());
   const text = completed?.text || tracker.partial;
   if (completed) {
     recorder?.addSubtitle(translated, completed);
-    if (translated && config.voice !== 'Native') enqueueTts(completed.text);
   }
   if (!text) return;
   await report({
@@ -227,12 +194,16 @@ async function flushTranscripts() {
     if (!tracker.partial) continue;
     const completed = mergeTranscript(tracker, tracker.partial, true, now);
     recorder?.addSubtitle(translated, completed);
-    if (translated && config.voice !== 'Native' && completed) enqueueTts(completed.text);
   }
 }
 
 async function handleLiveMessage(message) {
   if (message.error) throw new Error(message.error.message || 'gemini_live_error');
+  if (message.goAway) {
+    liveReady = false;
+    socket?.close(1000, 'renew');
+    return 'renewing';
+  }
   if (message.setupComplete) {
     liveReady = true;
     await report({status: 'connected', active: true});
@@ -242,11 +213,9 @@ async function handleLiveMessage(message) {
   if (!content) return '';
   if (content.inputTranscription) await handleTranscript(false, content.inputTranscription);
   if (content.outputTranscription) await handleTranscript(true, content.outputTranscription);
-  if (config.voice === 'Native') {
-    for (const part of content.modelTurn?.parts || []) {
-      const inline = part.inlineData || part.inline_data;
-      if (inline?.data) playDubbed(base64ToBytes(inline.data));
-    }
+  for (const part of content.modelTurn?.parts || []) {
+    const inline = part.inlineData || part.inline_data;
+    if (inline?.data) playDubbed(base64ToBytes(inline.data));
   }
   if (content.turnComplete) await flushTranscripts();
   return '';
@@ -259,9 +228,10 @@ function openSocket() {
     const timeout = setTimeout(() => {
       if (!connected) reject(new Error('gemini_socket_timeout'));
     }, 15000);
-    socket = new WebSocket(liveUrl(apiKey));
-    socket.onopen = () => socket.send(JSON.stringify(setupMessage(config.targetLanguage)));
-    socket.onmessage = (event) => {
+    const current = new WebSocket(liveUrl(apiKey));
+    socket = current;
+    current.onopen = () => current.send(JSON.stringify(setupMessage(config.targetLanguage)));
+    current.onmessage = (event) => {
       messages = messages.then(async () => {
         try {
           const payload = event.data instanceof Blob ? await event.data.text() : event.data;
@@ -273,25 +243,49 @@ function openSocket() {
         } catch (error) {
           clearTimeout(timeout);
           await report({status: 'error', active: false, error: error.message});
-          socket?.close();
+          current.close();
           if (!connected) reject(error);
         }
       });
     };
-    socket.onerror = () => {
+    current.onerror = () => {
       clearTimeout(timeout);
       if (!connected) reject(new Error('gemini_socket_failed'));
     };
-    socket.onclose = () => {
+    current.onclose = () => {
       clearTimeout(timeout);
-      liveReady = false;
-      if (!stopping) {
-        report({active: false, status: 'error', error: 'gemini_socket_closed'});
-        end(false).catch(() => {});
+      if (socket === current) {
+        socket = null;
+        liveReady = false;
       }
       if (!connected) reject(new Error('gemini_socket_closed'));
+      else if (!stopping) reconnectSocket().catch(() => {});
     };
   });
+}
+
+async function reconnectSocket() {
+  if (reconnecting || stopping) return;
+  reconnecting = true;
+  await report({status: 'connecting', active: true, error: ''});
+  let lastError = new Error('gemini_socket_closed');
+  try {
+    for (let attempt = 0; attempt < 5 && !stopping; attempt += 1) {
+      await wait(Math.min(500 * (2 ** attempt), 4000));
+      try {
+        await openSocket();
+        return;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    if (!stopping) {
+      await report({active: false, status: 'error', error: lastError.message});
+      await end(false);
+    }
+  } finally {
+    reconnecting = false;
+  }
 }
 
 async function begin(streamId, nextConfig, nextApiKey) {
@@ -299,10 +293,10 @@ async function begin(streamId, nextConfig, nextApiKey) {
   config = nextConfig;
   apiKey = nextApiKey;
   stopping = false;
+  reconnecting = false;
   liveReady = false;
   sourceTracker = {partial: '', started: 0};
   translatedTracker = {partial: '', started: 0};
-  ttsQueue = Promise.resolve();
   sessionStartedAt = performance.now();
   if (config.recording) recorder = await SessionRecorder.create();
   stream = await navigator.mediaDevices.getUserMedia({
@@ -339,7 +333,6 @@ async function end(sendAudioEnd = true) {
     await wait(700);
   }
   await flushTranscripts();
-  await ttsQueue;
   socket?.close();
   stream?.getTracks().forEach((track) => track.stop());
   captureNode?.disconnect(); source?.disconnect(); sourceGain?.disconnect(); dubGain?.disconnect();
@@ -353,6 +346,7 @@ async function end(sendAudioEnd = true) {
   apiKey = '';
   nextDubTime = 0;
   liveReady = false;
+  reconnecting = false;
   await report({active: false, status: 'idle'});
 }
 
