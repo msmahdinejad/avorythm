@@ -4,6 +4,22 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-12
+
+### Fixed
+
+- Recover uploaded-media Live sessions from proxy keepalive timeouts and transient connection resets.
+- Retry no-response segments three times and preserve isolated non-speech or unavailable intervals as synchronized silence instead of failing the entire job.
+- Keep valid Precise output when an optional quality retry disconnects.
+- Wait for translated audio/transcripts instead of treating an earlier source transcript or silent audio tail as completion.
+- Add explicit leading/trailing silence boundaries so the first and final words of file segments are not clipped.
+- Reject abnormally short Live output and drain receiver tasks cleanly after send failures.
+
+### Changed
+
+- Detect short speech pauses through background music and create sentence-friendlier uploaded-media windows.
+- Compare up to three Precise samples while retaining the 15,000-token rolling reservation ceiling.
+
 ## [0.5.0] - 2026-08-12
 
 ### Added
@@ -106,7 +122,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/msmahdinejad/lingodub/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/msmahdinejad/lingodub/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/msmahdinejad/lingodub/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/msmahdinejad/lingodub/compare/v0.3.1...v0.4.0

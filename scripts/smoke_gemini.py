@@ -3,24 +3,29 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import wave
 from pathlib import Path
 
 from lingodub.config import ConfigStore
 from lingodub.gemini import GeminiGateway
+from lingodub.jobs import complete_translation
 from lingodub.models import Settings
 
 
 def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--wav", type=Path, required=True, help="16 kHz mono 16-bit PCM WAV")
+    parser.add_argument("--target", default="fa", help="BCP-47 target language")
     return parser.parse_args()
 
 
-async def smoke(wav_path: Path) -> None:
+async def smoke(wav_path: Path, target_language: str) -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     store = ConfigStore()
     settings = Settings(
-        target_language="fa",
+        target_language=target_language,
         original_volume=0,
         dub_volume=1,
         proxy_url=store.load().proxy_url,
@@ -41,9 +46,13 @@ async def smoke(wav_path: Path) -> None:
                 raise ValueError("Smoke WAV must be 16 kHz mono 16-bit PCM")
             source_16khz = source.readframes(source.getnframes())
         result = await gateway.translate_pcm(settings, source_16khz)
-        if not result.audio or not result.translated_text.strip():
+        print(f"Source ({result.source_language or 'unknown'}): {result.source_text}")
+        print(f"Translation ({settings.target_language}): {result.translated_text}")
+        print(f"Audio bytes: {len(result.audio)}")
+        print(f"Tokens: {result.total_tokens}")
+        seconds = len(source_16khz) / (16_000 * 2)
+        if not complete_translation(result, seconds):
             raise RuntimeError("Live Translate returned incomplete output")
-        print("Gemini 3.5 Live Translate smoke test passed.")
     finally:
         await gateway.close()
 
@@ -51,4 +60,5 @@ async def smoke(wav_path: Path) -> None:
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(smoke(arguments().wav))
+    args = arguments()
+    asyncio.run(smoke(args.wav, args.target))

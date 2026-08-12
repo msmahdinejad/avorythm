@@ -48,7 +48,7 @@ def create_app(
 
     app = FastAPI(
         title="LingoDub Companion",
-        version="0.5.0",
+        version="0.5.1",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,

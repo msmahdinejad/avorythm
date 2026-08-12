@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 from types import SimpleNamespace, TracebackType
 
 import pytest
+from google.genai import types as genai_types
 
 from lingodub.gemini import (
     GeminiGateway,
     LiveEvent,
     duration_seconds,
     stream_tail_is_silent,
+    transient_live_error,
     trim_stream_padding,
 )
 from lingodub.models import Settings
@@ -81,6 +84,34 @@ class LateTranscriptGateway(FakeGateway):
         yield LiveEvent(turn_complete=True)
 
 
+class SlowTranslationGateway(FakeGateway):
+    @staticmethod
+    async def events(session: object) -> AsyncIterator[LiveEvent]:
+        yield LiveEvent(source_text="Complete source", source_finished=True)
+        await asyncio.sleep(3.2)
+        yield LiveEvent(translated_text="ترجمه کامل", translated_finished=True)
+        yield LiveEvent(audio=b"\xe8\x03" * 24_000, generation_complete=True)
+
+
+class TranscriptAfterSilentTailGateway(FakeGateway):
+    @staticmethod
+    async def events(session: object) -> AsyncIterator[LiveEvent]:
+        yield LiveEvent(source_text="Complete source", source_finished=True)
+        yield LiveEvent(audio=b"\0\0" * 12_000, generation_complete=True)
+        await asyncio.sleep(4.2)
+        yield LiveEvent(translated_text="ترجمه پایانی کامل", translated_finished=True)
+
+
+class BrokenSendGateway(FakeGateway):
+    async def send_audio(self, session: object, raw: bytes) -> None:
+        raise ConnectionError("connection reset")
+
+    @staticmethod
+    async def events(session: object) -> AsyncIterator[LiveEvent]:
+        raise ConnectionError("receiver closed")
+        yield LiveEvent()
+
+
 class MultiTurnSession:
     def __init__(self) -> None:
         self.calls = 0
@@ -111,6 +142,21 @@ def test_live_config_uses_translation_only_contract() -> None:
     assert config.speech_config is None
 
 
+def test_gateway_disables_websocket_ping_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    def client(**kwargs: object) -> SimpleNamespace:
+        captured.update(kwargs)
+        return SimpleNamespace()
+
+    monkeypatch.setattr("lingodub.gemini.genai.Client", client)
+    GeminiGateway("test-key")
+
+    options = captured["http_options"]
+    assert isinstance(options, genai_types.HttpOptions)
+    assert options.async_client_args == {"ping_interval": None}
+
+
 def test_file_config_uses_manual_activity_detection() -> None:
     gateway = GeminiGateway.__new__(GeminiGateway)
     config = gateway.live_config(Settings(target_language="fa"), manual_activity=True)
@@ -123,6 +169,12 @@ def test_go_away_duration_parser() -> None:
     assert duration_seconds("12.5s") == 12.5
     assert duration_seconds("invalid") is None
     assert duration_seconds(None) is None
+
+
+def test_transient_live_connection_errors_are_retryable() -> None:
+    assert transient_live_error(TimeoutError()) is True
+    assert transient_live_error(RuntimeError("no close frame received or sent")) is True
+    assert transient_live_error(RuntimeError("API key not valid")) is False
 
 
 def test_stream_padding_trims_silent_tail_without_cutting_speech() -> None:
@@ -147,6 +199,8 @@ async def test_segment_translation_keeps_finished_transcripts() -> None:
     assert gateway.session.activity_ended is True
     assert gateway.session.ended is False
     assert gateway.session.audio
+    assert gateway.session.audio[0] == b"\0" * 12_800
+    assert gateway.session.audio[-1] == b"\0" * 64_000
     assert result.audio == b"\xe8\x03" * 480
     assert result.source_text == "Hello"
     assert result.translated_text == "سلام"
@@ -163,6 +217,40 @@ async def test_segment_translation_waits_for_transcript_after_generation() -> No
         realtime=False,
     )
     assert result.translated_text == "جمله کامل"
+
+
+@pytest.mark.asyncio
+async def test_segment_translation_does_not_treat_source_text_as_finished_output() -> None:
+    gateway = SlowTranslationGateway()
+    result = await gateway.translate_pcm(
+        Settings(target_language="fa"),
+        b"\0\0" * 1_600,
+        realtime=False,
+    )
+    assert result.translated_text == "ترجمه کامل"
+    assert result.audio
+
+
+@pytest.mark.asyncio
+async def test_segment_translation_waits_for_text_after_silent_audio_tail() -> None:
+    gateway = TranscriptAfterSilentTailGateway()
+    result = await gateway.translate_pcm(
+        Settings(target_language="fa"),
+        b"\0\0" * 1_600,
+        realtime=False,
+    )
+    assert result.translated_text == "ترجمه پایانی کامل"
+
+
+@pytest.mark.asyncio
+async def test_segment_translation_drains_receiver_when_send_fails() -> None:
+    gateway = BrokenSendGateway()
+    with pytest.raises(ConnectionError, match="connection reset"):
+        await gateway.translate_pcm(
+            Settings(target_language="fa"),
+            b"\0\0" * 1_600,
+            realtime=False,
+        )
 
 
 @pytest.mark.asyncio

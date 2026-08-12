@@ -58,7 +58,10 @@ const messages = {
     quotaNotice: 'برای ماندن زیر سقف توکن، پردازش خودکار مکث کرده است.', processingWarning: 'حالت دقیق صوت دوبله را دوباره با Gemini کنترل می‌کند و در صورت retry ممکن است چهار تا هشت برابر مدت فایل زمان ببرد.',
     qualityScore: 'اطمینان معنایی', quality_retry: 'یک قطعه به‌دلیل اختلاف صوت و متن دوباره تولید شد.',
     quality_low: 'کیفیت یک قطعه پایین ماند؛ متن و صوت را پیش از استفادهٔ نهایی بررسی کن.',
-    quality_unverified: 'زبان مبدأ برای کنترل خودکار کیفیت قابل تشخیص نبود؛ خروجی را دستی بررسی کن.'
+    quality_unverified: 'زبان مبدأ برای کنترل خودکار کیفیت قابل تشخیص نبود؛ خروجی را دستی بررسی کن.',
+    network_recovered: 'اتصال موقتاً قطع شد؛ برنامه از آخرین خروجی معتبر استفاده کرد.',
+    non_speech_skipped: 'یک بازه بدون گفتار بود و با سکوت هماهنگ حفظ شد.',
+    segment_skipped: 'یک بازه پس از سه تلاش پاسخی نگرفت و با سکوت هماهنگ حفظ شد؛ آن بخش را بازبینی کن.'
   },
   en: {
     appOnline: 'Desktop app is online', tagline: 'Live dubbing, minus the friction',
@@ -106,7 +109,10 @@ const messages = {
     quotaNotice: 'Processing paused automatically to stay below the token ceiling.', processingWarning: 'Precise mode checks dubbed speech with Gemini and can take four to eight times the file duration when a retry is needed.',
     qualityScore: 'Semantic confidence', quality_retry: 'A segment was regenerated because its audio and transcript disagreed.',
     quality_low: 'A segment remained low-confidence; review its audio and transcript before final use.',
-    quality_unverified: 'The source language could not be identified for automatic quality checking; review the output manually.'
+    quality_unverified: 'The source language could not be identified for automatic quality checking; review the output manually.',
+    network_recovered: 'The connection briefly dropped; the last valid result was preserved.',
+    non_speech_skipped: 'A non-speech interval was preserved as synchronized silence.',
+    segment_skipped: 'One interval returned no result after three attempts and was preserved as synchronized silence; review that section.'
   }
 };
 
