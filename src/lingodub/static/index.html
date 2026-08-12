@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>LingoDub</title>
   <link rel="icon" href="/assets/lingodub-logo.png" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=0.4.1">
+  <link rel="stylesheet" href="/styles.css?v=0.5.0">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -115,31 +115,32 @@
 
     <section id="mediaStudio" class="media-studio">
       <div class="section-heading media-heading">
-        <div><span class="section-kicker" data-i18n="mediaKicker">MEDIA STUDIO</span><h2 data-i18n="mediaTitle">دوبلهٔ فایل ویدئویی</h2></div>
-        <p data-i18n="mediaIntro">فیلم را محلی پردازش کن، چهار خروجی بگیر و دوبله را بدون تأخیر تجمعی روی تایم‌لاین ببین.</p>
+        <div><span class="section-kicker" data-i18n="mediaKicker">MEDIA STUDIO</span><h2 data-i18n="mediaTitle">دوبلهٔ فایل صوتی یا ویدئویی</h2></div>
+        <p data-i18n="mediaIntro">صوت یا ویدئو را محلی پردازش کن، چهار خروجی بگیر و دوبله را روی تایم‌لاین هماهنگ پخش کن.</p>
       </div>
 
       <div class="media-layout">
         <article class="media-card upload-card">
           <label id="dropZone" class="drop-zone" for="mediaFile">
-            <input id="mediaFile" type="file" accept="video/mp4,video/webm,video/x-matroska,video/quicktime,video/avi,video/x-ms-wmv,video/mpeg,video/3gpp">
+            <input id="mediaFile" type="file" accept="audio/*,video/mp4,video/webm,video/x-matroska,video/quicktime,video/avi,video/x-ms-wmv,video/mpeg,video/3gpp,.m4a,.wma,.opus,.aiff">
             <span class="upload-glyph" aria-hidden="true">＋</span>
-            <b data-i18n="chooseVideo">ویدئو را انتخاب یا اینجا رها کن</b>
-            <small id="selectedFile" data-i18n="videoFormats">MP4، MKV، WebM، MOV، AVI و WMV تا ۸ گیگابایت</small>
+            <b data-i18n="chooseVideo">فایل صوتی یا ویدئویی را انتخاب یا اینجا رها کن</b>
+            <small id="selectedFile" data-i18n="videoFormats">MP3، WAV، M4A، FLAC، OGG، MP4، MKV و فرمت‌های رایج تا ۸ گیگابایت</small>
           </label>
 
           <fieldset class="mode-picker">
             <legend data-i18n="processingMode">حالت پردازش</legend>
-            <label class="mode-option selected"><input type="radio" name="mediaMode" value="precise" checked><span><b data-i18n="preciseMode">سینک دقیق</b><small data-i18n="preciseHelp">پیشنهادی؛ هر دیالوگ روی بازهٔ خودش تنظیم می‌شود.</small></span></label>
-            <label class="mode-option"><input type="radio" name="mediaMode" value="fast"><span><b data-i18n="fastMode">سریع</b><small data-i18n="fastHelp">پیش‌نمایش زودتر، با اصلاح سبک‌تر مرز دیالوگ‌ها.</small></span></label>
+            <label class="mode-option selected"><input type="radio" name="mediaMode" value="precise" checked><span><b data-i18n="preciseMode">سینک دقیق</b><small data-i18n="preciseHelp">پیشنهادی؛ دوبله را با ترجمهٔ معکوس کنترل می‌کند و قطعهٔ ضعیف را دوباره می‌سازد.</small></span></label>
+            <label class="mode-option"><input type="radio" name="mediaMode" value="fast"><span><b data-i18n="fastMode">سریع</b><small data-i18n="fastHelp">یک‌بار ترجمه بدون کنترل معنایی؛ برای پیش‌نمایش سریع‌تر.</small></span></label>
           </fieldset>
 
           <label class="field"><span data-i18n="fileTargetLanguage">زبان دوبلهٔ فایل</span><select id="mediaTargetLanguage"></select></label>
-          <button id="processMediaButton" class="button primary wide" type="button" disabled data-i18n="processVideo">شروع پردازش ویدئو</button>
-          <p class="privacy-note" data-i18n="mediaPrivacy">خود ویدئو روی لپ‌تاپ می‌ماند؛ فقط صوت PCM استخراج‌شده به Gemini 3.5 Live Translate فرستاده می‌شود.</p>
+          <button id="processMediaButton" class="button primary wide" type="button" disabled data-i18n="processVideo">شروع پردازش فایل</button>
+          <p class="privacy-note" data-i18n="mediaPrivacy">خود فایل روی لپ‌تاپ می‌ماند؛ PCM استخراج‌شده و در حالت دقیق، PCM دوبله برای کنترل معنایی به همان Gemini Live فرستاده می‌شود.</p>
 
           <div id="jobPanel" class="job-panel" hidden>
             <div class="job-line"><span><b id="jobStage">—</b><small id="jobFile">—</small></span><strong id="jobPercent">0%</strong></div>
+            <output id="jobQuality" class="quality-score" hidden></output>
             <progress id="jobProgress" max="1" value="0"></progress>
             <p id="jobMessage" role="status" aria-live="polite"></p>
             <div class="job-actions"><button id="cancelJobButton" class="button ghost" type="button" data-i18n="cancel">لغو</button><button id="deleteJobButton" class="text-button" type="button" hidden data-i18n="deleteJob">حذف پروژه</button></div>
@@ -147,15 +148,20 @@
 
           <div class="recent-jobs">
             <div class="mixer-title"><span data-i18n="recentJobs">پروژه‌های اخیر</span><small data-i18n="storedLocally">ذخیره‌شده روی همین دستگاه</small></div>
-            <div id="recentJobsList" class="recent-list"><p data-i18n="noJobs">هنوز ویدئویی پردازش نشده است.</p></div>
+            <div id="recentJobsList" class="recent-list"><p data-i18n="noJobs">هنوز فایل صوتی یا ویدئویی پردازش نشده است.</p></div>
           </div>
         </article>
 
         <article id="playerCard" class="media-card player-card empty">
-          <div id="playerEmpty" class="player-empty"><span>▶</span><b data-i18n="playerWaiting">پس از آماده‌شدن ویدئو، پلیر هماهنگ اینجا فعال می‌شود.</b></div>
+          <div id="playerEmpty" class="player-empty"><span>▶</span><b data-i18n="playerWaiting">پس از آماده‌شدن فایل، پلیر هماهنگ اینجا فعال می‌شود.</b></div>
           <div id="playerReady" hidden>
             <div class="video-stage">
               <video id="mediaPlayer" controls preload="metadata"></video>
+              <div id="audioSourceStage" class="audio-source-stage" hidden>
+                <img src="/assets/lingodub-logo.png" alt="">
+                <b id="audioSourceName"></b>
+                <audio id="sourceAudioPlayer" controls preload="metadata"></audio>
+              </div>
               <audio id="dubbedPlayer" preload="metadata"></audio>
               <div class="subtitle-stack" aria-live="off">
                 <p id="sourceCaption" class="caption source-caption" dir="auto" hidden></p>
@@ -186,6 +192,6 @@
   </main>
 
   <footer><span>LingoDub · Open source</span><a href="https://github.com/msmahdinejad/lingodub" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
-  <script src="/app.js?v=0.4.1" defer></script>
+  <script src="/app.js?v=0.5.0" defer></script>
 </body>
 </html>

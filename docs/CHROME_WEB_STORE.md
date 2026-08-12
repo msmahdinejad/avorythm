@@ -8,7 +8,7 @@
 
 - برای نصب عمومی و یک‌کلیکی روی Windows و macOS باید اکستنشن در Chrome Web Store منتشر شود. `Load unpacked` فقط برای توسعه است و self-hosting روی این دو سیستم‌عامل فقط در محیط‌های مدیریت‌شدهٔ سازمانی پشتیبانی می‌شود. [روش‌های رسمی توزیع Chrome](https://developer.chrome.com/docs/extensions/how-to/distribute) و [روش‌های نصب جایگزین](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
 - اکستنشن جدید باید Manifest V3 باشد؛ Manifest V3 نسخهٔ لازم برای ارسال آیتم جدید است و Manifest V2 دیگر پذیرفته یا اجرا نمی‌شود. [Best practices رسمی Web Store](https://developer.chrome.com/docs/webstore/best-practices) و [خط زمانی حذف Manifest V2](https://developer.chrome.com/docs/extensions/develop/migrate/mv2-deprecation-timeline)
-- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.4.1` مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل self-hosted/prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
+- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.5.0` مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل self-hosted/prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
 
 معماری پیشنهادی برای نسخهٔ قابل انتشار:
 
@@ -162,7 +162,7 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 
 | مورد | وضعیت فعلی | اقدام لازم پیش از submission |
 |---|---|---|
-| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.4.1` و description کمتر از سقف ۱۳۲ کاراکتر | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
+| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.5.0` و description کمتر از سقف ۱۳۲ کاراکتر | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
 | Service worker / offscreen | ✅ الگوی MV3 و فایل‌های local | justification دقیق در Privacy tab |
 | Remote executable code | ✅ `eval`، `new Function`، CDN script یا remote JS دیده نشد | در Dashboard گزینهٔ No انتخاب و package نهایی دوباره scan شود |
 | CSP | ✅ فقط `script-src 'self'` | حفظ شود |

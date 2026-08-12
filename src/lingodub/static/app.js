@@ -15,7 +15,7 @@ const messages = {
   fa: {
     appOnline: 'اپ دسکتاپ آنلاین است', tagline: 'دوبلهٔ زنده، بدون دردسر',
     eyebrow: 'ترجمه و دوبلهٔ هم‌زمان با Gemini', heroTitle: 'هر صدایی را به زبان خودت بشنو.',
-    heroText: 'صدای فیلم، کلاس و ویدئو را زنده ترجمه کن یا فایل را برای پخش کاملاً هماهنگ پردازش کن.',
+    heroText: 'صدای فیلم، کلاس و فایل صوتی را زنده ترجمه کن یا رسانه را برای پخش کاملاً هماهنگ پردازش کن.',
     start: 'شروع دوبله', stop: 'توقف دوبله', record: 'شروع ضبط', stopRecord: 'پایان ضبط',
     status: 'وضعیت', idle: 'آماده', connecting: 'در حال اتصال', connected: 'در حال دوبله',
     error: 'خطا', detectedLanguage: 'زبان تشخیص‌داده‌شده', recording: 'ضبط', off: 'خاموش', on: 'روشن',
@@ -36,32 +36,34 @@ const messages = {
     mixerOpened: 'میکسر ویندوز باز شد؛ مسیر AMM را طبق آموزش تنظیم کن.', requestFailed: 'درخواست انجام نشد',
     recordingReady: 'چهار خروجی آماده است', selectDefault: 'پیش‌فرض سیستم',
     locationUnsupported: 'Google این API Key یا موقعیت اتصال را مجاز نمی‌داند؛ حساب و خروجی پروکسی را بررسی کن.',
-    mediaKicker: 'استودیوی رسانه', mediaTitle: 'دوبلهٔ فایل ویدئویی',
-    mediaIntro: 'فیلم را محلی پردازش کن، چهار خروجی بگیر و دوبله را بدون تأخیر تجمعی روی تایم‌لاین ببین.',
-    chooseVideo: 'ویدئو را انتخاب یا اینجا رها کن', videoFormats: 'MP4، MKV، WebM، MOV، AVI و WMV تا ۸ گیگابایت',
+    mediaKicker: 'استودیوی رسانه', mediaTitle: 'دوبلهٔ فایل صوتی یا ویدئویی',
+    mediaIntro: 'صوت یا ویدئو را محلی پردازش کن، چهار خروجی بگیر و دوبله را روی تایم‌لاین هماهنگ پخش کن.',
+    chooseVideo: 'فایل صوتی یا ویدئویی را انتخاب یا اینجا رها کن', videoFormats: 'MP3، WAV، M4A، FLAC، OGG، MP4، MKV و فرمت‌های رایج تا ۸ گیگابایت',
     processingMode: 'حالت پردازش', preciseMode: 'سینک دقیق',
-    preciseHelp: 'پیشنهادی؛ هر دیالوگ روی بازهٔ خودش تنظیم می‌شود.', fastMode: 'سریع',
-    fastHelp: 'پیش‌نمایش زودتر، با اصلاح سبک‌تر مرز دیالوگ‌ها.', fileTargetLanguage: 'زبان دوبلهٔ فایل',
-    processVideo: 'شروع پردازش ویدئو',
-    mediaPrivacy: 'خود ویدئو روی لپ‌تاپ می‌ماند؛ فقط صوت PCM استخراج‌شده به Gemini 3.5 Live Translate فرستاده می‌شود.',
+    preciseHelp: 'پیشنهادی؛ دوبله را با ترجمهٔ معکوس کنترل می‌کند و قطعهٔ ضعیف را دوباره می‌سازد.', fastMode: 'سریع',
+    fastHelp: 'یک‌بار ترجمه بدون کنترل معنایی؛ برای پیش‌نمایش سریع‌تر.', fileTargetLanguage: 'زبان دوبلهٔ فایل',
+    processVideo: 'شروع پردازش فایل',
+    mediaPrivacy: 'خود فایل روی لپ‌تاپ می‌ماند؛ PCM استخراج‌شده و در حالت دقیق، PCM دوبله برای کنترل معنایی به همان Gemini Live فرستاده می‌شود.',
     cancel: 'لغو', deleteJob: 'حذف پروژه', recentJobs: 'پروژه‌های اخیر', storedLocally: 'ذخیره‌شده روی همین دستگاه',
-    noJobs: 'هنوز ویدئویی پردازش نشده است.', playerWaiting: 'پس از آماده‌شدن ویدئو، پلیر هماهنگ اینجا فعال می‌شود.',
+    noJobs: 'هنوز فایل صوتی یا ویدئویی پردازش نشده است.', playerWaiting: 'پس از آماده‌شدن فایل، پلیر هماهنگ اینجا فعال می‌شود.',
     hearOriginal: 'صدای اصلی', hearDubbed: 'صدای دوبله', sourceSubs: 'زیرنویس اصلی',
     translatedSubs: 'زیرنویس ترجمه', originalShort: 'اصلی', dubbedShort: 'دوبله',
     originalAudioFile: 'صدای اصلی', dubbedAudioFile: 'صدای دوبله', sourceSubtitleFile: 'زیرنویس اصلی',
     translatedSubtitleFile: 'زیرنویس دوبله', allFourFiles: 'هر چهار فایل', fileSelected: 'انتخاب شد',
-    uploadFirst: 'ابتدا یک ویدئو انتخاب کن.', mediaQueued: 'فایل ذخیره شد و در صف پردازش است.',
+    uploadFirst: 'ابتدا یک فایل صوتی یا ویدئویی انتخاب کن.', mediaQueued: 'فایل ذخیره شد و در صف پردازش است.',
     confirmDelete: 'این پروژه و همهٔ خروجی‌های محلی آن حذف شود؟', open: 'بازکردن',
     stageQueued: 'در صف', stageProbing: 'بررسی فایل', stageExtracting: 'استخراج صدا',
     stageTranslating: 'ترجمه با Gemini Live', stageQuotaWait: 'انتظار برای سهمیه', stageAligning: 'هماهنگ‌سازی خروجی‌ها',
     stageReady: 'آمادهٔ پخش', stageFailed: 'ناموفق', stageCancelled: 'لغوشده', stageCancelling: 'در حال لغو',
-    quotaNotice: 'برای ماندن زیر سقف توکن، پردازش خودکار مکث کرده است.', processingWarning: 'این پردازش تقریباً به‌اندازهٔ مدت گفتار یا بیشتر زمان می‌برد.',
-    dub_trimmed: 'بخشی از گفتار طولانی برای حفظ سینک کوتاه شد.'
+    quotaNotice: 'برای ماندن زیر سقف توکن، پردازش خودکار مکث کرده است.', processingWarning: 'حالت دقیق صوت دوبله را دوباره با Gemini کنترل می‌کند و در صورت retry ممکن است چهار تا هشت برابر مدت فایل زمان ببرد.',
+    qualityScore: 'اطمینان معنایی', quality_retry: 'یک قطعه به‌دلیل اختلاف صوت و متن دوباره تولید شد.',
+    quality_low: 'کیفیت یک قطعه پایین ماند؛ متن و صوت را پیش از استفادهٔ نهایی بررسی کن.',
+    quality_unverified: 'زبان مبدأ برای کنترل خودکار کیفیت قابل تشخیص نبود؛ خروجی را دستی بررسی کن.'
   },
   en: {
     appOnline: 'Desktop app is online', tagline: 'Live dubbing, minus the friction',
     eyebrow: 'Real-time translation and dubbing with Gemini', heroTitle: 'Hear anything in your language.',
-    heroText: 'Translate live audio or process a video file for timeline-locked playback.',
+    heroText: 'Translate live audio or process audio/video files for timeline-locked playback.',
     start: 'Start dubbing', stop: 'Stop dubbing', record: 'Start recording', stopRecord: 'Stop recording',
     status: 'Status', idle: 'Ready', connecting: 'Connecting', connected: 'Dubbing live', error: 'Error',
     detectedLanguage: 'Detected language', recording: 'Recording', off: 'Off', on: 'On',
@@ -82,27 +84,29 @@ const messages = {
     mixerOpened: 'Windows mixer opened; follow the AMM route in the guide.', requestFailed: 'Request failed',
     recordingReady: 'Four outputs are ready', selectDefault: 'System default',
     locationUnsupported: 'Google does not allow this API key or connection location; check the account and proxy exit.',
-    mediaKicker: 'MEDIA STUDIO', mediaTitle: 'Dub a video file',
+    mediaKicker: 'MEDIA STUDIO', mediaTitle: 'Dub an audio or video file',
     mediaIntro: 'Process locally, download four outputs, and play the dub on a drift-free timeline.',
-    chooseVideo: 'Choose a video or drop it here', videoFormats: 'MP4, MKV, WebM, MOV, AVI, and WMV up to 8 GB',
+    chooseVideo: 'Choose an audio or video file or drop it here', videoFormats: 'MP3, WAV, M4A, FLAC, OGG, MP4, MKV, and common formats up to 8 GB',
     processingMode: 'Processing mode', preciseMode: 'Precise sync',
-    preciseHelp: 'Recommended; each spoken segment is fitted to its source window.', fastMode: 'Fast',
-    fastHelp: 'Earlier preview with lighter dialogue-boundary correction.', fileTargetLanguage: 'File target language',
-    processVideo: 'Process video',
-    mediaPrivacy: 'The video stays on this laptop; only extracted PCM audio is sent to Gemini 3.5 Live Translate.',
+    preciseHelp: 'Recommended; back-checks dubbed speech and retries a weak segment.', fastMode: 'Fast',
+    fastHelp: 'Single-pass translation without the semantic quality check.', fileTargetLanguage: 'File target language',
+    processVideo: 'Process file',
+    mediaPrivacy: 'The file stays on this laptop; extracted PCM and, in Precise mode, dubbed PCM for the semantic check are sent to the same Gemini Live model.',
     cancel: 'Cancel', deleteJob: 'Delete project', recentJobs: 'Recent projects', storedLocally: 'Stored on this device',
-    noJobs: 'No video has been processed yet.', playerWaiting: 'The synchronized player appears after processing finishes.',
+    noJobs: 'No audio or video file has been processed yet.', playerWaiting: 'The synchronized player appears after processing finishes.',
     hearOriginal: 'Original audio', hearDubbed: 'Dubbed audio', sourceSubs: 'Source subtitles',
     translatedSubs: 'Translated subtitles', originalShort: 'Original', dubbedShort: 'Dub',
     originalAudioFile: 'Original audio', dubbedAudioFile: 'Dubbed audio', sourceSubtitleFile: 'Source subtitles',
     translatedSubtitleFile: 'Dub subtitles', allFourFiles: 'All four files', fileSelected: 'Selected',
-    uploadFirst: 'Choose a video first.', mediaQueued: 'File stored and queued for processing.',
+    uploadFirst: 'Choose an audio or video file first.', mediaQueued: 'File stored and queued for processing.',
     confirmDelete: 'Delete this project and all of its local outputs?', open: 'Open',
     stageQueued: 'Queued', stageProbing: 'Inspecting file', stageExtracting: 'Extracting audio',
     stageTranslating: 'Translating with Gemini Live', stageQuotaWait: 'Waiting for quota', stageAligning: 'Aligning outputs',
     stageReady: 'Ready to play', stageFailed: 'Failed', stageCancelled: 'Cancelled', stageCancelling: 'Cancelling',
-    quotaNotice: 'Processing paused automatically to stay below the token ceiling.', processingWarning: 'Processing takes roughly the speech duration or longer.',
-    dub_trimmed: 'Some long dialogue was shortened to preserve sync.'
+    quotaNotice: 'Processing paused automatically to stay below the token ceiling.', processingWarning: 'Precise mode checks dubbed speech with Gemini and can take four to eight times the file duration when a retry is needed.',
+    qualityScore: 'Semantic confidence', quality_retry: 'A segment was regenerated because its audio and transcript disagreed.',
+    quality_low: 'A segment remained low-confidence; review its audio and transcript before final use.',
+    quality_unverified: 'The source language could not be identified for automatic quality checking; review the output manually.'
   }
 };
 
@@ -249,6 +253,11 @@ function renderJob(job) {
   $('#jobStage').textContent = t(stageKey(job.status));
   $('#jobPercent').textContent = `${Math.round(job.progress * 100)}%`;
   $('#jobProgress').value = job.progress;
+  $('#jobQuality').hidden = job.quality_score == null;
+  $('#jobQuality').classList.toggle('low-quality', job.quality_score != null && job.quality_score < 0.62);
+  $('#jobQuality').textContent = job.quality_score == null
+    ? ''
+    : `${t('qualityScore')}: ${Math.round(job.quality_score * 100)}%`;
   const warnings = (job.warnings || []).map((warning) => t(warning)).join(' ');
   $('#jobMessage').textContent = job.error || warnings || (job.status === 'quota_wait' ? t('quotaNotice') : t('processingWarning'));
   const terminal = ['ready', 'failed', 'cancelled'].includes(job.status);
@@ -351,8 +360,9 @@ async function fetchCues(url) {
 }
 
 function cueAt(cues, time) { return cues.find((cue) => time >= cue.start && time < cue.end); }
+function sourcePlayer() { return currentJob?.media_kind === 'audio' ? $('#sourceAudioPlayer') : $('#mediaPlayer'); }
 function renderCaptions() {
-  const time = $('#mediaPlayer').currentTime;
+  const time = sourcePlayer().currentTime;
   const source = cueAt(sourceCues, time);
   const translated = cueAt(translatedCues, time);
   $('#sourceCaption').textContent = source?.text || '';
@@ -362,29 +372,36 @@ function renderCaptions() {
 }
 
 function syncPlayers(force = false) {
-  const video = $('#mediaPlayer');
+  const source = sourcePlayer();
   const dub = $('#dubbedPlayer');
-  if (!$('#hearDubbed').checked || !Number.isFinite(video.currentTime)) return;
-  const drift = dub.currentTime - video.currentTime;
+  if (!$('#hearDubbed').checked || !Number.isFinite(source.currentTime)) return;
+  const drift = dub.currentTime - source.currentTime;
   if (force || Math.abs(drift) > 0.12) {
-    dub.currentTime = Math.min(video.currentTime, Number.isFinite(dub.duration) ? dub.duration : video.currentTime);
-    dub.playbackRate = video.playbackRate;
+    dub.currentTime = Math.min(source.currentTime, Number.isFinite(dub.duration) ? dub.duration : source.currentTime);
+    dub.playbackRate = source.playbackRate;
   } else if (Math.abs(drift) > 0.04) {
-    dub.playbackRate = video.playbackRate * (drift > 0 ? 0.98 : 1.02);
+    dub.playbackRate = source.playbackRate * (drift > 0 ? 0.98 : 1.02);
   } else {
-    dub.playbackRate = video.playbackRate;
+    dub.playbackRate = source.playbackRate;
   }
 }
 
 async function loadPlayer(job) {
   loadedPlayerJobId = job.id;
   const video = $('#mediaPlayer');
+  const audio = $('#sourceAudioPlayer');
   const dub = $('#dubbedPlayer');
-  video.pause(); dub.pause();
-  video.src = job.video_url;
+  video.pause(); audio.pause(); dub.pause();
+  const isAudio = job.media_kind === 'audio';
+  video.hidden = isAudio;
+  $('#audioSourceStage').hidden = !isAudio;
+  video.removeAttribute('src'); audio.removeAttribute('src');
+  const source = isAudio ? audio : video;
+  source.src = job.media_url || job.video_url;
+  $('#audioSourceName').textContent = job.filename;
   dub.src = job.outputs['dubbed.wav'];
-  video.muted = !$('#hearOriginal').checked;
-  video.volume = Number($('#playerOriginalVolume').value);
+  source.muted = !$('#hearOriginal').checked;
+  source.volume = Number($('#playerOriginalVolume').value);
   dub.volume = Number($('#playerDubVolume').value);
   sourceCues = await fetchCues(job.source_vtt_url);
   translatedCues = await fetchCues(job.translated_vtt_url);
@@ -396,7 +413,7 @@ async function loadPlayer(job) {
   $('#playerCard').classList.remove('empty');
   $('#playerEmpty').hidden = true;
   $('#playerReady').hidden = false;
-  video.load(); dub.load(); renderCaptions();
+  source.load(); dub.load(); renderCaptions();
 }
 
 $('#localeToggle').addEventListener('click', () => {
@@ -475,26 +492,27 @@ $('#recentJobsList').addEventListener('click', (event) => {
   if (job) renderJob(job);
 });
 
-const video = $('#mediaPlayer');
 const dub = $('#dubbedPlayer');
-video.addEventListener('play', async () => {
-  syncPlayers(true);
-  if ($('#hearDubbed').checked) { try { await dub.play(); } catch {} }
+[$('#mediaPlayer'), $('#sourceAudioPlayer')].forEach((source) => {
+  source.addEventListener('play', async () => {
+    syncPlayers(true);
+    if ($('#hearDubbed').checked) { try { await dub.play(); } catch {} }
+  });
+  source.addEventListener('pause', () => dub.pause());
+  source.addEventListener('seeking', () => syncPlayers(true));
+  source.addEventListener('ratechange', () => { dub.playbackRate = source.playbackRate; });
+  source.addEventListener('timeupdate', renderCaptions);
+  source.addEventListener('ended', () => { dub.pause(); dub.currentTime = 0; });
 });
-video.addEventListener('pause', () => dub.pause());
-video.addEventListener('seeking', () => syncPlayers(true));
-video.addEventListener('ratechange', () => { dub.playbackRate = video.playbackRate; });
-video.addEventListener('timeupdate', renderCaptions);
-video.addEventListener('ended', () => { dub.pause(); dub.currentTime = 0; });
-$('#hearOriginal').addEventListener('change', () => { video.muted = !$('#hearOriginal').checked; });
+$('#hearOriginal').addEventListener('change', () => { sourcePlayer().muted = !$('#hearOriginal').checked; });
 $('#hearDubbed').addEventListener('change', async () => {
   if (!$('#hearDubbed').checked) dub.pause();
-  else if (!video.paused) { syncPlayers(true); try { await dub.play(); } catch {} }
+  else if (!sourcePlayer().paused) { syncPlayers(true); try { await dub.play(); } catch {} }
 });
 ['showSourceSubs', 'showTranslatedSubs'].forEach((id) => $(`#${id}`).addEventListener('change', renderCaptions));
-$('#playerOriginalVolume').addEventListener('input', () => { video.volume = Number($('#playerOriginalVolume').value); });
+$('#playerOriginalVolume').addEventListener('input', () => { sourcePlayer().volume = Number($('#playerOriginalVolume').value); });
 $('#playerDubVolume').addEventListener('input', () => { dub.volume = Number($('#playerDubVolume').value); });
-setInterval(() => { if (!video.paused) syncPlayers(); }, 250);
+setInterval(() => { if (!sourcePlayer().paused) syncPlayers(); }, 250);
 
 (async () => {
   translatePage();

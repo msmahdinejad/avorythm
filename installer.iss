@@ -1,5 +1,5 @@
 #define MyAppName "LingoDub"
-#define MyAppVersion "0.4.1"
+#define MyAppVersion "0.5.0"
 #define MyAppPublisher "Mohammad Saleh Mahdinejad"
 #define MyAppURL "https://github.com/msmahdinejad/lingodub"
 
@@ -31,10 +31,10 @@ Name: "{autodesktop}\LingoDub"; Filename: "{app}\LingoDub.exe"; Tasks: desktopic
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: checkedonce
-Name: "ffmpeg"; Description: "Install FFmpeg for uploaded-video processing (recommended)"; GroupDescription: "Optional components:"; Flags: checkedonce
+Name: "ffmpeg"; Description: "Install FFmpeg for uploaded audio/video processing (recommended)"; GroupDescription: "Optional components:"; Flags: checkedonce
 
 [Run]
-Filename: "{cmd}"; Parameters: "/c winget install --id Gyan.FFmpeg --exact --silent --accept-package-agreements --accept-source-agreements --scope user"; StatusMsg: "Installing FFmpeg for video processing..."; Tasks: ffmpeg; Check: WingetAvailable; Flags: runhidden waituntilterminated
+Filename: "{cmd}"; Parameters: "/c winget install --id Gyan.FFmpeg --exact --silent --accept-package-agreements --accept-source-agreements --scope user"; StatusMsg: "Installing FFmpeg for media processing..."; Tasks: ffmpeg; Check: WingetAvailable; Flags: runhidden waituntilterminated
 Filename: "{app}\LingoDub.exe"; Description: "Launch LingoDub"; Flags: nowait postinstall skipifsilent
 
 [Code]

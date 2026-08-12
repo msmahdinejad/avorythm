@@ -3,12 +3,15 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 import shutil
+import unicodedata
 import uuid
 import wave
 from collections.abc import AsyncIterator, Callable
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Literal
 
@@ -16,11 +19,12 @@ from .config import ConfigStore
 from .constants import OUTPUT_RATE, SUPPORTED_LANGUAGES
 from .gemini import GeminiGateway, SegmentTranslation
 from .media import (
-    SUPPORTED_VIDEO_SUFFIXES,
+    MediaKind,
     MediaTools,
     fixed_windows,
     read_pcm_window,
     speech_windows,
+    supported_media,
     write_subtitles,
 )
 from .quota import TokenGovernor
@@ -42,6 +46,26 @@ def utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
 
+def transcript_score(reference: str, candidate: str) -> float:
+    def words(value: str) -> list[str]:
+        normalized = unicodedata.normalize("NFKD", value.casefold())
+        normalized = "".join(
+            character for character in normalized if not unicodedata.combining(character)
+        )
+        tokens = re.findall(r"\w+", normalized, flags=re.UNICODE)
+        if len(tokens) == 1 and len(tokens[0]) >= 4:
+            return list(tokens[0])
+        return tokens
+
+    expected = words(reference)
+    actual = words(candidate)
+    if not expected or not actual:
+        return 0.0
+    sequence = SequenceMatcher(None, expected, actual).ratio()
+    coverage = len(set(expected) & set(actual)) / len(set(expected))
+    return round((sequence + coverage) / 2, 3)
+
+
 @dataclass(slots=True)
 class MediaJob:
     id: str
@@ -49,11 +73,13 @@ class MediaJob:
     suffix: str
     mode: MediaMode
     target_language: str
+    media_kind: MediaKind = "video"
     status: str = "queued"
     stage: str = "queued"
     progress: float = 0.0
     duration: float = 0.0
     source_language: str = ""
+    quality_score: float | None = None
     error: str = ""
     warnings: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
@@ -61,6 +87,11 @@ class MediaJob:
 
     @classmethod
     def from_dict(cls, payload: dict[str, object]) -> MediaJob:
+        payload.setdefault(
+            "media_kind",
+            supported_media(str(payload.get("filename", ""))) or "video",
+        )
+        payload.setdefault("quality_score", None)
         return cls(**payload)  # type: ignore[arg-type]
 
     def to_dict(self) -> dict[str, object]:
@@ -168,16 +199,24 @@ class MediaJobManager:
         content_length: int | None = None,
     ) -> MediaJob:
         suffix = Path(filename).suffix.lower()
-        if suffix not in SUPPORTED_VIDEO_SUFFIXES:
-            raise ValueError("unsupported video format")
+        media_kind = supported_media(filename)
+        if not media_kind:
+            raise ValueError("unsupported media format")
         if target_language not in SUPPORTED_LANGUAGES:
             raise ValueError("unsupported target language")
         if mode not in ("precise", "fast"):
             raise ValueError("unsupported processing mode")
         if content_length is not None and content_length > self.MAX_UPLOAD_BYTES:
-            raise ValueError("video is larger than the 8 GB local limit")
+            raise ValueError("media file is larger than the 8 GB local limit")
 
-        job = MediaJob(uuid.uuid4().hex, Path(filename).name, suffix, mode, target_language)
+        job = MediaJob(
+            uuid.uuid4().hex,
+            Path(filename).name,
+            suffix,
+            mode,
+            target_language,
+            media_kind,
+        )
         folder = self._folder(job.id)
         folder.mkdir(parents=True)
         source = folder / f"source{suffix}"
@@ -187,10 +226,10 @@ class MediaJobManager:
                 async for chunk in chunks:
                     size += len(chunk)
                     if size > self.MAX_UPLOAD_BYTES:
-                        raise ValueError("video is larger than the 8 GB local limit")
+                        raise ValueError("media file is larger than the 8 GB local limit")
                     output.write(chunk)
             if size == 0:
-                raise ValueError("uploaded video is empty")
+                raise ValueError("uploaded media file is empty")
             self.jobs[job.id] = job
             self.cancellations[job.id] = asyncio.Event()
             self._save(job)
@@ -211,7 +250,7 @@ class MediaJobManager:
 
     def path(self, job_id: str, name: str) -> Path:
         job = self.get(job_id)
-        if name == "video":
+        if name in {"media", "video"}:
             path = self._folder(job.id) / f"source{job.suffix}"
         elif name in OUTPUT_NAMES or name in {"source.vtt", "translated.vtt"}:
             if job.status != "ready":
@@ -279,6 +318,7 @@ class MediaJobManager:
         job: MediaJob,
         pcm: bytes,
         seconds: float,
+        target_language: str | None = None,
     ) -> SegmentTranslation:
         estimated = max(512, round(seconds * 60) + 256)
 
@@ -290,11 +330,41 @@ class MediaJobManager:
         if job.status == "quota_wait":
             self._update(job, "translating", job.progress)
         result = await gateway.translate_pcm(
-            self.store.load().model_copy(update={"target_language": job.target_language}),
+            self.store.load().model_copy(
+                update={"target_language": target_language or job.target_language}
+            ),
             pcm,
         )
         await self.governor.reconcile(charge, result.total_tokens or estimated)
         return result
+
+    async def _quality_score(
+        self,
+        gateway: GeminiGateway,
+        job: MediaJob,
+        tools: MediaTools,
+        result: SegmentTranslation,
+        fitted: bytes,
+        seconds: float,
+    ) -> float | None:
+        source_language = result.source_language.split("-")[0]
+        if (
+            source_language not in SUPPORTED_LANGUAGES
+            or source_language == job.target_language.split("-")[0]
+            or not result.source_text
+            or not result.translated_text
+        ):
+            return None
+        validation = await self._translate(
+            gateway,
+            job,
+            await tools.to_input_pcm(fitted),
+            seconds,
+            source_language,
+        )
+        fidelity = transcript_score(result.translated_text, validation.source_text)
+        meaning = transcript_score(result.source_text, validation.translated_text)
+        return round(min(fidelity, meaning), 3)
 
     async def _process(self, job: MediaJob) -> None:
         cancelled = self.cancellations.setdefault(job.id, asyncio.Event())
@@ -313,7 +383,12 @@ class MediaJobManager:
             return
 
         if job.mode == "precise":
-            windows = speech_windows(info.duration, await tools.silences(original))
+            windows = speech_windows(
+                info.duration,
+                await tools.silences(original),
+                maximum=24,
+                minimum=8,
+            )
         else:
             windows = fixed_windows(info.duration)
         if not windows:
@@ -321,11 +396,12 @@ class MediaJobManager:
 
         key = self.store.get_api_key()
         if not key:
-            raise RuntimeError("set Gemini API key before processing a video")
+            raise RuntimeError("set Gemini API key before processing media")
         self.store.apply_proxy(self.store.load())
         gateway = self.gateway_factory(key)
         source_entries: list[SubtitleEntry] = []
         translated_entries: list[SubtitleEntry] = []
+        quality_scores: list[tuple[float, float]] = []
         cursor_frames = 0
         self._update(job, "translating", 0.1)
         try:
@@ -338,19 +414,47 @@ class MediaJobManager:
                         self._update(job, "cancelled")
                         return
                     pcm = read_pcm_window(original, window)
-                    result = await self._translate(gateway, job, pcm, window.duration)
-                    if not result.audio or not result.translated_text:
+                    best: tuple[float, float | None, SegmentTranslation, bytes] | None = None
+                    attempts = 2 if job.mode == "precise" else 1
+                    for attempt in range(attempts):
                         result = await self._translate(gateway, job, pcm, window.duration)
+                        if not result.audio or not result.translated_text:
+                            continue
+                        fitted, _ = await tools.fit_dubbed(
+                            result.audio,
+                            window.duration,
+                            job.mode == "precise",
+                        )
+                        quality = (
+                            await self._quality_score(
+                                gateway,
+                                job,
+                                tools,
+                                result,
+                                fitted,
+                                window.duration,
+                            )
+                            if job.mode == "precise"
+                            else None
+                        )
+                        score = quality if quality is not None else (-1.0 if best else 0.0)
+                        if best is None or score > best[0]:
+                            best = (score, quality, result, fitted)
+                        if quality is None or quality >= 0.62:
+                            break
+                        if attempt == 0 and "quality_retry" not in job.warnings:
+                            job.warnings.append("quality_retry")
+                    if best is None:
+                        raise RuntimeError("Gemini Live returned incomplete translated speech")
+                    _, quality, result, fitted = best
+                    if job.mode == "precise" and quality is not None:
+                        quality_scores.append((quality, window.duration))
+                        if quality < 0.62 and "quality_low" not in job.warnings:
+                            job.warnings.append("quality_low")
+                    elif job.mode == "precise" and "quality_unverified" not in job.warnings:
+                        job.warnings.append("quality_unverified")
                     if result.source_language:
                         job.source_language = result.source_language
-                    fitted, clipped = await tools.fit_dubbed(
-                        result.audio,
-                        window.duration,
-                        job.mode == "precise",
-                    )
-                    warning = "dub_trimmed"
-                    if clipped and warning not in job.warnings:
-                        job.warnings.append(warning)
                     start_frame = round(window.start * OUTPUT_RATE)
                     if start_frame > cursor_frames:
                         dubbed.writeframesraw(b"\0" * (start_frame - cursor_frames) * 2)
@@ -371,6 +475,10 @@ class MediaJobManager:
                     dubbed.writeframesraw(b"\0" * (total_frames - cursor_frames) * 2)
         finally:
             await gateway.close()
+
+        if quality_scores:
+            weighted = sum(score * seconds for score, seconds in quality_scores)
+            job.quality_score = round(weighted / sum(seconds for _, seconds in quality_scores), 3)
 
         self._update(job, "aligning", 0.92)
         write_subtitles(folder / "source.srt", source_entries)

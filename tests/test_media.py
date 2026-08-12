@@ -11,6 +11,7 @@ from lingodub.media import (
     fixed_windows,
     parse_silences,
     speech_windows,
+    supported_media,
     write_subtitles,
 )
 from lingodub.recording import SubtitleEntry
@@ -73,3 +74,32 @@ def test_media_tools_find_winget_package_without_alias(
     monkeypatch.setattr("lingodub.media.shutil.which", lambda _: None)
 
     assert MediaTools._find("ffmpeg") == str(executable)
+
+
+def test_supported_media_accepts_audio_and_video() -> None:
+    assert supported_media("lesson.mp3") == "audio"
+    assert supported_media("podcast.FLAC") == "audio"
+    assert supported_media("course.mkv") == "video"
+    assert supported_media("notes.txt") is None
+
+
+@pytest.mark.asyncio
+async def test_fast_fit_preserves_oversized_speech(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tools = MediaTools.__new__(MediaTools)
+    tools.ffmpeg = "ffmpeg"
+    processed = False
+
+    async def fake_run(*arguments: str, input_data: bytes | None = None) -> tuple[bytes, str]:
+        nonlocal processed
+        processed = True
+        assert input_data is not None
+        return b"\x01\x00" * 24_000, ""
+
+    monkeypatch.setattr(tools, "_run", fake_run)
+    fitted, clipped = await tools.fit_dubbed(b"\x02\x00" * 48_000, 1.0, precise=False)
+
+    assert processed is True
+    assert len(fitted) == 48_000
+    assert clipped is False

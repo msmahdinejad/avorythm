@@ -11,6 +11,7 @@ import wave
 import zipfile
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 from .constants import INPUT_RATE, OUTPUT_RATE
 from .recording import SubtitleEntry, srt_time
@@ -27,6 +28,30 @@ SUPPORTED_VIDEO_SUFFIXES = {
     ".mpg",
     ".3gp",
 }
+SUPPORTED_AUDIO_SUFFIXES = {
+    ".aac",
+    ".aif",
+    ".aiff",
+    ".flac",
+    ".m4a",
+    ".mp3",
+    ".oga",
+    ".ogg",
+    ".opus",
+    ".wav",
+    ".wma",
+}
+SUPPORTED_MEDIA_SUFFIXES = SUPPORTED_VIDEO_SUFFIXES | SUPPORTED_AUDIO_SUFFIXES
+MediaKind = Literal["audio", "video"]
+
+
+def supported_media(filename: str) -> MediaKind | None:
+    suffix = Path(filename).suffix.lower()
+    if suffix in SUPPORTED_AUDIO_SUFFIXES:
+        return "audio"
+    if suffix in SUPPORTED_VIDEO_SUFFIXES:
+        return "video"
+    return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -144,7 +169,7 @@ class MediaTools:
                 None,
             )
         if not found:
-            raise RuntimeError(f"{name} is required for uploaded video processing")
+            raise RuntimeError(f"{name} is required for uploaded media processing")
         return found
 
     async def _run(self, *arguments: str, input_data: bytes | None = None) -> tuple[bytes, str]:
@@ -188,7 +213,7 @@ class MediaTools:
             stream.get("codec_type") == "audio" for stream in payload.get("streams", [])
         )
         if duration <= 0 or not has_audio:
-            raise ValueError("video has no readable audio track")
+            raise ValueError("media file has no readable audio track")
         return MediaInfo(duration, has_audio)
 
     async def extract_audio(self, source: Path, destination: Path, duration: float) -> None:
@@ -232,10 +257,15 @@ class MediaTools:
         target_bytes = max(0, round(seconds * OUTPUT_RATE) * 2)
         if len(pcm) <= target_bytes:
             return pcm + b"\0" * (target_bytes - len(pcm)), False
-        if not precise or target_bytes == 0:
+        if target_bytes == 0:
             return pcm[:target_bytes], True
         ratio = len(pcm) / target_bytes
-        factor = min(1.35, ratio)
+        maximum = 1.5 if precise else 2.0
+        factors: list[float] = []
+        while ratio > maximum:
+            factors.append(maximum)
+            ratio /= maximum
+        factors.append(ratio)
         stdout, _ = await self._run(
             self.ffmpeg,
             "-v",
@@ -249,14 +279,35 @@ class MediaTools:
             "-i",
             "pipe:0",
             "-filter:a",
-            f"atempo={factor:.6f}",
+            ",".join(f"atempo={factor:.6f}" for factor in factors),
             "-f",
             "s16le",
             "pipe:1",
             input_data=pcm,
         )
-        clipped = len(stdout) > target_bytes
-        return stdout[:target_bytes] + b"\0" * max(0, target_bytes - len(stdout)), clipped
+        return stdout[:target_bytes] + b"\0" * max(0, target_bytes - len(stdout)), False
+
+    async def to_input_pcm(self, pcm: bytes) -> bytes:
+        stdout, _ = await self._run(
+            self.ffmpeg,
+            "-v",
+            "error",
+            "-f",
+            "s16le",
+            "-ar",
+            str(OUTPUT_RATE),
+            "-ac",
+            "1",
+            "-i",
+            "pipe:0",
+            "-ar",
+            str(INPUT_RATE),
+            "-f",
+            "s16le",
+            "pipe:1",
+            input_data=pcm,
+        )
+        return stdout
 
     @staticmethod
     def archive(folder: Path) -> None:

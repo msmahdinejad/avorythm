@@ -7,7 +7,7 @@ LingoDub contains two independent products. The Windows app handles desktop audi
 | Product | Capture/input | Gemini connection | Credentials | Outputs |
 |---|---|---|---|---|
 | Windows live app | WASAPI loopback | Python `google-genai` Live API | Windows Credential Manager or private `.env` | playback + WAV/SRT/ZIP |
-| Windows Media Studio | local file → FFmpeg PCM | sequential real-time Live sessions | same desktop key | video player + four files + ZIP |
+| Windows Media Studio | local audio/video → FFmpeg PCM | sequential real-time Live sessions | same desktop key | media player + four files + ZIP |
 | Browser extension | `chrome.tabCapture` + AudioWorklet | direct Gemini Live WebSocket | `chrome.storage.session` | playback + four Downloads files |
 
 Every path uses only `gemini-3.5-live-translate-preview`. There is no secondary TTS, STT, Files, Batch, or Generate Content model.
@@ -28,7 +28,7 @@ Every path uses only `gemini-3.5-live-translate-preview`. There is no secondary 
 
 Media-job manifests are atomically persisted. Active jobs recover as queued after a restart. One worker processes one real-time stream at a time, and cancellation propagates into network waits and FFmpeg subprocesses.
 
-## Uploaded-video sequence
+## Uploaded-media sequence
 
 ```mermaid
 sequenceDiagram
@@ -38,7 +38,7 @@ sequenceDiagram
     participant FFmpeg as FFmpeg/FFprobe
     participant Live as Gemini 3.5 Live Translate
     participant Player as Synchronized player
-    User->>UI: Select local video and mode
+    User->>UI: Select local audio/video and mode
     UI->>Jobs: Stream raw upload to localhost
     Jobs->>FFmpeg: Probe and extract 16 kHz mono PCM
     Jobs->>FFmpeg: Find safe silence boundaries
@@ -47,13 +47,15 @@ sequenceDiagram
       Jobs->>Live: Stream 100 ms PCM chunks in real time
       Live-->>Jobs: 24 kHz translated PCM + both transcripts
       Jobs->>FFmpeg: Fit translated speech to the window
+      Jobs->>Live: Back-check fitted dub in Precise mode
+      Live-->>Jobs: Heard target speech + round-trip meaning
     end
     Jobs->>Jobs: Write WAV, SRT, VTT, and ZIP
-    UI->>Player: Load video, dubbed WAV, and both VTT tracks
-    Player->>Player: Video master clock + drift correction
+    UI->>Player: Load media, dubbed WAV, and both VTT tracks
+    Player->>Player: Source master clock + drift correction
 ```
 
-The uploaded video never leaves localhost. Only extracted PCM goes to Google. The default local governor is 15,000 estimated tokens per rolling minute, below the 20,000 requested ceiling.
+The uploaded source never leaves localhost. Only extracted PCM goes to Google. Precise mode removes Live stream padding, validates the actual fitted speech with the same model, retries once below the confidence threshold, and keeps a visible warning if the preview model still disagrees. The default local governor is 15,000 estimated tokens per rolling minute, below the 20,000 requested ceiling.
 
 ## Standalone extension sequence
 
