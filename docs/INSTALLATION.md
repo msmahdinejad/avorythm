@@ -90,7 +90,7 @@ Do not route LingoDub output to AMM Virtual. That feeds dubbed speech back into 
 - **Extension asks for the key again:** expected after a full browser exit because the key is session-only.
 - **No tab audio:** use Chrome/Edge 116+, keep the target tab active when Start is clicked, and note that protected DRM pages may block capture.
 - **Media Studio says FFmpeg is required:** install it with the WinGet command above and restart LingoDub.
-- **Uploaded job takes several times the media duration:** expected in Precise mode; it back-translates the actual dubbed speech and may retry once while the local governor keeps traffic below 15,000 estimated tokens per minute.
+- **Uploaded job takes several times the media duration:** expected in Precise mode; it back-translates the actual dubbed speech and may make up to three bounded attempts while the local governor keeps traffic below 15,000 estimated tokens per minute.
 - **Low semantic confidence warning:** the same preview model still disagreed with the speech it generated after retry; listen to that output before final use or try the job again.
 - **Long translated dialogue sounds fast:** it exceeded its media window and was time-compressed without clipping the sentence ending.
 - **Desktop source remains audible:** its Windows output is still the physical device; change the source app to AMM Virtual.

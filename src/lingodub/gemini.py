@@ -89,11 +89,37 @@ class SegmentTranslation:
     total_tokens: int
 
 
+class NoTranslationError(TimeoutError):
+    """The Live session completed without any translated content."""
+
+
+def transient_live_error(error: Exception) -> bool:
+    if isinstance(error, (TimeoutError, ConnectionError, OSError)):
+        return True
+    message = str(error).casefold()
+    return any(
+        marker in message
+        for marker in (
+            "no close frame",
+            "keepalive ping timeout",
+            "connection closed",
+            "timed out",
+            "1006",
+            "1011",
+        )
+    )
+
+
 class GeminiGateway:
     """The single Gemini 3.5 Live Translate protocol boundary."""
 
     def __init__(self, api_key: str) -> None:
-        self.client = genai.Client(api_key=api_key)
+        self.client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(
+                async_client_args={"ping_interval": None},
+            ),
+        )
 
     def live_config(
         self,
@@ -201,10 +227,11 @@ class GeminiGateway:
         started = time.monotonic()
         last_event_at = started
         received_content = False
+        received_translation = False
         async with self.connect(settings, manual_activity=True) as session:
             async def receive() -> None:
                 nonlocal source_language, prompt_tokens, response_tokens, total_tokens
-                nonlocal last_event_at, received_content
+                nonlocal last_event_at, received_content, received_translation
                 async for event in self.events(session):
                     last_event_at = time.monotonic()
                     now = time.monotonic() - started
@@ -228,39 +255,50 @@ class GeminiGateway:
                     received_content = received_content or bool(
                         event.audio or event.source_text or event.translated_text
                     )
+                    received_translation = received_translation or bool(
+                        event.audio or event.translated_text
+                    )
             receiver = asyncio.create_task(receive())
             chunk_bytes = INPUT_RATE * 2 // 10
             try:
                 await session.send_realtime_input(  # type: ignore[attr-defined]
                     activity_start=types.ActivityStart()
                 )
+                lead = b"\0" * round(INPUT_RATE * 2 * 0.4)
+                await self.send_audio(session, lead)
+                if realtime:
+                    await asyncio.sleep(0.4)
                 for offset in range(0, len(pcm), chunk_bytes):
                     chunk = pcm[offset : offset + chunk_bytes]
                     await self.send_audio(session, chunk)
                     if realtime:
                         await asyncio.sleep(len(chunk) / (INPUT_RATE * 2))
+                # Live Translate may otherwise finalize before emitting the final
+                # words of a bounded file segment. A short silent tail gives the
+                # model an explicit utterance boundary without changing the source.
+                tail = b"\0" * round(INPUT_RATE * 2 * 2.0)
+                await self.send_audio(session, tail)
+                if realtime:
+                    await asyncio.sleep(2.0)
                 await session.send_realtime_input(  # type: ignore[attr-defined]
                     activity_end=types.ActivityEnd()
                 )
                 last_event_at = time.monotonic()
                 input_seconds = len(pcm) / (INPUT_RATE * 2)
-                minimum_output = round((input_seconds + 0.25) * OUTPUT_RATE) * 2
                 output_limit = round((input_seconds * 1.6 + 0.5) * OUTPUT_RATE) * 2
-                deadline = last_event_at + max(12, input_seconds * 0.75 + 6)
+                deadline = last_event_at + max(14, input_seconds * 0.75 + 8)
                 while not receiver.done():
                     now = time.monotonic()
                     # Transcriptions are independent of generation events and have no
                     # guaranteed ordering. Keep the receiver alive through a short idle
                     # grace period so text arriving after generationComplete is retained.
-                    if received_content and now - last_event_at >= 3:
+                    if received_translation and now - last_event_at >= 5:
                         break
                     if received_content and len(audio) >= output_limit:
                         break
-                    if len(audio) >= minimum_output and stream_tail_is_silent(audio):
-                        break
                     if now >= deadline:
                         if not received_content:
-                            raise TimeoutError("Gemini Live returned no translation")
+                            raise NoTranslationError("Gemini Live returned no translation")
                         break
                     await asyncio.sleep(0.1)
                 if receiver.done():
@@ -268,7 +306,7 @@ class GeminiGateway:
             finally:
                 if not receiver.done():
                     receiver.cancel()
-                    await asyncio.gather(receiver, return_exceptions=True)
+                await asyncio.gather(receiver, return_exceptions=True)
 
         finished_at = time.monotonic() - started
         if source_result := source.flush(finished_at):

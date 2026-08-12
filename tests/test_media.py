@@ -38,6 +38,11 @@ def test_short_media_is_one_complete_window() -> None:
     assert speech_windows(8, silences) == [TimeWindow(0, 8)]
 
 
+def test_uploaded_media_uses_short_stable_windows() -> None:
+    windows = speech_windows(25, [], maximum=12, minimum=5)
+    assert windows == [TimeWindow(0, 12), TimeWindow(12, 24), TimeWindow(24, 25)]
+
+
 def test_fixed_windows_cover_entire_duration() -> None:
     assert fixed_windows(91) == [TimeWindow(0, 45), TimeWindow(45, 90), TimeWindow(90, 91)]
 

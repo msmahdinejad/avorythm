@@ -17,7 +17,7 @@ from typing import Literal
 
 from .config import ConfigStore
 from .constants import OUTPUT_RATE, SUPPORTED_LANGUAGES
-from .gemini import GeminiGateway, SegmentTranslation
+from .gemini import GeminiGateway, NoTranslationError, SegmentTranslation, transient_live_error
 from .media import (
     MediaKind,
     MediaTools,
@@ -64,6 +64,11 @@ def transcript_score(reference: str, candidate: str) -> float:
     sequence = SequenceMatcher(None, expected, actual).ratio()
     coverage = len(set(expected) & set(actual)) / len(set(expected))
     return round((sequence + coverage) / 2, 3)
+
+
+def complete_translation(result: SegmentTranslation, seconds: float) -> bool:
+    audio_seconds = len(result.audio) / (OUTPUT_RATE * 2)
+    return bool(result.translated_text.strip()) and audio_seconds >= min(1.0, seconds * 0.2)
 
 
 @dataclass(slots=True)
@@ -326,17 +331,24 @@ class MediaJobManager:
             job.error = f"quota wait: {max(1, round(wait))}s"
             self._update(job, "quota_wait", job.progress, error=job.error)
 
-        charge = await self.governor.reserve(estimated, waiting)
-        if job.status == "quota_wait":
-            self._update(job, "translating", job.progress)
-        result = await gateway.translate_pcm(
-            self.store.load().model_copy(
-                update={"target_language": target_language or job.target_language}
-            ),
-            pcm,
+        settings = self.store.load().model_copy(
+            update={"target_language": target_language or job.target_language}
         )
-        await self.governor.reconcile(charge, result.total_tokens or estimated)
-        return result
+        for attempt in range(3):
+            charge = await self.governor.reserve(estimated, waiting)
+            if job.status == "quota_wait":
+                self._update(job, "translating", job.progress)
+            try:
+                result = await gateway.translate_pcm(settings, pcm)
+            except Exception as error:
+                await self.governor.reconcile(charge, estimated)
+                if attempt < 2 and transient_live_error(error):
+                    await asyncio.sleep(0.5 * (attempt + 1))
+                    continue
+                raise
+            await self.governor.reconcile(charge, result.total_tokens or estimated)
+            return result
+        raise AssertionError("unreachable")
 
     async def _quality_score(
         self,
@@ -386,8 +398,8 @@ class MediaJobManager:
             windows = speech_windows(
                 info.duration,
                 await tools.silences(original),
-                maximum=24,
-                minimum=8,
+                maximum=12,
+                minimum=5,
             )
         else:
             windows = fixed_windows(info.duration)
@@ -415,28 +427,50 @@ class MediaJobManager:
                         return
                     pcm = read_pcm_window(original, window)
                     best: tuple[float, float | None, SegmentTranslation, bytes] | None = None
-                    attempts = 2 if job.mode == "precise" else 1
+                    no_translation = True
+                    attempts = 3 if job.mode == "precise" else 1
                     for attempt in range(attempts):
-                        result = await self._translate(gateway, job, pcm, window.duration)
-                        if not result.audio or not result.translated_text:
+                        try:
+                            result = await self._translate(gateway, job, pcm, window.duration)
+                        except NoTranslationError:
+                            if "segment_skipped" not in job.warnings:
+                                job.warnings.append("segment_skipped")
+                            break
+                        except Exception as error:
+                            if best is not None and transient_live_error(error):
+                                if "network_recovered" not in job.warnings:
+                                    job.warnings.append("network_recovered")
+                                break
+                            raise
+                        no_translation = no_translation and not (
+                            result.audio or result.translated_text
+                        )
+                        if not complete_translation(result, window.duration):
                             continue
                         fitted, _ = await tools.fit_dubbed(
                             result.audio,
                             window.duration,
                             job.mode == "precise",
                         )
-                        quality = (
-                            await self._quality_score(
-                                gateway,
-                                job,
-                                tools,
-                                result,
-                                fitted,
-                                window.duration,
-                            )
-                            if job.mode == "precise"
-                            else None
-                        )
+                        quality = None
+                        if best is None:
+                            best = (0.0, None, result, fitted)
+                        try:
+                            if job.mode == "precise":
+                                quality = await self._quality_score(
+                                    gateway,
+                                    job,
+                                    tools,
+                                    result,
+                                    fitted,
+                                    window.duration,
+                                )
+                        except Exception as error:
+                            if transient_live_error(error):
+                                if "network_recovered" not in job.warnings:
+                                    job.warnings.append("network_recovered")
+                                break
+                            raise
                         score = quality if quality is not None else (-1.0 if best else 0.0)
                         if best is None or score > best[0]:
                             best = (score, quality, result, fitted)
@@ -444,6 +478,17 @@ class MediaJobManager:
                             break
                         if attempt == 0 and "quality_retry" not in job.warnings:
                             job.warnings.append("quality_retry")
+                    if best is None and no_translation:
+                        warning = (
+                            "segment_skipped"
+                            if "segment_skipped" in job.warnings
+                            else "non_speech_skipped"
+                        )
+                        if warning not in job.warnings:
+                            job.warnings.append(warning)
+                        progress = 0.1 + 0.78 * ((index + 1) / len(windows))
+                        self._update(job, "translating", progress)
+                        continue
                     if best is None:
                         raise RuntimeError("Gemini Live returned incomplete translated speech")
                     _, quality, result, fitted = best

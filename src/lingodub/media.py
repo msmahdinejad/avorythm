@@ -246,7 +246,7 @@ class MediaTools:
             "-i",
             str(source_wav),
             "-af",
-            "silencedetect=noise=-38dB:d=0.35",
+            "silencedetect=noise=-30dB:d=0.12",
             "-f",
             "null",
             "-",
