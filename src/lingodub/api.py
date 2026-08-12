@@ -48,7 +48,7 @@ def create_app(
 
     app = FastAPI(
         title="LingoDub Companion",
-        version="0.4.1",
+        version="0.5.0",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -60,7 +60,8 @@ def create_app(
         payload = job.to_dict()
         payload.update(
             {
-                "video_url": f"/api/media/jobs/{job.id}/video",
+                "media_url": f"/api/media/jobs/{job.id}/media",
+                "video_url": f"/api/media/jobs/{job.id}/media",
                 "source_vtt_url": f"/api/media/jobs/{job.id}/subtitles/source",
                 "translated_vtt_url": f"/api/media/jobs/{job.id}/subtitles/translated",
                 "outputs": {
@@ -121,7 +122,7 @@ def create_app(
     @app.post("/api/start")
     async def start() -> dict[str, bool]:
         if media.active_job_id:
-            raise HTTPException(409, "wait for uploaded video processing to finish")
+            raise HTTPException(409, "wait for uploaded media processing to finish")
         try:
             await runtime.start()
         except ValueError as error:
@@ -212,10 +213,11 @@ def create_app(
             raise HTTPException(409, str(error)) from error
         return {"ok": True}
 
+    @app.get("/api/media/jobs/{job_id}/media")
     @app.get("/api/media/jobs/{job_id}/video")
-    def media_video(job_id: str) -> FileResponse:
+    def media_source(job_id: str) -> FileResponse:
         try:
-            path = media.path(job_id, "video")
+            path = media.path(job_id, "media")
         except (KeyError, FileNotFoundError) as error:
             raise HTTPException(404) from error
         return FileResponse(path, media_type=mimetypes.guess_type(path.name)[0])

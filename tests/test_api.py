@@ -97,7 +97,7 @@ def test_media_upload_rejects_unknown_format(
         )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "unsupported video format"
+    assert response.json()["detail"] == "unsupported media format"
 
 
 def test_media_job_paths_reject_traversal(

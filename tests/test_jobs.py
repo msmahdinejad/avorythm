@@ -10,7 +10,7 @@ import pytest
 
 from lingodub.config import ConfigStore
 from lingodub.gemini import SegmentTranslation
-from lingodub.jobs import MediaJobManager
+from lingodub.jobs import MediaJobManager, transcript_score
 from lingodub.media import MediaInfo, MediaTools, TimeWindow
 
 
@@ -31,6 +31,9 @@ class FakeTools:
     async def fit_dubbed(self, pcm: bytes, seconds: float, precise: bool) -> tuple[bytes, bool]:
         return pcm[:48_000].ljust(48_000, b"\0"), False
 
+    async def to_input_pcm(self, pcm: bytes) -> bytes:
+        return pcm
+
     archive = staticmethod(MediaTools.archive)
 
 
@@ -39,7 +42,17 @@ class FakeGateway:
         self.api_key = api_key
 
     async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-        return SegmentTranslation(b"\0\0" * 24_000, "Hello", "سلام", "en", 100, 100, 200)
+        if settings.target_language == "en":  # type: ignore[attr-defined]
+            return SegmentTranslation(
+                b"\0\0" * 24_000,
+                "Hallo",
+                "Hello",
+                "de",
+                100,
+                100,
+                200,
+            )
+        return SegmentTranslation(b"\0\0" * 24_000, "Hello", "Hallo", "en", 100, 100, 200)
 
     async def close(self) -> None:
         return None
@@ -47,6 +60,11 @@ class FakeGateway:
 
 async def chunks() -> AsyncIterator[bytes]:
     yield b"fake video"
+
+
+def test_transcript_score_handles_languages_without_spaces() -> None:
+    assert transcript_score("海岸洪水风险", "海岸洪水危险") > 0.6
+    assert transcript_score("海岸洪水风险", "完全不同文本") < 0.3
 
 
 @pytest.mark.asyncio
@@ -63,9 +81,11 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
     )
     await manager.start()
     try:
-        job = await manager.create_upload("lesson.mp4", "fa", "precise", chunks())
+        job = await manager.create_upload("lesson.mp3", "de", "precise", chunks())
         await asyncio.wait_for(manager.queue.join(), 2)
         assert manager.get(job.id).status == "ready"
+        assert manager.get(job.id).media_kind == "audio"
+        assert manager.get(job.id).quality_score == 1.0
         for name in (
             "original.wav",
             "source.srt",
@@ -78,6 +98,69 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
             assert manager.path(job.id, name).is_file()
         manager.delete(job.id)
         assert not (tmp_path / "jobs" / job.id).exists()
+    finally:
+        await manager.close()
+        shutil.rmtree(tmp_path, ignore_errors=True)
+
+
+@pytest.mark.asyncio
+async def test_precise_job_retries_low_quality_dub(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class QualityGateway(FakeGateway):
+        calls = 0
+        validations = 0
+
+        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
+            type(self).calls += 1
+            if settings.target_language == "en":  # type: ignore[attr-defined]
+                type(self).validations += 1
+                if type(self).validations == 1:
+                    return SegmentTranslation(
+                        b"\0\0" * 24_000,
+                        "Autos fahren schnell",
+                        "cars drive fast",
+                        "de",
+                        100,
+                        100,
+                        200,
+                    )
+                return SegmentTranslation(
+                    b"\0\0" * 24_000,
+                    "Korallenriffe schützen die Küste",
+                    "coral reefs protect the coast",
+                    "de",
+                    100,
+                    100,
+                    200,
+                )
+            return SegmentTranslation(
+                b"\0\0" * 24_000,
+                "coral reefs protect the coast",
+                "Korallenriffe schützen die Küste",
+                "en",
+                100,
+                100,
+                200,
+            )
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
+    manager = MediaJobManager(
+        ConfigStore(tmp_path / "config"),
+        tmp_path / "jobs",
+        tools=FakeTools(),  # type: ignore[arg-type]
+        gateway_factory=QualityGateway,  # type: ignore[arg-type]
+    )
+    await manager.start()
+    try:
+        job = await manager.create_upload("lesson.wav", "de", "precise", chunks())
+        await asyncio.wait_for(manager.queue.join(), 2)
+        result = manager.get(job.id)
+        assert result.status == "ready"
+        assert result.quality_score == 1.0
+        assert "quality_retry" in result.warnings
+        assert QualityGateway.calls == 4
     finally:
         await manager.close()
         shutil.rmtree(tmp_path, ignore_errors=True)

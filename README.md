@@ -2,7 +2,7 @@
 
 Real-time and synchronized AI dubbing with **Gemini 3.5 Live Translate**. LingoDub ships as two independent products:
 
-- a Windows app for desktop audio and uploaded video files;
+- a Windows app for desktop audio and uploaded audio/video files;
 - a standalone Manifest V3 extension for Chrome/Edge tabs.
 
 [فارسی](README.fa.md) · [Installation](docs/INSTALLATION.md) · [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md) · [Privacy](PRIVACY.md)
@@ -19,24 +19,24 @@ Real-time and synchronized AI dubbing with **Gemini 3.5 Live Translate**. LingoD
 - Supports 70+ official Live Translate languages.
 - Uses one Live Translate model only—no secondary TTS, STT, batch, or Files API.
 
-### Uploaded-video Media Studio
+### Uploaded-media studio
 
-Drop an MP4, MKV, WebM, MOV, AVI, WMV, MPEG, or 3GP into the Windows app. LingoDub keeps the video local, extracts PCM with FFmpeg, and provides:
+Drop an MP3, WAV, M4A, FLAC, OGG, MP4, MKV, WebM, MOV, AVI, WMV, MPEG, or 3GP into the Windows app. LingoDub keeps the source file local, extracts PCM with FFmpeg, and provides:
 
-- **Precise sync** (default): cuts long media near silence and time-fits translated speech;
-- **Fast**: fixed windows and lighter alignment;
-- a local HTML5 player with independent original/dub audio;
+- **Precise sync** (default): cuts near silence, checks the actual dubbed WAV by translating it back with the same Live model, retries one weak result, and shows semantic confidence;
+- **Fast**: single-pass fixed windows without the semantic back-check;
+- a local HTML5 video or audio player with independent original/dub audio;
 - simultaneous source and translated subtitles;
 - the four individual files plus `all-outputs.zip`.
 
-The player uses the video as the master clock, corrects small drift with playback-rate nudges, and hard-seeks only when drift exceeds 120 ms. A rolling governor reserves at most 15,000 estimated tokens per minute—below the requested 20,000-token ceiling. Because the Live model accepts real-time audio only, processing takes roughly the speech duration or longer.
+The selected media is the player master clock; small drift is corrected with playback-rate nudges and drift above 120 ms with a seek. A rolling governor reserves at most 15,000 estimated tokens per minute—below the requested 20,000-token ceiling. Precise mode can take four to eight times the media duration when a retry is needed because it listens to its own dubbed output. A low score is surfaced honestly; it is not a guarantee of model accuracy.
 
 ## Quick install
 
 ### Windows app
 
 1. Download `LingoDub-Setup-x64.exe` from GitHub Releases.
-2. Keep the recommended **Install FFmpeg** component selected if you want uploaded-video processing.
+2. Keep the recommended **Install FFmpeg** component selected if you want uploaded audio/video processing.
 3. Launch LingoDub, open Advanced settings, save your Gemini API key, and set the proxy to `http://127.0.0.1:10808` when required.
 
 The key is stored in Windows Credential Manager. The installer uses WinGet for FFmpeg rather than redistributing an untracked binary. If WinGet is unavailable, install it later with:
@@ -58,7 +58,7 @@ The extension intentionally stores a BYOK key only in `chrome.storage.session`, 
 
 ## Desktop live-audio routing
 
-Virtual routing is needed **only** when the Windows app dubs another desktop program live. It is not needed for the extension or uploaded-video Media Studio.
+Virtual routing is needed **only** when the Windows app dubs another desktop program live. It is not needed for the extension or uploaded-media studio.
 
 Use the exact route shown below:
 
@@ -111,7 +111,7 @@ python .\scripts\smoke_gemini.py --wav .\sample.wav
 
 ## Security and privacy
 
-- The app binds only to `127.0.0.1`; uploaded videos and outputs remain under the local LingoDub data directory.
+- The app binds only to `127.0.0.1`; uploaded media and outputs remain under the local LingoDub data directory.
 - Only extracted PCM is sent to Gemini for a requested translation.
 - The extension captures only the tab explicitly started by the user.
 - No analytics, ads, remote code, or developer telemetry are included.
@@ -121,7 +121,7 @@ See [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md), and [ARCHITECTURE.md](
 
 ## Model limitations
 
-Gemini 3.5 Live Translate is a preview service. Voice replication, speaker identity, accent detection, latency, quotas, and translation accuracy can vary. The model does not expose a named-voice selector; LingoDub therefore labels the voice as automatic rather than pretending a separate TTS voice can be chosen. Very long translated dialogue may be time-compressed or trimmed to preserve video synchronization.
+Gemini 3.5 Live Translate is a preview service. Voice replication, speaker identity, accent detection, latency, quotas, and translation accuracy can vary. The model does not expose a named-voice selector; LingoDub therefore labels the voice as automatic rather than pretending a separate TTS voice can be chosen. Very long translated dialogue may be time-compressed to preserve synchronization. Precise mode retries one low-confidence segment and warns when the model still disagrees with its own translated transcript.
 
 Implementation follows Google's current [Live Translation guide](https://ai.google.dev/gemini-api/docs/live-api/live-translate), [model page](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview), and [ephemeral-token guidance](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens).
 

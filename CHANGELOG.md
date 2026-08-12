@@ -4,6 +4,27 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-12
+
+### Added
+
+- Uploaded MP3, WAV, M4A, FLAC, OGG, AAC, Opus, AIFF, and WMA processing alongside video files.
+- Dedicated synchronized audio-player presentation with independent original/dub audio and both subtitle tracks.
+- Precise-mode semantic back-check of the actual fitted dub, one bounded retry, confidence score, and visible low-confidence warning.
+
+### Fixed
+
+- Continue the Python Live receiver across SDK model turns instead of silently stopping live dubbing after the first turn.
+- Preserve transcriptions delivered after `generationComplete`, as required by Google's unordered transcription event contract.
+- Remove continuous silent padding from file-session output before time fitting; the old behavior could compress a complete sentence into the first seconds and make speech unintelligible.
+- Preserve complete Fast-mode dialogue with chained `atempo` filters instead of clipping sentence endings.
+
+### Changed
+
+- Use manual activity boundaries for uploaded-file windows and cap silent Live output locally.
+- Split Precise jobs into shorter, silence-aware windows and keep the rolling local reservation ceiling at 15,000 estimated tokens per minute.
+- Rename file-processing copy and installer options from video-only to audio/video media.
+
 ## [0.4.1] - 2026-08-11
 
 ### Fixed
@@ -85,7 +106,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/msmahdinejad/lingodub/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/msmahdinejad/lingodub/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/msmahdinejad/lingodub/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/msmahdinejad/lingodub/compare/v0.3.0...v0.3.1

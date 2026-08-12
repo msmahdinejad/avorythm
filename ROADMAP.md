@@ -13,7 +13,7 @@
 
 ## Next
 
-- [x] Uploaded-video processing, synchronized player, and four file outputs
+- [x] Uploaded audio/video processing, synchronized player, and four file outputs
 - [x] Rolling token governor, job recovery, and cancellation
 - [x] Long-session renewal for desktop and extension Live streams
 
