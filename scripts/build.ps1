@@ -18,18 +18,19 @@ try {
     }
 
     & $python -m PyInstaller --noconfirm --clean --onedir `
-        --name LingoDub `
-        --icon extension\icons\LingoDub.ico `
+        --name Voxilyra `
+        --icon extension\icons\Voxilyra.ico `
+        --version-file assets\windows-version.txt `
         --paths src `
-        --collect-all lingodub `
+        --collect-all voxilyra `
         --collect-all pyaudiowpatch `
         --hidden-import keyring.backends.Windows `
         scripts\launcher.py
     if ($LASTEXITCODE) { throw "PyInstaller failed." }
 
-    $archive = Join-Path $repository "dist\LingoDub-Windows-x64.zip"
+    $archive = Join-Path $repository "dist\Voxilyra-Windows-x64.zip"
     if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive -Force }
-    Compress-Archive -Path "dist\LingoDub\*" -DestinationPath $archive -CompressionLevel Optimal
+    Compress-Archive -Path "dist\Voxilyra\*" -DestinationPath $archive -CompressionLevel Optimal
 }
 finally {
     Pop-Location

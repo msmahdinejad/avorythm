@@ -7,7 +7,7 @@ from types import SimpleNamespace, TracebackType
 import pytest
 from google.genai import types as genai_types
 
-from lingodub.gemini import (
+from voxilyra.gemini import (
     GeminiGateway,
     LiveEvent,
     duration_seconds,
@@ -15,7 +15,7 @@ from lingodub.gemini import (
     transient_live_error,
     trim_stream_padding,
 )
-from lingodub.models import Settings
+from voxilyra.models import Settings
 
 
 class FakeSession:
@@ -149,7 +149,7 @@ def test_gateway_disables_websocket_ping_timeout(monkeypatch: pytest.MonkeyPatch
         captured.update(kwargs)
         return SimpleNamespace()
 
-    monkeypatch.setattr("lingodub.gemini.genai.Client", client)
+    monkeypatch.setattr("voxilyra.gemini.genai.Client", client)
     GeminiGateway("test-key")
 
     options = captured["http_options"]

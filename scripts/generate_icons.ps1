@@ -1,6 +1,6 @@
 param(
     [string]$OutputDirectory = "$PSScriptRoot\..\extension\icons",
-    [string]$SourceLogo = "$PSScriptRoot\..\assets\branding\lingodub-logo.png"
+    [string]$SourceLogo = "$PSScriptRoot\..\assets\branding\voxilyra-logo.png"
 )
 
 Add-Type -AssemblyName System.Drawing
@@ -35,8 +35,8 @@ $gradient = [Drawing.Drawing2D.LinearGradientBrush]::new(
     [Drawing.Color]::FromArgb(17, 20, 33), [Drawing.Color]::FromArgb(9, 11, 19)
 )
 $graphics.FillPath($gradient, $background)
-$sourceRectangle = [Drawing.Rectangle]::new(160, 205, 935, 905)
-$destinationRectangle = [Drawing.Rectangle]::new(24, 23, 208, 210)
+$sourceRectangle = [Drawing.Rectangle]::new(0, 0, $source.Width, $source.Height)
+$destinationRectangle = [Drawing.Rectangle]::new(22, 22, 212, 212)
 $graphics.DrawImage(
     $source,
     $destinationRectangle,
@@ -56,7 +56,7 @@ foreach ($size in 16, 32, 48, 128) {
 }
 $handle = $master.GetHicon()
 $windowsIcon = [Drawing.Icon]::FromHandle($handle)
-$iconStream = [IO.File]::Create((Join-Path $resolvedOutput "LingoDub.ico"))
+$iconStream = [IO.File]::Create((Join-Path $resolvedOutput "Voxilyra.ico"))
 $windowsIcon.Save($iconStream)
 $iconStream.Dispose()
 $windowsIcon.Dispose()

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>LingoDub · Audio setup</title>
-  <link rel="icon" href="/assets/lingodub-logo.png" type="image/png">
+  <title>Voxilyra · Audio setup</title>
+  <link rel="icon" href="/assets/voxilyra-logo.png" type="image/png">
   <style>
     @font-face{font-family:Vazirmatn;src:url('/assets/vazirmatn-arabic.woff2')}@font-face{font-family:Vazirmatn;src:url('/assets/vazirmatn-latin.woff2');unicode-range:U+0000-024F}
     :root{--bg:#090b13;--panel:#121522;--line:rgba(255,255,255,.09);--text:#f4f5fa;--muted:#9ba1b3;--purple:#8b5cf6;--cyan:#22d3ee;--green:#37d399;--danger:#fb7185}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,rgba(139,92,246,.13),transparent 30%),var(--bg);color:var(--text);font-family:Vazirmatn,system-ui;min-height:100vh}.top{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100vw - 1120px)/2));position:sticky;top:0;background:rgba(9,11,19,.88);backdrop-filter:blur(16px);z-index:2}.brand{display:flex;align-items:center;gap:11px}.brand img{width:39px;height:39px}.brand b,.brand small{display:block}.brand small{font-size:10px;color:var(--muted)}button,a{font:inherit}.actions{display:flex;gap:8px}.actions a,.actions button{border:1px solid var(--line);background:#171a26;color:var(--text);border-radius:10px;padding:8px 12px;text-decoration:none;cursor:pointer}.shell{max-width:1120px;margin:auto;padding:48px 20px 70px}.hero{text-align:center;max-width:820px;margin:0 auto 34px}.eyebrow{color:var(--cyan);font-size:10px;letter-spacing:1.6px;font-weight:700}.hero h1{font-size:clamp(30px,5vw,50px);margin:10px 0}.hero p{color:var(--muted);line-height:1.9;font-size:14px}.route{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}.route article{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:17px;position:relative;overflow:hidden}.route article:before{content:attr(data-step);position:absolute;inset:10px auto auto 12px;width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:rgba(139,92,246,.16);color:#c4b5fd;font-size:10px}.route small{display:block;color:var(--muted);font-size:9px}.route b{display:block;font-size:13px;margin:7px 0}.route code{display:block;direction:ltr;text-align:left;color:#a5f3fc;background:#0d111c;border:1px solid var(--line);border-radius:9px;padding:9px;white-space:normal;overflow-wrap:anywhere}.screenshot-card{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:16px;box-shadow:0 24px 70px rgba(0,0,0,.28)}.screenshot-card img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line)}.caption{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-top:12px}.caption p{margin:0;color:var(--muted);font-size:11px;line-height:1.8}.caption strong{color:var(--green);font-size:11px;min-width:max-content}.steps{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}.card{border:1px solid var(--line);background:var(--panel);border-radius:17px;padding:20px}.card h2{font-size:16px;margin:0 0 13px}.card ol,.card ul{margin:0;padding-inline-start:22px;color:#d9dce6;font-size:12px;line-height:2}.card li::marker{color:var(--purple);font-weight:700}.warning{border-color:rgba(251,113,133,.28);background:linear-gradient(145deg,rgba(251,113,133,.07),var(--panel))}.warning b{color:#fecdd3}.not-needed{margin-top:15px;border:1px solid rgba(55,211,153,.25);background:rgba(55,211,153,.06);border-radius:15px;padding:16px}.not-needed h2{font-size:14px;color:#a7f3d0;margin:0 0 8px}.not-needed p{font-size:11px;color:#c9d5d1;line-height:1.8;margin:0}.ltr{direction:ltr;text-align:left}[hidden]{display:none!important}@media(max-width:800px){.route,.steps{grid-template-columns:1fr}.caption{flex-direction:column}.shell{padding-top:30px}.actions a{display:none}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -13,7 +13,7 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand"><img src="/assets/lingodub-logo.png" alt=""><span><b>LingoDub</b><small data-fa="آموزش تنظیم صدای ویندوز" data-en="Windows audio setup guide">آموزش تنظیم صدای ویندوز</small></span></div>
+    <div class="brand"><img src="/assets/voxilyra-logo.png" alt=""><span><b>Voxilyra</b><small data-fa="آموزش تنظیم صدای ویندوز" data-en="Windows audio setup guide">آموزش تنظیم صدای ویندوز</small></span></div>
     <div class="actions"><a href="/" data-fa="بازگشت به داشبورد" data-en="Back to dashboard">بازگشت به داشبورد</a><button id="openMixer" type="button" data-fa="باز کردن Volume Mixer" data-en="Open Volume Mixer">باز کردن Volume Mixer</button><button id="language" type="button">EN</button></div>
   </header>
 
@@ -21,18 +21,18 @@
     <section class="hero">
       <span class="eyebrow">AMM VIRTUAL AUDIO ROUTE</span>
       <h1 data-fa="سه انتخاب؛ بدون هم‌پوشانی دو صدا" data-en="Three choices; no overlapping speech">سه انتخاب؛ بدون هم‌پوشانی دو صدا</h1>
-      <p data-fa="این تصویر از تنظیم واقعی سیستم گرفته شده است. فقط مسیر زیر را عیناً بساز: Chrome وارد دستگاه مجازی شود، LingoDub از میکروفون مجازی بگیرد و صدای دوبله را از هدفون یا اسپیکر واقعی پخش کند." data-en="This is a real Windows setup. Recreate only this route: Chrome outputs to the virtual device, LingoDub captures its virtual microphone, and the dub plays through your physical headphones or speakers.">این تصویر از تنظیم واقعی سیستم گرفته شده است. فقط مسیر زیر را عیناً بساز: Chrome وارد دستگاه مجازی شود، LingoDub از میکروفون مجازی بگیرد و صدای دوبله را از هدفون یا اسپیکر واقعی پخش کند.</p>
+      <p data-fa="این تصویر از تنظیم واقعی سیستم گرفته شده است. فقط مسیر زیر را عیناً بساز: Chrome وارد دستگاه مجازی شود، Voxilyra از میکروفون مجازی بگیرد و صدای دوبله را از هدفون یا اسپیکر واقعی پخش کند." data-en="This is a real Windows setup. Recreate only this route: Chrome outputs to the virtual device, Voxilyra captures its virtual microphone, and the dub plays through your physical headphones or speakers.">این تصویر از تنظیم واقعی سیستم گرفته شده است. فقط مسیر زیر را عیناً بساز: Chrome وارد دستگاه مجازی شود، Voxilyra از میکروفون مجازی بگیرد و صدای دوبله را از هدفون یا اسپیکر واقعی پخش کند.</p>
     </section>
 
     <section class="route" aria-label="Audio route">
       <article data-step="1"><small data-fa="برنامهٔ منبع" data-en="Source app">برنامهٔ منبع</small><b>Google Chrome</b><code>Output → Speakers (AMM Virtual Audio Device)</code></article>
-      <article data-step="2"><small data-fa="ورودی LingoDub" data-en="LingoDub input">ورودی LingoDub</small><b data-fa="صدای برنامه" data-en="Application audio">صدای برنامه</b><code>Input → Microphone (AMM Virtual Audio Device)</code></article>
-      <article data-step="3"><small data-fa="خروجی LingoDub" data-en="LingoDub output">خروجی LingoDub</small><b data-fa="چیزی که می‌شنوی" data-en="What you hear">چیزی که می‌شنوی</b><code>Output → Default / Physical headphones</code></article>
+      <article data-step="2"><small data-fa="ورودی Voxilyra" data-en="Voxilyra input">ورودی Voxilyra</small><b data-fa="صدای برنامه" data-en="Application audio">صدای برنامه</b><code>Input → Microphone (AMM Virtual Audio Device)</code></article>
+      <article data-step="3"><small data-fa="خروجی Voxilyra" data-en="Voxilyra output">خروجی Voxilyra</small><b data-fa="چیزی که می‌شنوی" data-en="What you hear">چیزی که می‌شنوی</b><code>Output → Default / Physical headphones</code></article>
     </section>
 
     <section class="screenshot-card">
-      <img src="/assets/audio-routing-guide.png" alt="Windows Volume Mixer showing Chrome output routed to AMM Virtual Audio Device and LingoDub input routed from AMM Virtual Audio Device">
-      <div class="caption"><p data-fa="در ردیف Google Chrome فقط Output device را روی Speakers (AMM Virtual Audio Device) بگذار. در ردیف LingoDub.exe، Output device باید Default بماند و Input device روی Microphone (AMM Virtual Audio Device) قرار بگیرد." data-en="For Google Chrome, set only Output device to Speakers (AMM Virtual Audio Device). For LingoDub.exe, leave Output device on Default and set Input device to Microphone (AMM Virtual Audio Device).">در ردیف Google Chrome فقط Output device را روی Speakers (AMM Virtual Audio Device) بگذار. در ردیف LingoDub.exe، Output device باید Default بماند و Input device روی Microphone (AMM Virtual Audio Device) قرار بگیرد.</p><strong data-fa="تصویر مرجع واقعی" data-en="Real reference screenshot">تصویر مرجع واقعی</strong></div>
+      <img src="/assets/audio-routing-guide.png" alt="Windows Volume Mixer showing Chrome output routed to AMM Virtual Audio Device and Voxilyra input routed from AMM Virtual Audio Device">
+      <div class="caption"><p data-fa="در ردیف Google Chrome فقط Output device را روی Speakers (AMM Virtual Audio Device) بگذار. در ردیف Voxilyra.exe، Output device باید Default بماند و Input device روی Microphone (AMM Virtual Audio Device) قرار بگیرد." data-en="For Google Chrome, set only Output device to Speakers (AMM Virtual Audio Device). For Voxilyra.exe, leave Output device on Default and set Input device to Microphone (AMM Virtual Audio Device).">در ردیف Google Chrome فقط Output device را روی Speakers (AMM Virtual Audio Device) بگذار. در ردیف Voxilyra.exe، Output device باید Default بماند و Input device روی Microphone (AMM Virtual Audio Device) قرار بگیرد.</p><strong data-fa="تصویر مرجع واقعی" data-en="Real reference screenshot">تصویر مرجع واقعی</strong></div>
     </section>
 
     <section class="steps">
@@ -42,14 +42,14 @@
           <li data-fa="فیلم را در Chrome یا برنامهٔ منبع پخش کن تا در Volume Mixer دیده شود." data-en="Play the media in Chrome or the source app so it appears in Volume Mixer.">فیلم را در Chrome یا برنامهٔ منبع پخش کن تا در Volume Mixer دیده شود.</li>
           <li data-fa="Settings → System → Sound → Volume mixer را باز کن." data-en="Open Settings → System → Sound → Volume mixer.">Settings → System → Sound → Volume mixer را باز کن.</li>
           <li data-fa="Output برنامهٔ منبع را روی Speakers (AMM Virtual Audio Device) بگذار." data-en="Set the source app output to Speakers (AMM Virtual Audio Device).">Output برنامهٔ منبع را روی Speakers (AMM Virtual Audio Device) بگذار.</li>
-          <li data-fa="در LingoDub، ورودی AMM Loopback/Virtual را انتخاب کن." data-en="Select the AMM loopback/virtual capture inside LingoDub.">در LingoDub، ورودی AMM Loopback/Virtual را انتخاب کن.</li>
-          <li data-fa="خروجی LingoDub را روی Default یا هدفون واقعی بگذار و صدای اصلی را روی صفر نگه دار." data-en="Keep LingoDub output on Default or physical headphones and set original volume to zero.">خروجی LingoDub را روی Default یا هدفون واقعی بگذار و صدای اصلی را روی صفر نگه دار.</li>
+          <li data-fa="در Voxilyra، ورودی AMM Loopback/Virtual را انتخاب کن." data-en="Select the AMM loopback/virtual capture inside Voxilyra.">در Voxilyra، ورودی AMM Loopback/Virtual را انتخاب کن.</li>
+          <li data-fa="خروجی Voxilyra را روی Default یا هدفون واقعی بگذار و صدای اصلی را روی صفر نگه دار." data-en="Keep Voxilyra output on Default or physical headphones and set original volume to zero.">خروجی Voxilyra را روی Default یا هدفون واقعی بگذار و صدای اصلی را روی صفر نگه دار.</li>
         </ol>
       </article>
       <article class="card warning">
         <h2 data-fa="اشتباه خطرناک" data-en="Avoid feedback">اشتباه خطرناک</h2>
         <ul>
-          <li><b data-fa="خروجی LingoDub را روی AMM Virtual نگذار." data-en="Never route LingoDub output back to AMM Virtual.">خروجی LingoDub را روی AMM Virtual نگذار.</b></li>
+          <li><b data-fa="خروجی Voxilyra را روی AMM Virtual نگذار." data-en="Never route Voxilyra output back to AMM Virtual.">خروجی Voxilyra را روی AMM Virtual نگذار.</b></li>
           <li data-fa="این کار صدای دوبله را دوباره Capture می‌کند و اکو/حلقهٔ صوتی می‌سازد." data-en="That captures the dub again and creates echo or a feedback loop.">این کار صدای دوبله را دوباره Capture می‌کند و اکو/حلقهٔ صوتی می‌سازد.</li>
           <li data-fa="برای شنیدن فقط دوبله، Original را ۰٪ و Dubbed را ۱۰۰٪ بگذار." data-en="For dub-only listening, set Original to 0% and Dubbed to 100%.">برای شنیدن فقط دوبله، Original را ۰٪ و Dubbed را ۱۰۰٪ بگذار.</li>
         </ul>
@@ -63,9 +63,9 @@
   </main>
 
   <script>
-    let locale=localStorage.getItem('lingodub.locale')||'fa';
+    let locale=localStorage.getItem('voxilyra.locale')||'fa';
     const render=()=>{document.documentElement.lang=locale;document.documentElement.dir=locale==='fa'?'rtl':'ltr';document.querySelectorAll('[data-fa]').forEach((node)=>{node.textContent=node.dataset[locale];});document.querySelectorAll('code').forEach((node)=>node.classList.add('ltr'));document.getElementById('language').textContent=locale==='fa'?'EN':'فا';};
-    document.getElementById('language').onclick=()=>{locale=locale==='fa'?'en':'fa';localStorage.setItem('lingodub.locale',locale);render();};
+    document.getElementById('language').onclick=()=>{locale=locale==='fa'?'en':'fa';localStorage.setItem('voxilyra.locale',locale);render();};
     document.getElementById('openMixer').onclick=async()=>{const response=await fetch('/api/audio/open-mixer',{method:'POST'});if(!response.ok)alert(locale==='fa'?'باز کردن میکسر ممکن نشد.':'Could not open Volume Mixer.');};
     render();
   </script>

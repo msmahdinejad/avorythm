@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>LingoDub</title>
-  <link rel="icon" href="/assets/lingodub-logo.png" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=0.5.1">
+  <title>Voxilyra</title>
+  <link rel="icon" href="/assets/voxilyra-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css?v=0.6.0">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="LingoDub">
-      <span class="brand-mark" aria-hidden="true"><img src="/assets/lingodub-logo.png" alt=""></span>
-      <span><b>LingoDub</b><small data-i18n="tagline">دوبلهٔ زنده، بدون دردسر</small></span>
+    <a class="brand" href="/" aria-label="Voxilyra">
+      <span class="brand-mark" aria-hidden="true"><img src="/assets/voxilyra-logo.png" alt=""></span>
+      <span><b>Voxilyra</b><small data-i18n="tagline">دوبلهٔ زنده، بدون دردسر</small></span>
     </a>
     <div class="top-actions">
       <span id="connectionBadge" class="badge"><i></i><span data-i18n="appOnline">اپ دسکتاپ آنلاین است</span></span>
@@ -86,7 +86,7 @@
         <form id="settingsForm">
           <div class="field-row">
             <label class="field"><span data-i18n="targetLanguage">زبان مقصد</span><select id="targetLanguage"></select></label>
-            <div class="field"><span data-i18n="speaker">گوینده</span><output id="voice" class="read-only-value" data-i18n="nativeVoice">صدای خودکار Gemini Live</output><small data-i18n="nativeVoiceHelp">Gemini Live صدای گوینده را خودکار بازتولید می‌کند.</small></div>
+            <label class="field"><span data-i18n="speaker">گویندهٔ فایل</span><select id="voice"></select><small data-i18n="nativeVoiceHelp">برای دوبلهٔ فایل با Gemini Live؛ صدای زنده خودکار است.</small></label>
           </div>
           <label class="field"><span data-i18n="captureDevice">ورودی صدای برنامه</span><select id="captureDevice"></select></label>
           <label class="field"><span data-i18n="outputDevice">خروجی شنیداری</span><select id="outputDevice"></select></label>
@@ -106,6 +106,7 @@
           <details class="advanced">
             <summary data-i18n="advanced">تنظیمات پیشرفته</summary>
             <label class="field"><span>Gemini API Key</span><div class="input-action"><input id="apiKey" type="password" autocomplete="off" placeholder="AIza…"><button id="saveKeyButton" type="button" data-i18n="save">ذخیره</button></div><small id="keyStatus"></small></label>
+            <label class="field"><span>Groq API Key</span><div class="input-action"><input id="groqApiKey" type="password" autocomplete="off" placeholder="gsk_…"><button id="saveGroqKeyButton" type="button" data-i18n="save">ذخیره</button></div><small id="groqKeyStatus"></small></label>
             <label class="field"><span data-i18n="proxy">پروکسی</span><input id="proxyUrl" inputmode="url" placeholder="http://127.0.0.1:10808" autocomplete="off"></label>
           </details>
           <button id="saveSettingsButton" class="button secondary wide" type="submit" data-i18n="saveSettings">ذخیرهٔ تنظیمات</button>
@@ -130,13 +131,13 @@
 
           <fieldset class="mode-picker">
             <legend data-i18n="processingMode">حالت پردازش</legend>
-            <label class="mode-option selected"><input type="radio" name="mediaMode" value="precise" checked><span><b data-i18n="preciseMode">سینک دقیق</b><small data-i18n="preciseHelp">پیشنهادی؛ دوبله را با ترجمهٔ معکوس کنترل می‌کند و قطعهٔ ضعیف را دوباره می‌سازد.</small></span></label>
-            <label class="mode-option"><input type="radio" name="mediaMode" value="fast"><span><b data-i18n="fastMode">سریع</b><small data-i18n="fastHelp">یک‌بار ترجمه بدون کنترل معنایی؛ برای پیش‌نمایش سریع‌تر.</small></span></label>
+            <label class="mode-option selected"><input type="radio" name="mediaMode" value="precise" checked><span><b data-i18n="preciseMode">دقیق</b><small data-i18n="preciseHelp">Whisper Large v3 و کنترل متن صدای تولیدشده؛ پیشنهاد ما.</small></span></label>
+            <label class="mode-option"><input type="radio" name="mediaMode" value="fast"><span><b data-i18n="fastMode">سریع</b><small data-i18n="fastHelp">Whisper Large v3 Turbo با کنترل کمتر برای پیش‌نمایش سریع.</small></span></label>
           </fieldset>
 
           <label class="field"><span data-i18n="fileTargetLanguage">زبان دوبلهٔ فایل</span><select id="mediaTargetLanguage"></select></label>
           <button id="processMediaButton" class="button primary wide" type="button" disabled data-i18n="processVideo">شروع پردازش فایل</button>
-          <p class="privacy-note" data-i18n="mediaPrivacy">خود فایل روی لپ‌تاپ می‌ماند؛ PCM استخراج‌شده و در حالت دقیق، PCM دوبله برای کنترل معنایی به همان Gemini Live فرستاده می‌شود.</p>
+          <p class="privacy-note" data-i18n="mediaPrivacy">فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.</p>
 
           <div id="jobPanel" class="job-panel" hidden>
             <div class="job-line"><span><b id="jobStage">—</b><small id="jobFile">—</small></span><strong id="jobPercent">0%</strong></div>
@@ -158,7 +159,7 @@
             <div class="video-stage">
               <video id="mediaPlayer" controls preload="metadata"></video>
               <div id="audioSourceStage" class="audio-source-stage" hidden>
-                <img src="/assets/lingodub-logo.png" alt="">
+                <img src="/assets/voxilyra-logo.png" alt="">
                 <b id="audioSourceName"></b>
                 <audio id="sourceAudioPlayer" controls preload="metadata"></audio>
               </div>
@@ -191,7 +192,7 @@
     </section>
   </main>
 
-  <footer><span>LingoDub · Open source</span><a href="https://github.com/msmahdinejad/lingodub" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
-  <script src="/app.js?v=0.5.1" defer></script>
+  <footer><span>Voxilyra · Open source</span><a href="https://github.com/msmahdinejad/voxilyra" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+  <script src="/app.js?v=0.6.0" defer></script>
 </body>
 </html>

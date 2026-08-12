@@ -1,5 +1,5 @@
 name: Bug report
-description: Report reproducible LingoDub behavior
+description: Report reproducible Voxilyra behavior
 title: "[Bug]: "
 labels: [bug]
 body:
@@ -9,7 +9,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: LingoDub version
+      label: Voxilyra version
       placeholder: 0.1.0
     validations:
       required: true

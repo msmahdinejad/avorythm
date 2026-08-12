@@ -22,7 +22,7 @@ Token service
   └─ keeps the long-lived Gemini credential server-side
 ```
 
-این معماری به نصب LingoDub Desktop نیاز ندارد؛ backend فقط توکن کوتاه‌عمر می‌سازد و صدای زنده می‌تواند مستقیم از مرورگر به Gemini برود. Google می‌گوید توکن‌های ephemeral برای client-to-server Live API طراحی شده‌اند، قابل محدودسازی‌اند و ریسک افشای credential را کم می‌کنند. [راهنمای رسمی توکن‌های موقت](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
+این معماری به نصب Voxilyra Desktop نیاز ندارد؛ backend فقط توکن کوتاه‌عمر می‌سازد و صدای زنده می‌تواند مستقیم از مرورگر به Gemini برود. Google می‌گوید توکن‌های ephemeral برای client-to-server Live API طراحی شده‌اند، قابل محدودسازی‌اند و ریسک افشای credential را کم می‌کنند. [راهنمای رسمی توکن‌های موقت](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
 
 ### قوانین فنی و محتوایی اصلی
 
@@ -32,7 +32,7 @@ Token service
 
 متن پیشنهادی برای فیلد **Single purpose**:
 
-> LingoDub captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
+> Voxilyra captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
 
 کنترل صدای اصلی/دوبله، انتخاب زبان، زیرنویس و ضبط خروجی همگی زیرمجموعهٔ همین هدف «ترجمه و دوبلهٔ زندهٔ تب انتخاب‌شده» هستند.
 
@@ -40,7 +40,7 @@ Token service
 
 فقط باریک‌ترین permissionهای لازم را درخواست کنید؛ permission برای قابلیت آینده یا «شاید بعداً لازم شود» مجاز نیست. درخواست بیش‌ازحد می‌تواند باعث ردشدن شود. [Use of Permissions policy](https://developer.chrome.com/docs/webstore/program-policies/permissions) و [Privacy fields](https://developer.chrome.com/docs/webstore/cws-dashboard-privacy)
 
-توجیه‌های پیشنهادی برای permissionهای LingoDub:
+توجیه‌های پیشنهادی برای permissionهای Voxilyra:
 
 | Permission | متن پیشنهادی برای reviewer |
 |---|---|
@@ -67,7 +67,7 @@ Token service
 
 قبل از اولین capture، کنار دکمهٔ Start یک disclosure واضح نمایش دهید؛ نه فقط داخل Privacy Policy:
 
-> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. LingoDub does not capture other tabs. Recording is off unless you enable it.
+> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Voxilyra does not capture other tabs. Recording is off unless you enable it.
 
 کاربر باید با یک اقدام مثبت مثل **Start dubbing** رضایت بدهد. نوع داده، هدف استفاده و گیرندهٔ داده باید قبل از جمع‌آوری روشن باشد. [Disclosure Requirements](https://developer.chrome.com/docs/webstore/program-policies/disclosure-requirements) و [User Data FAQ](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq)
 
@@ -180,7 +180,7 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 | Automated extension tests | ⚠️ تست‌های Node برای protocol، transcript، WAV/SRT و parsing صوت وجود دارند؛ browser E2E هنوز دیده نشد | حداقل یک end-to-end test برای capture lifecycle، consent، session-key clear و چهار download |
 | ZIP layout | ✅ script بسته‌بندی وجود دارد | باز کنید و وجود `manifest.json` در root را در CI assert کنید |
 
-### ریسک‌های ردشدن مخصوص LingoDub
+### ریسک‌های ردشدن مخصوص Voxilyra
 
 1. ذخیرهٔ API Key بلندمدت در client برخلاف راهنمای امنیتی جاری Gemini.
 2. نبود disclosure صریح قبل از ارسال صدای تب به Google.
@@ -215,11 +215,11 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 
 Suggested single-purpose statement:
 
-> LingoDub captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
+> Voxilyra captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
 
 Suggested pre-capture disclosure:
 
-> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. LingoDub does not capture other tabs. Recording is off unless you enable it.
+> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Voxilyra does not capture other tabs. Recording is off unless you enable it.
 
 ### Required listing package and assets
 

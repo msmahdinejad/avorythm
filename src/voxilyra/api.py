@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .audio import DeviceCatalog
 from .config import ConfigStore
-from .constants import RTL_LANGUAGES, SUPPORTED_LANGUAGES
+from .constants import RTL_LANGUAGES, SUPPORTED_LANGUAGES, VOICE_NAMES
 from .jobs import OUTPUT_NAMES, MediaJob, MediaJobManager
 from .models import ApiKeyInput, Settings
 from .routing import open_windows_volume_mixer
@@ -47,8 +47,8 @@ def create_app(
         await media.close()
 
     app = FastAPI(
-        title="LingoDub Companion",
-        version="0.5.1",
+        title="Voxilyra Companion",
+        version="0.6.0",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -83,8 +83,11 @@ def create_app(
         return {
             "devices": DeviceCatalog.scan().to_dict(),
             "languages": sorted(SUPPORTED_LANGUAGES),
+            "voices": sorted(VOICE_NAMES),
             "settings": runtime.settings.model_dump(),
             "api_key_set": bool(config.get_api_key()),
+            "gemini_key_set": bool(config.get_api_key("gemini")),
+            "groq_key_set": bool(config.get_api_key("groq")),
         }
 
     @app.get("/api/state")
@@ -106,7 +109,7 @@ def create_app(
     @app.post("/api/key")
     def set_key(body: ApiKeyInput) -> dict[str, bool]:
         try:
-            config.set_api_key(body.api_key)
+            config.set_api_key(body.api_key, body.provider)
         except ValueError as error:
             raise HTTPException(400, str(error)) from error
         return {"ok": True}
@@ -164,7 +167,7 @@ def create_app(
 
     @app.get("/api/media/jobs")
     def media_list() -> dict[str, object]:
-        return {"jobs": [media_snapshot(job) for job in media.list()]}
+        return {"jobs": [media_snapshot(job) for job in media.list_jobs()]}
 
     @app.post("/api/media/jobs")
     async def media_create(

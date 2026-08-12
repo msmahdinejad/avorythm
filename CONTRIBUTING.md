@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving LingoDub. English and Persian issues are both welcome.
+Thank you for improving Voxilyra. English and Persian issues are both welcome.
 
 1. Search existing issues and open one before a large change.
 2. Fork the repository and branch from `main`.

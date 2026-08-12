@@ -1,4 +1,4 @@
-from lingodub.transcripts import TranscriptTracker
+from voxilyra.transcripts import TranscriptTracker
 
 
 def test_tracker_merges_partial_transcripts_without_duplication() -> None:

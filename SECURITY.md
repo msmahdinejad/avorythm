@@ -12,9 +12,9 @@ Do not open a public issue for a suspected vulnerability. Use GitHub's **Report 
 
 The Windows app listens only on `127.0.0.1:8765`. Do not expose or reverse-proxy this port to a network. The standalone browser extension never connects to that port. Keep downloaded builds and virtual audio drivers from trusted sources.
 
-API keys are stored by the Windows keyring or loaded from a private `.env`. Never attach `.env`, logs containing credentials, or private recordings to an issue.
+Gemini and Groq API keys are stored separately by the Windows keyring or loaded from a private `.env`. Never attach `.env`, logs containing credentials, or private recordings to an issue.
 
-Uploaded videos, extracted audio, subtitles, job manifests, and archives stay in the local LingoDub data directory. Media endpoints validate job IDs and allowlist filenames. Only extracted PCM is sent to Gemini after an explicit processing request. Delete a Media Studio job to remove its local source and outputs.
+Uploaded videos, extracted audio, subtitles, job manifests, and archives stay in the local Voxilyra data directory. Media endpoints validate job IDs and allowlist filenames. After an explicit request, FLAC chunks go to Groq Whisper, transcript text to Gemini translation, and translated text to Gemini Live narration. Delete a Media Studio job to remove its local source and outputs.
 
 ## Extension trust boundary
 

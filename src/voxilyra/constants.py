@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 LIVE_MODEL = "gemini-3.5-live-translate-preview"
+FILE_TRANSLATION_MODEL = "gemini-3.1-flash-lite"
+FILE_VOICE_MODEL = "gemini-3.1-flash-live-preview"
+GROQ_PRECISE_MODEL = "whisper-large-v3"
+GROQ_FAST_MODEL = "whisper-large-v3-turbo"
 INPUT_RATE = 16_000
 OUTPUT_RATE = 24_000
 CHUNK_MS = 100
@@ -90,3 +94,14 @@ SUPPORTED_LANGUAGES = {
 }
 
 RTL_LANGUAGES = {"ar", "fa", "he", "ur", "sd"}
+
+VOICE_NAMES = {
+    "Aoede",
+    "Charon",
+    "Fenrir",
+    "Kore",
+    "Leda",
+    "Orus",
+    "Puck",
+    "Zephyr",
+}

@@ -127,7 +127,7 @@ class SessionRecorder {
       target: 'background',
       type: 'download',
       url,
-      filename: `LingoDub/${this.stamp}/${filename}`
+      filename: `Voxilyra/${this.stamp}/${filename}`
     });
     if (!response?.ok) throw new Error(response?.error || 'download_failed');
   }
@@ -308,7 +308,7 @@ async function begin(streamId, nextConfig, nextApiKey) {
   source = context.createMediaStreamSource(stream);
   sourceGain = context.createGain();
   dubGain = context.createGain();
-  captureNode = new AudioWorkletNode(context, 'lingodub-pcm-capture');
+  captureNode = new AudioWorkletNode(context, 'voxilyra-pcm-capture');
   const silent = context.createGain();
   silent.gain.value = 0;
   source.connect(sourceGain).connect(context.destination);

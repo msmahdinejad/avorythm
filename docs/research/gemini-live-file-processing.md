@@ -1,5 +1,7 @@
 # Gemini 3.5 Live Translate for Uploaded Media
 
+> Historical research retained for context. Voxilyra 0.6.0 uses Groq Whisper for file transcription, Gemini 3.1 Flash Lite for translation, and Gemini 3.1 Flash Live for speech.
+
 Research checked against official Google documentation on 2026-08-11.
 
 ## Findings
@@ -8,7 +10,7 @@ Research checked against official Google documentation on 2026-08-11.
   input/output transcription. It is Live-only: Batch API and structured output are not
   supported.
 - Live Translate is continuous audio translation, not a deterministic uploaded-file
-  API. LingoDub must stream extracted PCM and create file/timeline semantics locally.
+  API. Voxilyra must stream extracted PCM and create file/timeline semantics locally.
 - Google recommends 20–100 ms realtime audio chunks and 16 kHz input.
 - Audio-only sessions are limited to roughly 15 minutes without context compression;
   a WebSocket connection lasts roughly 10 minutes. GoAway, session resumption, and
@@ -24,7 +26,7 @@ Research checked against official Google documentation on 2026-08-11.
 - Live transcription has no documented word- or cue-timestamp accuracy contract.
   Cue-level synchronization must use local audio windows and duration fitting.
 
-## Consequences for LingoDub
+## Consequences for Voxilyra
 
 - All AI work stays on `gemini-3.5-live-translate-preview`.
 - FFmpeg locally extracts PCM, detects silence, measures duration, fits audio, and

@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from lingodub.api import create_app
-from lingodub.audio import AudioDevice, DeviceCatalog
-from lingodub.config import ConfigStore
-from lingodub.models import Settings
+from voxilyra.api import create_app
+from voxilyra.audio import AudioDevice, DeviceCatalog
+from voxilyra.config import ConfigStore
+from voxilyra.models import Settings
 
 
 def catalog() -> DeviceCatalog:
@@ -23,10 +23,10 @@ def catalog() -> DeviceCatalog:
 def client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
     store = ConfigStore(tmp_path / "config")
     store.save(Settings(capture_device=4, output_device=7))
-    monkeypatch.setattr("lingodub.api.DeviceCatalog.scan", catalog)
+    monkeypatch.setattr("voxilyra.api.DeviceCatalog.scan", catalog)
     static = tmp_path / "static"
     static.mkdir()
-    (static / "index.html").write_text("LingoDub", encoding="utf-8")
+    (static / "index.html").write_text("Voxilyra", encoding="utf-8")
     return TestClient(create_app(store, tmp_path / "recordings", static))
 
 
@@ -35,8 +35,8 @@ def test_health_and_bootstrap(
     tmp_path: Path,
 ) -> None:
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    monkeypatch.setattr("lingodub.config.load_dotenv", lambda: False)
-    monkeypatch.setattr("lingodub.config.keyring.get_password", lambda service, user: None)
+    monkeypatch.setattr("voxilyra.config.load_dotenv", lambda: False)
+    monkeypatch.setattr("voxilyra.config.keyring.get_password", lambda service, user: None)
 
     with client(monkeypatch, tmp_path) as app:
         assert app.get("/api/health").json()["status"] == "ok"
@@ -45,6 +45,9 @@ def test_health_and_bootstrap(
     assert response.status_code == 200
     assert response.json()["devices"]["default_output"] == 7
     assert response.json()["api_key_set"] is False
+    assert response.json()["gemini_key_set"] is False
+    assert response.json()["groq_key_set"] is False
+    assert "Kore" in response.json()["voices"]
 
 
 def test_settings_endpoint_validates_and_persists(

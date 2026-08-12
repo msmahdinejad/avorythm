@@ -7,10 +7,10 @@ import sys
 import wave
 from pathlib import Path
 
-from lingodub.config import ConfigStore
-from lingodub.gemini import GeminiGateway
-from lingodub.jobs import complete_translation
-from lingodub.models import Settings
+from voxilyra.config import ConfigStore
+from voxilyra.gemini import GeminiGateway
+from voxilyra.jobs import complete_translation
+from voxilyra.models import Settings
 
 
 def arguments() -> argparse.Namespace:

@@ -1,98 +1,112 @@
-# LingoDub
+<p align="center">
+  <img src="assets/branding/voxilyra-logo.png" width="148" alt="Voxilyra logo">
+</p>
 
-Real-time and synchronized AI dubbing with **Gemini 3.5 Live Translate**. LingoDub ships as two independent products:
+<h1 align="center">Voxilyra</h1>
 
-- a Windows app for desktop audio and uploaded audio/video files;
-- a standalone Manifest V3 extension for Chrome/Edge tabs.
+<p align="center"><strong>Hear every voice in your language.</strong></p>
 
-[فارسی](README.fa.md) · [Installation](docs/INSTALLATION.md) · [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md) · [Privacy](PRIVACY.md)
+<p align="center">
+  Translate desktop or browser audio live, or turn uploaded audio and video into a synchronized dub, source transcript, translated transcript, and original soundtrack.
+</p>
 
-![LingoDub dashboard](docs/images/dashboard.png)
+<p align="center">
+  <a href="https://github.com/msmahdinejad/voxilyra/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/voxilyra/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/voxilyra/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/voxilyra?label=Release"></a>
+  <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
+  <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
+</p>
 
-## What it does
+<p align="center">
+  <a href="README.fa.md">فارسی</a> ·
+  <a href="docs/INSTALLATION.md">Installation</a> ·
+  <a href="docs/CHROME_WEB_STORE.md">Chrome Web Store</a> ·
+  <a href="PRIVACY.md">Privacy</a>
+</p>
 
-- Streams 16 kHz PCM to `gemini-3.5-live-translate-preview` and plays its native 24 kHz translated speech.
-- Separately controls original and dubbed audio; **Dub only** is the default.
-- Shows source and translated transcripts with correct RTL/LTR direction.
-- Records `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt`.
-- Automatically reconnects long Live sessions when Google rotates the connection.
-- Supports 70+ official Live Translate languages.
-- Uses one Live Translate model only—no secondary TTS, STT, batch, or Files API.
+![Voxilyra English dashboard](docs/images/dashboard-en.png)
 
-### Uploaded-media studio
+## Two independent products
 
-Drop an MP3, WAV, M4A, FLAC, OGG, MP4, MKV, WebM, MOV, AVI, WMV, MPEG, or 3GP into the Windows app. LingoDub keeps the source file local, extracts PCM with FFmpeg, and provides:
+- **Windows app:** live desktop dubbing plus a media studio for uploaded audio/video.
+- **Chrome/Edge extension:** live tab dubbing with no desktop app, Python, FFmpeg, localhost, or virtual audio device.
 
-- **Precise sync** (default): cuts near silence, checks the actual dubbed WAV by translating it back with the same Live model, retries one weak result, and shows semantic confidence;
-- **Fast**: single-pass fixed windows without the semantic back-check;
-- a local HTML5 video or audio player with independent original/dub audio;
-- simultaneous source and translated subtitles;
-- the four individual files plus `all-outputs.zip`.
+Both interfaces support Persian and English, use Vazirmatn, render RTL/LTR transcripts correctly, and independently control original and dubbed audio.
 
-The selected media is the player master clock; small drift is corrected with playback-rate nudges and drift above 120 ms with a seek. A rolling governor reserves at most 15,000 estimated tokens per minute—below the requested 20,000-token ceiling. Precise mode can take four to eight times the media duration when a retry is needed because it listens to its own dubbed output. A low score is surfaced honestly; it is not a guarantee of model accuracy.
+## Uploaded-media pipeline
+
+```text
+Audio/video
+  → local FFmpeg extraction and timeline
+  → Groq Whisper Large v3 transcription with timestamps
+  → Gemini 3.1 Flash Lite text translation
+  → Gemini 3.1 Flash Live translated speech
+  → local alignment, subtitles, player, and ZIP
+```
+
+The default **Precise** mode uses `whisper-large-v3` and verifies Gemini Live's output transcript against each translated segment, retrying a mismatched segment. **Fast** uses `whisper-large-v3-turbo` for quicker previews. Long media is encoded to small 16 kHz mono FLAC chunks with overlap; only the non-overlapping core timestamps are retained.
+
+Every successful job provides:
+
+- `original.wav`
+- `source.srt`
+- `dubbed.wav`
+- `translated.srt`
+- `all-outputs.zip`
+
+The built-in audio/video player uses the source media as its master clock. The dub is corrected when drift exceeds 120 ms, and both subtitle tracks can be enabled together.
 
 ## Quick install
 
 ### Windows app
 
-1. Download `LingoDub-Setup-x64.exe` from GitHub Releases.
-2. Keep the recommended **Install FFmpeg** component selected if you want uploaded audio/video processing.
-3. Launch LingoDub, open Advanced settings, save your Gemini API key, and set the proxy to `http://127.0.0.1:10808` when required.
+1. Download `Voxilyra-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/voxilyra/releases).
+2. Keep **Install FFmpeg** enabled when you want uploaded-media processing.
+3. In Advanced settings, save a [Gemini API key](https://aistudio.google.com/app/apikey) and a [Groq API key](https://console.groq.com/keys).
+4. Leave the proxy at `http://127.0.0.1:10808` when your connection requires it.
 
-The key is stored in Windows Credential Manager. The installer uses WinGet for FFmpeg rather than redistributing an untracked binary. If WinGet is unavailable, install it later with:
+Keys are stored in Windows Credential Manager, never in `settings.json`. Groq and Gemini free tiers are subject to each provider's current account quotas; Voxilyra cannot guarantee ongoing free availability.
+
+If WinGet could not install FFmpeg during setup, run:
 
 ```powershell
 winget install --id Gyan.FFmpeg --exact --scope user
 ```
 
-### Standalone extension
+### Chrome/Edge extension
 
-1. Download and extract `LingoDub-Extension.zip` to a permanent folder.
-2. Open `chrome://extensions` (or `edge://extensions`).
-3. Enable **Developer mode**, click **Load unpacked**, and select the folder containing `manifest.json`.
-4. Pin LingoDub, open a video tab, enter the key in the popup, and start dubbing.
+1. Download and extract `Voxilyra-Extension.zip`.
+2. Open `chrome://extensions` or `edge://extensions`.
+3. Enable **Developer mode**, choose **Load unpacked**, and select the extracted folder.
+4. Pin Voxilyra, enter the Gemini key for this browser session, open a media tab, and press Start.
 
-The extension needs no Windows app, Python, localhost service, FFmpeg, or virtual audio device. Chrome does not permit one-click installation of an unpacked GitHub extension; a true **Add to Chrome** button requires a Chrome Web Store listing.
+The extension is fully independent from the Windows app. Chrome only offers true one-click consumer installation after publication in the Chrome Web Store; GitHub-hosted unpacked extensions require the steps above.
 
-The extension intentionally stores a BYOK key only in `chrome.storage.session`, so it clears when the browser fully exits. It sends the key and selected-tab audio directly to Google's endpoint. For a public production deployment, Google recommends a small HTTPS token service and short-lived ephemeral tokens instead of client-side long-lived keys.
+## Desktop live audio routing
 
-## Desktop live-audio routing
+Uploaded files and the extension need no virtual device. Only **live desktop-app capture** needs this route:
 
-Virtual routing is needed **only** when the Windows app dubs another desktop program live. It is not needed for the extension or uploaded-media studio.
+1. Source browser/app **Output** → `Speakers (AMM Virtual Audio Device)`.
+2. Voxilyra **Input** → `Microphone (AMM Virtual Audio Device)`.
+3. Voxilyra **Output** → `Default` or physical headphones/speakers.
+4. Keep Original volume at `0%` for dub-only listening.
 
-Use the exact route shown below:
-
-1. Chrome/source program **Output** → `Speakers (AMM Virtual Audio Device)`.
-2. LingoDub **Input** → `Microphone (AMM Virtual Audio Device)` / matching loopback.
-3. LingoDub **Output** → `Default` or physical headphones.
-4. Original 0%, Dubbed 100%.
-
-Never send LingoDub output back to AMM; that creates an audio feedback loop.
-
-![Correct AMM routing](docs/images/audio-routing-guide.png)
-
-The bilingual visual walkthrough is also available inside the app at `/audio-guide.html`.
+Never route Voxilyra's output back to AMM Virtual; that creates echo and feedback. See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app).
 
 ## Development
 
-Requirements: Windows 10/11 x64, Python 3.11–3.13, Node.js for extension tests, and FFmpeg/FFprobe for Media Studio.
+Requirements: Windows 10/11, Python 3.12, Node.js 20+, FFmpeg, and Inno Setup 6 for the installer.
 
 ```powershell
-py -3.12 -m venv .venv
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev,build]"
 python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
-node --test tests\extension.test.mjs tests\offscreen.test.mjs tests\background.test.mjs
-```
-
-Run the app:
-
-```powershell
-$env:HTTP_PROXY='http://127.0.0.1:10808'
-$env:HTTPS_PROXY='http://127.0.0.1:10808'
-python -m lingodub
+node --test tests\*.test.mjs
+.\scripts\dev.ps1
 ```
 
 Build release artifacts:
@@ -100,31 +114,20 @@ Build release artifacts:
 ```powershell
 .\scripts\build.ps1
 .\scripts\package-extension.ps1
-iscc .\installer.iss
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 ```
 
-An optional paid Live smoke test accepts a short 16 kHz mono 16-bit PCM WAV:
+## Privacy and limits
 
-```powershell
-python .\scripts\smoke_gemini.py --wav .\sample.wav
-```
+- The app binds only to `127.0.0.1`; original uploads and generated files remain under the local Voxilyra data directory.
+- Uploaded audio chunks are sent to Groq for transcription; transcript text is sent to Gemini for translation and speech generation.
+- Live desktop/tab audio is sent to Gemini Live only after the user starts dubbing.
+- A local rolling governor reserves at most 15,000 Gemini tokens per 60 seconds, below the requested 20,000-token ceiling.
+- `gemini-3.5-live-translate-preview` and `gemini-3.1-flash-live-preview` are preview services. Accuracy, voice stability, availability, latency, and quotas can change.
+- Windows SmartScreen warnings disappear reliably only after signing the installer with a trusted code-signing certificate and building publisher reputation.
 
-## Security and privacy
-
-- The app binds only to `127.0.0.1`; uploaded media and outputs remain under the local LingoDub data directory.
-- Only extracted PCM is sent to Gemini for a requested translation.
-- The extension captures only the tab explicitly started by the user.
-- No analytics, ads, remote code, or developer telemetry are included.
-- Do not process or record media you are not authorized to use.
-
-See [SECURITY.md](SECURITY.md), [PRIVACY.md](PRIVACY.md), and [ARCHITECTURE.md](ARCHITECTURE.md).
-
-## Model limitations
-
-Gemini 3.5 Live Translate is a preview service. Voice replication, speaker identity, accent detection, latency, quotas, and translation accuracy can vary. The model does not expose a named-voice selector; LingoDub therefore labels the voice as automatic rather than pretending a separate TTS voice can be chosen. Very long translated dialogue may be time-compressed to preserve synchronization. Precise mode retries one low-confidence segment and warns when the model still disagrees with its own translated transcript.
-
-Implementation follows Google's current [Live Translation guide](https://ai.google.dev/gemini-api/docs/live-api/live-translate), [model page](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview), and [ephemeral-token guidance](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens).
+See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## License
 
-MIT. Vazirmatn and other third-party notices are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE) © Mohammad Saleh Mahdinejad

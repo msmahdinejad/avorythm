@@ -13,7 +13,7 @@ from .api import create_app
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="LingoDub desktop application")
+    parser = argparse.ArgumentParser(description="Voxilyra desktop application")
     parser.add_argument("--no-browser", action="store_true")
     return parser.parse_args()
 
@@ -28,7 +28,7 @@ def app_is_running() -> bool:
 
 def main() -> None:
     if sys.platform != "win32":
-        raise SystemExit("LingoDub desktop capture currently supports Windows 10/11.")
+        raise SystemExit("Voxilyra desktop capture currently supports Windows 10/11.")
     args = parse_args()
     if app_is_running():
         if not args.no_browser:

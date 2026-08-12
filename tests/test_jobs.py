@@ -8,65 +8,78 @@ from pathlib import Path
 
 import pytest
 
-from lingodub.config import ConfigStore
-from lingodub.gemini import NoTranslationError, SegmentTranslation
-from lingodub.jobs import MediaJobManager, complete_translation, transcript_score
-from lingodub.media import MediaInfo, MediaTools, TimeWindow
+from voxilyra.config import ConfigStore
+from voxilyra.gemini import Narration, TextTranslation
+from voxilyra.jobs import MediaJobManager, transcript_score
+from voxilyra.media import MediaInfo, MediaTools, TranscriptionChunk
 
 
 class FakeTools:
     async def probe(self, source: Path) -> MediaInfo:
-        return MediaInfo(1.0, True)
+        return MediaInfo(2.0, True)
 
     async def extract_audio(self, source: Path, destination: Path, duration: float) -> None:
         with wave.open(str(destination), "wb") as writer:
             writer.setnchannels(1)
             writer.setsampwidth(2)
             writer.setframerate(16_000)
-            writer.writeframes(b"\0\0" * 16_000)
+            writer.writeframes(b"\0\0" * 32_000)
 
-    async def silences(self, source_wav: Path) -> list[TimeWindow]:
-        return []
+    async def transcription_chunks(
+        self, source: Path, directory: Path, duration: float
+    ) -> list[TranscriptionChunk]:
+        directory.mkdir(parents=True)
+        path = directory / "chunk.flac"
+        path.write_bytes(b"flac")
+        return [TranscriptionChunk(path, 0, 0, duration)]
 
-    async def fit_dubbed(self, pcm: bytes, seconds: float, precise: bool) -> tuple[bytes, bool]:
-        return pcm[:48_000].ljust(48_000, b"\0"), False
-
-    async def to_input_pcm(self, pcm: bytes) -> bytes:
-        return pcm
+    async def fit_dubbed(
+        self, pcm: bytes, seconds: float, precise: bool
+    ) -> tuple[bytes, bool]:
+        size = round(seconds * 24_000) * 2
+        return pcm[:size].ljust(size, b"\0"), False
 
     archive = staticmethod(MediaTools.archive)
 
 
-class FakeGateway:
+class FakeWhisper:
     def __init__(self, api_key: str) -> None:
         self.api_key = api_key
 
-    async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-        if settings.target_language == "en":  # type: ignore[attr-defined]
-            return SegmentTranslation(
-                b"\0\0" * 24_000,
-                "Hallo",
-                "Hello",
-                "de",
-                100,
-                100,
-                200,
-            )
-        return SegmentTranslation(b"\0\0" * 24_000, "Hello", "Hallo", "en", 100, 100, 200)
+    async def transcribe(self, path: Path, model: str) -> dict[str, object]:
+        return {
+            "language": "en",
+            "duration": 2.0,
+            "segments": [{"start": 0.1, "end": 1.8, "text": "Charge while you shop."}],
+        }
+
+    async def close(self) -> None:
+        return None
+
+
+class FakeFileGateway:
+    narrations = 0
+
+    def __init__(self, api_key: str) -> None:
+        self.api_key = api_key
+
+    async def translate(
+        self, texts: list[str], source_language: str, target_language: str
+    ) -> TextTranslation:
+        assert source_language == "en"
+        assert target_language == "fa"
+        return TextTranslation(["هنگام خرید شارژ کنید."], 200)
+
+    async def narrate(self, text: str, language: str, voice: str) -> Narration:
+        type(self).narrations += 1
+        return Narration(b"\1\0" * 24_000, text, 300)
 
     async def close(self) -> None:
         return None
 
 
 async def chunks() -> AsyncIterator[bytes]:
-    yield b"fake video"
-
-
-def test_incomplete_short_live_audio_is_rejected() -> None:
-    short = SegmentTranslation(b"\0\0" * 6_000, "Long source", "ترجمه", "en", 0, 0, 100)
-    complete = SegmentTranslation(b"\0\0" * 48_000, "Long source", "ترجمه", "en", 0, 0, 100)
-    assert complete_translation(short, 10) is False
-    assert complete_translation(complete, 10) is True
+    yield b"fake media"
 
 
 def test_transcript_score_handles_languages_without_spaces() -> None:
@@ -79,20 +92,29 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key-123")
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key-123")
     manager = MediaJobManager(
         ConfigStore(tmp_path / "config"),
         tmp_path / "jobs",
         tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=FakeGateway,  # type: ignore[arg-type]
+        whisper_factory=FakeWhisper,
+        file_gateway_factory=FakeFileGateway,
     )
     await manager.start()
     try:
-        job = await manager.create_upload("lesson.mp3", "de", "precise", chunks())
+        job = await manager.create_upload("lesson.mp3", "fa", "precise", chunks())
         await asyncio.wait_for(manager.queue.join(), 2)
-        assert manager.get(job.id).status == "ready"
-        assert manager.get(job.id).media_kind == "audio"
-        assert manager.get(job.id).quality_score == 1.0
+        result = manager.get(job.id)
+        assert result.status == "ready"
+        assert result.source_language == "en"
+        assert result.quality_score == 1.0
+        assert "Charge while you shop." in manager.path(job.id, "source.srt").read_text(
+            encoding="utf-8-sig"
+        )
+        assert "هنگام خرید شارژ کنید." in manager.path(
+            job.id, "translated.srt"
+        ).read_text(encoding="utf-8-sig")
         for name in (
             "original.wav",
             "source.srt",
@@ -103,251 +125,51 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
             "translated.vtt",
         ):
             assert manager.path(job.id, name).is_file()
-        manager.delete(job.id)
-        assert not (tmp_path / "jobs" / job.id).exists()
-    finally:
-        await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
-
-
-@pytest.mark.asyncio
-async def test_precise_job_retries_low_quality_dub(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class QualityGateway(FakeGateway):
-        calls = 0
-        validations = 0
-
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-            type(self).calls += 1
-            if settings.target_language == "en":  # type: ignore[attr-defined]
-                type(self).validations += 1
-                if type(self).validations == 1:
-                    return SegmentTranslation(
-                        b"\0\0" * 24_000,
-                        "Autos fahren schnell",
-                        "cars drive fast",
-                        "de",
-                        100,
-                        100,
-                        200,
-                    )
-                return SegmentTranslation(
-                    b"\0\0" * 24_000,
-                    "Korallenriffe schützen die Küste",
-                    "coral reefs protect the coast",
-                    "de",
-                    100,
-                    100,
-                    200,
-                )
-            return SegmentTranslation(
-                b"\0\0" * 24_000,
-                "coral reefs protect the coast",
-                "Korallenriffe schützen die Küste",
-                "en",
-                100,
-                100,
-                200,
-            )
-
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    manager = MediaJobManager(
-        ConfigStore(tmp_path / "config"),
-        tmp_path / "jobs",
-        tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=QualityGateway,  # type: ignore[arg-type]
-    )
-    await manager.start()
-    try:
-        job = await manager.create_upload("lesson.wav", "de", "precise", chunks())
-        await asyncio.wait_for(manager.queue.join(), 2)
-        result = manager.get(job.id)
-        assert result.status == "ready"
-        assert result.quality_score == 1.0
-        assert "quality_retry" in result.warnings
-        assert QualityGateway.calls == 4
-    finally:
-        await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
-
-
-@pytest.mark.asyncio
-async def test_precise_job_preserves_valid_result_when_optional_retry_disconnects(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class DisconnectingGateway(FakeGateway):
-        translations = 0
-
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-            if settings.target_language == "en":  # type: ignore[attr-defined]
-                return SegmentTranslation(
-                    b"\0\0" * 24_000,
-                    "Etwas anderes",
-                    "something else",
-                    "de",
-                    100,
-                    100,
-                    200,
-                )
-            type(self).translations += 1
-            if type(self).translations > 1:
-                raise RuntimeError("no close frame received or sent")
-            return await super().translate_pcm(settings, pcm)
-
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    manager = MediaJobManager(
-        ConfigStore(tmp_path / "config"),
-        tmp_path / "jobs",
-        tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=DisconnectingGateway,  # type: ignore[arg-type]
-    )
-    await manager.start()
-    try:
-        job = await manager.create_upload("lesson.wav", "de", "precise", chunks())
-        await asyncio.wait_for(manager.queue.join(), 3)
-        result = manager.get(job.id)
-        assert result.status == "ready"
-        assert "quality_retry" in result.warnings
-        assert "network_recovered" in result.warnings
-        assert manager.path(job.id, "dubbed.wav").is_file()
-    finally:
-        await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
-
-
-@pytest.mark.asyncio
-async def test_media_job_preserves_a_non_speech_window_as_silence(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class EmptyGateway(FakeGateway):
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-            return SegmentTranslation(b"", "", "", "", 100, 0, 100)
-
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    manager = MediaJobManager(
-        ConfigStore(tmp_path / "config"),
-        tmp_path / "jobs",
-        tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=EmptyGateway,  # type: ignore[arg-type]
-    )
-    await manager.start()
-    try:
-        job = await manager.create_upload("music.mp4", "fa", "precise", chunks())
-        await asyncio.wait_for(manager.queue.join(), 2)
-        result = manager.get(job.id)
-        assert result.status == "ready"
-        assert "non_speech_skipped" in result.warnings
         with wave.open(str(manager.path(job.id, "dubbed.wav")), "rb") as dubbed:
-            assert dubbed.getnframes() == 24_000
-        assert manager.path(job.id, "source.srt").read_text(encoding="utf-8-sig") == ""
+            assert dubbed.getnframes() == 48_000
     finally:
         await manager.close()
         shutil.rmtree(tmp_path, ignore_errors=True)
 
 
 @pytest.mark.asyncio
-async def test_media_job_ignores_source_only_noise_transcription(
+async def test_precise_mode_retries_mismatched_live_narration(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    class SourceOnlyGateway(FakeGateway):
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-            return SegmentTranslation(b"", "background sound", "", "en", 100, 0, 100)
-
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    manager = MediaJobManager(
-        ConfigStore(tmp_path / "config"),
-        tmp_path / "jobs",
-        tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=SourceOnlyGateway,  # type: ignore[arg-type]
-    )
-    await manager.start()
-    try:
-        job = await manager.create_upload("music.mp4", "fa", "precise", chunks())
-        await asyncio.wait_for(manager.queue.join(), 2)
-        result = manager.get(job.id)
-        assert result.status == "ready"
-        assert "non_speech_skipped" in result.warnings
-    finally:
-        await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
-
-
-@pytest.mark.asyncio
-async def test_media_job_recovers_on_the_third_live_attempt(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class FlakyGateway(FakeGateway):
+    class RetryingGateway(FakeFileGateway):
         calls = 0
 
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
+        async def narrate(self, text: str, language: str, voice: str) -> Narration:
             type(self).calls += 1
-            if type(self).calls < 3:
-                raise TimeoutError("Gemini Live returned no translation")
-            return await super().translate_pcm(settings, pcm)
+            transcript = "متنی کاملا نامرتبط" if type(self).calls == 1 else text
+            return Narration(b"\1\0" * 24_000, transcript, 300)
 
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    async def no_delay(_: float) -> None:
-        return None
-
-    monkeypatch.setattr("lingodub.jobs.asyncio.sleep", no_delay)
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key-123")
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key-123")
     manager = MediaJobManager(
         ConfigStore(tmp_path / "config"),
         tmp_path / "jobs",
         tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=FlakyGateway,  # type: ignore[arg-type]
+        whisper_factory=FakeWhisper,
+        file_gateway_factory=RetryingGateway,
     )
     await manager.start()
     try:
-        job = await manager.create_upload("lesson.mp4", "de", "fast", chunks())
-        await asyncio.wait_for(manager.queue.join(), 2)
-        assert manager.get(job.id).status == "ready"
-        assert FlakyGateway.calls == 3
-    finally:
-        await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
-
-
-@pytest.mark.asyncio
-async def test_media_job_preserves_a_no_response_segment_after_retries(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    class NoResponseGateway(FakeGateway):
-        async def translate_pcm(self, settings: object, pcm: bytes) -> SegmentTranslation:
-            raise NoTranslationError("Gemini Live returned no translation")
-
-    async def no_delay(_: float) -> None:
-        return None
-
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
-    monkeypatch.setattr("lingodub.jobs.asyncio.sleep", no_delay)
-    manager = MediaJobManager(
-        ConfigStore(tmp_path / "config"),
-        tmp_path / "jobs",
-        tools=FakeTools(),  # type: ignore[arg-type]
-        gateway_factory=NoResponseGateway,  # type: ignore[arg-type]
-    )
-    await manager.start()
-    try:
-        job = await manager.create_upload("music.mp4", "fa", "precise", chunks())
+        job = await manager.create_upload("lesson.mp4", "fa", "precise", chunks())
         await asyncio.wait_for(manager.queue.join(), 2)
         result = manager.get(job.id)
         assert result.status == "ready"
-        assert "segment_skipped" in result.warnings
-        assert manager.path(job.id, "all-outputs.zip").is_file()
+        assert "narration_retry" in result.warnings
+        assert RetryingGateway.calls == 2
     finally:
         await manager.close()
-        shutil.rmtree(tmp_path, ignore_errors=True)
 
 
 @pytest.mark.asyncio
-async def test_cancel_stops_the_active_job(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_cancel_stops_active_job(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     entered = asyncio.Event()
 
     class SlowTools(FakeTools):
@@ -356,12 +178,14 @@ async def test_cancel_stops_the_active_job(tmp_path: Path, monkeypatch: pytest.M
             await asyncio.sleep(30)
             return await super().probe(source)
 
-    monkeypatch.setenv("GEMINI_API_KEY", "test-api-key-123")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-gemini-key-123")
+    monkeypatch.setenv("GROQ_API_KEY", "test-groq-key-123")
     manager = MediaJobManager(
         ConfigStore(tmp_path / "config"),
         tmp_path / "jobs",
         tools=SlowTools(),  # type: ignore[arg-type]
-        gateway_factory=FakeGateway,  # type: ignore[arg-type]
+        whisper_factory=FakeWhisper,
+        file_gateway_factory=FakeFileGateway,
     )
     await manager.start()
     try:

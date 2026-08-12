@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
-from .constants import SUPPORTED_LANGUAGES
+from .constants import SUPPORTED_LANGUAGES, VOICE_NAMES
 
 
 class Settings(BaseModel):
@@ -15,6 +15,7 @@ class Settings(BaseModel):
     original_volume: float = Field(default=0.0, ge=0.0, le=1.5)
     dub_volume: float = Field(default=1.0, ge=0.0, le=1.5)
     proxy_url: str = ""
+    voice_name: str = "Kore"
 
     @field_validator("target_language")
     @classmethod
@@ -23,8 +24,16 @@ class Settings(BaseModel):
             raise ValueError("unsupported target language")
         return value
 
+    @field_validator("voice_name")
+    @classmethod
+    def validate_voice(cls, value: str) -> str:
+        if value not in VOICE_NAMES:
+            raise ValueError("unsupported voice")
+        return value
+
 class ApiKeyInput(BaseModel):
     api_key: str = Field(min_length=10, max_length=256)
+    provider: Literal["gemini", "groq"] = "gemini"
 
 
 @dataclass(slots=True)

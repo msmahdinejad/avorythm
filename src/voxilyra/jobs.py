@@ -13,25 +13,31 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Protocol
 
 from .config import ConfigStore
-from .constants import OUTPUT_RATE, SUPPORTED_LANGUAGES
-from .gemini import GeminiGateway, NoTranslationError, SegmentTranslation, transient_live_error
-from .media import (
-    MediaKind,
-    MediaTools,
-    fixed_windows,
-    read_pcm_window,
-    speech_windows,
-    supported_media,
-    write_subtitles,
+from .constants import (
+    GROQ_FAST_MODEL,
+    GROQ_PRECISE_MODEL,
+    OUTPUT_RATE,
+    SUPPORTED_LANGUAGES,
 )
+from .gemini import GeminiFileGateway, Narration, NoTranslationError, TextTranslation
+from .groq import GroqWhisperGateway, TranscriptSegment, merge_segments, parse_transcription
+from .media import MediaKind, MediaTools, supported_media, write_subtitles
 from .quota import TokenGovernor
 from .recording import SubtitleEntry
 
 MediaMode = Literal["precise", "fast"]
-ACTIVE_STATES = {"probing", "extracting", "translating", "quota_wait", "aligning"}
+ACTIVE_STATES = {
+    "probing",
+    "extracting",
+    "transcribing",
+    "translating",
+    "narrating",
+    "quota_wait",
+    "aligning",
+}
 TERMINAL_STATES = {"ready", "cancelled", "failed"}
 OUTPUT_NAMES = {
     "original.wav",
@@ -42,6 +48,19 @@ OUTPUT_NAMES = {
 }
 
 
+class WhisperGateway(Protocol):
+    async def transcribe(self, path: Path, model: str) -> dict[str, object]: ...
+    async def close(self) -> None: ...
+
+
+class FileGateway(Protocol):
+    async def translate(
+        self, texts: list[str], source_language: str, target_language: str
+    ) -> TextTranslation: ...
+    async def narrate(self, text: str, language: str, voice_name: str) -> Narration: ...
+    async def close(self) -> None: ...
+
+
 def utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
@@ -49,9 +68,7 @@ def utc_now() -> str:
 def transcript_score(reference: str, candidate: str) -> float:
     def words(value: str) -> list[str]:
         normalized = unicodedata.normalize("NFKD", value.casefold())
-        normalized = "".join(
-            character for character in normalized if not unicodedata.combining(character)
-        )
+        normalized = "".join(c for c in normalized if not unicodedata.combining(c))
         tokens = re.findall(r"\w+", normalized, flags=re.UNICODE)
         if len(tokens) == 1 and len(tokens[0]) >= 4:
             return list(tokens[0])
@@ -64,11 +81,6 @@ def transcript_score(reference: str, candidate: str) -> float:
     sequence = SequenceMatcher(None, expected, actual).ratio()
     coverage = len(set(expected) & set(actual)) / len(set(expected))
     return round((sequence + coverage) / 2, 3)
-
-
-def complete_translation(result: SegmentTranslation, seconds: float) -> bool:
-    audio_seconds = len(result.audio) / (OUTPUT_RATE * 2)
-    return bool(result.translated_text.strip()) and audio_seconds >= min(1.0, seconds * 0.2)
 
 
 @dataclass(slots=True)
@@ -113,13 +125,15 @@ class MediaJobManager:
         *,
         tools: MediaTools | None = None,
         governor: TokenGovernor | None = None,
-        gateway_factory: Callable[[str], GeminiGateway] = GeminiGateway,
+        whisper_factory: Callable[[str], WhisperGateway] = GroqWhisperGateway,
+        file_gateway_factory: Callable[[str], FileGateway] = GeminiFileGateway,
     ) -> None:
         self.store = store
         self.root = root or store.directory / "media-jobs"
         self.tools = tools
         self.governor = governor or TokenGovernor()
-        self.gateway_factory = gateway_factory
+        self.whisper_factory = whisper_factory
+        self.file_gateway_factory = file_gateway_factory
         self.jobs: dict[str, MediaJob] = {}
         self.cancellations: dict[str, asyncio.Event] = {}
         self.queue: asyncio.Queue[str] = asyncio.Queue()
@@ -213,7 +227,6 @@ class MediaJobManager:
             raise ValueError("unsupported processing mode")
         if content_length is not None and content_length > self.MAX_UPLOAD_BYTES:
             raise ValueError("media file is larger than the 8 GB local limit")
-
         job = MediaJob(
             uuid.uuid4().hex,
             Path(filename).name,
@@ -250,7 +263,7 @@ class MediaJobManager:
         except KeyError as error:
             raise KeyError(job_id) from error
 
-    def list(self) -> list[MediaJob]:
+    def list_jobs(self) -> list[MediaJob]:
         return sorted(self.jobs.values(), key=lambda item: item.created_at, reverse=True)
 
     def path(self, job_id: str, name: str) -> Path:
@@ -305,78 +318,70 @@ class MediaJobManager:
                 current = asyncio.current_task()
                 if current is not None and current.cancelling():
                     raise
-                job = self.jobs.get(job_id)
-                if job:
+                if job := self.jobs.get(job_id):
                     self._update(job, "cancelled")
             except Exception as error:
-                job = self.jobs.get(job_id)
-                if job:
+                if job := self.jobs.get(job_id):
                     self._update(job, "failed", error=safe_error(error))
             finally:
                 self.active_task = None
                 self.active_job_id = ""
                 self.queue.task_done()
 
+    def _waiting(self, job: MediaJob, wait: float) -> None:
+        message = f"quota wait: {max(1, round(wait))}s"
+        self._update(job, "quota_wait", job.progress, error=message)
+
     async def _translate(
         self,
-        gateway: GeminiGateway,
+        gateway: FileGateway,
         job: MediaJob,
-        pcm: bytes,
-        seconds: float,
-        target_language: str | None = None,
-    ) -> SegmentTranslation:
-        estimated = max(512, round(seconds * 60) + 256)
-
-        def waiting(wait: float) -> None:
-            job.error = f"quota wait: {max(1, round(wait))}s"
-            self._update(job, "quota_wait", job.progress, error=job.error)
-
-        settings = self.store.load().model_copy(
-            update={"target_language": target_language or job.target_language}
-        )
-        for attempt in range(3):
-            charge = await self.governor.reserve(estimated, waiting)
+        segments: list[TranscriptSegment],
+    ) -> list[str]:
+        texts = [segment.text for segment in segments]
+        translated: list[str] = []
+        for start in range(0, len(texts), 50):
+            batch = texts[start : start + 50]
+            estimate = min(8_000, max(512, sum(len(text) for text in batch) // 2 + 256))
+            charge = await self.governor.reserve(estimate, lambda wait: self._waiting(job, wait))
             if job.status == "quota_wait":
                 self._update(job, "translating", job.progress)
+            result = await gateway.translate(batch, job.source_language, job.target_language)
+            await self.governor.reconcile(charge, result.total_tokens or estimate)
+            translated.extend(result.texts)
+            progress = 0.38 + 0.12 * min(1, (start + len(batch)) / len(texts))
+            self._update(job, "translating", progress)
+        return translated
+
+    async def _narrate(self, gateway: FileGateway, job: MediaJob, text: str) -> Narration:
+        estimate = min(6_000, max(512, len(text) * 4 + 256))
+        for attempt in range(3):
+            charge = await self.governor.reserve(estimate, lambda wait: self._waiting(job, wait))
+            if job.status == "quota_wait":
+                self._update(job, "narrating", job.progress)
             try:
-                result = await gateway.translate_pcm(settings, pcm)
-            except Exception as error:
-                await self.governor.reconcile(charge, estimated)
-                if attempt < 2 and transient_live_error(error):
-                    await asyncio.sleep(0.5 * (attempt + 1))
+                result = await gateway.narrate(
+                    text,
+                    job.target_language,
+                    self.store.load().voice_name,
+                )
+            except Exception:
+                await self.governor.reconcile(charge, estimate)
+                if attempt == 2:
+                    raise
+                await asyncio.sleep(0.5 * (attempt + 1))
+                continue
+            await self.governor.reconcile(charge, result.total_tokens or estimate)
+            score = transcript_score(text, result.transcript) if result.transcript else 1.0
+            if job.mode == "precise" and score < 0.72:
+                if "narration_retry" not in job.warnings:
+                    job.warnings.append("narration_retry")
+                if attempt < 2:
                     continue
-                raise
-            await self.governor.reconcile(charge, result.total_tokens or estimated)
+                if "quality_low" not in job.warnings:
+                    job.warnings.append("quality_low")
             return result
         raise AssertionError("unreachable")
-
-    async def _quality_score(
-        self,
-        gateway: GeminiGateway,
-        job: MediaJob,
-        tools: MediaTools,
-        result: SegmentTranslation,
-        fitted: bytes,
-        seconds: float,
-    ) -> float | None:
-        source_language = result.source_language.split("-")[0]
-        if (
-            source_language not in SUPPORTED_LANGUAGES
-            or source_language == job.target_language.split("-")[0]
-            or not result.source_text
-            or not result.translated_text
-        ):
-            return None
-        validation = await self._translate(
-            gateway,
-            job,
-            await tools.to_input_pcm(fitted),
-            seconds,
-            source_language,
-        )
-        fidelity = transcript_score(result.translated_text, validation.source_text)
-        meaning = transcript_score(result.source_text, validation.translated_text)
-        return round(min(fidelity, meaning), 3)
 
     async def _process(self, job: MediaJob) -> None:
         cancelled = self.cancellations.setdefault(job.id, asyncio.Event())
@@ -394,136 +399,96 @@ class MediaJobManager:
             self._update(job, "cancelled")
             return
 
-        if job.mode == "precise":
-            windows = speech_windows(
-                info.duration,
-                await tools.silences(original),
-                maximum=12,
-                minimum=5,
-            )
-        else:
-            windows = fixed_windows(info.duration)
-        if not windows:
-            raise RuntimeError("no processable audio was found")
-
-        key = self.store.get_api_key()
-        if not key:
+        gemini_key = self.store.get_api_key("gemini")
+        groq_key = self.store.get_api_key("groq")
+        if not gemini_key:
             raise RuntimeError("set Gemini API key before processing media")
+        if not groq_key:
+            raise RuntimeError("set Groq API key before processing media")
         self.store.apply_proxy(self.store.load())
-        gateway = self.gateway_factory(key)
-        source_entries: list[SubtitleEntry] = []
-        translated_entries: list[SubtitleEntry] = []
-        quality_scores: list[tuple[float, float]] = []
-        cursor_frames = 0
-        self._update(job, "translating", 0.1)
+        whisper = self.whisper_factory(groq_key)
+        gateway = self.file_gateway_factory(gemini_key)
         try:
+            self._update(job, "transcribing", 0.12)
+            chunks = await tools.transcription_chunks(
+                original,
+                folder / "whisper-chunks",
+                info.duration,
+            )
+            raw_segments: list[TranscriptSegment] = []
+            languages: list[str] = []
+            model = GROQ_PRECISE_MODEL if job.mode == "precise" else GROQ_FAST_MODEL
+            for index, chunk in enumerate(chunks):
+                payload = await whisper.transcribe(chunk.path, model)
+                transcription = parse_transcription(payload, chunk)
+                raw_segments.extend(transcription.segments)
+                if transcription.language:
+                    languages.append(transcription.language)
+                self._update(job, "transcribing", 0.12 + 0.23 * ((index + 1) / len(chunks)))
+                if cancelled.is_set():
+                    self._update(job, "cancelled")
+                    return
+            maximum_seconds = 12 if job.mode == "precise" else 16
+            segments = merge_segments(raw_segments, maximum_seconds=maximum_seconds)
+            if not segments:
+                raise RuntimeError("Groq Whisper found no speech in this media")
+            job.source_language = max(set(languages), key=languages.count) if languages else ""
+
+            self._update(job, "translating", 0.38)
+            translations = await self._translate(gateway, job, segments)
+            if len(translations) != len(segments):
+                raise RuntimeError("translation segment count does not match transcription")
+
+            source_entries = [SubtitleEntry(item.start, item.end, item.text) for item in segments]
+            translated_entries = [
+                SubtitleEntry(item.start, item.end, text)
+                for item, text in zip(segments, translations, strict=True)
+            ]
+            scores: list[tuple[float, float]] = []
+            cursor_frames = 0
+            self._update(job, "narrating", 0.52)
             with wave.open(str(folder / "dubbed.wav"), "wb") as dubbed:
                 dubbed.setnchannels(1)
                 dubbed.setsampwidth(2)
                 dubbed.setframerate(OUTPUT_RATE)
-                for index, window in enumerate(windows):
+                for index, (segment, text) in enumerate(zip(segments, translations, strict=True)):
                     if cancelled.is_set():
                         self._update(job, "cancelled")
                         return
-                    pcm = read_pcm_window(original, window)
-                    best: tuple[float, float | None, SegmentTranslation, bytes] | None = None
-                    no_translation = True
-                    attempts = 3 if job.mode == "precise" else 1
-                    for attempt in range(attempts):
-                        try:
-                            result = await self._translate(gateway, job, pcm, window.duration)
-                        except NoTranslationError:
-                            if "segment_skipped" not in job.warnings:
-                                job.warnings.append("segment_skipped")
-                            break
-                        except Exception as error:
-                            if best is not None and transient_live_error(error):
-                                if "network_recovered" not in job.warnings:
-                                    job.warnings.append("network_recovered")
-                                break
-                            raise
-                        no_translation = no_translation and not (
-                            result.audio or result.translated_text
-                        )
-                        if not complete_translation(result, window.duration):
-                            continue
-                        fitted, _ = await tools.fit_dubbed(
-                            result.audio,
-                            window.duration,
-                            job.mode == "precise",
-                        )
-                        quality = None
-                        if best is None:
-                            best = (0.0, None, result, fitted)
-                        try:
-                            if job.mode == "precise":
-                                quality = await self._quality_score(
-                                    gateway,
-                                    job,
-                                    tools,
-                                    result,
-                                    fitted,
-                                    window.duration,
-                                )
-                        except Exception as error:
-                            if transient_live_error(error):
-                                if "network_recovered" not in job.warnings:
-                                    job.warnings.append("network_recovered")
-                                break
-                            raise
-                        score = quality if quality is not None else (-1.0 if best else 0.0)
-                        if best is None or score > best[0]:
-                            best = (score, quality, result, fitted)
-                        if quality is None or quality >= 0.62:
-                            break
-                        if attempt == 0 and "quality_retry" not in job.warnings:
-                            job.warnings.append("quality_retry")
-                    if best is None and no_translation:
-                        warning = (
-                            "segment_skipped"
-                            if "segment_skipped" in job.warnings
-                            else "non_speech_skipped"
-                        )
-                        if warning not in job.warnings:
-                            job.warnings.append(warning)
-                        progress = 0.1 + 0.78 * ((index + 1) / len(windows))
-                        self._update(job, "translating", progress)
+                    try:
+                        narration = await self._narrate(gateway, job, text)
+                    except NoTranslationError:
+                        if "segment_skipped" not in job.warnings:
+                            job.warnings.append("segment_skipped")
                         continue
-                    if best is None:
-                        raise RuntimeError("Gemini Live returned incomplete translated speech")
-                    _, quality, result, fitted = best
-                    if job.mode == "precise" and quality is not None:
-                        quality_scores.append((quality, window.duration))
-                        if quality < 0.62 and "quality_low" not in job.warnings:
-                            job.warnings.append("quality_low")
-                    elif job.mode == "precise" and "quality_unverified" not in job.warnings:
-                        job.warnings.append("quality_unverified")
-                    if result.source_language:
-                        job.source_language = result.source_language
-                    start_frame = round(window.start * OUTPUT_RATE)
+                    fitted, _ = await tools.fit_dubbed(
+                        narration.audio,
+                        segment.duration,
+                        job.mode == "precise",
+                    )
+                    start_frame = round(segment.start * OUTPUT_RATE)
                     if start_frame > cursor_frames:
                         dubbed.writeframesraw(b"\0" * (start_frame - cursor_frames) * 2)
                     dubbed.writeframesraw(fitted)
                     cursor_frames = start_frame + len(fitted) // 2
-                    if result.source_text:
-                        source_entries.append(
-                            SubtitleEntry(window.start, window.end, result.source_text)
+                    if narration.transcript:
+                        scores.append(
+                            (transcript_score(text, narration.transcript), segment.duration)
                         )
-                    if result.translated_text:
-                        translated_entries.append(
-                            SubtitleEntry(window.start, window.end, result.translated_text)
-                        )
-                    progress = 0.1 + 0.78 * ((index + 1) / len(windows))
-                    self._update(job, "translating", progress)
+                    self._update(job, "narrating", 0.52 + 0.36 * ((index + 1) / len(segments)))
                 total_frames = round(info.duration * OUTPUT_RATE)
                 if total_frames > cursor_frames:
                     dubbed.writeframesraw(b"\0" * (total_frames - cursor_frames) * 2)
+            if scores:
+                job.quality_score = round(
+                    sum(score * seconds for score, seconds in scores)
+                    / sum(seconds for _, seconds in scores),
+                    3,
+                )
         finally:
+            await whisper.close()
             await gateway.close()
-
-        if quality_scores:
-            weighted = sum(score * seconds for score, seconds in quality_scores)
-            job.quality_score = round(weighted / sum(seconds for _, seconds in quality_scores), 3)
+            shutil.rmtree(folder / "whisper-chunks", ignore_errors=True)
 
         self._update(job, "aligning", 0.92)
         write_subtitles(folder / "source.srt", source_entries)

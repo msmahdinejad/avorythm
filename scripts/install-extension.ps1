@@ -8,11 +8,11 @@ $source = if (Test-Path -LiteralPath (Join-Path $installedSource "manifest.json"
     $repositorySource
 }
 if (-not (Test-Path -LiteralPath (Join-Path $source "manifest.json"))) {
-    throw "LingoDub extension files were not found."
+    throw "Voxilyra extension files were not found."
 }
 
-$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "LingoDub\Extension"))
-$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "LingoDub"))
+$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Voxilyra\Extension"))
+$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Voxilyra"))
 if (-not $destination.StartsWith($expectedRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Unsafe extension destination."
 }

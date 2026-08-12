@@ -1,32 +1,31 @@
 # Architecture
 
-LingoDub contains two independent products. The Windows app handles desktop audio and uploaded files; the Manifest V3 extension handles browser-tab audio. Neither product starts, configures, authenticates, or transports audio for the other.
+Voxilyra contains two independent products. The Windows app handles desktop audio and uploaded files; the Manifest V3 extension handles browser-tab audio. Neither product depends on the other.
 
 ## Product boundaries
 
-| Product | Capture/input | Gemini connection | Credentials | Outputs |
+| Product | Input | AI path | Credentials | Outputs |
 |---|---|---|---|---|
-| Windows live app | WASAPI loopback | Python `google-genai` Live API | Windows Credential Manager or private `.env` | playback + WAV/SRT/ZIP |
-| Windows Media Studio | local audio/video → FFmpeg PCM | sequential real-time Live sessions | same desktop key | media player + four files + ZIP |
+| Windows live app | WASAPI loopback | Gemini 3.5 Live Translate | Gemini key in Windows Credential Manager | playback + WAV/SRT/ZIP |
+| Windows Media Studio | local audio/video + FFmpeg | Groq Whisper → Gemini text → Gemini Live speech | separate Groq and Gemini keys in Credential Manager | player + four files + ZIP |
 | Browser extension | `chrome.tabCapture` + AudioWorklet | direct Gemini Live WebSocket | `chrome.storage.session` | playback + four Downloads files |
-
-Every path uses only `gemini-3.5-live-translate-preview`. There is no secondary TTS, STT, Files, Batch, or Generate Content model.
 
 ## Desktop modules
 
-| Module | Owns | Does not own |
-|---|---|---|
-| `ConfigStore` | desktop settings, keyring, `.env`, proxy environment | HTTP or Gemini calls |
-| `AudioEngine` | WASAPI capture, PCM conversion, mixed playback | translation policy |
-| `GeminiGateway` | Google SDK and Live Translate protocol | devices, persistence, UI |
-| `DubRuntime` | live session lifecycle and reconnection | browser APIs |
-| `MediaJobManager` | uploads, queue, recovery, cancellation, orchestration | FFmpeg process details |
-| `MediaTools` | probe, extraction, silence cuts, time fitting, archive | Gemini or job policy |
-| `TokenGovernor` | rolling 60-second local reservations | Google account quotas |
-| `SessionRecorder` | desktop WAV/SRT/ZIP output | playback or translation |
-| FastAPI app | local dashboard, safe files, HTTP range | extension traffic |
+| Module | Responsibility |
+|---|---|
+| `ConfigStore` | settings, separate keyring secrets, legacy Gemini-key fallback, proxy environment |
+| `AudioEngine` | WASAPI capture, PCM conversion, mixed playback |
+| `GeminiGateway` | continuous Gemini 3.5 Live Translate protocol |
+| `GeminiFileGateway` | structured text translation and exact-text Gemini Live narration |
+| `GroqWhisperGateway` | authenticated Whisper multipart requests, retries, response errors |
+| `DubRuntime` | desktop live lifecycle and reconnects |
+| `MediaJobManager` | upload queue, recovery, cancellation, quota, and file-pipeline orchestration |
+| `MediaTools` | FFprobe, extraction, Groq-safe FLAC chunks, time fitting, archive |
+| `TokenGovernor` | conservative 60-second Gemini reservations |
+| FastAPI app | local dashboard and allowlisted files |
 
-Media-job manifests are atomically persisted. Active jobs recover as queued after a restart. One worker processes one real-time stream at a time, and cancellation propagates into network waits and FFmpeg subprocesses.
+Media manifests are atomically persisted. One worker processes one file at a time. Cancellation propagates into network waits and exact FFmpeg subprocesses.
 
 ## Uploaded-media sequence
 
@@ -35,69 +34,47 @@ sequenceDiagram
     actor User
     participant UI as Media Studio
     participant Jobs as MediaJobManager
-    participant FFmpeg as FFmpeg/FFprobe
-    participant Live as Gemini 3.5 Live Translate
-    participant Player as Synchronized player
-    User->>UI: Select local audio/video and mode
-    UI->>Jobs: Stream raw upload to localhost
-    Jobs->>FFmpeg: Probe and extract 16 kHz mono PCM
-    Jobs->>FFmpeg: Find safe silence boundaries
-    loop each bounded window
-      Jobs->>Jobs: Reserve rolling token budget
-      Jobs->>Live: Stream 100 ms PCM chunks in real time
-      Live-->>Jobs: 24 kHz translated PCM + both transcripts
-      Jobs->>FFmpeg: Fit translated speech to the window
-      Jobs->>Live: Back-check fitted dub in Precise mode
-      Live-->>Jobs: Heard target speech + round-trip meaning
+    participant FFmpeg
+    participant Groq as Groq Whisper
+    participant Text as Gemini 3.1 Flash Lite
+    participant Voice as Gemini 3.1 Flash Live
+    participant Player
+    User->>UI: Select media, language, mode, voice
+    UI->>Jobs: Stream upload to localhost
+    Jobs->>FFmpeg: Probe and extract 16 kHz mono WAV
+    Jobs->>FFmpeg: Create overlapping FLAC chunks
+    loop each chunk
+      Jobs->>Groq: Transcribe with segment timestamps
+      Groq-->>Jobs: Language + timestamped text
+      Jobs->>Jobs: Keep only non-overlapping core timestamps
     end
-    Jobs->>Jobs: Write WAV, SRT, VTT, and ZIP
-    UI->>Player: Load media, dubbed WAV, and both VTT tracks
+    Jobs->>Text: Translate bounded JSON batches
+    Text-->>Jobs: One translation per stable segment id
+    loop each translated segment
+      Jobs->>Jobs: Reserve rolling Gemini budget
+      Jobs->>Voice: Render supplied text with selected voice
+      Voice-->>Jobs: 24 kHz PCM + output transcript
+      Jobs->>Jobs: Retry a mismatch in Precise mode
+      Jobs->>FFmpeg: Fit speech into original time window
+    end
+    Jobs->>Jobs: Write WAV, SRT, VTT, ZIP
+    UI->>Player: Load source, dub, and two subtitle tracks
     Player->>Player: Source master clock + drift correction
 ```
 
-The uploaded source never leaves localhost. Only extracted PCM goes to Google. Precise mode removes Live stream padding, validates the actual fitted speech with the same model, retries once below the confidence threshold, and keeps a visible warning if the preview model still disagrees. The default local governor is 15,000 estimated tokens per rolling minute, below the 20,000 requested ceiling.
+The source file never leaves localhost. Audio chunks are the only uploaded-media bytes sent to Groq. Gemini receives transcript text for translation and translated text for narration. `whisper-large-v3` is the default accuracy model; Fast mode uses `whisper-large-v3-turbo`. Structured translation preserves segment IDs and rejects missing results.
 
-## Standalone extension sequence
+## Standalone extension
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant Popup as Extension popup
-    participant SW as MV3 service worker
-    participant Audio as Offscreen AudioWorklet
-    participant Gemini as Gemini Live API
-    User->>Popup: Enter session key and Start
-    Popup->>SW: Target, mix, recording
-    SW->>Audio: User-selected tab stream ID
-    Audio->>Audio: Capture and replace direct tab playback
-    Audio->>Gemini: 16 kHz PCM over direct WSS
-    Gemini-->>Audio: 24 kHz PCM and transcripts
-    Audio->>Audio: Dub/original/auto-duck mix
-    Audio-->>SW: Status and transcripts
-    opt GoAway or connection rotation
-      Audio->>Gemini: Reconnect with bounded backoff
-    end
-    opt Recording
-      Audio->>Audio: Stream WAV data into temporary OPFS
-      Audio->>SW: Download four local files
-    end
-```
+The extension continues to use `gemini-3.5-live-translate-preview` because that model natively translates live speech. `chrome.tabCapture` replaces direct tab playback, so the offscreen document recreates exactly the original/dub mix selected by the user. Its long-lived Gemini key is session-only; a public Store deployment should replace it with an authenticated ephemeral-token service.
 
-## Security boundaries
+## Security and quotas
 
-- The app binds only to `127.0.0.1:8765`; no extension endpoint exists.
-- File endpoints use allowlists and validated job IDs; Starlette `FileResponse` provides byte ranges for media seeking.
-- The extension has no localhost permission, content scripts, remote executable code, or arbitrary-site host access.
-- Extension preferences use `chrome.storage.local`; the BYOK key uses session storage and clears when the browser fully exits.
-- Extension audio is sent only after an explicit Start action and only to `generativelanguage.googleapis.com`.
-- A production store deployment should replace direct long-lived BYOK with an authenticated ephemeral-token broker, as recommended by Google.
+- The app binds only to `127.0.0.1:8765`.
+- Job IDs and downloadable filenames are allowlisted.
+- Gemini and Groq secrets are never serialized into settings or job manifests.
+- The default Gemini governor reserves no more than 15,000 estimated tokens per rolling 60 seconds.
+- Groq requests are sequential, use sub-25 MB FLAC chunks, honor `Retry-After`, and retry only 429/5xx failures.
+- The extension has no localhost permission, content script, remote executable code, or arbitrary-site host access.
 
-## Audio contracts
-
-- Input: signed 16-bit little-endian mono PCM at 16 kHz in 100 ms chunks.
-- Output: signed 16-bit little-endian mono PCM at 24 kHz.
-- Browser downsampling stays off the popup thread in an AudioWorklet.
-- Desktop PortAudio callbacks use queues and never block on network work.
-- Long Live sessions reconnect automatically; gaps during reconnection remain silence in recordings.
-
-No JavaScript framework, bundler, remote code, or database is required.
+No JavaScript framework, bundler, database, task broker, or cloud storage is required.

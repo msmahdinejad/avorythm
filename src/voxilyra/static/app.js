@@ -1,6 +1,6 @@
 const $ = (selector) => document.querySelector(selector);
 const API = '/api';
-let locale = localStorage.getItem('lingodub.locale') || 'fa';
+let locale = localStorage.getItem('voxilyra.locale') || 'fa';
 let bootstrap = null;
 let lastError = '';
 let selectedMediaFile = null;
@@ -25,14 +25,14 @@ const messages = {
     recordHint: 'هنگام دوبله، ضبط را روشن کن تا چهار فایل هماهنگ ساخته شود.', downloadAll: 'دریافت همه',
     controls: 'کنترل‌ها', settings: 'تنظیمات', quickSetup: 'تنظیم دستی صدای برنامه‌ها',
     setupDescription: 'یک مرحله در Windows Volume Mixer',
-    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی LingoDub را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
+    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی Voxilyra را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
     openWindowsMixer: 'باز کردن میکسر صدای ویندوز', audioGuide: 'آموزش تصویری تنظیم صدا',
-    targetLanguage: 'زبان مقصد', speaker: 'گوینده', nativeVoice: 'صدای خودکار Gemini Live',
-    nativeVoiceHelp: 'Gemini Live صدای گوینده را خودکار بازتولید می‌کند.', captureDevice: 'ورودی صدای برنامه',
+    targetLanguage: 'زبان مقصد', speaker: 'گویندهٔ فایل',
+    nativeVoiceHelp: 'برای دوبلهٔ فایل با Gemini Live؛ صدای زنده خودکار است.', captureDevice: 'ورودی صدای برنامه',
     outputDevice: 'خروجی شنیداری', soundMix: 'ترکیب صدا', soundMixHint: 'هر کدام را مستقل بشنو',
     originalSound: 'صدای اصلی', dubbedSound: 'صدای دوبله', advanced: 'تنظیمات پیشرفته', save: 'ذخیره',
     proxy: 'پروکسی', saveSettings: 'ذخیرهٔ تنظیمات', saved: 'ذخیره شد.', keySaved: 'کلید امن ذخیره شد.',
-    keyExists: 'کلید API تنظیم شده است', keyMissing: 'کلید API را وارد کنید',
+    keyExists: 'کلید API تنظیم شده است', keyMissing: 'کلید API را وارد کنید', groqKeyMissing: 'برای پردازش فایل، Groq API Key را در تنظیمات پیشرفته وارد کنید.',
     mixerOpened: 'میکسر ویندوز باز شد؛ مسیر AMM را طبق آموزش تنظیم کن.', requestFailed: 'درخواست انجام نشد',
     recordingReady: 'چهار خروجی آماده است', selectDefault: 'پیش‌فرض سیستم',
     locationUnsupported: 'Google این API Key یا موقعیت اتصال را مجاز نمی‌داند؛ حساب و خروجی پروکسی را بررسی کن.',
@@ -40,10 +40,10 @@ const messages = {
     mediaIntro: 'صوت یا ویدئو را محلی پردازش کن، چهار خروجی بگیر و دوبله را روی تایم‌لاین هماهنگ پخش کن.',
     chooseVideo: 'فایل صوتی یا ویدئویی را انتخاب یا اینجا رها کن', videoFormats: 'MP3، WAV، M4A، FLAC، OGG، MP4، MKV و فرمت‌های رایج تا ۸ گیگابایت',
     processingMode: 'حالت پردازش', preciseMode: 'سینک دقیق',
-    preciseHelp: 'پیشنهادی؛ دوبله را با ترجمهٔ معکوس کنترل می‌کند و قطعهٔ ضعیف را دوباره می‌سازد.', fastMode: 'سریع',
-    fastHelp: 'یک‌بار ترجمه بدون کنترل معنایی؛ برای پیش‌نمایش سریع‌تر.', fileTargetLanguage: 'زبان دوبلهٔ فایل',
+    preciseHelp: 'Whisper Large v3 و کنترل متن صدای تولیدشده؛ پیشنهاد ما.', fastMode: 'سریع',
+    fastHelp: 'Whisper Large v3 Turbo با کنترل کمتر برای پیش‌نمایش سریع.', fileTargetLanguage: 'زبان دوبلهٔ فایل',
     processVideo: 'شروع پردازش فایل',
-    mediaPrivacy: 'خود فایل روی لپ‌تاپ می‌ماند؛ PCM استخراج‌شده و در حالت دقیق، PCM دوبله برای کنترل معنایی به همان Gemini Live فرستاده می‌شود.',
+    mediaPrivacy: 'فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.',
     cancel: 'لغو', deleteJob: 'حذف پروژه', recentJobs: 'پروژه‌های اخیر', storedLocally: 'ذخیره‌شده روی همین دستگاه',
     noJobs: 'هنوز فایل صوتی یا ویدئویی پردازش نشده است.', playerWaiting: 'پس از آماده‌شدن فایل، پلیر هماهنگ اینجا فعال می‌شود.',
     hearOriginal: 'صدای اصلی', hearDubbed: 'صدای دوبله', sourceSubs: 'زیرنویس اصلی',
@@ -53,10 +53,10 @@ const messages = {
     uploadFirst: 'ابتدا یک فایل صوتی یا ویدئویی انتخاب کن.', mediaQueued: 'فایل ذخیره شد و در صف پردازش است.',
     confirmDelete: 'این پروژه و همهٔ خروجی‌های محلی آن حذف شود؟', open: 'بازکردن',
     stageQueued: 'در صف', stageProbing: 'بررسی فایل', stageExtracting: 'استخراج صدا',
-    stageTranslating: 'ترجمه با Gemini Live', stageQuotaWait: 'انتظار برای سهمیه', stageAligning: 'هماهنگ‌سازی خروجی‌ها',
+    stageTranscribing: 'تبدیل صدا به متن با Groq Whisper', stageTranslating: 'ترجمه با Gemini 3.1 Flash Lite', stageNarrating: 'ساخت صدای دوبله با Gemini Live', stageQuotaWait: 'انتظار برای سهمیه', stageAligning: 'هماهنگ‌سازی خروجی‌ها',
     stageReady: 'آمادهٔ پخش', stageFailed: 'ناموفق', stageCancelled: 'لغوشده', stageCancelling: 'در حال لغو',
-    quotaNotice: 'برای ماندن زیر سقف توکن، پردازش خودکار مکث کرده است.', processingWarning: 'حالت دقیق صوت دوبله را دوباره با Gemini کنترل می‌کند و در صورت retry ممکن است چهار تا هشت برابر مدت فایل زمان ببرد.',
-    qualityScore: 'اطمینان معنایی', quality_retry: 'یک قطعه به‌دلیل اختلاف صوت و متن دوباره تولید شد.',
+    quotaNotice: 'برای ماندن زیر سقف ۲۰ هزار توکن در دقیقه، پردازش خودکار مکث کرده است.', processingWarning: 'حالت دقیق از Whisper دقیق‌تر استفاده می‌کند و متن صدای ساخته‌شده را برای هر قطعه کنترل می‌کند.',
+    qualityScore: 'تطابق گفتار و ترجمه', narration_retry: 'یک قطعه به‌دلیل اختلاف صوت و متن دوباره تولید شد.',
     quality_low: 'کیفیت یک قطعه پایین ماند؛ متن و صوت را پیش از استفادهٔ نهایی بررسی کن.',
     quality_unverified: 'زبان مبدأ برای کنترل خودکار کیفیت قابل تشخیص نبود؛ خروجی را دستی بررسی کن.',
     network_recovered: 'اتصال موقتاً قطع شد؛ برنامه از آخرین خروجی معتبر استفاده کرد.',
@@ -76,14 +76,14 @@ const messages = {
     recordHint: 'Enable recording while dubbing to create four synchronized files.', downloadAll: 'Download all',
     controls: 'CONTROLS', settings: 'Settings', quickSetup: 'Manual desktop audio setup',
     setupDescription: 'One step in Windows Volume Mixer',
-    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep LingoDub on physical headphones. The extension and file processor do not need this route.',
+    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep Voxilyra on physical headphones. The extension and file processor do not need this route.',
     openWindowsMixer: 'Open Windows volume mixer', audioGuide: 'Open the visual audio guide',
-    targetLanguage: 'Target language', speaker: 'Speaker', nativeVoice: 'Automatic Gemini Live voice',
-    nativeVoiceHelp: 'Gemini Live automatically reproduces the speaker voice.', captureDevice: 'Application audio input',
+    targetLanguage: 'Target language', speaker: 'File dubbing voice',
+    nativeVoiceHelp: 'Used for file dubbing with Gemini Live; live translation keeps its automatic voice.', captureDevice: 'Application audio input',
     outputDevice: 'Listening output', soundMix: 'Audio mix', soundMixHint: 'Listen independently',
     originalSound: 'Original audio', dubbedSound: 'Dubbed audio', advanced: 'Advanced settings', save: 'Save',
     proxy: 'Proxy', saveSettings: 'Save settings', saved: 'Saved.', keySaved: 'Key stored securely.',
-    keyExists: 'API key is configured', keyMissing: 'Enter an API key',
+    keyExists: 'API key is configured', keyMissing: 'Enter an API key', groqKeyMissing: 'Enter a Groq API key in Advanced settings to process files.',
     mixerOpened: 'Windows mixer opened; follow the AMM route in the guide.', requestFailed: 'Request failed',
     recordingReady: 'Four outputs are ready', selectDefault: 'System default',
     locationUnsupported: 'Google does not allow this API key or connection location; check the account and proxy exit.',
@@ -91,10 +91,10 @@ const messages = {
     mediaIntro: 'Process locally, download four outputs, and play the dub on a drift-free timeline.',
     chooseVideo: 'Choose an audio or video file or drop it here', videoFormats: 'MP3, WAV, M4A, FLAC, OGG, MP4, MKV, and common formats up to 8 GB',
     processingMode: 'Processing mode', preciseMode: 'Precise sync',
-    preciseHelp: 'Recommended; back-checks dubbed speech and retries a weak segment.', fastMode: 'Fast',
-    fastHelp: 'Single-pass translation without the semantic quality check.', fileTargetLanguage: 'File target language',
+    preciseHelp: 'Whisper Large v3 plus generated-speech transcript checks; recommended.', fastMode: 'Fast',
+    fastHelp: 'Whisper Large v3 Turbo with fewer checks for a faster preview.', fileTargetLanguage: 'File target language',
     processVideo: 'Process file',
-    mediaPrivacy: 'The file stays on this laptop; extracted PCM and, in Precise mode, dubbed PCM for the semantic check are sent to the same Gemini Live model.',
+    mediaPrivacy: 'The file stays on this laptop; audio chunks go to Groq Whisper, text to Gemini, and translated text to Gemini Live for speech.',
     cancel: 'Cancel', deleteJob: 'Delete project', recentJobs: 'Recent projects', storedLocally: 'Stored on this device',
     noJobs: 'No audio or video file has been processed yet.', playerWaiting: 'The synchronized player appears after processing finishes.',
     hearOriginal: 'Original audio', hearDubbed: 'Dubbed audio', sourceSubs: 'Source subtitles',
@@ -104,10 +104,10 @@ const messages = {
     uploadFirst: 'Choose an audio or video file first.', mediaQueued: 'File stored and queued for processing.',
     confirmDelete: 'Delete this project and all of its local outputs?', open: 'Open',
     stageQueued: 'Queued', stageProbing: 'Inspecting file', stageExtracting: 'Extracting audio',
-    stageTranslating: 'Translating with Gemini Live', stageQuotaWait: 'Waiting for quota', stageAligning: 'Aligning outputs',
+    stageTranscribing: 'Transcribing with Groq Whisper', stageTranslating: 'Translating with Gemini 3.1 Flash Lite', stageNarrating: 'Generating dub with Gemini Live', stageQuotaWait: 'Waiting for quota', stageAligning: 'Aligning outputs',
     stageReady: 'Ready to play', stageFailed: 'Failed', stageCancelled: 'Cancelled', stageCancelling: 'Cancelling',
-    quotaNotice: 'Processing paused automatically to stay below the token ceiling.', processingWarning: 'Precise mode checks dubbed speech with Gemini and can take four to eight times the file duration when a retry is needed.',
-    qualityScore: 'Semantic confidence', quality_retry: 'A segment was regenerated because its audio and transcript disagreed.',
+    quotaNotice: 'Processing paused automatically to stay below 20,000 tokens per minute.', processingWarning: 'Precise mode uses the more accurate Whisper model and checks each generated speech transcript.',
+    qualityScore: 'Speech-to-translation match', narration_retry: 'A segment was regenerated because its audio and transcript disagreed.',
     quality_low: 'A segment remained low-confidence; review its audio and transcript before final use.',
     quality_unverified: 'The source language could not be identified for automatic quality checking; review the output manually.',
     network_recovered: 'The connection briefly dropped; the last valid result was preserved.',
@@ -173,6 +173,8 @@ function translatePage() {
   if (bootstrap) {
     fillLanguages($('#targetLanguage'), bootstrap.languages, $('#targetLanguage').value || bootstrap.settings.target_language);
     fillLanguages($('#mediaTargetLanguage'), bootstrap.languages, $('#mediaTargetLanguage').value || bootstrap.settings.target_language);
+    $('#keyStatus').textContent = t(bootstrap.gemini_key_set ? 'keyExists' : 'keyMissing');
+    $('#groqKeyStatus').textContent = t(bootstrap.groq_key_set ? 'keyExists' : 'keyMissing');
   }
   if (currentJob) renderJob(currentJob);
   renderRecentJobs();
@@ -185,7 +187,8 @@ function formSettings() {
     output_device: Number($('#outputDevice').value),
     original_volume: Number($('#originalVolume').value),
     dub_volume: Number($('#dubVolume').value),
-    proxy_url: $('#proxyUrl').value.trim()
+    proxy_url: $('#proxyUrl').value.trim(),
+    voice_name: $('#voice').value
   };
 }
 
@@ -194,6 +197,7 @@ function applySettings(settings) {
   fillLanguages($('#mediaTargetLanguage'), bootstrap.languages, settings.target_language);
   fillSelect($('#captureDevice'), bootstrap.devices.captures, settings.capture_device);
   fillSelect($('#outputDevice'), bootstrap.devices.outputs, settings.output_device);
+  fillSelect($('#voice'), bootstrap.voices, settings.voice_name, (voice) => voice);
   $('#proxyUrl').value = settings.proxy_url;
   $('#originalVolume').value = settings.original_volume;
   $('#dubVolume').value = settings.dub_volume;
@@ -209,7 +213,8 @@ function updateRangeLabels() {
 async function loadBootstrap() {
   bootstrap = await request('/bootstrap');
   applySettings(bootstrap.settings);
-  $('#keyStatus').textContent = t(bootstrap.api_key_set ? 'keyExists' : 'keyMissing');
+  $('#keyStatus').textContent = t(bootstrap.gemini_key_set ? 'keyExists' : 'keyMissing');
+  $('#groqKeyStatus').textContent = t(bootstrap.groq_key_set ? 'keyExists' : 'keyMissing');
   translatePage();
 }
 
@@ -318,7 +323,8 @@ function selectMediaFile(file) {
 
 async function processMedia() {
   if (!selectedMediaFile) return notify(t('uploadFirst'));
-  if (!bootstrap.api_key_set) return notify(t('keyMissing'));
+  if (!bootstrap.gemini_key_set) return notify(t('keyMissing'));
+  if (!bootstrap.groq_key_set) return notify(t('groqKeyMissing'));
   const mode = document.querySelector('input[name="mediaMode"]:checked').value;
   const query = new URLSearchParams({
     filename: selectedMediaFile.name,
@@ -424,7 +430,7 @@ async function loadPlayer(job) {
 
 $('#localeToggle').addEventListener('click', () => {
   locale = locale === 'fa' ? 'en' : 'fa';
-  localStorage.setItem('lingodub.locale', locale);
+  localStorage.setItem('voxilyra.locale', locale);
   translatePage();
 });
 $('#settingsForm').addEventListener('submit', async (event) => {
@@ -439,10 +445,22 @@ $('#saveKeyButton').addEventListener('click', async () => {
   const apiKey = $('#apiKey').value.trim();
   if (!apiKey) return notify(t('keyMissing'));
   try {
-    await request('/key', {method: 'POST', body: JSON.stringify({api_key: apiKey})});
+    await request('/key', {method: 'POST', body: JSON.stringify({api_key: apiKey, provider: 'gemini'})});
     $('#apiKey').value = '';
     $('#keyStatus').textContent = t('keyExists');
     bootstrap.api_key_set = true;
+    bootstrap.gemini_key_set = true;
+    notify(t('keySaved'), true);
+  } catch (error) { notify(error.message); }
+});
+$('#saveGroqKeyButton').addEventListener('click', async () => {
+  const apiKey = $('#groqApiKey').value.trim();
+  if (!apiKey) return notify(t('keyMissing'));
+  try {
+    await request('/key', {method: 'POST', body: JSON.stringify({api_key: apiKey, provider: 'groq'})});
+    $('#groqApiKey').value = '';
+    $('#groqKeyStatus').textContent = t('keyExists');
+    bootstrap.groq_key_set = true;
     notify(t('keySaved'), true);
   } catch (error) { notify(error.message); }
 });

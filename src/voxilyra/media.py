@@ -70,6 +70,14 @@ class TimeWindow:
         return self.end - self.start
 
 
+@dataclass(frozen=True, slots=True)
+class TranscriptionChunk:
+    path: Path
+    start: float
+    core_start: float
+    core_end: float
+
+
 def parse_silences(output: str) -> list[TimeWindow]:
     starts = [float(value) for value in re.findall(r"silence_start:\s*([0-9.]+)", output)]
     ends = [float(value) for value in re.findall(r"silence_end:\s*([0-9.]+)", output)]
@@ -237,6 +245,50 @@ class MediaTools:
             "pcm_s16le",
             str(destination),
         )
+
+    async def transcription_chunks(
+        self,
+        source_wav: Path,
+        directory: Path,
+        duration: float,
+        *,
+        core_seconds: float = 480,
+        overlap_seconds: float = 1.5,
+    ) -> list[TranscriptionChunk]:
+        """Create Groq-safe FLAC chunks with context around each non-overlapping core."""
+
+        directory.mkdir(parents=True, exist_ok=True)
+        chunks: list[TranscriptionChunk] = []
+        for index, core_start in enumerate(
+            float(value) for value in range(0, math.ceil(duration), round(core_seconds))
+        ):
+            if core_start >= duration:
+                break
+            core_end = min(duration, core_start + core_seconds)
+            start = max(0.0, core_start - overlap_seconds)
+            end = min(duration, core_end + overlap_seconds)
+            path = directory / f"chunk-{index:04d}.flac"
+            await self._run(
+                self.ffmpeg,
+                "-y",
+                "-v",
+                "error",
+                "-ss",
+                f"{start:.6f}",
+                "-t",
+                f"{end - start:.6f}",
+                "-i",
+                str(source_wav),
+                "-ac",
+                "1",
+                "-ar",
+                str(INPUT_RATE),
+                "-c:a",
+                "flac",
+                str(path),
+            )
+            chunks.append(TranscriptionChunk(path, start, core_start, core_end))
+        return chunks
 
     async def silences(self, source_wav: Path) -> list[TimeWindow]:
         _, stderr = await self._run(

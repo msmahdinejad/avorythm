@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from lingodub.quota import TokenGovernor
+from voxilyra.quota import TokenGovernor
 
 
 @pytest.mark.asyncio

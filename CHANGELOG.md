@@ -4,6 +4,25 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-13
+
+### Added
+
+- Groq Whisper Large v3/turbo transcription with timestamp-preserving FLAC chunking.
+- Structured Gemini 3.1 Flash Lite translation and Gemini 3.1 Flash Live file narration.
+- Separate Groq/Gemini key management and a selectable file-dubbing voice.
+- New Voxilyra brand, generated logo, English README dashboard, and bilingual documentation.
+
+### Changed
+
+- Replaced uploaded-media Gemini Live Translate speech-to-speech processing with a three-stage transcription, translation, and narration pipeline.
+- Renamed the package, executable, installer, extension, artifacts, and user-facing documentation.
+
+### Fixed
+
+- Preserve Whisper timestamps across overlapped long-file chunks without duplicate boundary segments.
+- Retry only mismatched Gemini Live narration segments and keep traffic below the local rolling ceiling.
+
 ## [0.5.1] - 2026-08-12
 
 ### Fixed
@@ -100,7 +119,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- New generated LingoDub brand mark across the app, installer, extension, and documentation.
+- New generated Voxilyra brand mark across the app, installer, extension, and documentation.
 - Bilingual in-app audio-routing guide with a Windows Volume Mixer illustration.
 - Post-install helper that prepares the unpacked extension folder and opens the browser setup page.
 
@@ -122,12 +141,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingodub/compare/v0.5.1...HEAD
-[0.5.1]: https://github.com/msmahdinejad/lingodub/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/msmahdinejad/lingodub/compare/v0.4.1...v0.5.0
-[0.4.1]: https://github.com/msmahdinejad/lingodub/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/msmahdinejad/lingodub/compare/v0.3.1...v0.4.0
-[0.3.1]: https://github.com/msmahdinejad/lingodub/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/msmahdinejad/lingodub/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/msmahdinejad/lingodub/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/msmahdinejad/lingodub/releases/tag/v0.1.0
+[Unreleased]: https://github.com/msmahdinejad/voxilyra/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/msmahdinejad/voxilyra/releases/tag/v0.1.0

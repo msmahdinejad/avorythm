@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from lingodub.config import ConfigStore
-from lingodub.models import Settings
+from voxilyra.config import ConfigStore
+from voxilyra.models import Settings
 
 
 def test_settings_are_saved_atomically_without_api_key(tmp_path: Path) -> None:
@@ -28,11 +28,11 @@ def test_api_key_is_delegated_to_os_keyring(
     saved: dict[str, str] = {}
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.setattr(
-        "lingodub.config.keyring.set_password",
+        "voxilyra.config.keyring.set_password",
         lambda service, user, key: saved.update(key=key),
     )
     monkeypatch.setattr(
-        "lingodub.config.keyring.get_password",
+        "voxilyra.config.keyring.get_password",
         lambda service, user: saved.get("key"),
     )
     store = ConfigStore(tmp_path)
@@ -41,3 +41,27 @@ def test_api_key_is_delegated_to_os_keyring(
 
     assert store.get_api_key() == "test-secret-key"
     assert not store.path.exists()
+
+
+def test_groq_key_is_separate_from_gemini_key(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    saved: dict[str, str] = {}
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setattr(
+        "voxilyra.config.keyring.set_password",
+        lambda service, user, key: saved.__setitem__(service, key),
+    )
+    monkeypatch.setattr(
+        "voxilyra.config.keyring.get_password",
+        lambda service, user: saved.get(service),
+    )
+    store = ConfigStore(tmp_path)
+
+    store.set_api_key("gemini-secret-key", "gemini")
+    store.set_api_key("groq-secret-key", "groq")
+
+    assert store.get_api_key("gemini") == "gemini-secret-key"
+    assert store.get_api_key("groq") == "groq-secret-key"

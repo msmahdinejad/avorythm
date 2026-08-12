@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 import time
 from collections.abc import AsyncIterator
@@ -9,8 +10,15 @@ from dataclasses import dataclass
 import numpy as np
 from google import genai
 from google.genai import types
+from pydantic import BaseModel, Field
 
-from .constants import INPUT_RATE, LIVE_MODEL, OUTPUT_RATE
+from .constants import (
+    FILE_TRANSLATION_MODEL,
+    FILE_VOICE_MODEL,
+    INPUT_RATE,
+    LIVE_MODEL,
+    OUTPUT_RATE,
+)
 from .models import Settings
 from .transcripts import TranscriptTracker
 
@@ -86,6 +94,24 @@ class SegmentTranslation:
     source_language: str
     prompt_tokens: int
     response_tokens: int
+    total_tokens: int
+
+
+class TranslationItem(BaseModel):
+    id: int = Field(ge=0)
+    text: str = Field(min_length=1)
+
+
+@dataclass(frozen=True, slots=True)
+class TextTranslation:
+    texts: list[str]
+    total_tokens: int
+
+
+@dataclass(frozen=True, slots=True)
+class Narration:
+    audio: bytes
+    transcript: str
     total_tokens: int
 
 
@@ -337,3 +363,109 @@ class GeminiGateway:
             model=LIVE_MODEL,
             config=self.live_config(settings, manual_activity=manual_activity),
         )
+
+
+class GeminiFileGateway:
+    """Text translation and timestamp-sized speech generation for uploaded media."""
+
+    def __init__(self, api_key: str) -> None:
+        self.client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(async_client_args={"ping_interval": None}),
+        )
+
+    async def translate(
+        self,
+        texts: list[str],
+        source_language: str,
+        target_language: str,
+    ) -> TextTranslation:
+        if not texts:
+            return TextTranslation([], 0)
+        if source_language.split("-")[0] == target_language.split("-")[0]:
+            return TextTranslation(texts.copy(), 0)
+        prompt = json.dumps(
+            {
+                "source_language": source_language or "auto",
+                "target_language": target_language,
+                "segments": [{"id": index, "text": text} for index, text in enumerate(texts)],
+            },
+            ensure_ascii=False,
+        )
+        response = await self.client.aio.models.generate_content(
+            model=FILE_TRANSLATION_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=(
+                    "Translate every segment faithfully and naturally. Preserve names, numbers, "
+                    "technical terms, tone, and intent. Do not summarize, explain, censor, merge, "
+                    "or add information. Return exactly one item for every input id in the same "
+                    "order."
+                ),
+                response_mime_type="application/json",
+                response_schema=list[TranslationItem],
+                temperature=0.1,
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
+            ),
+        )
+        raw_items = response.parsed
+        if not isinstance(raw_items, list):
+            raise RuntimeError("Gemini returned an invalid translation response")
+        items = [
+            item if isinstance(item, TranslationItem) else TranslationItem.model_validate(item)
+            for item in raw_items
+        ]
+        by_id = {item.id: item.text.strip() for item in items}
+        if set(by_id) != set(range(len(texts))) or any(not value for value in by_id.values()):
+            raise RuntimeError("Gemini omitted one or more translated segments")
+        usage = getattr(response, "usage_metadata", None)
+        tokens = int(getattr(usage, "total_token_count", 0) or 0)
+        return TextTranslation([by_id[index] for index in range(len(texts))], tokens)
+
+    async def narrate(self, text: str, language: str, voice_name: str) -> Narration:
+        audio = bytearray()
+        transcript_parts: list[str] = []
+        total_tokens = 0
+        config = types.LiveConnectConfig(
+            response_modalities=[types.Modality.AUDIO],
+            output_audio_transcription=types.AudioTranscriptionConfig(),
+            speech_config=types.SpeechConfig(
+                language_code=language,
+                voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_name)
+                ),
+            ),
+            system_instruction=(
+                "You are a precise speech renderer. Speak exactly the supplied text once in a "
+                "natural pace. Do not translate, paraphrase, answer, introduce it, or add any "
+                "words."
+            ),
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+        )
+        async with self.client.aio.live.connect(model=FILE_VOICE_MODEL, config=config) as session:
+            await session.send_realtime_input(text=text)
+            async for response in session.receive():
+                content = getattr(response, "server_content", None)
+                model_turn = getattr(content, "model_turn", None) if content else None
+                for part in getattr(model_turn, "parts", None) or []:
+                    inline = getattr(part, "inline_data", None)
+                    if inline and isinstance(inline.data, bytes):
+                        audio.extend(inline.data)
+                transcription = getattr(content, "output_transcription", None) if content else None
+                if transcription and getattr(transcription, "text", ""):
+                    transcript_parts.append(transcription.text)
+                usage = getattr(response, "usage_metadata", None)
+                total_tokens = max(
+                    total_tokens,
+                    int(getattr(usage, "total_token_count", 0) or 0),
+                )
+                if content and getattr(content, "turn_complete", False):
+                    break
+        rendered = trim_stream_padding(bytes(audio), threshold=64, padding_seconds=0.12)
+        if not rendered:
+            raise NoTranslationError("Gemini Live returned no narrated audio")
+        return Narration(rendered, "".join(transcript_parts).strip(), total_tokens)
+
+    async def close(self) -> None:
+        await self.client.aio.aclose()
+        self.client.close()

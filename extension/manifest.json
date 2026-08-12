@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "LingoDub — Live AI Dubbing",
-  "short_name": "LingoDub",
+  "name": "Voxilyra — Live AI Dubbing",
+  "short_name": "Voxilyra",
   "description": "Translate and dub the current tab live with Gemini, with independent source and dubbed audio controls.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "tabCapture", "offscreen", "storage", "downloads"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],
   "background": {"service_worker": "background.js", "type": "module"},
-  "action": {"default_popup": "popup.html", "default_title": "LingoDub"},
+  "action": {"default_popup": "popup.html", "default_title": "Voxilyra"},
   "icons": {"16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png"},
   "content_security_policy": {"extension_pages": "script-src 'self'; object-src 'self'"}
 }

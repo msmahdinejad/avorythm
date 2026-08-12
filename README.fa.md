@@ -1,119 +1,101 @@
-# LingoDub
+<p align="center">
+  <img src="assets/branding/voxilyra-logo.png" width="148" alt="لوگوی Voxilyra">
+</p>
 
-ترجمه و دوبلهٔ زنده و سینک‌شده با **Gemini 3.5 Live Translate**. پروژه دو محصول کاملاً مستقل دارد:
+<h1 align="center">Voxilyra</h1>
 
-- اپ ویندوز برای صدای برنامه‌های دسکتاپ و فایل صوتی/ویدئویی؛
-- اکستنشن مستقل Manifest V3 برای تب‌های Chrome/Edge.
+<p align="center"><strong>هر صدایی را به زبان خودت بشنو.</strong></p>
 
-[English](README.md) · [آموزش نصب](docs/INSTALLATION.fa.md) · [چک‌لیست Chrome Web Store](docs/CHROME_WEB_STORE.md) · [حریم خصوصی](PRIVACY.md)
+<p align="center">
+  صدای دسکتاپ یا مرورگر را زنده ترجمه کن، یا از فایل صوتی و ویدئویی یک دوبلهٔ سینک، متن اصلی، ترجمه و صدای اصلی تحویل بگیر.
+</p>
 
-![داشبورد LingoDub](docs/images/dashboard.png)
+<p align="center">
+  <a href="https://github.com/msmahdinejad/voxilyra/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/voxilyra/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/voxilyra/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/voxilyra?label=Release"></a>
+  <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
+  <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
+</p>
 
-## قابلیت‌ها
+<p align="center"><a href="README.md">English</a> · <a href="docs/INSTALLATION.fa.md">نصب</a> · <a href="PRIVACY.md">حریم خصوصی</a></p>
 
-- ارسال PCM با نرخ 16kHz به `gemini-3.5-live-translate-preview` و پخش گفتار ترجمه‌شدهٔ 24kHz خود مدل؛
-- کنترل مستقل صدای اصلی و دوبله، با حالت پیش‌فرض «فقط دوبله»؛
-- نمایش متن اصلی و ترجمه با جهت درست RTL/LTR؛
-- ضبط چهار خروجی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt`؛
-- اتصال مجدد خودکار برای نشست‌های طولانی Live؛
-- پشتیبانی از بیش از ۷۰ زبان رسمی Live Translate؛
-- فقط یک مدل Live Translate؛ بدون TTS، STT، Batch یا Files API جداگانه.
+![داشبورد انگلیسی Voxilyra](docs/images/dashboard-en.png)
 
-### استودیوی فایل صوتی و ویدئویی
+## دو محصول مستقل
 
-فایل MP3، WAV، M4A، FLAC، OGG، MP4، MKV، WebM، MOV، AVI، WMV، MPEG یا 3GP را داخل اپ رها کن. خود فایل روی لپ‌تاپ می‌ماند؛ LingoDub فقط PCM استخراج‌شده با FFmpeg را برای ترجمه می‌فرستد و این موارد را می‌سازد:
+- **اپ ویندوز:** دوبلهٔ زندهٔ صدای دسکتاپ و استودیوی فایل صوتی/ویدئویی.
+- **اکستنشن Chrome/Edge:** دوبلهٔ زندهٔ تب، بدون نیاز به اپ، Python، FFmpeg، localhost یا کابل مجازی.
 
-- **سینک دقیق** (پیش‌فرض): برش نزدیک سکوت، بازشنوی خود WAV دوبله با همان مدل Live، یک retry برای خروجی ضعیف و نمایش اطمینان معنایی؛
-- **سریع**: پردازش تک‌مرحله‌ای با پنجره‌های ثابت و بدون کنترل معنایی؛
-- پلیر محلی صوت یا ویدئو با صدای اصلی و دوبلهٔ مستقل؛
-- امکان نمایش هم‌زمان هر دو زیرنویس؛
-- چهار فایل جداگانه و `all-outputs.zip`.
+## معماری پردازش فایل
 
-فایل انتخاب‌شده ساعت اصلی پلیر است؛ اختلاف‌های کوچک با تغییر بسیار جزئی سرعت و اختلاف بیشتر از ۱۲۰ میلی‌ثانیه با seek اصلاح می‌شود. سهمیه‌بان محلی حداکثر ۱۵هزار توکن تخمینی در هر دقیقه رزرو می‌کند تا زیر سقف ۲۰هزار بماند. حالت دقیق در صورت نیاز به retry ممکن است چهار تا هشت برابر زمان فایل طول بکشد. امتیاز پایین صادقانه هشدار داده می‌شود و تضمین دقت مدل نیست.
+```text
+صوت/ویدئو
+  ← استخراج و زمان‌بندی محلی با FFmpeg
+  ← تبدیل به متن زمان‌دار با Groq Whisper Large v3
+  ← ترجمهٔ متن با Gemini 3.1 Flash Lite
+  ← ساخت گفتار ترجمه‌شده با Gemini 3.1 Flash Live
+  ← هماهنگ‌سازی، زیرنویس، پلیر و ZIP روی لپ‌تاپ
+```
 
-## نصب سریع
+حالت پیش‌فرض **دقیق** از `whisper-large-v3` استفاده می‌کند، متن صدای تولیدی Live را با ترجمه می‌سنجد و فقط قطعهٔ ناسازگار را دوباره می‌سازد. حالت **سریع** از `whisper-large-v3-turbo` استفاده می‌کند.
 
-### اپ ویندوز
+چهار خروجی اصلی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` هستند و همگی در `all-outputs.zip` نیز قرار می‌گیرند. پلیر داخلی ویدئو/صوت را ساعت مرجع قرار می‌دهد، اختلاف بیشتر از ۱۲۰ میلی‌ثانیه را اصلاح می‌کند و هر دو زیرنویس را هم‌زمان نمایش می‌دهد.
 
-1. `LingoDub-Setup-x64.exe` را از Releases بگیر.
-2. برای پردازش فایل، گزینهٔ پیشنهادی **Install FFmpeg** را روشن نگه دار.
-3. برنامه را باز کن، در تنظیمات پیشرفته Gemini API Key را ذخیره کن و در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
+## نصب سریع اپ
 
-کلید در Windows Credential Manager ذخیره می‌شود. نصب‌کننده FFmpeg را با WinGet نصب می‌کند. اگر WinGet موجود نبود بعداً این دستور را اجرا کن:
+1. `Voxilyra-Setup-x64.exe` را از [Releases](https://github.com/msmahdinejad/voxilyra/releases) بگیر.
+2. گزینهٔ **Install FFmpeg** را برای پردازش فایل روشن نگه دار.
+3. در تنظیمات پیشرفته، [کلید Gemini](https://aistudio.google.com/app/apikey) و [کلید Groq](https://console.groq.com/keys) را ذخیره کن.
+4. در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
+
+کلیدها در Windows Credential Manager ذخیره می‌شوند و داخل `settings.json` نیستند. پلن رایگان هر سرویس سهمیه و قوانین خودش را دارد و دائمی‌بودن رایگان‌بودن آن تحت کنترل Voxilyra نیست.
+
+اگر نصب FFmpeg در Installer موفق نشد:
 
 ```powershell
 winget install --id Gyan.FFmpeg --exact --scope user
 ```
 
-### اکستنشن مستقل
+## نصب اکستنشن
 
-1. `LingoDub-Extension.zip` را دانلود و در یک پوشهٔ ثابت Extract کن.
+1. `Voxilyra-Extension.zip` را Extract کن.
 2. `chrome://extensions` یا `edge://extensions` را باز کن.
-3. **Developer mode** را روشن کن، **Load unpacked** را بزن و پوشه‌ای را انتخاب کن که `manifest.json` مستقیم داخل آن است.
-4. اکستنشن را Pin کن، یک تب ویدئو باز کن، Key را در Popup وارد کن و دوبله را شروع کن.
+3. **Developer mode** را روشن و **Load unpacked** را بزن.
+4. پوشهٔ Extractشده را انتخاب کن، اکستنشن را Pin کن و کلید Gemini را برای همان نشست وارد کن.
 
-اکستنشن به اپ ویندوز، Python، localhost، FFmpeg یا Virtual Audio Device نیاز ندارد. نصب یک‌کلیکی اکستنشن unpacked از GitHub طبق سیاست Chrome ممکن نیست؛ دکمهٔ واقعی **Add to Chrome** فقط بعد از انتشار در Chrome Web Store ساخته می‌شود.
+اکستنشن کاملاً مستقل است. نصب واقعاً یک‌کلیکی در Chrome فقط بعد از انتشار در Chrome Web Store ممکن می‌شود.
 
-کلید اکستنشن عمداً فقط در `chrome.storage.session` نگه‌داری می‌شود و با بسته‌شدن کامل مرورگر پاک می‌شود. کلید و صدای تب مستقیماً به Google می‌روند. برای انتشار production عمومی، معماری امن‌تر پیشنهادی Google یک سرویس HTTPS کوچک برای ساخت ephemeral token کوتاه‌عمر است.
+## مسیر صدای اپ دسکتاپ
 
-## تنظیم صدای دوبلهٔ زندهٔ دسکتاپ
+پردازش فایل و اکستنشن به دستگاه مجازی نیاز ندارند. فقط دوبلهٔ زندهٔ اپ:
 
-Virtual Audio فقط برای دوبلهٔ زندهٔ یک برنامه توسط اپ ویندوز لازم است. اکستنشن و بخش فایل صوتی/ویدئویی هیچ نیازی به آن ندارند.
+1. خروجی مرورگر/برنامه → `Speakers (AMM Virtual Audio Device)`
+2. ورودی Voxilyra → `Microphone (AMM Virtual Audio Device)`
+3. خروجی Voxilyra → `Default` یا هدفون/اسپیکر واقعی
+4. برای شنیدن فقط دوبله، صدای اصلی را روی صفر بگذار.
 
-مسیر درست مطابق تصویر ارسالی:
-
-1. **Output** برنامهٔ منبع/Chrome → `Speakers (AMM Virtual Audio Device)`؛
-2. **Input** داخل LingoDub → `Microphone (AMM Virtual Audio Device)` یا Loopback متناظر؛
-3. **Output** داخل LingoDub → `Default` یا هدفون واقعی؛
-4. صدای اصلی ۰٪ و دوبله ۱۰۰٪.
-
-خروجی LingoDub را هرگز روی AMM نگذار؛ این کار حلقهٔ صوتی و اکو می‌سازد.
-
-![مسیر صحیح AMM](docs/images/audio-routing-guide.png)
-
-آموزش تصویری دو‌زبانه داخل خود اپ در `/audio-guide.html` هم در دسترس است.
+خروجی Voxilyra را روی AMM Virtual نگذار؛ حلقهٔ اکو می‌سازد. راهنمای تصویری در [آموزش نصب فارسی](docs/INSTALLATION.fa.md) است.
 
 ## توسعه و تست
 
-نیازمندی‌ها: Windows 10/11 x64، Python 3.11 تا 3.13، Node.js برای تست اکستنشن، و FFmpeg/FFprobe برای Media Studio.
-
 ```powershell
-py -3.12 -m venv .venv
+python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev,build]"
 python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
-node --test tests\extension.test.mjs tests\offscreen.test.mjs tests\background.test.mjs
+node --test tests\*.test.mjs
+.\scripts\dev.ps1
 ```
 
-اجرا:
+## حریم خصوصی و محدودیت‌ها
 
-```powershell
-$env:HTTP_PROXY='http://127.0.0.1:10808'
-$env:HTTPS_PROXY='http://127.0.0.1:10808'
-python -m lingodub
-```
+- فایل اصلی و خروجی‌ها محلی می‌مانند؛ قطعه‌های صوتی برای Whisper به Groq ارسال می‌شوند.
+- متن برای ترجمه و ساخت صوت به Gemini می‌رود.
+- سقف محلی ترافیک Gemini برابر ۱۵ هزار توکن در هر ۶۰ ثانیه است؛ پایین‌تر از حد ۲۰ هزار درخواستی.
+- مدل‌های Live در وضعیت Preview هستند و دقت، صدا، تأخیر، سهمیه و دسترس‌پذیری تضمین صددرصدی ندارند.
+- حذف مطمئن هشدار SmartScreen نیازمند امضای کد معتبر و ساخت reputation ناشر است.
 
-ساخت خروجی انتشار:
-
-```powershell
-.\scripts\build.ps1
-.\scripts\package-extension.ps1
-iscc .\installer.iss
-```
-
-## امنیت، حریم خصوصی و محدودیت مدل
-
-- اپ فقط روی `127.0.0.1` گوش می‌دهد و ویدئو/خروجی‌ها محلی هستند.
-- اکستنشن فقط تبی را Capture می‌کند که کاربر صریحاً Start کرده است.
-- هیچ Analytics، تبلیغ، Remote Code یا Telemetry توسعه‌دهنده وجود ندارد.
-- فقط محتوایی را پردازش یا ضبط کن که اجازهٔ آن را داری.
-
-Gemini 3.5 Live Translate یک مدل Preview است؛ ثبات صدا، تشخیص گوینده/لهجه، تأخیر، سهمیه و دقت ترجمه تضمین صددرصدی ندارند. مدل انتخاب named voice ارائه نمی‌کند؛ به همین دلیل رابط «صدای خودکار Live» را نشان می‌دهد و TTS جداگانه‌ای جعل نمی‌کند. گفتار ترجمه‌شدهٔ خیلی بلند ممکن است برای حفظ سینک فشرده یا کوتاه شود.
-
-[SECURITY.md](SECURITY.md)، [PRIVACY.md](PRIVACY.md) و [ARCHITECTURE.md](ARCHITECTURE.md) جزئیات را توضیح می‌دهند. پیاده‌سازی بر اساس [راهنمای رسمی Live Translation](https://ai.google.dev/gemini-api/docs/live-api/live-translate)، [صفحهٔ مدل](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview) و [راهنمای ephemeral token](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens) است.
-
-## مجوز
-
-MIT. مجوز Vazirmatn و موارد ثالث در [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) آمده است.
+مجوز: [MIT](LICENSE)
