@@ -2,6 +2,23 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.0.0] - 2026-08-13
+
+### Added
+
+- Release-ready English and Persian extension metadata, first-capture data consent, and direct project/privacy links.
+- Chrome Web Store listing copy, permission declarations, reviewer instructions, and required promotional assets.
+- Public code-signing policy and a SignPath-ready GitHub Actions signing stage for the Windows installer.
+
+### Changed
+
+- Recording downloads now use an optional permission requested only when the user enables recording.
+- Windows installer metadata now exposes a consistent product/file version and displays the license and privacy policy before installation.
+
+### Fixed
+
+- Extension authentication now uses the constrained ephemeral-token WebSocket method and setup schema implemented by Google's current GenAI SDK; the complete token-to-`setupComplete` handshake is verified through the configured proxy.
+
 ## [0.9.1] - 2026-08-13
 
 ### Fixed
@@ -209,7 +226,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/msmahdinejad/lingora/compare/v0.9.1...v1.0.0
 [0.9.1]: https://github.com/msmahdinejad/lingora/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/msmahdinejad/lingora/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/msmahdinejad/lingora/compare/v0.8.0...v0.8.1

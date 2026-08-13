@@ -17,6 +17,15 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
       }
     }
   };
+  let tokenNumber = 0;
+  globalThis.fetch = async (url, options) => {
+    assert.equal(url, 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens');
+    assert.equal(options.headers['x-goog-api-key'], 'test-key');
+    const request = JSON.parse(options.body);
+    assert.equal(request.bidiGenerateContentSetup.model, 'models/gemini-3.5-live-translate-preview');
+    tokenNumber += 1;
+    return {ok: true, async json() { return {name: `auth_tokens/test-${tokenNumber}`}; }};
+  };
 
   class AudioNode {
     connect() { return this; }
@@ -53,7 +62,8 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     static instances = [];
     readyState = 0;
     sent = [];
-    constructor() {
+    constructor(url) {
+      assert.match(url, /v1alpha\.GenerativeService\.BidiGenerateContentConstrained\?access_token=auth_tokens%2Ftest-/);
       WebSocket.instances.push(this);
       queueMicrotask(() => {
         this.readyState = WebSocket.OPEN;

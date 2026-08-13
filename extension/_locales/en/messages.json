@@ -1,0 +1,5 @@
+{
+  "appName": {"message": "Lingora — Live Translation"},
+  "appDescription": {"message": "Translate, dub, or caption audio from the current tab live with Gemini."},
+  "actionTitle": {"message": "Open Lingora live translation"}
+}

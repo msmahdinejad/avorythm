@@ -1,5 +1,6 @@
 #define MyAppName "Lingora"
-#define MyAppVersion "0.9.1"
+#define MyAppProductName "Lingora Live Translator"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "Mohammad Saleh Mahdinejad"
 #define MyAppURL "https://github.com/msmahdinejad/lingora"
 
@@ -9,6 +10,10 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}/issues
+AppUpdatesURL={#MyAppURL}/releases
+LicenseFile=LICENSE
+InfoBeforeFile=PRIVACY.md
 DefaultDirName={localappdata}\Programs\Lingora
 DefaultGroupName=Lingora
 UsePreviousAppDir=no
@@ -22,6 +27,12 @@ SetupIconFile=extension\icons\Lingora.ico
 UninstallDisplayIcon={app}\Lingora.exe
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoCopyright=Copyright (c) 2026 {#MyAppPublisher}
+VersionInfoDescription=Lingora multilingual live translation installer
+VersionInfoProductName={#MyAppProductName}
+VersionInfoProductVersion={#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}.0
 
 [Files]
 Source: "dist\Lingora\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

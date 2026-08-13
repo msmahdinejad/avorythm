@@ -23,7 +23,9 @@
   <a href="README.fa.md">فارسی</a> ·
   <a href="docs/INSTALLATION.md">Installation</a> ·
   <a href="docs/CHROME_WEB_STORE.md">Chrome Web Store</a> ·
-  <a href="PRIVACY.md">Privacy</a>
+  <a href="PRIVACY.md">Privacy</a> ·
+  <a href="CODE_SIGNING_POLICY.md">Code signing policy</a> ·
+  <a href="docs/SIGNPATH_APPLICATION.md">SignPath application</a>
 </p>
 
 ![Lingora English dashboard](docs/images/dashboard-en.png)
@@ -77,7 +79,13 @@ Only text-output models with an applicable free quota are candidates. A local go
 3. Save a [Gemini API key](https://aistudio.google.com/app/apikey); save a [Groq API key](https://console.groq.com/keys) for Media Studio.
 4. Leave the proxy at `http://127.0.0.1:10808` when your connection needs it.
 
-The Windows installer is unsigned until the maintainer adds an Authenticode certificate, so SmartScreen may show “Unknown publisher”. Only a trusted code-signing certificate and publisher reputation reliably remove that warning.
+Legacy `0.x` Windows installers are unsigned and can trigger SmartScreen. Starting with the public `1.x` workflow, no Windows installer is published unless SignPath returns a valid Authenticode-signed artifact. A valid certificate plus publisher reputation is what progressively removes SmartScreen warnings.
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+The SignPath integration is prepared but activates only after Foundation approval and provisioning. Once active, GitHub Actions publishes the Windows installer only after origin verification, manual approval, and local Authenticode validation. Until then, release notes explicitly identify unsigned installers. See the [complete code signing policy](CODE_SIGNING_POLICY.md).
 
 ### macOS and Linux
 
@@ -140,7 +148,7 @@ CI runs tests, lint, type-checking, and extension validation on Windows, macOS, 
 - The app binds only to `127.0.0.1`; uploads and generated files remain in the local Lingora data directory.
 - Uploaded audio chunks go to Groq for transcription; text goes to Gemini for translation and speech generation.
 - Live desktop/tab audio goes to Gemini only after an explicit Start action.
-- Extension API keys stay in `chrome.storage.session` and disappear when the browser session ends. For Chrome Web Store production, replace long-lived BYOK with a small HTTPS service that mints Google ephemeral Live API tokens.
+- Extension API keys stay in `chrome.storage.session` and disappear when the browser session ends. For each connection, the extension exchanges the user's key directly with Google for a constrained, single-use ephemeral Live API token; no maintainer credential is embedded.
 - Preview model accuracy, availability, voice stability, latency, and quota can change upstream.
 
 See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md).

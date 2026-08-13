@@ -6,12 +6,15 @@ import {
   audioChannelVolume,
   audioMessage,
   base64ToBytes,
-  liveUrl,
+  ephemeralLiveUrl,
+  ephemeralTokenRequest,
   mergeTranscript,
   normalizeSettings,
   setupMessage,
   srt,
   subtitlesEnabled,
+  LIVE_ENDPOINT,
+  TOKEN_ENDPOINT,
   wavHeader
 } from '../extension/core.mjs';
 
@@ -53,16 +56,45 @@ test('app and extension expose the same four output controls', () => {
   assert.doesNotMatch(popup, /id="audioMode"/);
 });
 
+test('public surfaces link to the canonical project and privacy policy', () => {
+  const app = readFileSync(new URL('../src/dubira/static/index.html', import.meta.url), 'utf8');
+  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  const manifest = JSON.parse(readFileSync(new URL('../extension/manifest.json', import.meta.url), 'utf8'));
+  const homepage = 'https://github.com/msmahdinejad/lingora';
+  assert.equal(manifest.homepage_url, homepage);
+  assert.match(app, new RegExp(homepage));
+  assert.match(popup, new RegExp(homepage));
+  assert.match(popup, /PRIVACY\.md/);
+  assert.equal(manifest.default_locale, 'en');
+  assert.deepEqual(manifest.optional_permissions, ['downloads']);
+});
+
+test('extension requires explicit first-capture consent', () => {
+  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('../extension/popup.js', import.meta.url), 'utf8');
+  const background = readFileSync(new URL('../extension/background.js', import.meta.url), 'utf8');
+  assert.match(popup, /id="dataConsent"/);
+  assert.match(script, /CONSENT_VERSION = 1/);
+  assert.match(background, /config\?\.consentVersion !== 1/);
+});
+
 test('builds the documented Gemini Live Translate protocol', () => {
-  assert.match(liveUrl('key + value'), /key=key%20%2B%20value$/);
   const setup = setupMessage('fa').setup;
   assert.equal(setup.model, 'models/gemini-3.5-live-translate-preview');
   assert.equal(setup.generationConfig.translationConfig.targetLanguageCode, 'fa');
   assert.deepEqual(setup.inputAudioTranscription, {});
   assert.deepEqual(setup.outputAudioTranscription, {});
   assert.equal('inputAudioTranscription' in setup.generationConfig, false);
+  assert.equal('outputAudioTranscription' in setup.generationConfig, false);
   assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
   assert.equal(audioMessage(Uint8Array.from([0, 1, 255])).realtimeInput.audio.data, 'AAH/');
+  assert.match(LIVE_ENDPOINT, /v1alpha\.GenerativeService\.BidiGenerateContentConstrained$/);
+  assert.equal(TOKEN_ENDPOINT, 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens');
+  assert.match(ephemeralLiveUrl('auth_tokens/a+b'), /access_token=auth_tokens%2Fa%2Bb$/);
+  const token = ephemeralTokenRequest('fa', Date.UTC(2026, 7, 13));
+  assert.equal(token.uses, 1);
+  assert.equal(token.bidiGenerateContentSetup.model, 'models/gemini-3.5-live-translate-preview');
+  assert.equal(token.bidiGenerateContentSetup.generationConfig.translationConfig.targetLanguageCode, 'fa');
 });
 
 test('hidden popup notices stay hidden', () => {

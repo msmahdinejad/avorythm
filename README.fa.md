@@ -23,10 +23,18 @@
   <a href="README.md">English</a> ·
   <a href="docs/INSTALLATION.fa.md">نصب کامل</a> ·
   <a href="docs/CHROME_WEB_STORE.md">انتشار اکستنشن</a> ·
-  <a href="PRIVACY.md">حریم خصوصی</a>
+  <a href="PRIVACY.md">حریم خصوصی</a> ·
+  <a href="CODE_SIGNING_POLICY.md">سیاست امضای کد</a> ·
+  <a href="docs/SIGNPATH_APPLICATION.md">فرم SignPath</a>
 </p>
 
 ![داشبورد انگلیسی Lingora](docs/images/dashboard-en.png)
+
+## Code signing policy / سیاست امضای کد
+
+Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+اتصال SignPath آماده شده اما فقط پس از تأیید Foundation و دریافت تنظیمات رسمی فعال می‌شود. پس از فعال‌سازی، GitHub Actions نصب‌کنندهٔ ویندوز را تنها بعد از بررسی مبدأ Build، تأیید دستی و اعتبارسنجی Authenticode منتشر می‌کند. جزئیات در [سیاست کامل امضای کد](CODE_SIGNING_POLICY.md) آمده است.
 
 ## اجزای پروژه
 
@@ -68,7 +76,7 @@
 3. Gemini API Key را ذخیره کن؛ برای استودیوی فایل Groq API Key هم لازم است.
 4. اگر اتصال نیاز دارد، پروکسی `http://127.0.0.1:10808` را نگه دار.
 
-تا وقتی فایل نصب با گواهی Authenticode معتبر امضا نشده، SmartScreen ممکن است «Unknown publisher» نشان دهد. حذف مطمئن این پیام فقط با code-signing معتبر و ساخت reputation ناشر ممکن است.
+نصب‌کننده‌های قدیمی `0.x` امضانشده‌اند و ممکن است SmartScreen نشان دهند. از گردش‌کار عمومی `1.x` به بعد، نصب‌کنندهٔ ویندوز فقط وقتی منتشر می‌شود که SignPath فایل دارای امضای معتبر Authenticode برگرداند. کم‌شدن هشدارهای SmartScreen به امضای معتبر و ساخته‌شدن reputation ناشر وابسته است.
 
 ### macOS و Linux
 
@@ -120,7 +128,7 @@ CI روی Windows، macOS و Linux تست، lint، type-check و اعتبارس�
 - سرویس اپ فقط روی `127.0.0.1` است؛ فایل‌ها و خروجی‌ها در پوشهٔ محلی Lingora می‌مانند.
 - قطعه‌های صوتی آپلودی برای transcription به Groq و متن برای ترجمه/تولید صدا به Gemini می‌رود.
 - صدای زنده فقط بعد از Start صریح کاربر فرستاده می‌شود.
-- کلید اکستنشن در `chrome.storage.session` است و با پایان نشست مرورگر حذف می‌شود. نسخهٔ عمومی Web Store بهتر است از سرویس HTTPS کوچک برای ساخت ephemeral token رسمی Google استفاده کند.
+- کلید اکستنشن در `chrome.storage.session` است و با پایان نشست مرورگر حذف می‌شود. اکستنشن برای هر اتصال، کلید خود کاربر را مستقیماً با Google به توکن محدود، کوتاه‌عمر و یک‌بارمصرف Live API تبدیل می‌کند؛ هیچ کلید متعلق به توسعه‌دهنده داخل بسته نیست.
 - مدل‌های Preview ممکن است از نظر دقت، تأخیر، صدا، سهمیه و دسترس‌پذیری تغییر کنند.
 
 [MIT](LICENSE) © Mohammad Saleh Mahdinejad

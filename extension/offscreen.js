@@ -2,10 +2,12 @@ import {
   audioChannelVolume,
   audioMessage,
   base64ToBytes,
-  liveUrl,
+  ephemeralLiveUrl,
+  ephemeralTokenRequest,
   mergeTranscript,
   setupMessage,
   srt,
+  TOKEN_ENDPOINT,
   wavHeader
 } from './core.mjs';
 
@@ -219,14 +221,31 @@ async function handleLiveMessage(message) {
   return '';
 }
 
-function openSocket() {
+async function createEphemeralToken() {
+  const response = await fetch(TOKEN_ENDPOINT, {
+    method: 'POST',
+    headers: {'content-type': 'application/json', 'x-goog-api-key': apiKey},
+    body: JSON.stringify(ephemeralTokenRequest(config.targetLanguage))
+  });
+  if (!response.ok) {
+    if ([401, 403].includes(response.status)) throw new Error('api_key_invalid');
+    if (response.status === 429) throw new Error('gemini_quota_exceeded');
+    throw new Error('gemini_token_failed');
+  }
+  const token = await response.json();
+  if (typeof token.name !== 'string' || !token.name) throw new Error('gemini_token_failed');
+  return token.name;
+}
+
+async function openSocket() {
+  const ephemeralToken = await createEphemeralToken();
   return new Promise((resolve, reject) => {
     let connected = false;
     let messages = Promise.resolve();
     const timeout = setTimeout(() => {
       if (!connected) reject(new Error('gemini_socket_timeout'));
     }, 15000);
-    const current = new WebSocket(liveUrl(apiKey));
+    const current = new WebSocket(ephemeralLiveUrl(ephemeralToken));
     socket = current;
     current.onopen = () => current.send(JSON.stringify(setupMessage(config.targetLanguage)));
     current.onmessage = (event) => {

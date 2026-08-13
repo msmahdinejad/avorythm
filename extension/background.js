@@ -78,6 +78,10 @@ async function bootstrap() {
 async function start(config) {
   const current = await getState();
   if (current.active) return current;
+  if (config?.consentVersion !== 1) throw new Error('consent_required');
+  if (config.recording && !await chrome.permissions.contains({permissions: ['downloads']})) {
+    throw new Error('downloads_permission_missing');
+  }
   const {apiKey} = await chrome.storage.session.get('apiKey');
   if (!apiKey) throw new Error('api_key_missing');
   await ensureOffscreenDocument();

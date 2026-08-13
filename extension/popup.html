@@ -16,6 +16,13 @@
       <div class="key-meta"><small id="keyStatus" data-i18n="keyMissingShort">تنظیم نشده</small><button id="clearKeyButton" type="button" data-i18n="clearKey">حذف کلید</button></div>
     </section>
 
+    <section id="consentCard" class="consent-card">
+      <label class="consent-check">
+        <input id="dataConsent" type="checkbox">
+        <span><b data-i18n="consentTitle">اجازهٔ ترجمهٔ این تب</b><small data-i18n="consentBody">با Start، فقط صدای تب انتخاب‌شده و متن‌های آن برای ترجمه و دوبله به Google Gemini فرستاده می‌شود. توسعه‌دهندهٔ Lingora به این محتوا دسترسی ندارد؛ ضبط هم پیش‌فرض خاموش است.</small></span>
+      </label>
+    </section>
+
     <section class="status-card">
       <div><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="ready">آمادهٔ ترجمه</span></div>
       <span id="languageBadge" class="language-badge">AUTO → FA</span>
@@ -57,6 +64,10 @@
     <button id="toggleButton" class="primary" type="button" disabled><span>▶</span><b data-i18n="start">شروع ترجمهٔ این تب</b></button>
     <div id="downloadReady" class="download" hidden data-i18n="downloadReady">چهار فایل در Downloads ذخیره شدند.</div>
     <p class="privacy" data-i18n="privacy">با شروع، صدای همین تب به Google Gemini فرستاده می‌شود؛ ضبط فقط با فعال‌کردن گزینهٔ بالا انجام می‌شود.</p>
+    <nav class="project-links" aria-label="Project links">
+      <a class="project-link primary-link" href="https://github.com/msmahdinejad/lingora" target="_blank" rel="noreferrer" data-i18n="moreFeatures">امکانات بیشتر و صفحهٔ پروژه ↗</a>
+      <a class="project-link" href="https://github.com/msmahdinejad/lingora/blob/main/PRIVACY.md" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">حریم خصوصی</a>
+    </nav>
   </main>
   <script type="module" src="popup.js"></script>
 </body>

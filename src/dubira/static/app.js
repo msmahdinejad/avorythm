@@ -137,6 +137,9 @@ const messages = {
   }
 };
 
+messages.fa.projectHomepage = 'صفحهٔ پروژه و امکانات بیشتر ↗';
+messages.en.projectHomepage = 'Project homepage and more features ↗';
+
 const languageNames = {
   fa: {fa: 'فارسی', en: 'انگلیسی', ar: 'عربی', de: 'آلمانی', fr: 'فرانسوی', es: 'اسپانیایی', it: 'ایتالیایی', ja: 'ژاپنی', ko: 'کره‌ای', ru: 'روسی', tr: 'ترکی', zh: 'چینی'},
   en: {fa: 'Persian', en: 'English', ar: 'Arabic', de: 'German', fr: 'French', es: 'Spanish', it: 'Italian', ja: 'Japanese', ko: 'Korean', ru: 'Russian', tr: 'Turkish', zh: 'Chinese'}

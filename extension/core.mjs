@@ -1,5 +1,7 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
-export const LIVE_ENDPOINT = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
+export const LIVE_ENDPOINT =
+  'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
+export const TOKEN_ENDPOINT = 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens';
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
 
 export const LANGUAGES = [
@@ -46,8 +48,16 @@ export function audioChannelVolume(channel, settings) {
   return enabled ? Number(channel === 'original' ? settings.originalVolume : settings.dubVolume) : 0;
 }
 
-export function liveUrl(apiKey) {
-  return `${LIVE_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;
+export function ephemeralLiveUrl(token) {
+  return `${LIVE_ENDPOINT}?access_token=${encodeURIComponent(token)}`;
+}
+
+export function ephemeralTokenRequest(targetLanguage, now = Date.now()) {
+  return {
+    uses: 1,
+    expireTime: new Date(now + 30 * 60 * 1000).toISOString(),
+    bidiGenerateContentSetup: setupMessage(targetLanguage).setup
+  };
 }
 
 export function setupMessage(targetLanguage) {

@@ -17,4 +17,8 @@ def test_release_versions_stay_aligned() -> None:
     assert package["project"]["version"] == __version__
     assert manifest["version"] == __version__
     assert f'#define MyAppVersion "{__version__}"' in installer
+    assert '#define MyAppProductName "Lingora Live Translator"' in installer
+    assert "VersionInfoProductName={#MyAppProductName}" in installer
+    assert 'StringStruct("ProductName", "Lingora Live Translator")' in windows_metadata
+    assert f'StringStruct("FileVersion", "{__version__}")' in windows_metadata
     assert f'StringStruct("ProductVersion", "{__version__}")' in windows_metadata

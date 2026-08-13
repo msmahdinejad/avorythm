@@ -17,6 +17,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       if (typeof key === 'string') return {[key]: state[key]};
       return {...state};
     },
+    permissions: {
+      async contains() { return true; },
+      async request() { return true; }
+    },
     async set(update) { Object.assign(state, update); },
     async remove(key) { delete state[key]; }
   });
@@ -75,6 +79,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
 
   const subtitleSettings = {
     ...local.settings,
+    consentVersion: 1,
     dubAudioEnabled: false,
     originalAudioEnabled: true,
     translatedSubtitlesEnabled: true

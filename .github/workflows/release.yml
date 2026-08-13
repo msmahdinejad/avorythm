@@ -4,9 +4,18 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build (for example v1.0.0)
+        required: true
+        type: string
 
 permissions:
+  actions: read
   contents: write
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   desktop:
@@ -15,13 +24,22 @@ jobs:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 35
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
+      - name: Validate tag and package version
+        shell: pwsh
+        run: |
+          $tagVersion = "${{ env.RELEASE_TAG }}" -replace '^v', ''
+          $packageVersion = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
+          if ($tagVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Release tag must be vMAJOR.MINOR.PATCH" }
+          if ($tagVersion -ne $packageVersion) { throw "Tag $tagVersion does not match package $packageVersion" }
       - name: Install Linux audio runtime
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libportaudio2
@@ -39,6 +57,52 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
+      - name: Read release version
+        if: runner.os == 'Windows'
+        id: release-version
+        shell: pwsh
+        run: |
+          $version = "${{ env.RELEASE_TAG }}" -replace '^v', ''
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Release tag must be vMAJOR.MINOR.PATCH" }
+          "value=$version" >> $env:GITHUB_OUTPUT
+          "file-value=$version.0" >> $env:GITHUB_OUTPUT
+      - name: Upload unsigned installer for SignPath
+        if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
+        id: upload-unsigned-installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: signpath-unsigned-installer
+          path: dist/Lingora-Setup-x64.exe
+          if-no-files-found: error
+      - name: Submit installer to SignPath
+        if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 7200
+          output-artifact-directory: dist/signpath-signed
+          parameters: |
+            version: ${{ toJSON(steps.release-version.outputs.value) }}
+            fileVersion: ${{ toJSON(steps.release-version.outputs.file-value) }}
+      - name: Stage signed installer
+        if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
+        shell: pwsh
+        run: |
+          $signed = Get-ChildItem -Path dist/signpath-signed -Recurse -File -Filter Lingora-Setup-x64.exe | Select-Object -First 1
+          if (-not $signed) { throw "SignPath did not return Lingora-Setup-x64.exe" }
+          Copy-Item -LiteralPath $signed.FullName -Destination dist/Lingora-Setup-x64.exe -Force
+          $signature = Get-AuthenticodeSignature -LiteralPath dist/Lingora-Setup-x64.exe
+          if ($signature.Status -ne 'Valid') { throw "Signed installer verification failed: $($signature.StatusMessage)" }
+      - name: Keep unsigned installer out of public release
+        if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED != 'true'
+        shell: pwsh
+        run: Remove-Item -LiteralPath dist/Lingora-Setup-x64.exe -Force
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ runner.os }}
@@ -61,7 +125,14 @@ jobs:
         run: sha256sum Lingora-* > SHA256SUMS.txt
       - uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ env.RELEASE_TAG }}
           generate_release_notes: true
+          body: |
+            ## Code signing policy
+
+            Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+            Windows installers are published only after SignPath origin verification and manual approval. See the [complete code signing policy](https://github.com/msmahdinejad/lingora/blob/main/CODE_SIGNING_POLICY.md) and [privacy policy](https://github.com/msmahdinejad/lingora/blob/main/PRIVACY.md).
           files: |
             dist/Lingora-*.zip
             dist/Lingora-Setup-x64.exe
