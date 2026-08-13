@@ -146,6 +146,14 @@ class AudioEngine:
     def __init__(self, capture_index: int, output_index: int) -> None:
         self._inputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
         self._outputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
+        self.audio: Any = None
+        self.capture_name = ""
+        self.output_name = ""
+        self.capture_channels = 1
+        self.output_channels = 1
+        self.output_rate = OUTPUT_RATE
+        self._input_stream: Any = None
+        self._output_stream: Any = None
         if sys.platform != "win32":
             self._init_portaudio(capture_index, output_index)
             return
@@ -182,7 +190,6 @@ class AudioEngine:
         )
 
     def _init_portaudio(self, capture_index: int, output_index: int) -> None:
-        self.audio = None
         capture = sounddevice.query_devices(capture_index)
         output = sounddevice.query_devices(output_index)
         self.capture_name = str(capture["name"])
