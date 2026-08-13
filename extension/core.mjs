@@ -1,5 +1,6 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
 export const LIVE_ENDPOINT = 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
+const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
 
 export const LANGUAGES = [
   'af','ak','sq','am','ar','hy','az','eu','be','bn','bg','my','ca','zh-Hans','zh-Hant','hr','cs','da','nl','en','et','fil','fi','fr','gl','ka','de','el','gu','ha','he','hi','hu','is','id','it','ja','jv','kn','kk','km','rw','ko','lo','lv','lt','mk','ms','ml','mr','mn','ne','no','nb','fa','pl','pt-BR','pt-PT','pa','ro','ru','sr','sd','si','sk','sl','es','su','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu'
@@ -75,12 +76,20 @@ export function audioMessage(pcm) {
 }
 
 export function mergeTranscript(tracker, text, finished, now) {
-  const clean = text.trim();
+  const raw = text.trim();
+  let clean = raw;
+  if (tracker.committedPrefix) {
+    if (raw.startsWith(tracker.committedPrefix)) clean = raw.slice(tracker.committedPrefix.length).trim();
+    else tracker.committedPrefix = '';
+  }
+  if (!clean && finished) tracker.committedPrefix = '';
   if (!clean) return null;
   if (!tracker.partial) tracker.started = now;
   if (clean.startsWith(tracker.partial)) tracker.partial = clean;
   else if (!tracker.partial.endsWith(clean)) tracker.partial = `${tracker.partial} ${clean}`.trim();
-  if (!finished) return null;
+  const sentenceEnded = SENTENCE_ENDINGS.includes(tracker.partial.at(-1));
+  if (!finished && !sentenceEnded) return null;
+  tracker.committedPrefix = finished ? '' : raw;
   const completed = {text: tracker.partial, start: tracker.started, end: now};
   tracker.partial = '';
   tracker.started = 0;

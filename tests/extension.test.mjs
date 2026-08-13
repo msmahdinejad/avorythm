@@ -43,6 +43,33 @@ test('merges cumulative and delta transcripts', () => {
   assert.deepEqual(base64ToBytes('AAH/'), Uint8Array.from([0, 1, 255]));
 });
 
+test('starts a fresh live subtitle after sentence punctuation', () => {
+  const tracker = {partial: '', started: 0};
+  assert.deepEqual(mergeTranscript(tracker, 'Hello world.', false, 1), {text: 'Hello world.', start: 1, end: 1});
+  assert.deepEqual(mergeTranscript(tracker, 'How are you?', false, 2), {text: 'How are you?', start: 2, end: 2});
+  assert.equal(tracker.partial, '');
+});
+
+test('drops a committed prefix from cumulative transcript updates', () => {
+  const tracker = {partial: '', started: 0};
+  assert.deepEqual(mergeTranscript(tracker, 'Hello world.', false, 1), {text: 'Hello world.', start: 1, end: 1});
+  assert.equal(mergeTranscript(tracker, 'Hello world. How', false, 2), null);
+  assert.equal(tracker.partial, 'How');
+});
+
+test('subtitle surfaces remain scrollable', () => {
+  const overlay = readFileSync(new URL('../extension/content.js', import.meta.url), 'utf8');
+  const popup = readFileSync(new URL('../extension/popup.css', import.meta.url), 'utf8');
+  const native = readFileSync(new URL('../src/dubira/static/subtitle-window.css', import.meta.url), 'utf8');
+  const dashboard = readFileSync(new URL('../src/dubira/static/styles.css', import.meta.url), 'utf8');
+  const browserPopup = readFileSync(new URL('../src/dubira/static/app.js', import.meta.url), 'utf8');
+  assert.match(overlay, /overflow:\s*auto/);
+  assert.match(popup, /\.transcripts>div\{[^}]*overflow-y:\s*auto/);
+  assert.match(native, /overflow-y:\s*auto/);
+  assert.match(dashboard, /\.transcript\{[^}]*overflow-y:\s*auto/);
+  assert.match(browserPopup, /\.card\{[^}]*overflow-y:\s*auto/s);
+});
+
 test('creates valid WAV and SRT outputs', () => {
   const header = wavHeader(32000, 16000);
   assert.equal(new TextDecoder().decode(header.subarray(0, 4)), 'RIFF');

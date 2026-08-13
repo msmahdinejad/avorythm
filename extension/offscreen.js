@@ -186,7 +186,10 @@ async function handleTranscript(translated, transcription) {
 async function flushTranscripts() {
   const now = elapsed();
   for (const [translated, tracker] of [[false, sourceTracker], [true, translatedTracker]]) {
-    if (!tracker.partial) continue;
+    if (!tracker.partial) {
+      tracker.committedPrefix = '';
+      continue;
+    }
     const completed = mergeTranscript(tracker, tracker.partial, true, now);
     recorder?.addSubtitle(translated, completed);
   }

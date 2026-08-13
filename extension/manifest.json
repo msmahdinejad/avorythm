@@ -3,7 +3,7 @@
   "name": "Lingora — Live Translation",
   "short_name": "Lingora",
   "description": "Translate, dub, or caption the current tab live with Gemini.",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "tabCapture", "offscreen", "storage", "downloads", "scripting"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],

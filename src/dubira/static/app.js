@@ -156,10 +156,10 @@ function buildSubtitleWindow(target) {
     @font-face{font-family:Vazirmatn;src:url('/assets/vazirmatn-latin.woff2') format('woff2');font-weight:100 900}
     *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;background:transparent;overflow:hidden}
     body{display:grid;place-items:center;padding:8px;font-family:Vazirmatn,Inter,system-ui,sans-serif;color:#fff}
-    .card{width:100%;height:100%;min-height:96px;padding:18px 24px 14px;display:flex;flex-direction:column;justify-content:center;
+    .card{width:100%;height:100%;min-height:96px;padding:18px 24px 14px;display:flex;flex-direction:column;justify-content:safe center;
       border:1px solid rgba(255,255,255,.22);border-radius:22px;background:rgba(9,13,27,var(--opacity,.88));
       box-shadow:0 22px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.13);
-      backdrop-filter:blur(26px) saturate(155%);-webkit-backdrop-filter:blur(26px) saturate(155%)}
+      overflow-y:auto;scrollbar-gutter:stable;backdrop-filter:blur(26px) saturate(155%);-webkit-backdrop-filter:blur(26px) saturate(155%)}
     p{margin:2px 0;text-align:center;unicode-bidi:plaintext;text-wrap:balance;overflow-wrap:anywhere}
     .source{font-size:calc(var(--size,26px)*.65);line-height:1.55;color:rgba(226,232,240,.7)}
     .translation{font-size:var(--size,26px);font-weight:680;line-height:1.65;text-shadow:0 2px 14px rgba(0,0,0,.7)}

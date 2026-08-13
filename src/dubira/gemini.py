@@ -343,9 +343,9 @@ class GeminiGateway:
                 await asyncio.gather(receiver, return_exceptions=True)
 
         finished_at = time.monotonic() - started
-        if source_result := source.flush(finished_at):
+        if source_result := source.flush(finished_at, reset_context=True):
             source_parts.append(source_result[0])
-        if translated_result := translated.flush(finished_at):
+        if translated_result := translated.flush(finished_at, reset_context=True):
             translated_parts.append(translated_result[0])
         return SegmentTranslation(
             audio=trim_stream_padding(bytes(audio)),

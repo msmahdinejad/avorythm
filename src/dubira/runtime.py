@@ -245,8 +245,8 @@ class DubRuntime:
                 )
                 self._finish_transcript(True, result)
             if event.turn_complete:
-                self._finish_transcript(False, source.flush(now))
-                self._finish_transcript(True, translated.flush(now))
+                self._finish_transcript(False, source.flush(now, reset_context=True))
+                self._finish_transcript(True, translated.flush(now, reset_context=True))
             if event.audio:
                 if self.recorder:
                     self.recorder.write_dubbed(event.audio)
