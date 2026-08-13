@@ -1,5 +1,5 @@
 #define MyAppName "Lingora"
-#define MyAppVersion "0.9.0"
+#define MyAppVersion "0.9.1"
 #define MyAppPublisher "Mohammad Saleh Mahdinejad"
 #define MyAppURL "https://github.com/msmahdinejad/lingora"
 

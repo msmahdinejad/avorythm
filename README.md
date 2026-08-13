@@ -30,7 +30,7 @@
 
 ## What ships
 
-- **Native desktop app for Windows, macOS, and Linux:** one pywebview shell around the local FastAPI service, with live translation, live dubbing, recording, and Media Studio.
+- **Native desktop app for Windows, macOS, and Linux:** a standalone pywebview window—Chrome is not opened or required—with live translation, live dubbing, recording, and Media Studio.
 - **Standalone Chrome/Edge extension:** captures only the tab explicitly started by the user and needs no desktop app, Python, FFmpeg, localhost, or virtual audio device.
 - **Floating subtitles:** retain original audio while translation appears in a frosted-glass card. Adjust text size, width, opacity, and source-text visibility. The native app card is resizable, draggable, and always on top; the extension card lives in the selected page and can be dragged or resized.
 

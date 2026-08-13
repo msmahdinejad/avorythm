@@ -14,6 +14,8 @@ Live translation requires a Gemini key and access to `gemini-3.5-live-translate-
 
 ## Windows app
 
+The normal launcher opens Lingora in its own native window. Chrome is neither opened nor required; browser mode is available only to developers through the explicit `--browser` flag.
+
 1. Download `Lingora-Setup-x64.exe` from Releases.
 2. Install without administrator privileges.
 3. Keep **Install FFmpeg for uploaded audio/video processing** checked unless you only need live desktop audio.

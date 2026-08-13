@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import platform
 import shutil
 import subprocess
@@ -12,6 +13,8 @@ def main() -> None:
     system = platform.system()
     machine = platform.machine().lower()
     architecture = "arm64" if machine in {"arm64", "aarch64"} else "x64"
+    if importlib.util.find_spec("webview") is None:
+        raise SystemExit("pywebview is required to build the standalone desktop app")
     command = [
         sys.executable,
         "-m",
@@ -26,6 +29,8 @@ def main() -> None:
         "src",
         "--collect-all",
         "dubira",
+        "--hidden-import",
+        "webview",
     ]
     if system == "Windows":
         command.extend(

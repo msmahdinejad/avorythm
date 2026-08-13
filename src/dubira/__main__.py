@@ -106,7 +106,7 @@ def main() -> None:
     if running_app() == "legacy":
         stop_legacy_app()
     if app_is_running():
-        if not args.no_browser:
+        if args.browser:
             webbrowser.open("http://127.0.0.1:8765")
         return
     server_holder: dict[str, uvicorn.Server] = {}

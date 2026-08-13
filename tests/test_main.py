@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import argparse
+import importlib
+
+import pytest
+
 from dubira.__main__ import NativeApi
+
+main_module = importlib.import_module("dubira.__main__")
 
 
 class FakeWindow:
@@ -55,3 +62,35 @@ def test_native_subtitle_window_is_created_lazily() -> None:
     assert webview.created["on_top"] is True
     assert webview.created["frameless"] is True
     assert api._subtitle_window is not None
+
+
+def test_normal_desktop_launch_never_opens_a_browser(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr(
+        main_module,
+        "parse_args",
+        lambda: argparse.Namespace(no_browser=False, browser=False),
+    )
+    monkeypatch.setattr(main_module, "running_app", lambda: "lingora")
+    monkeypatch.setattr(main_module.webbrowser, "open", opened.append)
+
+    main_module.main()
+
+    assert opened == []
+
+
+def test_browser_launch_opens_existing_local_app(monkeypatch: pytest.MonkeyPatch) -> None:
+    opened: list[str] = []
+    monkeypatch.setattr(
+        main_module,
+        "parse_args",
+        lambda: argparse.Namespace(no_browser=False, browser=True),
+    )
+    monkeypatch.setattr(main_module, "running_app", lambda: "lingora")
+    monkeypatch.setattr(main_module.webbrowser, "open", opened.append)
+
+    main_module.main()
+
+    assert opened == ["http://127.0.0.1:8765"]
