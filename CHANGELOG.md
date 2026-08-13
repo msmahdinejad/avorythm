@@ -4,6 +4,25 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-13
+
+### Added
+
+- Strongest-first translation pool across every non-zero-quota free text-output Gemini/Gemma model, with local RPM/RPD claims and provider-error fallback.
+- Full desktop-app shutdown endpoint and bilingual top-bar control.
+
+### Changed
+
+- Renamed the product, package, executable, installer, extension, repository, and artifacts to Dubira.
+- Moved file-voice selection into Media Studio and persisted it per media job.
+- Reworked the dashboard into a compact broadcast-console interface.
+
+### Fixed
+
+- Enforce source mute and zero volume whenever the player's Original audio switch is off.
+- Split long source and translated subtitles into short, naturally timed movie cues.
+- Hide the empty-player illustration as soon as processed media is ready.
+
 ## [0.6.0] - 2026-08-13
 
 ### Added
@@ -119,7 +138,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- New generated Voxilyra brand mark across the app, installer, extension, and documentation.
+- New generated Dubira brand mark across the app, installer, extension, and documentation.
 - Bilingual in-app audio-routing guide with a Windows Volume Mixer illustration.
 - Post-install helper that prepares the unpacked extension folder and opens the browser setup page.
 
@@ -141,13 +160,14 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/voxilyra/compare/v0.6.0...HEAD
-[0.6.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.5.1...v0.6.0
-[0.5.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.4.1...v0.5.0
-[0.4.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.3.1...v0.4.0
-[0.3.1]: https://github.com/msmahdinejad/voxilyra/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/msmahdinejad/voxilyra/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/msmahdinejad/voxilyra/releases/tag/v0.1.0
+[Unreleased]: https://github.com/msmahdinejad/dubira/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/msmahdinejad/dubira/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/msmahdinejad/dubira/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/msmahdinejad/dubira/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/msmahdinejad/dubira/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/msmahdinejad/dubira/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/msmahdinejad/dubira/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/msmahdinejad/dubira/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/msmahdinejad/dubira/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/msmahdinejad/dubira/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/msmahdinejad/dubira/releases/tag/v0.1.0

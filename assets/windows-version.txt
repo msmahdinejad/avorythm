@@ -1,7 +1,7 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(0, 6, 0, 0),
-    prodvers=(0, 6, 0, 0),
+    filevers=(0, 7, 0, 0),
+    prodvers=(0, 7, 0, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -15,13 +15,13 @@ VSVersionInfo(
         "040904B0",
         [
           StringStruct("CompanyName", "Mohammad Saleh Mahdinejad"),
-          StringStruct("FileDescription", "Voxilyra multilingual AI dubbing"),
-          StringStruct("FileVersion", "0.6.0"),
-          StringStruct("InternalName", "Voxilyra"),
+          StringStruct("FileDescription", "Dubira multilingual AI dubbing"),
+          StringStruct("FileVersion", "0.7.0"),
+          StringStruct("InternalName", "Dubira"),
           StringStruct("LegalCopyright", "Copyright (c) 2026 Mohammad Saleh Mahdinejad"),
-          StringStruct("OriginalFilename", "Voxilyra.exe"),
-          StringStruct("ProductName", "Voxilyra"),
-          StringStruct("ProductVersion", "0.6.0"),
+          StringStruct("OriginalFilename", "Dubira.exe"),
+          StringStruct("ProductName", "Dubira"),
+          StringStruct("ProductVersion", "0.7.0"),
         ],
       )
     ]),

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from voxilyra.config import ConfigStore
-from voxilyra.models import Settings
+from dubira.config import ConfigStore
+from dubira.models import Settings
 
 
 def test_settings_are_saved_atomically_without_api_key(tmp_path: Path) -> None:
@@ -28,11 +28,11 @@ def test_api_key_is_delegated_to_os_keyring(
     saved: dict[str, str] = {}
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.setattr(
-        "voxilyra.config.keyring.set_password",
+        "dubira.config.keyring.set_password",
         lambda service, user, key: saved.update(key=key),
     )
     monkeypatch.setattr(
-        "voxilyra.config.keyring.get_password",
+        "dubira.config.keyring.get_password",
         lambda service, user: saved.get("key"),
     )
     store = ConfigStore(tmp_path)
@@ -51,11 +51,11 @@ def test_groq_key_is_separate_from_gemini_key(
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr(
-        "voxilyra.config.keyring.set_password",
+        "dubira.config.keyring.set_password",
         lambda service, user, key: saved.__setitem__(service, key),
     )
     monkeypatch.setattr(
-        "voxilyra.config.keyring.get_password",
+        "dubira.config.keyring.get_password",
         lambda service, user: saved.get(service),
     )
     store = ConfigStore(tmp_path)

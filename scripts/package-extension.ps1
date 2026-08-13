@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 $repository = Split-Path -Parent $PSScriptRoot
-$destination = Join-Path $repository "dist\Voxilyra-Extension.zip"
+$destination = Join-Path $repository "dist\Dubira-Extension.zip"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
 if (Test-Path -LiteralPath $destination) { Remove-Item -LiteralPath $destination -Force }
 Compress-Archive -Path (Join-Path $repository "extension\*") -DestinationPath $destination -CompressionLevel Optimal

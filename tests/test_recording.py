@@ -4,7 +4,7 @@ import wave
 import zipfile
 from pathlib import Path
 
-from voxilyra.recording import SessionRecorder, srt_time
+from dubira.recording import SessionRecorder, srt_time
 
 
 def test_srt_time_formats_and_clamps() -> None:

@@ -6,9 +6,9 @@ from types import TracebackType
 
 import pytest
 
-from voxilyra.audio import AudioDevice, DeviceCatalog
-from voxilyra.config import ConfigStore
-from voxilyra.runtime import DubRuntime
+from dubira.audio import AudioDevice, DeviceCatalog
+from dubira.config import ConfigStore
+from dubira.runtime import DubRuntime
 
 
 class FakeAudio:
@@ -58,9 +58,9 @@ async def test_runtime_reconnects_after_a_live_session_ends(
         default_capture=1,
         default_output=2,
     )
-    monkeypatch.setattr("voxilyra.runtime.DeviceCatalog.scan", lambda: catalog)
-    monkeypatch.setattr("voxilyra.runtime.AudioEngine", FakeAudio)
-    monkeypatch.setattr("voxilyra.runtime.GeminiGateway", FakeGateway)
+    monkeypatch.setattr("dubira.runtime.DeviceCatalog.scan", lambda: catalog)
+    monkeypatch.setattr("dubira.runtime.AudioEngine", FakeAudio)
+    monkeypatch.setattr("dubira.runtime.GeminiGateway", FakeGateway)
     store = ConfigStore(tmp_path / "config")
     monkeypatch.setattr(store, "get_api_key", lambda: "test-api-key-123")
     runtime = DubRuntime(store, tmp_path / "recordings")

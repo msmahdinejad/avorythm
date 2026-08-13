@@ -1,6 +1,6 @@
 # Uploaded Video Dubbing with Gemini 3.5 Live Translate
 
-> Historical design, superseded by the Groq Whisper → Gemini text → Gemini Live file pipeline in Voxilyra 0.6.0. See `ARCHITECTURE.md` for the current implementation.
+> Historical design, superseded by the Groq Whisper → Gemini text → Gemini Live file pipeline in Dubira 0.6.0. See `ARCHITECTURE.md` for the current implementation.
 
 **Date:** 2026-08-11
 **Status:** Awaiting written-spec review
@@ -53,7 +53,7 @@ Add four focused modules:
 The existing `gemini.py` remains the only Gemini protocol boundary. It gains a
 file-segment operation and usage reporting rather than a second Gemini client.
 
-Each imported video gets a job directory under the existing Voxilyra data directory:
+Each imported video gets a job directory under the existing Dubira data directory:
 
 ```text
 media-jobs/<job-id>/
@@ -136,7 +136,7 @@ payloads consistently. The extension's existing Blob regression test remains req
 
 The user's ceiling is 20,000 tokens per minute. Google evaluates quotas at project
 level and does not publish a contract that lets a client guarantee project-wide usage
-when other applications use the same project. Voxilyra therefore guarantees a lower
+when other applications use the same project. Dubira therefore guarantees a lower
 local dispatch ceiling for its own traffic and clearly documents the external-traffic
 exception.
 
@@ -228,9 +228,9 @@ copied into `docs/images` and the packaged static assets with an optimized deriv
 The bilingual guide must annotate this exact route:
 
 - Google Chrome output: `Speakers (AMM Virtual Audio Device)`
-- Voxilyra input: `Microphone (AMM Virtual Audio Device)`
-- Voxilyra output: `Default` or physical headphones/speakers
-- Never route Voxilyra output back to the AMM virtual device.
+- Dubira input: `Microphone (AMM Virtual Audio Device)`
+- Dubira output: `Default` or physical headphones/speakers
+- Never route Dubira output back to the AMM virtual device.
 - Desktop live dubbing needs the virtual route.
 - Uploaded-video processing does not need the virtual route.
 - The independent extension does not need the virtual route.

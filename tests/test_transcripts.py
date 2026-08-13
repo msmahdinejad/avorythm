@@ -1,4 +1,4 @@
-from voxilyra.transcripts import TranscriptTracker
+from dubira.transcripts import TranscriptTracker
 
 
 def test_tracker_merges_partial_transcripts_without_duplication() -> None:

@@ -8,10 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from voxilyra.config import ConfigStore
-from voxilyra.gemini import Narration, TextTranslation
-from voxilyra.jobs import MediaJobManager, transcript_score
-from voxilyra.media import MediaInfo, MediaTools, TranscriptionChunk
+from dubira.config import ConfigStore
+from dubira.gemini import Narration, TextTranslation
+from dubira.groq import TranscriptSegment
+from dubira.jobs import MediaJobManager, subtitle_entries, transcript_score
+from dubira.media import MediaInfo, MediaTools, TranscriptionChunk
 
 
 class FakeTools:
@@ -59,6 +60,7 @@ class FakeWhisper:
 
 class FakeFileGateway:
     narrations = 0
+    voices: list[str] = []
 
     def __init__(self, api_key: str) -> None:
         self.api_key = api_key
@@ -72,6 +74,7 @@ class FakeFileGateway:
 
     async def narrate(self, text: str, language: str, voice: str) -> Narration:
         type(self).narrations += 1
+        type(self).voices.append(voice)
         return Narration(b"\1\0" * 24_000, text, 300)
 
     async def close(self) -> None:
@@ -85,6 +88,20 @@ async def chunks() -> AsyncIterator[bytes]:
 def test_transcript_score_handles_languages_without_spaces() -> None:
     assert transcript_score("海岸洪水风险", "海岸洪水危险") > 0.6
     assert transcript_score("海岸洪水风险", "完全不同文本") < 0.3
+
+
+def test_long_subtitles_are_split_into_movie_sized_cues() -> None:
+    text = (
+        "Energy management helps retail hosts respond to grid demand while keeping "
+        "charging reliable and matching infrastructure design to everyday driving."
+    )
+    entries = subtitle_entries(TranscriptSegment(0, 13.5, text), text)
+
+    assert len(entries) >= 3
+    assert max(len(entry.text) for entry in entries) <= 72
+    assert max(entry.end - entry.start for entry in entries) <= 5.0
+    assert entries[0].start == 0
+    assert entries[-1].end == 13.5
 
 
 @pytest.mark.asyncio
@@ -103,12 +120,17 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
     )
     await manager.start()
     try:
-        job = await manager.create_upload("lesson.mp3", "fa", "precise", chunks())
+        FakeFileGateway.voices.clear()
+        job = await manager.create_upload(
+            "lesson.mp3", "fa", "precise", chunks(), voice_name="Puck"
+        )
         await asyncio.wait_for(manager.queue.join(), 2)
         result = manager.get(job.id)
         assert result.status == "ready"
         assert result.source_language == "en"
         assert result.quality_score == 1.0
+        assert result.voice_name == "Puck"
+        assert FakeFileGateway.voices == ["Puck"]
         assert "Charge while you shop." in manager.path(job.id, "source.srt").read_text(
             encoding="utf-8-sig"
         )

@@ -1,6 +1,6 @@
 # Architecture
 
-Voxilyra contains two independent products. The Windows app handles desktop audio and uploaded files; the Manifest V3 extension handles browser-tab audio. Neither product depends on the other.
+Dubira contains two independent products. The Windows app handles desktop audio and uploaded files; the Manifest V3 extension handles browser-tab audio. Neither product depends on the other.
 
 ## Product boundaries
 
@@ -17,7 +17,7 @@ Voxilyra contains two independent products. The Windows app handles desktop audi
 | `ConfigStore` | settings, separate keyring secrets, legacy Gemini-key fallback, proxy environment |
 | `AudioEngine` | WASAPI capture, PCM conversion, mixed playback |
 | `GeminiGateway` | continuous Gemini 3.5 Live Translate protocol |
-| `GeminiFileGateway` | structured text translation and exact-text Gemini Live narration |
+| `GeminiFileGateway` | strongest-first free-tier text-model pool and exact-text Gemini Live narration |
 | `GroqWhisperGateway` | authenticated Whisper multipart requests, retries, response errors |
 | `DubRuntime` | desktop live lifecycle and reconnects |
 | `MediaJobManager` | upload queue, recovery, cancellation, quota, and file-pipeline orchestration |
@@ -36,7 +36,7 @@ sequenceDiagram
     participant Jobs as MediaJobManager
     participant FFmpeg
     participant Groq as Groq Whisper
-    participant Text as Gemini 3.1 Flash Lite
+    participant Text as Gemini/Gemma text pool
     participant Voice as Gemini 3.1 Flash Live
     participant Player
     User->>UI: Select media, language, mode, voice
@@ -48,7 +48,7 @@ sequenceDiagram
       Groq-->>Jobs: Language + timestamped text
       Jobs->>Jobs: Keep only non-overlapping core timestamps
     end
-    Jobs->>Text: Translate bounded JSON batches
+    Jobs->>Text: Translate bounded JSON batches, strongest model first
     Text-->>Jobs: One translation per stable segment id
     loop each translated segment
       Jobs->>Jobs: Reserve rolling Gemini budget
@@ -57,12 +57,12 @@ sequenceDiagram
       Jobs->>Jobs: Retry a mismatch in Precise mode
       Jobs->>FFmpeg: Fit speech into original time window
     end
-    Jobs->>Jobs: Write WAV, SRT, VTT, ZIP
+    Jobs->>Jobs: Split natural subtitle cues; write WAV, SRT, VTT, ZIP
     UI->>Player: Load source, dub, and two subtitle tracks
     Player->>Player: Source master clock + drift correction
 ```
 
-The source file never leaves localhost. Audio chunks are the only uploaded-media bytes sent to Groq. Gemini receives transcript text for translation and translated text for narration. `whisper-large-v3` is the default accuracy model; Fast mode uses `whisper-large-v3-turbo`. Structured translation preserves segment IDs and rejects missing results.
+The source file never leaves localhost. Audio chunks are the only uploaded-media bytes sent to Groq. Gemini receives transcript text for translation and translated text for narration. `whisper-large-v3` is the default accuracy model; Fast mode uses `whisper-large-v3-turbo`. Structured translation preserves segment IDs and rejects missing results. The model pool tries Gemini 3.6/3.5/3/2.5 Flash, the three non-zero-quota Flash-Lite models, then Gemma 4 31B/26B. Per-process RPM/RPD claims prevent locally avoidable quota errors; provider 429, 5xx, missing, or unavailable responses advance to the next model.
 
 ## Standalone extension
 

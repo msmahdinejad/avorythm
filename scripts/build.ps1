@@ -18,19 +18,19 @@ try {
     }
 
     & $python -m PyInstaller --noconfirm --clean --onedir `
-        --name Voxilyra `
-        --icon extension\icons\Voxilyra.ico `
+        --name Dubira `
+        --icon extension\icons\Dubira.ico `
         --version-file assets\windows-version.txt `
         --paths src `
-        --collect-all voxilyra `
+        --collect-all dubira `
         --collect-all pyaudiowpatch `
         --hidden-import keyring.backends.Windows `
         scripts\launcher.py
     if ($LASTEXITCODE) { throw "PyInstaller failed." }
 
-    $archive = Join-Path $repository "dist\Voxilyra-Windows-x64.zip"
+    $archive = Join-Path $repository "dist\Dubira-Windows-x64.zip"
     if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive -Force }
-    Compress-Archive -Path "dist\Voxilyra\*" -DestinationPath $archive -CompressionLevel Optimal
+    Compress-Archive -Path "dist\Dubira\*" -DestinationPath $archive -CompressionLevel Optimal
 }
 finally {
     Pop-Location

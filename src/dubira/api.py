@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import asyncio
 import mimetypes
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
@@ -32,6 +33,7 @@ def create_app(
     recordings: Path | None = None,
     static: Path | None = None,
     media_jobs: Path | None = None,
+    shutdown_callback: Callable[[], None] | None = None,
 ) -> FastAPI:
     config = store or ConfigStore()
     recording_root = recordings or config.directory / "recordings"
@@ -47,8 +49,8 @@ def create_app(
         await media.close()
 
     app = FastAPI(
-        title="Voxilyra Companion",
-        version="0.6.0",
+        title="Dubira Desktop",
+        version="0.7.0",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -137,6 +139,15 @@ def create_app(
         await runtime.stop()
         return {"ok": True}
 
+    @app.post("/api/shutdown")
+    async def shutdown() -> dict[str, bool]:
+        if shutdown_callback is None:
+            raise HTTPException(503, "application shutdown is unavailable")
+        await runtime.stop()
+        await media.close()
+        asyncio.get_running_loop().call_later(0.15, shutdown_callback)
+        return {"ok": True}
+
     @app.post("/api/record/start")
     def record_start() -> dict[str, bool]:
         if not runtime.state.running:
@@ -175,6 +186,7 @@ def create_app(
         filename: str = Query(min_length=1, max_length=240),
         target_language: str = Query(default="fa"),
         mode: Literal["precise", "fast"] = Query(default="precise"),
+        voice_name: str = Query(default="Kore"),
     ) -> dict[str, object]:
         if runtime.state.running:
             raise HTTPException(409, "stop live desktop dubbing before processing a video")
@@ -187,6 +199,7 @@ def create_app(
                 mode,
                 request.stream(),
                 length,
+                voice_name,
             )
         except ValueError as error:
             raise HTTPException(400, str(error)) from error

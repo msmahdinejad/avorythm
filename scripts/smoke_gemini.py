@@ -7,10 +7,10 @@ import sys
 import wave
 from pathlib import Path
 
-from voxilyra.config import ConfigStore
-from voxilyra.gemini import GeminiGateway
-from voxilyra.jobs import complete_translation
-from voxilyra.models import Settings
+from dubira.config import ConfigStore
+from dubira.gemini import GeminiGateway
+from dubira.jobs import complete_translation
+from dubira.models import Settings
 
 
 def arguments() -> argparse.Namespace:

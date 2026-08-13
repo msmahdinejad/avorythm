@@ -7,15 +7,17 @@ from types import SimpleNamespace, TracebackType
 import pytest
 from google.genai import types as genai_types
 
-from voxilyra.gemini import (
+from dubira.gemini import (
+    GeminiFileGateway,
     GeminiGateway,
     LiveEvent,
+    TranslationItem,
     duration_seconds,
     stream_tail_is_silent,
     transient_live_error,
     trim_stream_padding,
 )
-from voxilyra.models import Settings
+from dubira.models import Settings
 
 
 class FakeSession:
@@ -149,7 +151,7 @@ def test_gateway_disables_websocket_ping_timeout(monkeypatch: pytest.MonkeyPatch
         captured.update(kwargs)
         return SimpleNamespace()
 
-    monkeypatch.setattr("voxilyra.gemini.genai.Client", client)
+    monkeypatch.setattr("dubira.gemini.genai.Client", client)
     GeminiGateway("test-key")
 
     options = captured["http_options"]
@@ -263,3 +265,35 @@ async def test_event_stream_continues_across_live_turns() -> None:
     assert first.source_text == "turn 1"
     assert second.source_text == "turn 2"
     assert session.calls == 2
+
+
+@pytest.mark.asyncio
+async def test_translation_pool_falls_back_in_strength_order() -> None:
+    class QuotaError(Exception):
+        code = 429
+
+    class Models:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
+        async def generate_content(self, *, model: str, **_: object) -> object:
+            self.calls.append(model)
+            if len(self.calls) == 1:
+                raise QuotaError("RESOURCE_EXHAUSTED")
+            return SimpleNamespace(
+                parsed=[TranslationItem(id=0, text="سلام")],
+                usage_metadata=SimpleNamespace(total_token_count=42),
+            )
+
+    models = Models()
+    gateway = GeminiFileGateway.__new__(GeminiFileGateway)
+    gateway.client = SimpleNamespace(aio=SimpleNamespace(models=models))
+    gateway._minute_usage = {}
+    gateway._daily_usage = {}
+    gateway._unavailable_models = set()
+
+    result = await gateway.translate(["Hello"], "en", "fa")
+
+    assert models.calls == ["gemini-3.6-flash", "gemini-3.5-flash"]
+    assert result.texts == ["سلام"]
+    assert result.model == "gemini-3.5-flash"

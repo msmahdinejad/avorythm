@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/branding/voxilyra-logo.png" width="148" alt="Voxilyra logo">
+  <img src="assets/branding/dubira-logo.png" width="148" alt="Dubira logo">
 </p>
 
-<h1 align="center">Voxilyra</h1>
+<h1 align="center">Dubira</h1>
 
 <p align="center"><strong>Hear every voice in your language.</strong></p>
 
@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/msmahdinejad/voxilyra/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/voxilyra/ci.yml?branch=main&label=CI"></a>
-  <a href="https://github.com/msmahdinejad/voxilyra/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/voxilyra?label=Release"></a>
+  <a href="https://github.com/msmahdinejad/dubira/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/dubira/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/dubira/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/dubira?label=Release"></a>
   <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
@@ -25,7 +25,7 @@
   <a href="PRIVACY.md">Privacy</a>
 </p>
 
-![Voxilyra English dashboard](docs/images/dashboard-en.png)
+![Dubira English dashboard](docs/images/dashboard-en.png)
 
 ## Two independent products
 
@@ -40,7 +40,7 @@ Both interfaces support Persian and English, use Vazirmatn, render RTL/LTR trans
 Audio/video
   → local FFmpeg extraction and timeline
   → Groq Whisper Large v3 transcription with timestamps
-  → Gemini 3.1 Flash Lite text translation
+  → strongest-available Gemini/Gemma free-tier text model
   → Gemini 3.1 Flash Live translated speech
   → local alignment, subtitles, player, and ZIP
 ```
@@ -55,18 +55,28 @@ Every successful job provides:
 - `translated.srt`
 - `all-outputs.zip`
 
-The built-in audio/video player uses the source media as its master clock. The dub is corrected when drift exceeds 120 ms, and both subtitle tracks can be enabled together.
+The built-in audio/video player uses the source media as its master clock. The dub is corrected when drift exceeds 120 ms, original audio is truly silent while its switch is off, and both subtitle tracks can be enabled together. Long speech is split into short, movie-sized subtitle cues instead of one screen-blocking paragraph. The file voice is selected per Media Studio job.
+
+### Translation model pool
+
+Text translation falls back in this strongest-first order when a model is rate-limited or temporarily unavailable:
+
+`gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3-flash-preview` → `gemini-2.5-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemini-2.5-flash-lite` → `gemma-4-31b-it` → `gemma-4-26b-a4b-it`
+
+Only text-output models with a non-zero free quota in the active AI Studio project are included. Image, TTS, Live, embedding, agent, robotics, and zero-quota models are excluded. Local per-model RPM/RPD guards reduce avoidable 429s; [AI Studio remains authoritative](https://ai.google.dev/gemini-api/docs/rate-limits) because quotas vary by project and can change. Model IDs follow Google's current [Gemini](https://ai.google.dev/gemini-api/docs/models) and [Gemma API](https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api) documentation.
 
 ## Quick install
 
 ### Windows app
 
-1. Download `Voxilyra-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/voxilyra/releases).
+1. Download `Dubira-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/dubira/releases).
 2. Keep **Install FFmpeg** enabled when you want uploaded-media processing.
 3. In Advanced settings, save a [Gemini API key](https://aistudio.google.com/app/apikey) and a [Groq API key](https://console.groq.com/keys).
 4. Leave the proxy at `http://127.0.0.1:10808` when your connection requires it.
 
-Keys are stored in Windows Credential Manager, never in `settings.json`. Groq and Gemini free tiers are subject to each provider's current account quotas; Voxilyra cannot guarantee ongoing free availability.
+Use **Quit app** in the top bar to stop Dubira's local server completely, not only close the browser tab.
+
+Keys are stored in Windows Credential Manager, never in `settings.json`. Groq and Gemini free tiers are subject to each provider's current account quotas; Dubira cannot guarantee ongoing free availability.
 
 If WinGet could not install FFmpeg during setup, run:
 
@@ -76,10 +86,10 @@ winget install --id Gyan.FFmpeg --exact --scope user
 
 ### Chrome/Edge extension
 
-1. Download and extract `Voxilyra-Extension.zip`.
+1. Download and extract `Dubira-Extension.zip`.
 2. Open `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode**, choose **Load unpacked**, and select the extracted folder.
-4. Pin Voxilyra, enter the Gemini key for this browser session, open a media tab, and press Start.
+4. Pin Dubira, enter the Gemini key for this browser session, open a media tab, and press Start.
 
 The extension is fully independent from the Windows app. Chrome only offers true one-click consumer installation after publication in the Chrome Web Store; GitHub-hosted unpacked extensions require the steps above.
 
@@ -88,11 +98,11 @@ The extension is fully independent from the Windows app. Chrome only offers true
 Uploaded files and the extension need no virtual device. Only **live desktop-app capture** needs this route:
 
 1. Source browser/app **Output** → `Speakers (AMM Virtual Audio Device)`.
-2. Voxilyra **Input** → `Microphone (AMM Virtual Audio Device)`.
-3. Voxilyra **Output** → `Default` or physical headphones/speakers.
+2. Dubira **Input** → `Microphone (AMM Virtual Audio Device)`.
+3. Dubira **Output** → `Default` or physical headphones/speakers.
 4. Keep Original volume at `0%` for dub-only listening.
 
-Never route Voxilyra's output back to AMM Virtual; that creates echo and feedback. See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app).
+Never route Dubira's output back to AMM Virtual; that creates echo and feedback. See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app).
 
 ## Development
 
@@ -119,7 +129,7 @@ Build release artifacts:
 
 ## Privacy and limits
 
-- The app binds only to `127.0.0.1`; original uploads and generated files remain under the local Voxilyra data directory.
+- The app binds only to `127.0.0.1`; original uploads and generated files remain under the local Dubira data directory.
 - Uploaded audio chunks are sent to Groq for transcription; transcript text is sent to Gemini for translation and speech generation.
 - Live desktop/tab audio is sent to Gemini Live only after the user starts dubbing.
 - A local rolling governor reserves at most 15,000 Gemini tokens per 60 seconds, below the requested 20,000-token ceiling.

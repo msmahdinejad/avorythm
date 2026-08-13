@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
 import os
 import re
 import shutil
+import textwrap
 import unicodedata
 import uuid
 import wave
@@ -21,6 +23,7 @@ from .constants import (
     GROQ_PRECISE_MODEL,
     OUTPUT_RATE,
     SUPPORTED_LANGUAGES,
+    VOICE_NAMES,
 )
 from .gemini import GeminiFileGateway, Narration, NoTranslationError, TextTranslation
 from .groq import GroqWhisperGateway, TranscriptSegment, merge_segments, parse_transcription
@@ -83,6 +86,35 @@ def transcript_score(reference: str, candidate: str) -> float:
     return round((sequence + coverage) / 2, 3)
 
 
+def subtitle_entries(segment: TranscriptSegment, text: str) -> list[SubtitleEntry]:
+    """Turn a speech segment into short, movie-like cues without losing timing."""
+
+    clean = " ".join(text.split())
+    if not clean:
+        return []
+    timed_parts = max(1, math.ceil(segment.duration / 4.5))
+    width = min(72, max(18, -(-len(clean) // timed_parts)))
+    chunks = textwrap.wrap(
+        clean,
+        width=width,
+        break_long_words=True,
+        break_on_hyphens=False,
+    ) or [clean]
+    weights = [max(1, len(chunk)) for chunk in chunks]
+    total_weight = sum(weights)
+    cursor = segment.start
+    entries: list[SubtitleEntry] = []
+    for index, (chunk, weight) in enumerate(zip(chunks, weights, strict=True)):
+        end = (
+            segment.end
+            if index == len(chunks) - 1
+            else cursor + segment.duration * weight / total_weight
+        )
+        entries.append(SubtitleEntry(cursor, end, chunk))
+        cursor = end
+    return entries
+
+
 @dataclass(slots=True)
 class MediaJob:
     id: str
@@ -91,6 +123,7 @@ class MediaJob:
     mode: MediaMode
     target_language: str
     media_kind: MediaKind = "video"
+    voice_name: str = "Kore"
     status: str = "queued"
     stage: str = "queued"
     progress: float = 0.0
@@ -99,6 +132,7 @@ class MediaJob:
     quality_score: float | None = None
     error: str = ""
     warnings: list[str] = field(default_factory=list)
+    translation_models: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=utc_now)
     updated_at: str = field(default_factory=utc_now)
 
@@ -109,6 +143,8 @@ class MediaJob:
             supported_media(str(payload.get("filename", ""))) or "video",
         )
         payload.setdefault("quality_score", None)
+        payload.setdefault("voice_name", "Kore")
+        payload.setdefault("translation_models", [])
         return cls(**payload)  # type: ignore[arg-type]
 
     def to_dict(self) -> dict[str, object]:
@@ -216,6 +252,7 @@ class MediaJobManager:
         mode: MediaMode,
         chunks: AsyncIterator[bytes],
         content_length: int | None = None,
+        voice_name: str = "Kore",
     ) -> MediaJob:
         suffix = Path(filename).suffix.lower()
         media_kind = supported_media(filename)
@@ -225,6 +262,8 @@ class MediaJobManager:
             raise ValueError("unsupported target language")
         if mode not in ("precise", "fast"):
             raise ValueError("unsupported processing mode")
+        if voice_name not in VOICE_NAMES:
+            raise ValueError("unsupported voice")
         if content_length is not None and content_length > self.MAX_UPLOAD_BYTES:
             raise ValueError("media file is larger than the 8 GB local limit")
         job = MediaJob(
@@ -233,7 +272,8 @@ class MediaJobManager:
             suffix,
             mode,
             target_language,
-            media_kind,
+            media_kind=media_kind,
+            voice_name=voice_name,
         )
         folder = self._folder(job.id)
         folder.mkdir(parents=True)
@@ -348,6 +388,8 @@ class MediaJobManager:
                 self._update(job, "translating", job.progress)
             result = await gateway.translate(batch, job.source_language, job.target_language)
             await self.governor.reconcile(charge, result.total_tokens or estimate)
+            if result.model and result.model not in job.translation_models:
+                job.translation_models.append(result.model)
             translated.extend(result.texts)
             progress = 0.38 + 0.12 * min(1, (start + len(batch)) / len(texts))
             self._update(job, "translating", progress)
@@ -363,7 +405,7 @@ class MediaJobManager:
                 result = await gateway.narrate(
                     text,
                     job.target_language,
-                    self.store.load().voice_name,
+                    job.voice_name,
                 )
             except Exception:
                 await self.governor.reconcile(charge, estimate)
@@ -439,10 +481,13 @@ class MediaJobManager:
             if len(translations) != len(segments):
                 raise RuntimeError("translation segment count does not match transcription")
 
-            source_entries = [SubtitleEntry(item.start, item.end, item.text) for item in segments]
+            source_entries = [
+                entry for item in segments for entry in subtitle_entries(item, item.text)
+            ]
             translated_entries = [
-                SubtitleEntry(item.start, item.end, text)
+                entry
                 for item, text in zip(segments, translations, strict=True)
+                for entry in subtitle_entries(item, text)
             ]
             scores: list[tuple[float, float]] = []
             cursor_frames = 0

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import time
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
-from voxilyra.api import create_app
-from voxilyra.audio import AudioDevice, DeviceCatalog
-from voxilyra.config import ConfigStore
-from voxilyra.models import Settings
+from dubira.api import create_app
+from dubira.audio import AudioDevice, DeviceCatalog
+from dubira.config import ConfigStore
+from dubira.models import Settings
 
 
 def catalog() -> DeviceCatalog:
@@ -20,14 +22,25 @@ def catalog() -> DeviceCatalog:
     )
 
 
-def client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
+def client(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    shutdown_callback: Callable[[], None] | None = None,
+) -> TestClient:
     store = ConfigStore(tmp_path / "config")
     store.save(Settings(capture_device=4, output_device=7))
-    monkeypatch.setattr("voxilyra.api.DeviceCatalog.scan", catalog)
+    monkeypatch.setattr("dubira.api.DeviceCatalog.scan", catalog)
     static = tmp_path / "static"
     static.mkdir()
-    (static / "index.html").write_text("Voxilyra", encoding="utf-8")
-    return TestClient(create_app(store, tmp_path / "recordings", static))
+    (static / "index.html").write_text("Dubira", encoding="utf-8")
+    return TestClient(
+        create_app(
+            store,
+            tmp_path / "recordings",
+            static,
+            shutdown_callback=shutdown_callback,
+        )
+    )
 
 
 def test_health_and_bootstrap(
@@ -35,8 +48,8 @@ def test_health_and_bootstrap(
     tmp_path: Path,
 ) -> None:
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    monkeypatch.setattr("voxilyra.config.load_dotenv", lambda: False)
-    monkeypatch.setattr("voxilyra.config.keyring.get_password", lambda service, user: None)
+    monkeypatch.setattr("dubira.config.load_dotenv", lambda: False)
+    monkeypatch.setattr("dubira.config.keyring.get_password", lambda service, user: None)
 
     with client(monkeypatch, tmp_path) as app:
         assert app.get("/api/health").json()["status"] == "ok"
@@ -111,3 +124,16 @@ def test_media_job_paths_reject_traversal(
         response = app.get("/api/media/jobs/not-a-job/video")
 
     assert response.status_code == 404
+
+
+def test_shutdown_endpoint_stops_the_desktop_server(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    calls: list[bool] = []
+    with client(monkeypatch, tmp_path, lambda: calls.append(True)) as app:
+        response = app.post("/api/shutdown")
+        time.sleep(0.2)
+
+    assert response.status_code == 200
+    assert calls == [True]

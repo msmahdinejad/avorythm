@@ -1,6 +1,6 @@
 param(
     [string]$OutputDirectory = "$PSScriptRoot\..\extension\icons",
-    [string]$SourceLogo = "$PSScriptRoot\..\assets\branding\voxilyra-logo.png"
+    [string]$SourceLogo = "$PSScriptRoot\..\assets\branding\dubira-logo.png"
 )
 
 Add-Type -AssemblyName System.Drawing
@@ -56,7 +56,7 @@ foreach ($size in 16, 32, 48, 128) {
 }
 $handle = $master.GetHicon()
 $windowsIcon = [Drawing.Icon]::FromHandle($handle)
-$iconStream = [IO.File]::Create((Join-Path $resolvedOutput "Voxilyra.ico"))
+$iconStream = [IO.File]::Create((Join-Path $resolvedOutput "Dubira.ico"))
 $windowsIcon.Save($iconStream)
 $iconStream.Dispose()
 $windowsIcon.Dispose()

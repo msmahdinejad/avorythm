@@ -11,13 +11,16 @@ from dotenv import load_dotenv
 
 from .models import Settings
 
-APP_NAME = "Voxilyra"
-LEGACY_APP_NAME = "LingoDub"
+APP_NAME = "Dubira"
+LEGACY_APP_NAMES = ("Voxilyra", "LingoDub")
 KEYRING_SERVICES = {
-    "gemini": "Voxilyra Gemini API",
-    "groq": "Voxilyra Groq API",
+    "gemini": "Dubira Gemini API",
+    "groq": "Dubira Groq API",
 }
-LEGACY_GEMINI_SERVICE = "LingoDub Gemini API"
+LEGACY_KEYRING_SERVICES = {
+    "gemini": ("Voxilyra Gemini API", "LingoDub Gemini API"),
+    "groq": ("Voxilyra Groq API", "LingoDub Groq API"),
+}
 KEYRING_USER = "default"
 ApiProvider = Literal["gemini", "groq"]
 
@@ -30,8 +33,10 @@ class ConfigStore:
         base = directory or appdata / APP_NAME
         self.directory = base
         self.path = base / "settings.json"
-        self.legacy_path = (
-            appdata / LEGACY_APP_NAME / "settings.json" if directory is None else None
+        self.legacy_paths = (
+            [appdata / name / "settings.json" for name in LEGACY_APP_NAMES]
+            if directory is None
+            else []
         )
         load_dotenv()
         self._inherited_proxy = {
@@ -41,8 +46,11 @@ class ConfigStore:
     def load(self) -> Settings:
         data: dict[str, Any] = {}
         settings_path = self.path
-        if not settings_path.is_file() and self.legacy_path and self.legacy_path.is_file():
-            settings_path = self.legacy_path
+        if not settings_path.is_file():
+            settings_path = next(
+                (path for path in self.legacy_paths if path.is_file()),
+                settings_path,
+            )
         if settings_path.is_file():
             try:
                 data = json.loads(settings_path.read_text(encoding="utf-8"))
@@ -69,8 +77,10 @@ class ConfigStore:
             return key
         try:
             key = (keyring.get_password(KEYRING_SERVICES[provider], KEYRING_USER) or "").strip()
-            if not key and provider == "gemini":
-                key = (keyring.get_password(LEGACY_GEMINI_SERVICE, KEYRING_USER) or "").strip()
+            for service in LEGACY_KEYRING_SERVICES[provider]:
+                if key:
+                    break
+                key = (keyring.get_password(service, KEYRING_USER) or "").strip()
             return key
         except keyring.errors.KeyringError:
             return ""

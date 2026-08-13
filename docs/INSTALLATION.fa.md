@@ -16,10 +16,10 @@
 
 ## اپ ویندوز
 
-1. `Voxilyra-Setup-x64.exe` را از Releases دانلود کن.
+1. `Dubira-Setup-x64.exe` را از Releases دانلود کن.
 2. بدون Administrator نصب کن.
 3. برای بخش فایل صوتی/ویدئویی، گزینهٔ **Install FFmpeg** را روشن نگه دار.
-4. Voxilyra را باز و وارد **تنظیمات پیشرفته** شو.
+4. Dubira را باز و وارد **تنظیمات پیشرفته** شو.
 5. هر دو کلید Gemini و Groq را ذخیره و در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
 
 کلیدها جداگانه در Windows Credential Manager هستند و در `settings.json` نوشته نمی‌شوند. توسعه‌دهنده می‌تواند `.env.example` را به `.env` کپی کند؛ این فایل وارد Git نمی‌شود.
@@ -30,7 +30,7 @@
 winget install --id Gyan.FFmpeg --exact --scope user
 ```
 
-بعد از نصب FFmpeg، Voxilyra را دوباره اجرا کن.
+بعد از نصب FFmpeg، Dubira را دوباره اجرا کن.
 
 ## استودیوی فایل صوتی و ویدئویی
 
@@ -38,7 +38,7 @@ winget install --id Gyan.FFmpeg --exact --scope user
 2. فایل صوتی یا ویدئویی پشتیبانی‌شده تا سقف محلی ۸ گیگابایت را انتخاب یا رها کن.
 3. زبان مقصد را انتخاب کن.
 4. حالت **دقیق** از `whisper-large-v3` و کنترل متن گفتار تولیدشده استفاده می‌کند؛ حالت **سریع** از `whisper-large-v3-turbo` استفاده می‌کند.
-5. پردازش را شروع کن. خود فایل محلی است؛ قطعه‌های FLAC به Groq، متن به Gemini 3.1 Flash Lite و ترجمه برای ساخت صدا به Gemini 3.1 Flash Live می‌رود.
+5. گویندهٔ فایل را همان‌جا انتخاب و پردازش را شروع کن. خود فایل محلی است؛ قطعه‌های FLAC به Groq، متن به قوی‌ترین مدل در دسترس از مخزن رایگان Gemini/Gemma و ترجمه برای ساخت صدا به Gemini 3.1 Flash Live می‌رود.
 6. پس از آماده‌شدن، پلیر سینک را استفاده یا چهار فایل/ZIP را دانلود کن.
 
 صوت اصلی، صوت دوبله و هر دو زیرنویس مستقل‌اند. فایل صوتی با پلیر صوت و فایل ویدئویی با پلیر سینک نمایش داده می‌شود. Job قطع‌شده پس از Restart دوباره Queue می‌شود. Cancel شبکه/FFmpeg فعال را متوقف می‌کند و Delete کل پروژهٔ محلی را پاک می‌کند.
@@ -47,15 +47,15 @@ winget install --id Gyan.FFmpeg --exact --scope user
 
 ## اکستنشن مستقل
 
-1. `Voxilyra-Extension.zip` را دانلود و در پوشهٔ ثابت Extract کن؛ خود ZIP را انتخاب نکن.
+1. `Dubira-Extension.zip` را دانلود و در پوشهٔ ثابت Extract کن؛ خود ZIP را انتخاب نکن.
 2. `chrome://extensions` یا `edge://extensions` را باز کن.
 3. **Developer mode** را روشن کن.
 4. **Load unpacked** را بزن و پوشه‌ای را بده که `manifest.json` مستقیم داخلش است.
-5. Voxilyra را Pin و Popup را باز کن.
+5. Dubira را Pin و Popup را باز کن.
 6. Gemini API Key را برای نشست فعلی وارد کن.
 7. تب ویدئو را باز و **شروع دوبلهٔ این تب** را بزن.
 
-اکستنشن به اپ، localhost، Python، FFmpeg و Virtual Cable نیاز ندارد. `chrome.tabCapture` پخش مستقیم تب را قطع می‌کند و Voxilyra فقط میکس انتخابی را بازسازی می‌کند؛ بنابراین در حالت «فقط دوبله» صدای اصلی و دوبله روی هم نمی‌افتند.
+اکستنشن به اپ، localhost، Python، FFmpeg و Virtual Cable نیاز ندارد. `chrome.tabCapture` پخش مستقیم تب را قطع می‌کند و Dubira فقط میکس انتخابی را بازسازی می‌کند؛ بنابراین در حالت «فقط دوبله» صدای اصلی و دوبله روی هم نمی‌افتند.
 
 کلید فقط در `chrome.storage.session` است و پس از خروج کامل مرورگر باید دوباره وارد شود. با فعال‌کردن ضبط، چهار فایل `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` در Downloads ساخته می‌شوند. نشست‌های طولانی Live خودکار Renew می‌شوند.
 
@@ -76,14 +76,14 @@ winget install --id Gyan.FFmpeg --exact --scope user
 اول در برنامهٔ منبع صدا پخش کن تا Windows آن را در **Settings → System → Sound → Volume mixer** نشان دهد. سپس دقیقاً مطابق تصویر:
 
 1. زیر **Google Chrome** یا برنامهٔ منبع، **Output device** را روی `Speakers (AMM Virtual Audio Device)` بگذار.
-2. زیر **Voxilyra.exe**، **Output device** را `Default` یا هدفون واقعی نگه دار.
-3. زیر **Voxilyra.exe**، **Input device** را روی `Microphone (AMM Virtual Audio Device)` بگذار.
+2. زیر **Dubira.exe**، **Output device** را `Default` یا هدفون واقعی نگه دار.
+3. زیر **Dubira.exe**، **Input device** را روی `Microphone (AMM Virtual Audio Device)` بگذار.
 4. داخل داشبورد، Loopback متناظر AMM را به‌عنوان **ورودی صدای برنامه** انتخاب کن.
 5. صدای اصلی را ۰٪ و دوبله را ۱۰۰٪ بگذار.
 
 ![مسیر دقیق Volume Mixer](images/audio-routing-guide.png)
 
-خروجی Voxilyra را روی AMM Virtual نگذار؛ دوبله دوباره Capture می‌شود و اکو/فیدبک می‌سازد.
+خروجی Dubira را روی AMM Virtual نگذار؛ دوبله دوباره Capture می‌شود و اکو/فیدبک می‌سازد.
 
 ## رفع مشکل
 
@@ -92,6 +92,8 @@ winget install --id Gyan.FFmpeg --exact --scope user
 - **اکستنشن دوباره Key می‌خواهد:** بعد از خروج کامل مرورگر طبیعی است؛ کلید Session-only است.
 - **صدای تب نمی‌آید:** Chrome/Edge حداقل 116 باشد، هنگام Start همان تب فعال باشد و صفحهٔ DRM ممکن است Capture را مسدود کند.
 - **FFmpeg لازم است:** دستور WinGet بالا را اجرا و اپ را Restart کن.
+- **صدای اصلی داخل پلیر شنیده می‌شود:** گزینهٔ «صدای اصلی» را خاموش نگه دار. این کلید mute و حجم صفر را حتی در برابر کنترل داخلی ویدئو اعمال می‌کند.
+- **بستن کامل Dubira:** از دکمهٔ «خروج کامل» در نوار بالای داشبورد استفاده کن؛ بستن تب به‌تنهایی پردازش محلی را متوقف نمی‌کند.
 - **Groq Key لازم است:** در `console.groq.com/keys` کلید بساز و کنار کلید Gemini ذخیره کن.
 - **پردازش چند برابر زمان فایل طول می‌کشد:** ساخت صدای هر قطعه با Gemini Live ترتیبی است و حالت دقیق ممکن است قطعهٔ ناسازگار را دوباره بسازد.
 - **هشدار تطابق گفتار پایین:** متن صدای Live پس از retry هم با ترجمه اختلاف داشته؛ پیش از استفادهٔ نهایی خروجی را گوش کن.

@@ -4,8 +4,11 @@ import asyncio
 import json
 import re
 import time
+from collections import deque
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone, tzinfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import numpy as np
 from google import genai
@@ -13,11 +16,11 @@ from google.genai import types
 from pydantic import BaseModel, Field
 
 from .constants import (
-    FILE_TRANSLATION_MODEL,
     FILE_VOICE_MODEL,
     INPUT_RATE,
     LIVE_MODEL,
     OUTPUT_RATE,
+    TRANSLATION_MODELS,
 )
 from .models import Settings
 from .transcripts import TranscriptTracker
@@ -106,6 +109,7 @@ class TranslationItem(BaseModel):
 class TextTranslation:
     texts: list[str]
     total_tokens: int
+    model: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,6 +121,10 @@ class Narration:
 
 class NoTranslationError(TimeoutError):
     """The Live session completed without any translated content."""
+
+
+class TranslationPoolExhausted(RuntimeError):
+    """No configured free-tier translation model could serve this request."""
 
 
 def transient_live_error(error: Exception) -> bool:
@@ -373,6 +381,73 @@ class GeminiFileGateway:
             api_key=api_key,
             http_options=types.HttpOptions(async_client_args={"ping_interval": None}),
         )
+        self._minute_usage: dict[str, deque[float]] = {}
+        self._daily_usage: dict[str, tuple[date, int]] = {}
+        self._unavailable_models: set[str] = set()
+
+    def _claim(self, model: str, rpm: int, rpd: int) -> bool:
+        now = time.monotonic()
+        minute = self._minute_usage.setdefault(model, deque())
+        while minute and now - minute[0] >= 60:
+            minute.popleft()
+        try:
+            pacific: tzinfo = ZoneInfo("America/Los_Angeles")
+        except ZoneInfoNotFoundError:
+            # Windows/PyInstaller can omit IANA data. UTC-8 resets no earlier than
+            # Google during daylight time, so this fallback remains quota-safe.
+            pacific = timezone(timedelta(hours=-8))
+        pacific_today = datetime.now(pacific).date()
+        usage_date, daily_count = self._daily_usage.get(model, (pacific_today, 0))
+        if usage_date != pacific_today:
+            daily_count = 0
+        if model in self._unavailable_models or len(minute) >= rpm or daily_count >= rpd:
+            return False
+        minute.append(now)
+        self._daily_usage[model] = (pacific_today, daily_count + 1)
+        return True
+
+    @staticmethod
+    def _can_fallback(error: Exception) -> bool:
+        code = int(getattr(error, "code", 0) or 0)
+        message = str(error).casefold()
+        if code in {401, 403} or "api key not valid" in message or "api_key_invalid" in message:
+            return False
+        return (
+            code in {404, 408, 409, 429}
+            or code >= 500
+            or isinstance(error, (TimeoutError, ConnectionError, OSError))
+            or any(
+                marker in message
+                for marker in (
+                    "resource_exhausted",
+                    "rate limit",
+                    "quota",
+                    "not found",
+                    "not available",
+                    "unavailable",
+                    "overloaded",
+                    "timed out",
+                )
+            )
+        )
+
+    @staticmethod
+    def _translation_items(response: object, structured: bool) -> list[TranslationItem]:
+        raw_items = getattr(response, "parsed", None) if structured else None
+        if not isinstance(raw_items, list):
+            text = str(getattr(response, "text", "") or "").strip()
+            text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.IGNORECASE)
+            start, end = text.find("["), text.rfind("]")
+            if start < 0 or end < start:
+                raise RuntimeError("Gemini returned an invalid translation response")
+            try:
+                raw_items = json.loads(text[start : end + 1])
+            except json.JSONDecodeError as error:
+                raise RuntimeError("Gemini returned invalid translation JSON") from error
+        return [
+            item if isinstance(item, TranslationItem) else TranslationItem.model_validate(item)
+            for item in raw_items
+        ]
 
     async def translate(
         self,
@@ -389,38 +464,52 @@ class GeminiFileGateway:
                 "source_language": source_language or "auto",
                 "target_language": target_language,
                 "segments": [{"id": index, "text": text} for index, text in enumerate(texts)],
+                "output_format": [{"id": 0, "text": "translated text"}],
             },
             ensure_ascii=False,
         )
-        response = await self.client.aio.models.generate_content(
-            model=FILE_TRANSLATION_MODEL,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=(
-                    "Translate every segment faithfully and naturally. Preserve names, numbers, "
-                    "technical terms, tone, and intent. Do not summarize, explain, censor, merge, "
-                    "or add information. Return exactly one item for every input id in the same "
-                    "order."
-                ),
-                response_mime_type="application/json",
-                response_schema=list[TranslationItem],
-                temperature=0.1,
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
+        instruction = (
+            "Translate every segment faithfully and naturally. Preserve names, numbers, "
+            "technical terms, tone, intent, and sentence boundaries. Do not summarize, explain, "
+            "censor, merge, or add information. Return a JSON array with exactly one object for "
+            "every input id, in the same order, using only the keys id and text."
         )
-        raw_items = response.parsed
-        if not isinstance(raw_items, list):
-            raise RuntimeError("Gemini returned an invalid translation response")
-        items = [
-            item if isinstance(item, TranslationItem) else TranslationItem.model_validate(item)
-            for item in raw_items
-        ]
-        by_id = {item.id: item.text.strip() for item in items}
-        if set(by_id) != set(range(len(texts))) or any(not value for value in by_id.values()):
-            raise RuntimeError("Gemini omitted one or more translated segments")
-        usage = getattr(response, "usage_metadata", None)
-        tokens = int(getattr(usage, "total_token_count", 0) or 0)
-        return TextTranslation([by_id[index] for index in range(len(texts))], tokens)
+        last_error: Exception | None = None
+        for model, rpm, rpd, structured in TRANSLATION_MODELS:
+            if not self._claim(model, rpm, rpd):
+                continue
+            config = types.GenerateContentConfig(system_instruction=instruction)
+            if structured:
+                config.response_mime_type = "application/json"
+                config.response_schema = list[TranslationItem]
+            try:
+                response = await self.client.aio.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=config,
+                )
+                items = self._translation_items(response, structured)
+                by_id = {item.id: item.text.strip() for item in items}
+                if set(by_id) != set(range(len(texts))) or any(
+                    not value for value in by_id.values()
+                ):
+                    raise RuntimeError("Gemini omitted one or more translated segments")
+                usage = getattr(response, "usage_metadata", None)
+                tokens = int(getattr(usage, "total_token_count", 0) or 0)
+                return TextTranslation(
+                    [by_id[index] for index in range(len(texts))],
+                    tokens,
+                    model,
+                )
+            except Exception as error:
+                last_error = error
+                message = str(error).casefold()
+                if int(getattr(error, "code", 0) or 0) == 404 or "not found" in message:
+                    self._unavailable_models.add(model)
+                if not isinstance(error, RuntimeError) and not self._can_fallback(error):
+                    raise
+        detail = str(last_error) if last_error else "local free-tier limits reached"
+        raise TranslationPoolExhausted(f"translation model pool exhausted: {detail}")
 
     async def narrate(self, text: str, language: str, voice_name: str) -> Narration:
         audio = bytearray()

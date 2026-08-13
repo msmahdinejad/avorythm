@@ -38,4 +38,4 @@ class PcmCaptureProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('voxilyra-pcm-capture', PcmCaptureProcessor);
+registerProcessor('dubira-pcm-capture', PcmCaptureProcessor);

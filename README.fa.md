@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/branding/voxilyra-logo.png" width="148" alt="لوگوی Voxilyra">
+  <img src="assets/branding/dubira-logo.png" width="148" alt="لوگوی Dubira">
 </p>
 
-<h1 align="center">Voxilyra</h1>
+<h1 align="center">Dubira</h1>
 
 <p align="center"><strong>هر صدایی را به زبان خودت بشنو.</strong></p>
 
@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/msmahdinejad/voxilyra/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/voxilyra/ci.yml?branch=main&label=CI"></a>
-  <a href="https://github.com/msmahdinejad/voxilyra/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/voxilyra?label=Release"></a>
+  <a href="https://github.com/msmahdinejad/dubira/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/dubira/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/dubira/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/dubira?label=Release"></a>
   <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
@@ -20,7 +20,7 @@
 
 <p align="center"><a href="README.md">English</a> · <a href="docs/INSTALLATION.fa.md">نصب</a> · <a href="PRIVACY.md">حریم خصوصی</a></p>
 
-![داشبورد انگلیسی Voxilyra](docs/images/dashboard-en.png)
+![داشبورد انگلیسی Dubira](docs/images/dashboard-en.png)
 
 ## دو محصول مستقل
 
@@ -33,23 +33,27 @@
 صوت/ویدئو
   ← استخراج و زمان‌بندی محلی با FFmpeg
   ← تبدیل به متن زمان‌دار با Groq Whisper Large v3
-  ← ترجمهٔ متن با Gemini 3.1 Flash Lite
+  ← ترجمه با قوی‌ترین مدل در دسترس از مخزن رایگان Gemini/Gemma
   ← ساخت گفتار ترجمه‌شده با Gemini 3.1 Flash Live
   ← هماهنگ‌سازی، زیرنویس، پلیر و ZIP روی لپ‌تاپ
 ```
 
 حالت پیش‌فرض **دقیق** از `whisper-large-v3` استفاده می‌کند، متن صدای تولیدی Live را با ترجمه می‌سنجد و فقط قطعهٔ ناسازگار را دوباره می‌سازد. حالت **سریع** از `whisper-large-v3-turbo` استفاده می‌کند.
 
-چهار خروجی اصلی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` هستند و همگی در `all-outputs.zip` نیز قرار می‌گیرند. پلیر داخلی ویدئو/صوت را ساعت مرجع قرار می‌دهد، اختلاف بیشتر از ۱۲۰ میلی‌ثانیه را اصلاح می‌کند و هر دو زیرنویس را هم‌زمان نمایش می‌دهد.
+چهار خروجی اصلی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` هستند و همگی در `all-outputs.zip` نیز قرار می‌گیرند. پلیر داخلی ویدئو/صوت را ساعت مرجع قرار می‌دهد، اختلاف بیشتر از ۱۲۰ میلی‌ثانیه را اصلاح می‌کند، با خاموش‌شدن گزینهٔ صدای اصلی آن را واقعاً mute می‌کند و متن‌های بلند را به زیرنویس‌های کوتاه و طبیعی فیلمی می‌شکند. گوینده هم برای هر پروژه داخل Media Studio انتخاب می‌شود.
+
+مدل‌های ترجمه به‌ترتیب قدرت استفاده می‌شوند: `gemini-3.6-flash`، `gemini-3.5-flash`، `gemini-3-flash-preview`، `gemini-2.5-flash`، مدل‌های Flash-Lite دارای سهمیه، سپس Gemma 4 31B و 26B. در 429 یا عدم دسترسی، مدل بعدی خودکار امتحان می‌شود. مدل‌های تصویر، TTS، Live، Embedding و مدل‌های با سهمیهٔ صفر وارد pool ترجمه نشده‌اند.
 
 ## نصب سریع اپ
 
-1. `Voxilyra-Setup-x64.exe` را از [Releases](https://github.com/msmahdinejad/voxilyra/releases) بگیر.
+1. `Dubira-Setup-x64.exe` را از [Releases](https://github.com/msmahdinejad/dubira/releases) بگیر.
 2. گزینهٔ **Install FFmpeg** را برای پردازش فایل روشن نگه دار.
 3. در تنظیمات پیشرفته، [کلید Gemini](https://aistudio.google.com/app/apikey) و [کلید Groq](https://console.groq.com/keys) را ذخیره کن.
 4. در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
 
-کلیدها در Windows Credential Manager ذخیره می‌شوند و داخل `settings.json` نیستند. پلن رایگان هر سرویس سهمیه و قوانین خودش را دارد و دائمی‌بودن رایگان‌بودن آن تحت کنترل Voxilyra نیست.
+برای توقف کامل پردازش محلی از دکمهٔ **خروج کامل** در نوار بالای اپ استفاده کن؛ بستن تب کافی نیست.
+
+کلیدها در Windows Credential Manager ذخیره می‌شوند و داخل `settings.json` نیستند. پلن رایگان هر سرویس سهمیه و قوانین خودش را دارد و دائمی‌بودن رایگان‌بودن آن تحت کنترل Dubira نیست.
 
 اگر نصب FFmpeg در Installer موفق نشد:
 
@@ -59,7 +63,7 @@ winget install --id Gyan.FFmpeg --exact --scope user
 
 ## نصب اکستنشن
 
-1. `Voxilyra-Extension.zip` را Extract کن.
+1. `Dubira-Extension.zip` را Extract کن.
 2. `chrome://extensions` یا `edge://extensions` را باز کن.
 3. **Developer mode** را روشن و **Load unpacked** را بزن.
 4. پوشهٔ Extractشده را انتخاب کن، اکستنشن را Pin کن و کلید Gemini را برای همان نشست وارد کن.
@@ -71,11 +75,11 @@ winget install --id Gyan.FFmpeg --exact --scope user
 پردازش فایل و اکستنشن به دستگاه مجازی نیاز ندارند. فقط دوبلهٔ زندهٔ اپ:
 
 1. خروجی مرورگر/برنامه → `Speakers (AMM Virtual Audio Device)`
-2. ورودی Voxilyra → `Microphone (AMM Virtual Audio Device)`
-3. خروجی Voxilyra → `Default` یا هدفون/اسپیکر واقعی
+2. ورودی Dubira → `Microphone (AMM Virtual Audio Device)`
+3. خروجی Dubira → `Default` یا هدفون/اسپیکر واقعی
 4. برای شنیدن فقط دوبله، صدای اصلی را روی صفر بگذار.
 
-خروجی Voxilyra را روی AMM Virtual نگذار؛ حلقهٔ اکو می‌سازد. راهنمای تصویری در [آموزش نصب فارسی](docs/INSTALLATION.fa.md) است.
+خروجی Dubira را روی AMM Virtual نگذار؛ حلقهٔ اکو می‌سازد. راهنمای تصویری در [آموزش نصب فارسی](docs/INSTALLATION.fa.md) است.
 
 ## توسعه و تست
 

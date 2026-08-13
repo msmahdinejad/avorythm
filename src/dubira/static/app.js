@@ -1,6 +1,6 @@
 const $ = (selector) => document.querySelector(selector);
 const API = '/api';
-let locale = localStorage.getItem('voxilyra.locale') || 'fa';
+let locale = localStorage.getItem('dubira.locale') || localStorage.getItem('voxilyra.locale') || 'fa';
 let bootstrap = null;
 let lastError = '';
 let selectedMediaFile = null;
@@ -13,6 +13,8 @@ let translatedCues = [];
 
 const messages = {
   fa: {
+    navLive: 'زنده', navStudio: 'استودیوی فایل', navGuide: 'تنظیم صدا', quitApp: 'خروج کامل',
+    appClosed: 'Dubira بسته شد.', closeTab: 'اکنون می‌توانی این تب را ببندی.', translationModel: 'مدل ترجمه',
     appOnline: 'اپ دسکتاپ آنلاین است', tagline: 'دوبلهٔ زنده، بدون دردسر',
     eyebrow: 'ترجمه و دوبلهٔ هم‌زمان با Gemini', heroTitle: 'هر صدایی را به زبان خودت بشنو.',
     heroText: 'صدای فیلم، کلاس و فایل صوتی را زنده ترجمه کن یا رسانه را برای پخش کاملاً هماهنگ پردازش کن.',
@@ -25,10 +27,10 @@ const messages = {
     recordHint: 'هنگام دوبله، ضبط را روشن کن تا چهار فایل هماهنگ ساخته شود.', downloadAll: 'دریافت همه',
     controls: 'کنترل‌ها', settings: 'تنظیمات', quickSetup: 'تنظیم دستی صدای برنامه‌ها',
     setupDescription: 'یک مرحله در Windows Volume Mixer',
-    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی Voxilyra را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
+    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی Dubira را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
     openWindowsMixer: 'باز کردن میکسر صدای ویندوز', audioGuide: 'آموزش تصویری تنظیم صدا',
     targetLanguage: 'زبان مقصد', speaker: 'گویندهٔ فایل',
-    nativeVoiceHelp: 'برای دوبلهٔ فایل با Gemini Live؛ صدای زنده خودکار است.', captureDevice: 'ورودی صدای برنامه',
+    nativeVoiceHelp: 'فقط برای دوبلهٔ فایل‌های صوتی و ویدئویی.', captureDevice: 'ورودی صدای برنامه',
     outputDevice: 'خروجی شنیداری', soundMix: 'ترکیب صدا', soundMixHint: 'هر کدام را مستقل بشنو',
     originalSound: 'صدای اصلی', dubbedSound: 'صدای دوبله', advanced: 'تنظیمات پیشرفته', save: 'ذخیره',
     proxy: 'پروکسی', saveSettings: 'ذخیرهٔ تنظیمات', saved: 'ذخیره شد.', keySaved: 'کلید امن ذخیره شد.',
@@ -43,7 +45,7 @@ const messages = {
     preciseHelp: 'Whisper Large v3 و کنترل متن صدای تولیدشده؛ پیشنهاد ما.', fastMode: 'سریع',
     fastHelp: 'Whisper Large v3 Turbo با کنترل کمتر برای پیش‌نمایش سریع.', fileTargetLanguage: 'زبان دوبلهٔ فایل',
     processVideo: 'شروع پردازش فایل',
-    mediaPrivacy: 'فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.',
+    mediaPrivacy: 'فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به مخزن مدل‌های رایگان Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.',
     cancel: 'لغو', deleteJob: 'حذف پروژه', recentJobs: 'پروژه‌های اخیر', storedLocally: 'ذخیره‌شده روی همین دستگاه',
     noJobs: 'هنوز فایل صوتی یا ویدئویی پردازش نشده است.', playerWaiting: 'پس از آماده‌شدن فایل، پلیر هماهنگ اینجا فعال می‌شود.',
     hearOriginal: 'صدای اصلی', hearDubbed: 'صدای دوبله', sourceSubs: 'زیرنویس اصلی',
@@ -53,7 +55,7 @@ const messages = {
     uploadFirst: 'ابتدا یک فایل صوتی یا ویدئویی انتخاب کن.', mediaQueued: 'فایل ذخیره شد و در صف پردازش است.',
     confirmDelete: 'این پروژه و همهٔ خروجی‌های محلی آن حذف شود؟', open: 'بازکردن',
     stageQueued: 'در صف', stageProbing: 'بررسی فایل', stageExtracting: 'استخراج صدا',
-    stageTranscribing: 'تبدیل صدا به متن با Groq Whisper', stageTranslating: 'ترجمه با Gemini 3.1 Flash Lite', stageNarrating: 'ساخت صدای دوبله با Gemini Live', stageQuotaWait: 'انتظار برای سهمیه', stageAligning: 'هماهنگ‌سازی خروجی‌ها',
+    stageTranscribing: 'تبدیل صدا به متن با Groq Whisper', stageTranslating: 'ترجمه با مخزن مدل‌های رایگان Gemini', stageNarrating: 'ساخت صدای دوبله با Gemini Live', stageQuotaWait: 'انتظار برای سهمیه', stageAligning: 'هماهنگ‌سازی خروجی‌ها',
     stageReady: 'آمادهٔ پخش', stageFailed: 'ناموفق', stageCancelled: 'لغوشده', stageCancelling: 'در حال لغو',
     quotaNotice: 'برای ماندن زیر سقف ۲۰ هزار توکن در دقیقه، پردازش خودکار مکث کرده است.', processingWarning: 'حالت دقیق از Whisper دقیق‌تر استفاده می‌کند و متن صدای ساخته‌شده را برای هر قطعه کنترل می‌کند.',
     qualityScore: 'تطابق گفتار و ترجمه', narration_retry: 'یک قطعه به‌دلیل اختلاف صوت و متن دوباره تولید شد.',
@@ -64,6 +66,8 @@ const messages = {
     segment_skipped: 'یک بازه پس از سه تلاش پاسخی نگرفت و با سکوت هماهنگ حفظ شد؛ آن بخش را بازبینی کن.'
   },
   en: {
+    navLive: 'Live', navStudio: 'File studio', navGuide: 'Audio setup', quitApp: 'Quit app',
+    appClosed: 'Dubira is closed.', closeTab: 'You can close this tab now.', translationModel: 'Translation model',
     appOnline: 'Desktop app is online', tagline: 'Live dubbing, minus the friction',
     eyebrow: 'Real-time translation and dubbing with Gemini', heroTitle: 'Hear anything in your language.',
     heroText: 'Translate live audio or process audio/video files for timeline-locked playback.',
@@ -76,10 +80,10 @@ const messages = {
     recordHint: 'Enable recording while dubbing to create four synchronized files.', downloadAll: 'Download all',
     controls: 'CONTROLS', settings: 'Settings', quickSetup: 'Manual desktop audio setup',
     setupDescription: 'One step in Windows Volume Mixer',
-    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep Voxilyra on physical headphones. The extension and file processor do not need this route.',
+    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep Dubira on physical headphones. The extension and file processor do not need this route.',
     openWindowsMixer: 'Open Windows volume mixer', audioGuide: 'Open the visual audio guide',
     targetLanguage: 'Target language', speaker: 'File dubbing voice',
-    nativeVoiceHelp: 'Used for file dubbing with Gemini Live; live translation keeps its automatic voice.', captureDevice: 'Application audio input',
+    nativeVoiceHelp: 'Used only for uploaded audio and video files.', captureDevice: 'Application audio input',
     outputDevice: 'Listening output', soundMix: 'Audio mix', soundMixHint: 'Listen independently',
     originalSound: 'Original audio', dubbedSound: 'Dubbed audio', advanced: 'Advanced settings', save: 'Save',
     proxy: 'Proxy', saveSettings: 'Save settings', saved: 'Saved.', keySaved: 'Key stored securely.',
@@ -94,7 +98,7 @@ const messages = {
     preciseHelp: 'Whisper Large v3 plus generated-speech transcript checks; recommended.', fastMode: 'Fast',
     fastHelp: 'Whisper Large v3 Turbo with fewer checks for a faster preview.', fileTargetLanguage: 'File target language',
     processVideo: 'Process file',
-    mediaPrivacy: 'The file stays on this laptop; audio chunks go to Groq Whisper, text to Gemini, and translated text to Gemini Live for speech.',
+    mediaPrivacy: 'The file stays on this laptop; audio chunks go to Groq Whisper, text to the free Gemini model pool, and translated text to Gemini Live for speech.',
     cancel: 'Cancel', deleteJob: 'Delete project', recentJobs: 'Recent projects', storedLocally: 'Stored on this device',
     noJobs: 'No audio or video file has been processed yet.', playerWaiting: 'The synchronized player appears after processing finishes.',
     hearOriginal: 'Original audio', hearDubbed: 'Dubbed audio', sourceSubs: 'Source subtitles',
@@ -104,7 +108,7 @@ const messages = {
     uploadFirst: 'Choose an audio or video file first.', mediaQueued: 'File stored and queued for processing.',
     confirmDelete: 'Delete this project and all of its local outputs?', open: 'Open',
     stageQueued: 'Queued', stageProbing: 'Inspecting file', stageExtracting: 'Extracting audio',
-    stageTranscribing: 'Transcribing with Groq Whisper', stageTranslating: 'Translating with Gemini 3.1 Flash Lite', stageNarrating: 'Generating dub with Gemini Live', stageQuotaWait: 'Waiting for quota', stageAligning: 'Aligning outputs',
+    stageTranscribing: 'Transcribing with Groq Whisper', stageTranslating: 'Translating with the Gemini free-tier pool', stageNarrating: 'Generating dub with Gemini Live', stageQuotaWait: 'Waiting for quota', stageAligning: 'Aligning outputs',
     stageReady: 'Ready to play', stageFailed: 'Failed', stageCancelled: 'Cancelled', stageCancelling: 'Cancelling',
     quotaNotice: 'Processing paused automatically to stay below 20,000 tokens per minute.', processingWarning: 'Precise mode uses the more accurate Whisper model and checks each generated speech transcript.',
     qualityScore: 'Speech-to-translation match', narration_retry: 'A segment was regenerated because its audio and transcript disagreed.',
@@ -187,8 +191,7 @@ function formSettings() {
     output_device: Number($('#outputDevice').value),
     original_volume: Number($('#originalVolume').value),
     dub_volume: Number($('#dubVolume').value),
-    proxy_url: $('#proxyUrl').value.trim(),
-    voice_name: $('#voice').value
+    proxy_url: $('#proxyUrl').value.trim()
   };
 }
 
@@ -197,7 +200,7 @@ function applySettings(settings) {
   fillLanguages($('#mediaTargetLanguage'), bootstrap.languages, settings.target_language);
   fillSelect($('#captureDevice'), bootstrap.devices.captures, settings.capture_device);
   fillSelect($('#outputDevice'), bootstrap.devices.outputs, settings.output_device);
-  fillSelect($('#voice'), bootstrap.voices, settings.voice_name, (voice) => voice);
+  fillSelect($('#mediaVoice'), bootstrap.voices, localStorage.getItem('dubira.mediaVoice') || 'Kore', (voice) => voice);
   $('#proxyUrl').value = settings.proxy_url;
   $('#originalVolume').value = settings.original_volume;
   $('#dubVolume').value = settings.dub_volume;
@@ -270,7 +273,8 @@ function renderJob(job) {
     ? ''
     : `${t('qualityScore')}: ${Math.round(job.quality_score * 100)}%`;
   const warnings = (job.warnings || []).map((warning) => t(warning)).join(' ');
-  $('#jobMessage').textContent = job.error || warnings || (job.status === 'quota_wait' ? t('quotaNotice') : t('processingWarning'));
+  const model = job.translation_models?.length ? `${t('translationModel')}: ${job.translation_models.join(' → ')}` : '';
+  $('#jobMessage').textContent = [job.error || warnings || (job.status === 'quota_wait' ? t('quotaNotice') : t('processingWarning')), model].filter(Boolean).join(' · ');
   const terminal = ['ready', 'failed', 'cancelled'].includes(job.status);
   $('#cancelJobButton').hidden = terminal || job.status === 'cancelling';
   $('#deleteJobButton').hidden = !terminal;
@@ -329,7 +333,8 @@ async function processMedia() {
   const query = new URLSearchParams({
     filename: selectedMediaFile.name,
     target_language: $('#mediaTargetLanguage').value,
-    mode
+    mode,
+    voice_name: $('#mediaVoice').value
   });
   $('#processMediaButton').disabled = true;
   try {
@@ -373,6 +378,13 @@ async function fetchCues(url) {
 
 function cueAt(cues, time) { return cues.find((cue) => time >= cue.start && time < cue.end); }
 function sourcePlayer() { return currentJob?.media_kind === 'audio' ? $('#sourceAudioPlayer') : $('#mediaPlayer'); }
+function applyOriginalAudioState() {
+  const source = sourcePlayer();
+  const enabled = $('#hearOriginal').checked;
+  source.defaultMuted = !enabled;
+  source.muted = !enabled;
+  source.volume = enabled ? Number($('#playerOriginalVolume').value) : 0;
+}
 function renderCaptions() {
   const time = sourcePlayer().currentTime;
   const source = cueAt(sourceCues, time);
@@ -399,7 +411,6 @@ function syncPlayers(force = false) {
 }
 
 async function loadPlayer(job) {
-  loadedPlayerJobId = job.id;
   const video = $('#mediaPlayer');
   const audio = $('#sourceAudioPlayer');
   const dub = $('#dubbedPlayer');
@@ -412,8 +423,6 @@ async function loadPlayer(job) {
   source.src = job.media_url || job.video_url;
   $('#audioSourceName').textContent = job.filename;
   dub.src = job.outputs['dubbed.wav'];
-  source.muted = !$('#hearOriginal').checked;
-  source.volume = Number($('#playerOriginalVolume').value);
   dub.volume = Number($('#playerDubVolume').value);
   sourceCues = await fetchCues(job.source_vtt_url);
   translatedCues = await fetchCues(job.translated_vtt_url);
@@ -425,13 +434,25 @@ async function loadPlayer(job) {
   $('#playerCard').classList.remove('empty');
   $('#playerEmpty').hidden = true;
   $('#playerReady').hidden = false;
-  source.load(); dub.load(); renderCaptions();
+  source.load(); dub.load(); applyOriginalAudioState(); renderCaptions();
+  loadedPlayerJobId = job.id;
 }
 
 $('#localeToggle').addEventListener('click', () => {
   locale = locale === 'fa' ? 'en' : 'fa';
-  localStorage.setItem('voxilyra.locale', locale);
+  localStorage.setItem('dubira.locale', locale);
   translatePage();
+});
+$('#shutdownButton').addEventListener('click', async () => {
+  $('#shutdownButton').disabled = true;
+  try {
+    await request('/shutdown', {method: 'POST'});
+    $('#shutdownScreen').hidden = false;
+    document.body.classList.add('is-closed');
+  } catch (error) {
+    $('#shutdownButton').disabled = false;
+    notify(error.message);
+  }
 });
 $('#settingsForm').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -489,6 +510,7 @@ $('#clearTranscript').addEventListener('click', () => {
 ['originalVolume', 'dubVolume'].forEach((id) => $(`#${id}`).addEventListener('input', updateRangeLabels));
 
 $('#mediaFile').addEventListener('change', (event) => selectMediaFile(event.target.files[0]));
+$('#mediaVoice').addEventListener('change', () => localStorage.setItem('dubira.mediaVoice', $('#mediaVoice').value));
 ['dragenter', 'dragover'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.add('dragging'); }));
 ['dragleave', 'drop'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.remove('dragging'); }));
 $('#dropZone').addEventListener('drop', (event) => selectMediaFile(event.dataTransfer.files[0]));
@@ -519,6 +541,7 @@ $('#recentJobsList').addEventListener('click', (event) => {
 const dub = $('#dubbedPlayer');
 [$('#mediaPlayer'), $('#sourceAudioPlayer')].forEach((source) => {
   source.addEventListener('play', async () => {
+    applyOriginalAudioState();
     syncPlayers(true);
     if ($('#hearDubbed').checked) { try { await dub.play(); } catch {} }
   });
@@ -527,14 +550,18 @@ const dub = $('#dubbedPlayer');
   source.addEventListener('ratechange', () => { dub.playbackRate = source.playbackRate; });
   source.addEventListener('timeupdate', renderCaptions);
   source.addEventListener('ended', () => { dub.pause(); dub.currentTime = 0; });
+  source.addEventListener('loadedmetadata', applyOriginalAudioState);
+  source.addEventListener('volumechange', () => {
+    if (!$('#hearOriginal').checked && (!source.muted || source.volume !== 0)) applyOriginalAudioState();
+  });
 });
-$('#hearOriginal').addEventListener('change', () => { sourcePlayer().muted = !$('#hearOriginal').checked; });
+$('#hearOriginal').addEventListener('change', applyOriginalAudioState);
 $('#hearDubbed').addEventListener('change', async () => {
   if (!$('#hearDubbed').checked) dub.pause();
   else if (!sourcePlayer().paused) { syncPlayers(true); try { await dub.play(); } catch {} }
 });
 ['showSourceSubs', 'showTranslatedSubs'].forEach((id) => $(`#${id}`).addEventListener('change', renderCaptions));
-$('#playerOriginalVolume').addEventListener('input', () => { sourcePlayer().volume = Number($('#playerOriginalVolume').value); });
+$('#playerOriginalVolume').addEventListener('input', applyOriginalAudioState);
 $('#playerDubVolume').addEventListener('input', () => { dub.volume = Number($('#playerDubVolume').value); });
 setInterval(() => { if (!sourcePlayer().paused) syncPlayers(); }, 250);
 

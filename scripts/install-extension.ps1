@@ -8,11 +8,11 @@ $source = if (Test-Path -LiteralPath (Join-Path $installedSource "manifest.json"
     $repositorySource
 }
 if (-not (Test-Path -LiteralPath (Join-Path $source "manifest.json"))) {
-    throw "Voxilyra extension files were not found."
+    throw "Dubira extension files were not found."
 }
 
-$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Voxilyra\Extension"))
-$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Voxilyra"))
+$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Dubira\Extension"))
+$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Dubira"))
 if (-not $destination.StartsWith($expectedRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Unsafe extension destination."
 }

@@ -4,20 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>Voxilyra</title>
-  <link rel="icon" href="/assets/voxilyra-logo.png" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=0.6.0">
+  <title>Dubira</title>
+  <link rel="icon" href="/assets/dubira-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css?v=0.7.0-1">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="Voxilyra">
-      <span class="brand-mark" aria-hidden="true"><img src="/assets/voxilyra-logo.png" alt=""></span>
-      <span><b>Voxilyra</b><small data-i18n="tagline">دوبلهٔ زنده، بدون دردسر</small></span>
+    <a class="brand" href="/" aria-label="Dubira">
+      <span class="brand-mark" aria-hidden="true"><img src="/assets/dubira-logo.png" alt=""></span>
+      <span><b>Dubira</b><small data-i18n="tagline">دوبلهٔ زنده، بدون دردسر</small></span>
     </a>
+    <nav class="product-nav" aria-label="Primary">
+      <a href="#liveWorkspace" data-i18n="navLive">زنده</a>
+      <a href="#mediaStudio" data-i18n="navStudio">استودیوی فایل</a>
+      <a href="/audio-guide.html" data-i18n="navGuide">تنظیم صدا</a>
+    </nav>
     <div class="top-actions">
       <span id="connectionBadge" class="badge"><i></i><span data-i18n="appOnline">اپ دسکتاپ آنلاین است</span></span>
       <button id="localeToggle" class="icon-button" type="button" aria-label="Switch language">EN</button>
+      <button id="shutdownButton" class="shutdown-button" type="button" data-i18n="quitApp">خروج کامل</button>
     </div>
   </header>
 
@@ -47,7 +53,7 @@
     </section>
 
     <div class="layout">
-      <section class="workspace">
+      <section id="liveWorkspace" class="workspace">
         <div class="section-heading">
           <div><span class="section-kicker">LIVE</span><h2 data-i18n="liveTranscript">متن زنده</h2></div>
           <button id="clearTranscript" class="text-button" type="button" data-i18n="clear">پاک‌کردن</button>
@@ -84,10 +90,7 @@
         </details>
 
         <form id="settingsForm">
-          <div class="field-row">
-            <label class="field"><span data-i18n="targetLanguage">زبان مقصد</span><select id="targetLanguage"></select></label>
-            <label class="field"><span data-i18n="speaker">گویندهٔ فایل</span><select id="voice"></select><small data-i18n="nativeVoiceHelp">برای دوبلهٔ فایل با Gemini Live؛ صدای زنده خودکار است.</small></label>
-          </div>
+          <label class="field"><span data-i18n="targetLanguage">زبان مقصد</span><select id="targetLanguage"></select></label>
           <label class="field"><span data-i18n="captureDevice">ورودی صدای برنامه</span><select id="captureDevice"></select></label>
           <label class="field"><span data-i18n="outputDevice">خروجی شنیداری</span><select id="outputDevice"></select></label>
 
@@ -116,7 +119,7 @@
 
     <section id="mediaStudio" class="media-studio">
       <div class="section-heading media-heading">
-        <div><span class="section-kicker" data-i18n="mediaKicker">MEDIA STUDIO</span><h2 data-i18n="mediaTitle">دوبلهٔ فایل صوتی یا ویدئویی</h2></div>
+        <div><span class="section-kicker" data-i18n="mediaKicker">MEDIA STUDIO</span><h2 data-i18n="mediaTitle">دوبلهٔ فایل صوتی یا ویدئویی</h2><div class="pipeline-tags" aria-label="Processing pipeline"><span>GROQ WHISPER</span><span>GEMINI POOL</span><span>GEMINI LIVE</span></div></div>
         <p data-i18n="mediaIntro">صوت یا ویدئو را محلی پردازش کن، چهار خروجی بگیر و دوبله را روی تایم‌لاین هماهنگ پخش کن.</p>
       </div>
 
@@ -135,7 +138,10 @@
             <label class="mode-option"><input type="radio" name="mediaMode" value="fast"><span><b data-i18n="fastMode">سریع</b><small data-i18n="fastHelp">Whisper Large v3 Turbo با کنترل کمتر برای پیش‌نمایش سریع.</small></span></label>
           </fieldset>
 
-          <label class="field"><span data-i18n="fileTargetLanguage">زبان دوبلهٔ فایل</span><select id="mediaTargetLanguage"></select></label>
+          <div class="media-file-options">
+            <label class="field"><span data-i18n="fileTargetLanguage">زبان دوبلهٔ فایل</span><select id="mediaTargetLanguage"></select></label>
+            <label class="field"><span data-i18n="speaker">گویندهٔ فایل</span><select id="mediaVoice"></select><small data-i18n="nativeVoiceHelp">فقط برای فایل‌های صوتی و ویدئویی</small></label>
+          </div>
           <button id="processMediaButton" class="button primary wide" type="button" disabled data-i18n="processVideo">شروع پردازش فایل</button>
           <p class="privacy-note" data-i18n="mediaPrivacy">فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.</p>
 
@@ -157,9 +163,9 @@
           <div id="playerEmpty" class="player-empty"><span>▶</span><b data-i18n="playerWaiting">پس از آماده‌شدن فایل، پلیر هماهنگ اینجا فعال می‌شود.</b></div>
           <div id="playerReady" hidden>
             <div class="video-stage">
-              <video id="mediaPlayer" controls preload="metadata"></video>
+              <video id="mediaPlayer" controls preload="metadata" muted></video>
               <div id="audioSourceStage" class="audio-source-stage" hidden>
-                <img src="/assets/voxilyra-logo.png" alt="">
+                <img src="/assets/dubira-logo.png" alt="">
                 <b id="audioSourceName"></b>
                 <audio id="sourceAudioPlayer" controls preload="metadata"></audio>
               </div>
@@ -192,7 +198,8 @@
     </section>
   </main>
 
-  <footer><span>Voxilyra · Open source</span><a href="https://github.com/msmahdinejad/voxilyra" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
-  <script src="/app.js?v=0.6.0" defer></script>
+  <div id="shutdownScreen" class="shutdown-screen" hidden><img src="/assets/dubira-logo.png" alt=""><strong data-i18n="appClosed">Dubira بسته شد.</strong><span data-i18n="closeTab">اکنون می‌توانی این تب را ببندی.</span></div>
+  <footer><span>Dubira · Open source</span><a href="https://github.com/msmahdinejad/dubira" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+  <script src="/app.js?v=0.7.0" defer></script>
 </body>
 </html>
