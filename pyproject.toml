@@ -3,9 +3,9 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "dubira"
-version = "0.7.1"
-description = "Live and file-based multilingual AI dubbing for Windows and Chrome"
+name = "lingora"
+version = "0.8.0"
+description = "Live and file-based multilingual translation for desktop and Chrome"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 license = "MIT"
@@ -14,7 +14,7 @@ keywords = ["gemini", "live-translation", "dubbing", "accessibility", "browser-e
 classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: MIT License",
-  "Operating System :: Microsoft :: Windows :: Windows 10",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Topic :: Multimedia :: Sound/Audio",
 ]
@@ -25,6 +25,9 @@ dependencies = [
   "keyring==25.7.0",
   "numpy==2.4.6",
   "PyAudioWPatch==0.2.12.8; platform_system == 'Windows'",
+  "sounddevice==0.5.5; platform_system != 'Windows'",
+  "pywebview==6.2.1; platform_system != 'Linux'",
+  "pywebview[qt]==6.2.1; platform_system == 'Linux'",
   "python-dotenv==1.2.2",
   "uvicorn==0.52.1",
 ]
@@ -39,15 +42,16 @@ dev = [
 build = ["pyinstaller==6.21.0"]
 
 [project.urls]
-Homepage = "https://github.com/msmahdinejad/dubira"
-Documentation = "https://github.com/msmahdinejad/dubira#readme"
-Issues = "https://github.com/msmahdinejad/dubira/issues"
+Homepage = "https://github.com/msmahdinejad/lingora"
+Documentation = "https://github.com/msmahdinejad/lingora#readme"
+Issues = "https://github.com/msmahdinejad/lingora/issues"
 
 [project.scripts]
+lingora = "lingora.__main__:main"
 dubira = "dubira.__main__:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/dubira"]
+packages = ["src/dubira", "src/lingora"]
 
 [tool.hatch.build]
 include = ["src/dubira/static/**/*"]
@@ -68,4 +72,4 @@ python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-packages = ["dubira"]
+packages = ["dubira", "lingora"]

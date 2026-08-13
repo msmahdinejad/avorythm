@@ -3,6 +3,7 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 
 import {
+  audioChannelVolume,
   audioMessage,
   base64ToBytes,
   liveUrl,
@@ -11,6 +12,12 @@ import {
   srt,
   wavHeader
 } from '../extension/core.mjs';
+
+test('subtitle mode preserves source audio and mutes generated speech', () => {
+  const settings = {originalVolume: 0.2, dubVolume: 1};
+  assert.equal(audioChannelVolume('subtitles', 'original', settings), 1);
+  assert.equal(audioChannelVolume('subtitles', 'dub', settings), 0);
+});
 
 test('builds the documented Gemini Live Translate protocol', () => {
   assert.match(liveUrl('key + value'), /key=key%20%2B%20value$/);

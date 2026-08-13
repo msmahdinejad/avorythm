@@ -1,14 +1,25 @@
 from __future__ import annotations
 
 import queue
+import sys
 from contextlib import suppress
 from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
-import pyaudiowpatch as pyaudio  # type: ignore[import-untyped]
 
 from .constants import INPUT_FRAMES, OUTPUT_FRAMES, OUTPUT_RATE
+
+pyaudio: Any = None
+sounddevice: Any = None
+if sys.platform == "win32":
+    import pyaudiowpatch as _pyaudio  # type: ignore[import-untyped]
+
+    pyaudio = _pyaudio
+else:
+    import sounddevice as _sounddevice  # type: ignore[import-untyped]
+
+    sounddevice = _sounddevice
 
 VIRTUAL_DEVICE_MARKERS = ("virtual", "cable output", "vb-audio", "voicemeeter", "amm ")
 
@@ -31,11 +42,13 @@ class AudioDevice:
 class DeviceCatalog:
     captures: tuple[AudioDevice, ...]
     outputs: tuple[AudioDevice, ...]
-    default_capture: int
-    default_output: int
+    default_capture: int | None
+    default_output: int | None
 
     @classmethod
     def scan(cls) -> DeviceCatalog:
+        if sys.platform != "win32":
+            return cls._scan_portaudio()
         audio = pyaudio.PyAudio()
         try:
             captures = tuple(
@@ -59,6 +72,31 @@ class DeviceCatalog:
             )
         finally:
             audio.terminate()
+
+    @classmethod
+    def _scan_portaudio(cls) -> DeviceCatalog:
+        try:
+            devices = tuple(sounddevice.query_devices())
+            captures = tuple(
+                AudioDevice(index, str(device["name"]))
+                for index, device in enumerate(devices)
+                if int(device["max_input_channels"]) > 0
+            )
+            outputs = tuple(
+                AudioDevice(index, str(device["name"]))
+                for index, device in enumerate(devices)
+                if int(device["max_output_channels"]) > 0
+            )
+            defaults = sounddevice.default.device
+            default_input = int(defaults[0]) if int(defaults[0]) >= 0 else None
+            default_output = int(defaults[1]) if int(defaults[1]) >= 0 else None
+            preferred = next(
+                (device.index for device in captures if is_virtual_device(device.name)),
+                default_input,
+            )
+            return cls(captures, outputs, preferred, default_output)
+        except Exception:
+            return cls((), (), None, None)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -103,9 +141,14 @@ def mix_pcm(original: bytes, dubbed: bytes, original_volume: float, dub_volume: 
 
 
 class AudioEngine:
-    """Captures loopback audio and plays mixed PCM through callback queues."""
+    """Captures a selected input and plays mixed PCM through callback queues."""
 
     def __init__(self, capture_index: int, output_index: int) -> None:
+        self._inputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
+        self._outputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
+        if sys.platform != "win32":
+            self._init_portaudio(capture_index, output_index)
+            return
         self.audio = pyaudio.PyAudio()
         capture = self.audio.get_device_info_by_index(capture_index)
         if not capture.get("isLoopbackDevice"):
@@ -119,8 +162,6 @@ class AudioEngine:
         self.capture_channels = int(capture["maxInputChannels"])
         capture_rate = int(capture["defaultSampleRate"])
         capture_frames = capture_rate // 10
-        self._inputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
-        self._outputs: queue.Queue[bytes] = queue.Queue(maxsize=10)
         self._input_stream = self.audio.open(
             format=pyaudio.paInt16,
             channels=self.capture_channels,
@@ -139,6 +180,60 @@ class AudioEngine:
             frames_per_buffer=self.output_rate // 10,
             stream_callback=self._output_callback,
         )
+
+    def _init_portaudio(self, capture_index: int, output_index: int) -> None:
+        self.audio = None
+        capture = sounddevice.query_devices(capture_index)
+        output = sounddevice.query_devices(output_index)
+        self.capture_name = str(capture["name"])
+        self.output_name = str(output["name"])
+        self.capture_channels = min(2, int(capture["max_input_channels"]))
+        self.output_channels = min(2, int(output["max_output_channels"]))
+        if self.capture_channels < 1 or self.output_channels < 1:
+            raise ValueError("selected audio device is unavailable")
+        capture_rate = int(capture["default_samplerate"])
+        self.output_rate = int(output["default_samplerate"])
+        self._input_stream = sounddevice.RawInputStream(
+            samplerate=capture_rate,
+            blocksize=max(1, capture_rate // 10),
+            device=capture_index,
+            channels=self.capture_channels,
+            dtype="int16",
+            callback=self._portaudio_input_callback,
+        )
+        self._output_stream = sounddevice.RawOutputStream(
+            samplerate=self.output_rate,
+            blocksize=max(1, self.output_rate // 10),
+            device=output_index,
+            channels=self.output_channels,
+            dtype="int16",
+            callback=self._portaudio_output_callback,
+        )
+        self._input_stream.start()
+        self._output_stream.start()
+
+    def _portaudio_input_callback(
+        self,
+        data: bytes,
+        frame_count: int,
+        time_info: Any,
+        status: Any,
+    ) -> None:
+        self._offer(self._inputs, to_input_pcm(bytes(data), self.capture_channels))
+
+    def _portaudio_output_callback(
+        self,
+        output: Any,
+        frame_count: int,
+        time_info: Any,
+        status: Any,
+    ) -> None:
+        size = frame_count * self.output_channels * 2
+        try:
+            raw = self._outputs.get_nowait()
+        except queue.Empty:
+            raw = b""
+        output[:] = raw[:size] + b"\0" * max(0, size - len(raw))
 
     @staticmethod
     def _offer(target: queue.Queue[bytes], data: bytes) -> None:
@@ -192,4 +287,5 @@ class AudioEngine:
                 stream.close()
             except Exception:
                 pass
-        self.audio.terminate()
+        if self.audio is not None:
+            self.audio.terminate()

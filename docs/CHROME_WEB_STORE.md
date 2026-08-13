@@ -8,7 +8,7 @@
 
 - برای نصب عمومی و یک‌کلیکی روی Windows و macOS باید اکستنشن در Chrome Web Store منتشر شود. `Load unpacked` فقط برای توسعه است و self-hosting روی این دو سیستم‌عامل فقط در محیط‌های مدیریت‌شدهٔ سازمانی پشتیبانی می‌شود. [روش‌های رسمی توزیع Chrome](https://developer.chrome.com/docs/extensions/how-to/distribute) و [روش‌های نصب جایگزین](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions)
 - اکستنشن جدید باید Manifest V3 باشد؛ Manifest V3 نسخهٔ لازم برای ارسال آیتم جدید است و Manifest V2 دیگر پذیرفته یا اجرا نمی‌شود. [Best practices رسمی Web Store](https://developer.chrome.com/docs/webstore/best-practices) و [خط زمانی حذف Manifest V2](https://developer.chrome.com/docs/extensions/develop/migrate/mv2-deprecation-timeline)
-- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.7.1` مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل self-hosted/prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
+- مستقل‌بودن از برنامهٔ دسکتاپ ممکن است و نسخهٔ `0.8.0` مستقل است. بااین‌حال، BYOK فعلی که کلید خام را فقط در `chrome.storage.session` نگه می‌دارد یک راه‌حل self-hosted/prototype است، نه معماری production ترجیحی Store. Google صریحاً می‌گوید کلید Gemini نباید در client تولیدی قرار بگیرد و برای اتصال مستقیم Live API از مرورگر باید توکن کوتاه‌عمر از backend صادر شود. [امنیت Gemini API Key](https://ai.google.dev/gemini-api/docs/api-key) و [Ephemeral tokens](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
 
 معماری پیشنهادی برای نسخهٔ قابل انتشار:
 
@@ -22,7 +22,7 @@ Token service
   └─ keeps the long-lived Gemini credential server-side
 ```
 
-این معماری به نصب Dubira Desktop نیاز ندارد؛ backend فقط توکن کوتاه‌عمر می‌سازد و صدای زنده می‌تواند مستقیم از مرورگر به Gemini برود. Google می‌گوید توکن‌های ephemeral برای client-to-server Live API طراحی شده‌اند، قابل محدودسازی‌اند و ریسک افشای credential را کم می‌کنند. [راهنمای رسمی توکن‌های موقت](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
+این معماری به نصب Lingora Desktop نیاز ندارد؛ backend فقط توکن کوتاه‌عمر می‌سازد و صدای زنده می‌تواند مستقیم از مرورگر به Gemini برود. Google می‌گوید توکن‌های ephemeral برای client-to-server Live API طراحی شده‌اند، قابل محدودسازی‌اند و ریسک افشای credential را کم می‌کنند. [راهنمای رسمی توکن‌های موقت](https://ai.google.dev/gemini-api/docs/live-api/ephemeral-tokens)
 
 ### قوانین فنی و محتوایی اصلی
 
@@ -32,7 +32,7 @@ Token service
 
 متن پیشنهادی برای فیلد **Single purpose**:
 
-> Dubira captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
+> Lingora captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
 
 کنترل صدای اصلی/دوبله، انتخاب زبان، زیرنویس و ضبط خروجی همگی زیرمجموعهٔ همین هدف «ترجمه و دوبلهٔ زندهٔ تب انتخاب‌شده» هستند.
 
@@ -40,11 +40,12 @@ Token service
 
 فقط باریک‌ترین permissionهای لازم را درخواست کنید؛ permission برای قابلیت آینده یا «شاید بعداً لازم شود» مجاز نیست. درخواست بیش‌ازحد می‌تواند باعث ردشدن شود. [Use of Permissions policy](https://developer.chrome.com/docs/webstore/program-policies/permissions) و [Privacy fields](https://developer.chrome.com/docs/webstore/cws-dashboard-privacy)
 
-توجیه‌های پیشنهادی برای permissionهای Dubira:
+توجیه‌های پیشنهادی برای permissionهای Lingora:
 
 | Permission | متن پیشنهادی برای reviewer |
 |---|---|
 | `activeTab` | Identifies only the tab chosen by the user after an explicit extension action; the extension does not read every open website in the background. |
+| `scripting` | Injects the floating subtitle card into only the user-activated tab; `activeTab` grants temporary access and no persistent all-sites host permission is requested. |
 | `tabCapture` | Captures the selected tab's audio only after the user presses Start so it can be translated and dubbed. Chrome restricts tab capture to a user invocation. |
 | `offscreen` | Hosts the Web Audio pipeline required for tab audio capture and playback because a Manifest V3 service worker has no DOM or AudioContext. |
 | `storage` | Stores language, audio mix, volume, locale, and recording preferences. It must not be used to persist a long-lived production Gemini secret. |
@@ -67,7 +68,7 @@ Token service
 
 قبل از اولین capture، کنار دکمهٔ Start یک disclosure واضح نمایش دهید؛ نه فقط داخل Privacy Policy:
 
-> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Dubira does not capture other tabs. Recording is off unless you enable it.
+> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Lingora does not capture other tabs. Recording is off unless you enable it.
 
 کاربر باید با یک اقدام مثبت مثل **Start dubbing** رضایت بدهد. نوع داده، هدف استفاده و گیرندهٔ داده باید قبل از جمع‌آوری روشن باشد. [Disclosure Requirements](https://developer.chrome.com/docs/webstore/program-policies/disclosure-requirements) و [User Data FAQ](https://developer.chrome.com/docs/webstore/program-policies/user-data-faq)
 
@@ -162,12 +163,12 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 
 | مورد | وضعیت فعلی | اقدام لازم پیش از submission |
 |---|---|---|
-| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.7.1` و description کمتر از سقف ۱۳۲ کاراکتر | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
+| Manifest و metadata | ✅ Manifest V3، نسخهٔ `0.8.0` و description کمتر از سقف ۱۳۲ کاراکتر | قبل از هر upload نسخه افزایش یابد و متن با build یکسان بماند |
 | Service worker / offscreen | ✅ الگوی MV3 و فایل‌های local | justification دقیق در Privacy tab |
 | Remote executable code | ✅ `eval`، `new Function`، CDN script یا remote JS دیده نشد | در Dashboard گزینهٔ No انتخاب و package نهایی دوباره scan شود |
 | CSP | ✅ فقط `script-src 'self'` | حفظ شود |
 | استقلال از Desktop app | ✅ هیچ localhost/Companion bridge یا host permission محلی باقی نمانده؛ Live WSS مستقیم به `generativelanguage.googleapis.com` می‌رود | تست عملی build بسته‌بندی‌شده روی پروفایلی که Desktop app نصب نیست |
-| Permissions | ⚠️ `activeTab`, `tabCapture`, `offscreen`, `storage`, `downloads` همگی در کد جاری استفاده می‌شوند | justification بالا ثبت شود؛ چون recording اختیاری است، انتقال `downloads` به `optional_permissions` قبل از Store ارزش بررسی دارد. [Declare permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions) |
+| Permissions | ⚠️ `activeTab`, `scripting`, `tabCapture`, `offscreen`, `storage`, `downloads` همگی در کد جاری استفاده می‌شوند | justification بالا ثبت شود؛ `scripting` فقط پس از اقدام کاربر و با دسترسی موقت `activeTab` اجرا می‌شود. چون recording اختیاری است، انتقال `downloads` به `optional_permissions` پیش از Store ارزش بررسی دارد. [Declare permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions) |
 | Host permission | ✅ فقط `https://generativelanguage.googleapis.com/*` است؛ `<all_urls>` وجود ندارد | بعد از افزودن broker فقط origin دقیق broker هم اضافه شود؛ scope گسترده اضافه نشود |
 | API credential | ⚠️ کلید خام persist نمی‌شود و فقط در `chrome.storage.session` تا پایان browser session می‌ماند؛ این از `storage.local` بهتر است، ولی کلید همچنان client-side و در Live WSS URL قابل استخراج است | برای Store production از token service + Gemini ephemeral token استفاده شود؛ key بلندمدت فقط server-side |
 | Data disclosure/consent | ⚠️ disclosure دوزبانه کنار Start پیاده شده و صریح می‌گوید صدای همین تب به Google Gemini می‌رود و recording پیش‌فرض خاموش است؛ خود Start اقدام مثبت کاربر است | Privacy Policy عمومی و declarationهای Dashboard هنوز لازم‌اند؛ Website content، authentication information و در صورت کاربرد personal communications اعلام شود |
@@ -180,7 +181,7 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 | Automated extension tests | ⚠️ تست‌های Node برای protocol، transcript، WAV/SRT و parsing صوت وجود دارند؛ browser E2E هنوز دیده نشد | حداقل یک end-to-end test برای capture lifecycle، consent، session-key clear و چهار download |
 | ZIP layout | ✅ script بسته‌بندی وجود دارد | باز کنید و وجود `manifest.json` در root را در CI assert کنید |
 
-### ریسک‌های ردشدن مخصوص Dubira
+### ریسک‌های ردشدن مخصوص Lingora
 
 1. ذخیرهٔ API Key بلندمدت در client برخلاف راهنمای امنیتی جاری Gemini.
 2. نبود disclosure صریح قبل از ارسال صدای تب به Google.
@@ -215,11 +216,11 @@ Store Listing همچنین به description دقیق، category، زبان اص�
 
 Suggested single-purpose statement:
 
-> Dubira captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
+> Lingora captures audio from the browser tab explicitly selected by the user, sends it to Google Gemini for real-time translation, and plays the translated speech and transcripts in that tab session.
 
 Suggested pre-capture disclosure:
 
-> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Dubira does not capture other tabs. Recording is off unless you enable it.
+> By starting live dubbing, audio from the selected tab is sent to Google Gemini for translation. Lingora does not capture other tabs. Recording is off unless you enable it.
 
 ### Required listing package and assets
 

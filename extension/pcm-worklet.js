@@ -38,4 +38,4 @@ class PcmCaptureProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('dubira-pcm-capture', PcmCaptureProcessor);
+registerProcessor('lingora-pcm-capture', PcmCaptureProcessor);

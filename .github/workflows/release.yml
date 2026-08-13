@@ -9,38 +9,60 @@ permissions:
   contents: write
 
 jobs:
-  windows:
-    runs-on: windows-latest
-    timeout-minutes: 25
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
+      - name: Install Linux audio runtime
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libportaudio2
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev,build]"
+      - run: python scripts/build.py
       - shell: pwsh
-        run: ./scripts/build.ps1
-      - shell: pwsh
+        if: runner.os == 'Windows'
         run: ./scripts/package-extension.ps1
       - name: Install Inno Setup
+        if: runner.os == 'Windows'
         shell: pwsh
         run: choco install innosetup --no-progress -y
       - name: Build installer
+        if: runner.os == 'Windows'
         shell: pwsh
         run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ runner.os }}
+          path: |
+            dist/Lingora-*.zip
+            dist/Lingora-Setup-x64.exe
+          if-no-files-found: error
+
+  publish:
+    needs: desktop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
       - name: Create checksums
-        shell: pwsh
-        run: |
-          Get-FileHash dist/Dubira-Windows-x64.zip, dist/Dubira-Extension.zip, dist/Dubira-Setup-x64.exe -Algorithm SHA256 |
-            ForEach-Object { "$($_.Hash.ToLower())  $([IO.Path]::GetFileName($_.Path))" } |
-            Set-Content dist/SHA256SUMS.txt
+        working-directory: dist
+        run: sha256sum Lingora-* > SHA256SUMS.txt
       - uses: softprops/action-gh-release@v3
         with:
           generate_release_notes: true
           files: |
-            dist/Dubira-Windows-x64.zip
-            dist/Dubira-Extension.zip
-            dist/Dubira-Setup-x64.exe
+            dist/Lingora-*.zip
+            dist/Lingora-Setup-x64.exe
             dist/SHA256SUMS.txt

@@ -14,7 +14,7 @@ The Windows app listens only on `127.0.0.1:8765`. Do not expose or reverse-proxy
 
 Gemini and Groq API keys are stored separately by the Windows keyring or loaded from a private `.env`. Never attach `.env`, logs containing credentials, or private recordings to an issue.
 
-Uploaded videos, extracted audio, subtitles, job manifests, and archives stay in the local Dubira data directory. Media endpoints validate job IDs and allowlist filenames. After an explicit request, FLAC chunks go to Groq Whisper, transcript text to Gemini translation, and translated text to Gemini Live narration. Delete a Media Studio job to remove its local source and outputs.
+Uploaded videos, extracted audio, subtitles, job manifests, and archives stay in the local Lingora data directory. Media endpoints validate job IDs and allowlist filenames. After an explicit request, FLAC chunks go to Groq Whisper, transcript text to Gemini translation, and translated text to Gemini Live narration. Delete a Media Studio job to remove its local source and outputs.
 
 ## Extension trust boundary
 

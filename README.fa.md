@@ -1,87 +1,104 @@
 <p align="center">
-  <img src="assets/branding/dubira-logo.png" width="148" alt="لوگوی Dubira">
+  <img src="assets/branding/lingora-logo.png" width="148" alt="لوگوی Lingora">
 </p>
 
-<h1 align="center">Dubira</h1>
+<h1 align="center">Lingora</h1>
 
-<p align="center"><strong>هر صدایی را به زبان خودت بشنو.</strong></p>
+<p align="center"><strong>هر صدایی را به زبان خودت بشنو—یا فقط ترجمه‌اش را بخوان.</strong></p>
 
 <p align="center">
-  صدای دسکتاپ یا مرورگر را زنده ترجمه کن، یا از فایل صوتی و ویدئویی یک دوبلهٔ سینک، متن اصلی، ترجمه و صدای اصلی تحویل بگیر.
+  ترجمه و دوبلهٔ زندهٔ صدای دسکتاپ و مرورگر، زیرنویس شناور روی همهٔ پنجره‌ها،
+  و تبدیل فایل صوتی/ویدئویی به دوبلهٔ هماهنگ و چهار خروجی قابل دانلود.
 </p>
 
 <p align="center">
-  <a href="https://github.com/msmahdinejad/dubira/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/dubira/ci.yml?branch=main&label=CI"></a>
-  <a href="https://github.com/msmahdinejad/dubira/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/dubira?label=Release"></a>
+  <a href="https://github.com/msmahdinejad/lingora/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/lingora/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/lingora/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/lingora?label=Release"></a>
   <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <a href="docs/INSTALLATION.fa.md">نصب</a> · <a href="PRIVACY.md">حریم خصوصی</a></p>
+<p align="center">
+  <a href="README.md">English</a> ·
+  <a href="docs/INSTALLATION.fa.md">نصب کامل</a> ·
+  <a href="docs/CHROME_WEB_STORE.md">انتشار اکستنشن</a> ·
+  <a href="PRIVACY.md">حریم خصوصی</a>
+</p>
 
-![داشبورد انگلیسی Dubira](docs/images/dashboard-en.png)
+![داشبورد انگلیسی Lingora](docs/images/dashboard-en.png)
 
-## دو محصول مستقل
+## اجزای پروژه
 
-- **اپ ویندوز:** دوبلهٔ زندهٔ صدای دسکتاپ و استودیوی فایل صوتی/ویدئویی.
-- **اکستنشن Chrome/Edge:** دوبلهٔ زندهٔ تب، بدون نیاز به اپ، Python، FFmpeg، localhost یا کابل مجازی.
+- **اپ بومی Windows، macOS و Linux:** ترجمه/دوبلهٔ زنده، ضبط، و استودیوی فایل در یک پوستهٔ سبک pywebview.
+- **اکستنشن مستقل Chrome/Edge:** بدون نصب اپ، Python، FFmpeg، localhost یا کابل صوتی مجازی کار می‌کند.
+- **زیرنویس شناور:** صدای اصلی پخش می‌شود و ترجمه داخل کادر شیشه‌مات نمایش داده می‌شود. اندازهٔ متن، عرض، شفافیت و نمایش متن اصلی قابل کنترل است. کادر اپ همیشه روی پنجره‌ها می‌ماند؛ کادر اکستنشن را داخل صفحه می‌توان کشید و resize کرد.
 
-## معماری پردازش فایل
+هر دو رابط فارسی/انگلیسی هستند، از Vazirmatn استفاده می‌کنند و راست‌چین/چپ‌چین متن را خودکار تشخیص می‌دهند.
+
+## حالت‌های زنده
+
+| حالت | صدای اصلی | صدای ترجمه | زیرنویس |
+|---|---:|---:|---:|
+| فقط دوبله | خاموش | روشن | داخل داشبورد |
+| صدای اصلی + زیرنویس شناور | روشن | خاموش | کادر مستقل |
+| میکس هوشمند اکستنشن | قابل تنظیم | قابل تنظیم | داخل داشبورد |
+| فقط صدای اصلی اکستنشن | روشن | خاموش | داخل داشبورد |
+
+در مرورگرهای سازگار، کادر اپ با Document Picture-in-Picture ساخته می‌شود و fallback آن پنجرهٔ جداست. نسخهٔ بومی Lingora یک پنجرهٔ pywebview واقعی، قابل‌جابه‌جایی و Always-on-top دارد.
+
+## پردازش فایل صوتی و ویدئویی
 
 ```text
 صوت/ویدئو
-  ← استخراج و زمان‌بندی محلی با FFmpeg
-  ← تبدیل به متن زمان‌دار با Groq Whisper Large v3
-  ← ترجمه با قوی‌ترین مدل در دسترس از مخزن رایگان Gemini/Gemma
-  ← ساخت گفتار ترجمه‌شده با Gemini 3.1 Flash Live
-  ← هماهنگ‌سازی، زیرنویس، پلیر و ZIP روی لپ‌تاپ
+  → استخراج و تایم‌لاین محلی با FFmpeg
+  → تبدیل گفتار به متن با Groq Whisper Large v3
+  → ترجمه با قوی‌ترین مدل رایگان قابل‌دسترسی Gemini/Gemma
+  → تولید صدای ترجمه با Gemini 3.1 Flash Live
+  → هماهنگ‌سازی، زیرنویس‌های کوتاه، پلیر و ZIP
 ```
 
-حالت پیش‌فرض **دقیق** از `whisper-large-v3` استفاده می‌کند، متن صدای تولیدی Live را با ترجمه می‌سنجد و فقط قطعهٔ ناسازگار را دوباره می‌سازد. حالت **سریع** از `whisper-large-v3-turbo` استفاده می‌کند.
+هر پروژهٔ موفق `original.wav`، `source.srt`، `dubbed.wav`، `translated.srt` و `all-outputs.zip` می‌دهد. پلیر، رسانهٔ اصلی را ساعت مرجع می‌گیرد، اختلاف بیشتر از ۱۲۰ میلی‌ثانیه را اصلاح می‌کند، صدای اصلی را با خاموش‌بودن سوییچ واقعاً mute می‌کند و هر دو زیرنویس را مستقل نشان می‌دهد.
 
-چهار خروجی اصلی `original.wav`، `source.srt`، `dubbed.wav` و `translated.srt` هستند و همگی در `all-outputs.zip` نیز قرار می‌گیرند. پلیر داخلی ویدئو/صوت را ساعت مرجع قرار می‌دهد، اختلاف بیشتر از ۱۲۰ میلی‌ثانیه را اصلاح می‌کند، با خاموش‌شدن گزینهٔ صدای اصلی آن را واقعاً mute می‌کند و متن‌های بلند را به زیرنویس‌های کوتاه و طبیعی فیلمی می‌شکند. گوینده هم برای هر پروژه داخل Media Studio انتخاب می‌شود.
+حالت **دقیق** از `whisper-large-v3` استفاده و متن صدای تولیدشده را کنترل می‌کند. حالت **سریع** از `whisper-large-v3-turbo` استفاده می‌کند. محدودکنندهٔ محلی حداکثر ۱۵ هزار توکن تخمینی Gemini را در هر ۶۰ ثانیه رزرو می‌کند تا زیر سقف درخواستی ۲۰ هزار TPM بماند.
 
-مدل‌های ترجمه به‌ترتیب قدرت استفاده می‌شوند: `gemini-3.6-flash`، `gemini-3.5-flash`، `gemini-3-flash-preview`، `gemini-2.5-flash`، مدل‌های Flash-Lite دارای سهمیه، سپس Gemma 4 31B و 26B. در 429 یا عدم دسترسی، مدل بعدی خودکار امتحان می‌شود. مدل‌های تصویر، TTS، Live، Embedding و مدل‌های با سهمیهٔ صفر وارد pool ترجمه نشده‌اند.
+## نصب سریع
 
-## نصب سریع اپ
+### ویندوز
 
-1. `Dubira-Setup-x64.exe` را از [Releases](https://github.com/msmahdinejad/dubira/releases) بگیر.
-2. گزینهٔ **Install FFmpeg** را برای پردازش فایل روشن نگه دار.
-3. در تنظیمات پیشرفته، [کلید Gemini](https://aistudio.google.com/app/apikey) و [کلید Groq](https://console.groq.com/keys) را ذخیره کن.
-4. در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
+1. `Lingora-Setup-x64.exe` را از [Releases](https://github.com/msmahdinejad/lingora/releases) بگیر.
+2. برای پردازش فایل، تیک **Install FFmpeg** را روشن نگه دار.
+3. Gemini API Key را ذخیره کن؛ برای استودیوی فایل Groq API Key هم لازم است.
+4. اگر اتصال نیاز دارد، پروکسی `http://127.0.0.1:10808` را نگه دار.
 
-برای توقف کامل پردازش محلی از دکمهٔ **خروج کامل** در نوار بالای اپ استفاده کن؛ بستن تب کافی نیست.
+تا وقتی فایل نصب با گواهی Authenticode معتبر امضا نشده، SmartScreen ممکن است «Unknown publisher» نشان دهد. حذف مطمئن این پیام فقط با code-signing معتبر و ساخت reputation ناشر ممکن است.
 
-کلیدها در Windows Credential Manager ذخیره می‌شوند و داخل `settings.json` نیستند. پلن رایگان هر سرویس سهمیه و قوانین خودش را دارد و دائمی‌بودن رایگان‌بودن آن تحت کنترل Dubira نیست.
+### macOS و Linux
 
-اگر نصب FFmpeg در Installer موفق نشد:
+فایل `Lingora-Darwin-*.zip` یا `Lingora-Linux-*.zip` را دانلود و اجرا کن. برای استودیوی فایل باید FFmpeg در `PATH` باشد. در macOS یک ورودی loopback مثل BlackHole و در Linux ورودی monitor مربوط به PipeWire/PulseAudio را انتخاب کن. پردازش فایل به دستگاه مجازی نیاز ندارد.
 
-```powershell
-winget install --id Gyan.FFmpeg --exact --scope user
-```
+### اکستنشن Chrome/Edge
 
-## نصب اکستنشن
-
-1. `Dubira-Extension.zip` را Extract کن.
+1. `Lingora-Extension.zip` را دانلود و Extract کن.
 2. `chrome://extensions` یا `edge://extensions` را باز کن.
-3. **Developer mode** را روشن و **Load unpacked** را بزن.
-4. پوشهٔ Extractشده را انتخاب کن، اکستنشن را Pin کن و کلید Gemini را برای همان نشست وارد کن.
+3. Developer mode را روشن و **Load unpacked** را بزن.
+4. پوشهٔ Extractشده را انتخاب، Lingora را Pin و API Key را برای همان نشست مرورگر وارد کن.
+5. یک صفحهٔ عادی دارای رسانه را باز کن و Start را بزن. صفحه‌های داخلی مثل `chrome://` اجازهٔ تزریق زیرنویس نمی‌دهند.
 
-اکستنشن کاملاً مستقل است. نصب واقعاً یک‌کلیکی در Chrome فقط بعد از انتشار در Chrome Web Store ممکن می‌شود.
+نصب واقعاً یک‌کلیکی فقط بعد از انتشار امضاشده در Chrome Web Store ممکن است؛ GitHub اجازهٔ نصب خاموش اکستنشن unpacked را ندارد.
 
-## مسیر صدای اپ دسکتاپ
+## مسیر صدای اپ در ویندوز
 
-پردازش فایل و اکستنشن به دستگاه مجازی نیاز ندارند. فقط دوبلهٔ زندهٔ اپ:
+فقط ترجمهٔ زندهٔ برنامهٔ دیگری در اپ به این مسیر نیاز دارد:
 
-1. خروجی مرورگر/برنامه → `Speakers (AMM Virtual Audio Device)`
-2. ورودی Dubira → `Microphone (AMM Virtual Audio Device)`
-3. خروجی Dubira → `Default` یا هدفون/اسپیکر واقعی
-4. برای شنیدن فقط دوبله، صدای اصلی را روی صفر بگذار.
+1. خروجی مرورگر/برنامهٔ منبع → `Speakers (AMM Virtual Audio Device)`
+2. ورودی Lingora → `Microphone (AMM Virtual Audio Device)`
+3. خروجی Lingora → `Default` یا هدفون/اسپیکر واقعی
+4. خروجی Lingora را هیچ‌وقت دوباره روی AMM نگذار؛ حلقهٔ اکو می‌سازد.
 
-خروجی Dubira را روی AMM Virtual نگذار؛ حلقهٔ اکو می‌سازد. راهنمای تصویری در [آموزش نصب فارسی](docs/INSTALLATION.fa.md) است.
+اکستنشن خودش صدای تب را می‌گیرد و به این تنظیم نیاز ندارد. [آموزش تصویری](docs/INSTALLATION.fa.md#audio-routing-for-the-windows-app) را ببین.
 
-## توسعه و تست
+## توسعه و ساخت
 
 ```powershell
 python -m venv .venv
@@ -91,15 +108,22 @@ python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
 node --test tests\*.test.mjs
-.\scripts\dev.ps1
+python -m lingora
 ```
+
+```powershell
+python scripts/build.py
+.\scripts\package-extension.ps1
+```
+
+CI روی Windows، macOS و Linux تست، lint، type-check و اعتبارسنجی اکستنشن را اجرا می‌کند. Release تگ‌دار برای هر سه سیستم‌عامل خروجی می‌سازد.
 
 ## حریم خصوصی و محدودیت‌ها
 
-- فایل اصلی و خروجی‌ها محلی می‌مانند؛ قطعه‌های صوتی برای Whisper به Groq ارسال می‌شوند.
-- متن برای ترجمه و ساخت صوت به Gemini می‌رود.
-- سقف محلی ترافیک Gemini برابر ۱۵ هزار توکن در هر ۶۰ ثانیه است؛ پایین‌تر از حد ۲۰ هزار درخواستی.
-- مدل‌های Live در وضعیت Preview هستند و دقت، صدا، تأخیر، سهمیه و دسترس‌پذیری تضمین صددرصدی ندارند.
-- حذف مطمئن هشدار SmartScreen نیازمند امضای کد معتبر و ساخت reputation ناشر است.
+- سرویس اپ فقط روی `127.0.0.1` است؛ فایل‌ها و خروجی‌ها در پوشهٔ محلی Lingora می‌مانند.
+- قطعه‌های صوتی آپلودی برای transcription به Groq و متن برای ترجمه/تولید صدا به Gemini می‌رود.
+- صدای زنده فقط بعد از Start صریح کاربر فرستاده می‌شود.
+- کلید اکستنشن در `chrome.storage.session` است و با پایان نشست مرورگر حذف می‌شود. نسخهٔ عمومی Web Store بهتر است از سرویس HTTPS کوچک برای ساخت ephemeral token رسمی Google استفاده کند.
+- مدل‌های Preview ممکن است از نظر دقت، تأخیر، صدا، سهمیه و دسترس‌پذیری تغییر کنند.
 
-مجوز: [MIT](LICENSE)
+[MIT](LICENSE) © Mohammad Saleh Mahdinejad

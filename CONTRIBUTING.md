@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for improving Dubira. English and Persian issues are both welcome.
+Thank you for improving Lingora. English and Persian issues are both welcome.
 
 1. Search existing issues and open one before a large change.
 2. Fork the repository and branch from `main`.

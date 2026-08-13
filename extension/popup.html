@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="icons/icon32.png" type="image/png"><link rel="stylesheet" href="popup.css"><title>Dubira</title></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="icons/icon32.png" type="image/png"><link rel="stylesheet" href="popup.css"><title>Lingora</title></head>
 <body>
   <header>
-    <div class="brand"><span class="logo"><img src="assets/dubira-logo.png" alt=""></span><span><b>Dubira</b><small data-i18n="tagline">دوبلهٔ زندهٔ همین تب</small></span></div>
+    <div class="brand"><span class="logo"><img src="assets/lingora-logo.png" alt=""></span><span><b>Lingora</b><small data-i18n="tagline">ترجمهٔ زندهٔ همین تب</small></span></div>
     <button id="localeToggle" class="mini-button" type="button">EN</button>
   </header>
 
@@ -17,7 +17,7 @@
     </section>
 
     <section class="status-card">
-      <div><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="ready">آمادهٔ دوبله</span></div>
+      <div><span id="statusDot" class="status-dot"></span><span id="statusText" data-i18n="ready">آمادهٔ ترجمه</span></div>
       <span id="languageBadge" class="language-badge">AUTO → FA</span>
     </section>
 
@@ -29,7 +29,16 @@
     <section class="controls">
       <label><span data-i18n="language">زبان مقصد</span><select id="targetLanguage"></select></label>
       <p class="privacy" data-i18n="nativeVoiceHelp">Gemini Live صدای گوینده را خودکار بازتولید می‌کند.</p>
-      <label><span data-i18n="audioMode">صدایی که می‌شنوی</span><select id="audioMode"><option value="dub" data-i18n="dubOnly">فقط دوبله</option><option value="original" data-i18n="originalOnly">فقط صدای اصلی</option><option value="mix" data-i18n="smartMix">میکس هوشمند</option></select></label>
+      <label><span data-i18n="audioMode">حالت ترجمه</span><select id="audioMode"><option value="dub" data-i18n="dubOnly">فقط دوبله</option><option value="subtitles" data-i18n="subtitlesOnly">صدای اصلی + زیرنویس شناور</option><option value="original" data-i18n="originalOnly">فقط صدای اصلی</option><option value="mix" data-i18n="smartMix">میکس هوشمند</option></select></label>
+
+      <div id="subtitleControls" class="subtitle-controls" hidden>
+        <div class="control-title"><b data-i18n="subtitleBox">کادر زیرنویس</b><small data-i18n="dragHint">روی نوار بالای کادر بکش تا جابه‌جا شود</small></div>
+        <label><span data-i18n="subtitlePosition">جای اولیه</span><select id="subtitlePosition"><option value="bottom-center" data-i18n="bottomCenter">پایین وسط</option><option value="bottom-left" data-i18n="bottomLeft">پایین چپ</option><option value="bottom-right" data-i18n="bottomRight">پایین راست</option><option value="top-center" data-i18n="topCenter">بالا وسط</option></select></label>
+        <label class="slider"><span><b data-i18n="subtitleSize">اندازهٔ متن</b><output id="subtitleFontSizeValue">24px</output></span><input id="subtitleFontSize" type="range" min="14" max="52" step="1"></label>
+        <label class="slider"><span><b data-i18n="subtitleWidth">عرض کادر</b><output id="subtitleWidthValue">680px</output></span><input id="subtitleWidth" type="range" min="280" max="1200" step="20"></label>
+        <label class="slider"><span><b data-i18n="subtitleOpacity">شفافیت پس‌زمینه</b><output id="subtitleOpacityValue">88%</output></span><input id="subtitleOpacity" type="range" min="45" max="98" step="1"></label>
+        <label class="check"><input id="subtitleShowSource" type="checkbox"><span><b data-i18n="showSourceLine">نمایش متن اصلی</b><small data-i18n="sourceLineHelp">ترجمه و متن اصلی را هم‌زمان ببین</small></span></label>
+      </div>
 
       <div id="mixControls" class="mix-controls" hidden>
         <label><span><b data-i18n="sourceVolume">صدای اصلی</b><output id="originalValue">20%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
@@ -40,7 +49,7 @@
       <label class="check recording"><input id="recording" type="checkbox"><span><b data-i18n="saveOutputs">ذخیرهٔ چهار خروجی</b><small data-i18n="outputsHelp">دو فایل WAV و دو زیرنویس SRT</small></span></label>
     </section>
 
-    <button id="toggleButton" class="primary" type="button" disabled><span>▶</span><b data-i18n="start">شروع دوبلهٔ این تب</b></button>
+    <button id="toggleButton" class="primary" type="button" disabled><span>▶</span><b data-i18n="start">شروع ترجمهٔ این تب</b></button>
     <div id="downloadReady" class="download" hidden data-i18n="downloadReady">چهار فایل در Downloads ذخیره شدند.</div>
     <p class="privacy" data-i18n="privacy">با شروع، صدای همین تب به Google Gemini فرستاده می‌شود؛ ضبط فقط با فعال‌کردن گزینهٔ بالا انجام می‌شود.</p>
   </main>

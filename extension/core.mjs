@@ -12,8 +12,19 @@ export const DEFAULT_SETTINGS = Object.freeze({
   originalVolume: 0,
   dubVolume: 1,
   autoDuck: true,
-  recording: false
+  recording: false,
+  subtitlePosition: 'bottom-center',
+  subtitleFontSize: 24,
+  subtitleWidth: 680,
+  subtitleOpacity: 88,
+  subtitleShowSource: false
 });
+
+export function audioChannelVolume(mode, channel, settings) {
+  if (mode === 'dub') return channel === 'dub' ? 1 : 0;
+  if (mode === 'original' || mode === 'subtitles') return channel === 'original' ? 1 : 0;
+  return Number(channel === 'original' ? settings.originalVolume : settings.dubVolume);
+}
 
 export function liveUrl(apiKey) {
   return `${LIVE_ENDPOINT}?key=${encodeURIComponent(apiKey)}`;

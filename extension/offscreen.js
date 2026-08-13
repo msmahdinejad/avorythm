@@ -1,4 +1,5 @@
 import {
+  audioChannelVolume,
   audioMessage,
   base64ToBytes,
   liveUrl,
@@ -37,17 +38,11 @@ function elapsed() {
   return (performance.now() - sessionStartedAt) / 1000;
 }
 
-function volumeFor(mode, channel) {
-  if (mode === 'dub') return channel === 'dub' ? 1 : 0;
-  if (mode === 'original') return channel === 'original' ? 1 : 0;
-  return Number(channel === 'original' ? config.originalVolume : config.dubVolume);
-}
-
 function applyVolumes() {
   if (!context || !sourceGain || !dubGain) return;
   const now = context.currentTime;
-  sourceGain.gain.setTargetAtTime(volumeFor(config.audioMode, 'original'), now, 0.02);
-  dubGain.gain.setTargetAtTime(volumeFor(config.audioMode, 'dub'), now, 0.02);
+  sourceGain.gain.setTargetAtTime(audioChannelVolume(config.audioMode, 'original', config), now, 0.02);
+  dubGain.gain.setTargetAtTime(audioChannelVolume(config.audioMode, 'dub', config), now, 0.02);
 }
 
 class PcmWriter {
@@ -127,7 +122,7 @@ class SessionRecorder {
       target: 'background',
       type: 'download',
       url,
-      filename: `Dubira/${this.stamp}/${filename}`
+      filename: `Lingora/${this.stamp}/${filename}`
     });
     if (!response?.ok) throw new Error(response?.error || 'download_failed');
   }
@@ -157,7 +152,7 @@ function playDubbed(pcm) {
   const duration = samples.length / 24000;
   nextDubTime = begins + duration;
   recorder?.dubbed.appendAt(pcm, begins - contextStartedAt);
-  if (config.audioMode === 'original') return;
+  if (config.audioMode === 'original' || config.audioMode === 'subtitles') return;
 
   const buffer = context.createBuffer(1, samples.length, 24000);
   const channel = buffer.getChannelData(0);
@@ -166,7 +161,7 @@ function playDubbed(pcm) {
   player.buffer = buffer;
   player.connect(dubGain);
   if (config.audioMode === 'mix' && config.autoDuck) {
-    const base = volumeFor('mix', 'original');
+    const base = audioChannelVolume('mix', 'original', config);
     sourceGain.gain.cancelScheduledValues(begins);
     sourceGain.gain.setTargetAtTime(base * 0.12, begins, 0.025);
     sourceGain.gain.setTargetAtTime(base, nextDubTime, 0.08);
@@ -308,7 +303,7 @@ async function begin(streamId, nextConfig, nextApiKey) {
   source = context.createMediaStreamSource(stream);
   sourceGain = context.createGain();
   dubGain = context.createGain();
-  captureNode = new AudioWorkletNode(context, 'dubira-pcm-capture');
+  captureNode = new AudioWorkletNode(context, 'lingora-pcm-capture');
   const silent = context.createGain();
   silent.gain.value = 0;
   source.connect(sourceGain).connect(context.destination);

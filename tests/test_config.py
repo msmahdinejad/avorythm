@@ -21,6 +21,24 @@ def test_settings_are_saved_atomically_without_api_key(tmp_path: Path) -> None:
     assert store.load().proxy_url == "http://127.0.0.1:10808"
 
 
+def test_subtitle_mode_settings_round_trip(tmp_path: Path) -> None:
+    store = ConfigStore(tmp_path)
+    settings = Settings(
+        live_mode="subtitles",
+        subtitle_font_size=34,
+        subtitle_width=840,
+        subtitle_show_source=True,
+    )
+
+    store.save(settings)
+
+    loaded = store.load()
+    assert loaded.live_mode == "subtitles"
+    assert loaded.subtitle_font_size == 34
+    assert loaded.subtitle_width == 840
+    assert loaded.subtitle_show_source is True
+
+
 def test_api_key_is_delegated_to_os_keyring(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

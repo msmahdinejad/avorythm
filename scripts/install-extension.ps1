@@ -8,11 +8,11 @@ $source = if (Test-Path -LiteralPath (Join-Path $installedSource "manifest.json"
     $repositorySource
 }
 if (-not (Test-Path -LiteralPath (Join-Path $source "manifest.json"))) {
-    throw "Dubira extension files were not found."
+    throw "Lingora extension files were not found."
 }
 
-$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Dubira\Extension"))
-$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Dubira"))
+$destination = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Lingora\Extension"))
+$expectedRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA "Lingora"))
 if (-not $destination.StartsWith($expectedRoot, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Unsafe extension destination."
 }

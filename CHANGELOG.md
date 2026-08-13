@@ -2,7 +2,25 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
-## [Unreleased]
+## [0.8.0] - 2026-08-13
+
+### Added
+
+- Floating subtitle-only mode for the desktop app and standalone browser extension.
+- Draggable/resizable frosted-glass subtitle cards with source-line, size, width, and opacity controls.
+- Native pywebview desktop shell and release builds for Windows, macOS, and Linux.
+- Cross-platform PortAudio input/output support for macOS loopback devices and Linux monitor sources.
+
+### Changed
+
+- Renamed the public product, executable, installer, extension, repository, and artifacts to Lingora while keeping the previous Python import path as a compatibility layer.
+- Reworked both interfaces around a translucent glass visual system.
+- Expanded CI and release validation to all three desktop operating systems.
+
+### Fixed
+
+- Subtitle-only mode now forces original audio on and generated speech off at the audio mixer, not only in the UI.
+- Extension overlay access is temporary and limited to the tab explicitly activated by the user.
 
 ## [0.7.1] - 2026-08-13
 
@@ -145,7 +163,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- New generated Dubira brand mark across the app, installer, extension, and documentation.
+- New generated Lingora brand mark across the app, installer, extension, and documentation.
 - Bilingual in-app audio-routing guide with a Windows Volume Mixer illustration.
 - Post-install helper that prepares the unpacked extension folder and opens the browser setup page.
 
@@ -167,15 +185,16 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/dubira/compare/v0.7.1...HEAD
-[0.7.1]: https://github.com/msmahdinejad/dubira/compare/v0.7.0...v0.7.1
-[0.7.0]: https://github.com/msmahdinejad/dubira/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/msmahdinejad/dubira/compare/v0.5.1...v0.6.0
-[0.5.1]: https://github.com/msmahdinejad/dubira/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/msmahdinejad/dubira/compare/v0.4.1...v0.5.0
-[0.4.1]: https://github.com/msmahdinejad/dubira/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/msmahdinejad/dubira/compare/v0.3.1...v0.4.0
-[0.3.1]: https://github.com/msmahdinejad/dubira/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/msmahdinejad/dubira/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/msmahdinejad/dubira/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/msmahdinejad/dubira/releases/tag/v0.1.0
+[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/msmahdinejad/lingora/compare/v0.7.1...v0.8.0
+[0.7.1]: https://github.com/msmahdinejad/lingora/compare/v0.7.0...v0.7.1
+[0.7.0]: https://github.com/msmahdinejad/lingora/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/msmahdinejad/lingora/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/msmahdinejad/lingora/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/msmahdinejad/lingora/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/msmahdinejad/lingora/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/msmahdinejad/lingora/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/msmahdinejad/lingora/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/msmahdinejad/lingora/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/msmahdinejad/lingora/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/msmahdinejad/lingora/releases/tag/v0.1.0

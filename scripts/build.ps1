@@ -17,20 +17,8 @@ try {
         if ($LASTEXITCODE) { throw "Extension tests failed." }
     }
 
-    & $python -m PyInstaller --noconfirm --clean --onedir `
-        --name Dubira `
-        --icon extension\icons\Dubira.ico `
-        --version-file assets\windows-version.txt `
-        --paths src `
-        --collect-all dubira `
-        --collect-all pyaudiowpatch `
-        --hidden-import keyring.backends.Windows `
-        scripts\launcher.py
-    if ($LASTEXITCODE) { throw "PyInstaller failed." }
-
-    $archive = Join-Path $repository "dist\Dubira-Windows-x64.zip"
-    if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive -Force }
-    Compress-Archive -Path "dist\Dubira\*" -DestinationPath $archive -CompressionLevel Optimal
+    & $python scripts\build.py
+    if ($LASTEXITCODE) { throw "Build failed." }
 }
 finally {
     Pop-Location

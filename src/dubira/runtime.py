@@ -16,7 +16,7 @@ from .transcripts import TranscriptTracker
 class DubRuntime:
     """Coordinates desktop capture, translation, playback, transcripts, and recording."""
 
-    RESTART_FIELDS = {"target_language", "capture_device", "output_device"}
+    RESTART_FIELDS = {"target_language", "capture_device", "output_device", "live_mode"}
 
     def __init__(self, store: ConfigStore, recordings: Path) -> None:
         self.store = store
@@ -101,8 +101,8 @@ class DubRuntime:
         workers: list[asyncio.Task[None]] = []
         session_workers: list[asyncio.Task[None]] = []
         try:
-            assert self.settings.capture_device is not None
-            assert self.settings.output_device is not None
+            if self.settings.capture_device is None or self.settings.output_device is None:
+                raise ValueError("select an available audio input and output device")
             self.store.apply_proxy(self.settings)
             audio = AudioEngine(self.settings.capture_device, self.settings.output_device)
             self.gateway = GeminiGateway(self.store.get_api_key())
@@ -276,8 +276,12 @@ class DubRuntime:
                     mix_pcm(
                         source,
                         translation,
-                        self.settings.original_volume,
-                        self.settings.dub_volume,
+                        (
+                            1.0
+                            if self.settings.live_mode == "subtitles"
+                            else self.settings.original_volume
+                        ),
+                        0.0 if self.settings.live_mode == "subtitles" else self.settings.dub_volume,
                     )
                 )
             finally:

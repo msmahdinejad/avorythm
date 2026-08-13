@@ -32,7 +32,7 @@ def client(
     monkeypatch.setattr("dubira.api.DeviceCatalog.scan", catalog)
     static = tmp_path / "static"
     static.mkdir()
-    (static / "index.html").write_text("Dubira", encoding="utf-8")
+    (static / "index.html").write_text("Lingora", encoding="utf-8")
     return TestClient(
         create_app(
             store,

@@ -11,15 +11,15 @@ from dotenv import load_dotenv
 
 from .models import Settings
 
-APP_NAME = "Dubira"
-LEGACY_APP_NAMES = ("Voxilyra", "LingoDub")
+APP_NAME = "Lingora"
+LEGACY_APP_NAMES = ("Dubira", "Voxilyra", "LingoDub")
 KEYRING_SERVICES = {
-    "gemini": "Dubira Gemini API",
-    "groq": "Dubira Groq API",
+    "gemini": "Lingora Gemini API",
+    "groq": "Lingora Groq API",
 }
 LEGACY_KEYRING_SERVICES = {
-    "gemini": ("Voxilyra Gemini API", "LingoDub Gemini API"),
-    "groq": ("Voxilyra Groq API", "LingoDub Groq API"),
+    "gemini": ("Dubira Gemini API", "Voxilyra Gemini API", "LingoDub Gemini API"),
+    "groq": ("Dubira Groq API", "Voxilyra Groq API", "LingoDub Groq API"),
 }
 KEYRING_USER = "default"
 ApiProvider = Literal["gemini", "groq"]

@@ -469,10 +469,13 @@ class GeminiFileGateway:
             ensure_ascii=False,
         )
         instruction = (
-            "Translate every segment faithfully and naturally. Preserve names, numbers, "
-            "technical terms, tone, intent, and sentence boundaries. Do not summarize, explain, "
-            "censor, merge, or add information. Return a JSON array with exactly one object for "
-            "every input id, in the same order, using only the keys id and text."
+            "Translate every segment faithfully, idiomatically, and naturally for native viewers. "
+            "Use the full batch as context because adjacent segments can split one sentence, but "
+            "keep a one-to-one output mapping. Prefer domain-appropriate phrasing over literal "
+            "calques. Preserve names, numbers, technical terms, tone, intent, and sentence "
+            "boundaries. Do not summarize, explain, censor, merge, or add information. Return a "
+            "JSON array with exactly one object for every input id, in the same order, using only "
+            "the keys id and text."
         )
         last_error: Exception | None = None
         for model, rpm, rpd, structured in TRANSLATION_MODELS:

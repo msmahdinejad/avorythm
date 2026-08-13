@@ -1,18 +1,19 @@
 <p align="center">
-  <img src="assets/branding/dubira-logo.png" width="148" alt="Dubira logo">
+  <img src="assets/branding/lingora-logo.png" width="148" alt="Lingora logo">
 </p>
 
-<h1 align="center">Dubira</h1>
+<h1 align="center">Lingora</h1>
 
-<p align="center"><strong>Hear every voice in your language.</strong></p>
+<p align="center"><strong>Hear every voice—or just read it—in your language.</strong></p>
 
 <p align="center">
-  Translate desktop or browser audio live, or turn uploaded audio and video into a synchronized dub, source transcript, translated transcript, and original soundtrack.
+  Translate desktop and browser audio live, show an always-on-top translated subtitle card,
+  or turn uploaded audio/video into a synchronized dub and four downloadable outputs.
 </p>
 
 <p align="center">
-  <a href="https://github.com/msmahdinejad/dubira/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/dubira/ci.yml?branch=main&label=CI"></a>
-  <a href="https://github.com/msmahdinejad/dubira/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/dubira?label=Release"></a>
+  <a href="https://github.com/msmahdinejad/lingora/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/lingora/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/lingora/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/lingora?label=Release"></a>
   <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
@@ -25,14 +26,26 @@
   <a href="PRIVACY.md">Privacy</a>
 </p>
 
-![Dubira English dashboard](docs/images/dashboard-en.png)
+![Lingora English dashboard](docs/images/dashboard-en.png)
 
-## Two independent products
+## What ships
 
-- **Windows app:** live desktop dubbing plus a media studio for uploaded audio/video.
-- **Chrome/Edge extension:** live tab dubbing with no desktop app, Python, FFmpeg, localhost, or virtual audio device.
+- **Native desktop app for Windows, macOS, and Linux:** one pywebview shell around the local FastAPI service, with live translation, live dubbing, recording, and Media Studio.
+- **Standalone Chrome/Edge extension:** captures only the tab explicitly started by the user and needs no desktop app, Python, FFmpeg, localhost, or virtual audio device.
+- **Floating subtitles:** retain original audio while translation appears in a frosted-glass card. Adjust text size, width, opacity, and source-text visibility. The native app card is resizable, draggable, and always on top; the extension card lives in the selected page and can be dragged or resized.
 
-Both interfaces support Persian and English, use Vazirmatn, render RTL/LTR transcripts correctly, and independently control original and dubbed audio.
+Both products are independent, bilingual (English/Persian), use Vazirmatn, and render RTL/LTR content with automatic direction.
+
+## Live modes
+
+| Mode | Original audio | Translated audio | Translated subtitles |
+|---|---:|---:|---:|
+| Dub only | Off | On | Dashboard |
+| Original + floating subtitles | On | Off | Always-on-top card |
+| Smart mix (extension) | Adjustable | Adjustable | Dashboard |
+| Original only (extension) | On | Off | Dashboard |
+
+The subtitle window uses Document Picture-in-Picture in compatible browsers and a separate popup fallback. Native builds use a dedicated pywebview window with the operating system's always-on-top behavior.
 
 ## Uploaded-media pipeline
 
@@ -40,73 +53,69 @@ Both interfaces support Persian and English, use Vazirmatn, render RTL/LTR trans
 Audio/video
   → local FFmpeg extraction and timeline
   → Groq Whisper Large v3 transcription with timestamps
-  → strongest-available Gemini/Gemma free-tier text model
+  → strongest available Gemini/Gemma free-tier text model
   → Gemini 3.1 Flash Live translated speech
-  → local alignment, subtitles, player, and ZIP
+  → local alignment, movie-sized captions, synchronized player, ZIP
 ```
 
-The default **Precise** mode uses `whisper-large-v3` and verifies Gemini Live's output transcript against each translated segment, retrying a mismatched segment. **Fast** uses `whisper-large-v3-turbo` for quicker previews. Long media is encoded to small 16 kHz mono FLAC chunks with overlap; only the non-overlapping core timestamps are retained.
+Every successful job provides `original.wav`, `source.srt`, `dubbed.wav`, `translated.srt`, and `all-outputs.zip`. The player uses the source media as its master clock, corrects dub drift above 120 ms, truly mutes source audio when its switch is off, and can show either or both subtitle tracks.
 
-Every successful job provides:
-
-- `original.wav`
-- `source.srt`
-- `dubbed.wav`
-- `translated.srt`
-- `all-outputs.zip`
-
-The built-in audio/video player uses the source media as its master clock. The dub is corrected when drift exceeds 120 ms, original audio is truly silent while its switch is off, and both subtitle tracks can be enabled together. Long speech is split into short, movie-sized subtitle cues instead of one screen-blocking paragraph. The file voice is selected per Media Studio job.
+The default **Precise** mode uses `whisper-large-v3` and verifies generated-speech transcripts against each translated segment. **Fast** uses `whisper-large-v3-turbo`. Long media is sent as small 16 kHz mono FLAC chunks with timestamp overlap and deduplication.
 
 ### Translation model pool
 
-Text translation falls back in this strongest-first order when a model is rate-limited or temporarily unavailable:
+Lingora falls back strongest-first when a free-tier text model is rate-limited or unavailable:
 
 `gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3-flash-preview` → `gemini-2.5-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemini-2.5-flash-lite` → `gemma-4-31b-it` → `gemma-4-26b-a4b-it`
 
-Only text-output models with a non-zero free quota in the active AI Studio project are included. Image, TTS, Live, embedding, agent, robotics, and zero-quota models are excluded. Local per-model RPM/RPD guards reduce avoidable 429s; [AI Studio remains authoritative](https://ai.google.dev/gemini-api/docs/rate-limits) because quotas vary by project and can change. Model IDs follow Google's current [Gemini](https://ai.google.dev/gemini-api/docs/models) and [Gemma API](https://ai.google.dev/gemma/docs/core/gemma_on_gemini_api) documentation.
+Only text-output models with an applicable free quota are candidates. A local governor reserves at most 15,000 estimated Gemini tokens per rolling 60 seconds, below the requested 20,000 TPM ceiling. AI Studio remains authoritative because quotas vary by account and model.
 
 ## Quick install
 
-### Windows app
+### Windows
 
-1. Download `Dubira-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/dubira/releases).
-2. Keep **Install FFmpeg** enabled when you want uploaded-media processing.
-3. In Advanced settings, save a [Gemini API key](https://aistudio.google.com/app/apikey) and a [Groq API key](https://console.groq.com/keys).
-4. Leave the proxy at `http://127.0.0.1:10808` when your connection requires it.
+1. Download `Lingora-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/lingora/releases).
+2. Keep **Install FFmpeg** enabled for uploaded-media processing.
+3. Save a [Gemini API key](https://aistudio.google.com/app/apikey); save a [Groq API key](https://console.groq.com/keys) for Media Studio.
+4. Leave the proxy at `http://127.0.0.1:10808` when your connection needs it.
 
-Use **Quit app** in the top bar to stop Dubira's local server completely, not only close the browser tab.
+The Windows installer is unsigned until the maintainer adds an Authenticode certificate, so SmartScreen may show “Unknown publisher”. Only a trusted code-signing certificate and publisher reputation reliably remove that warning.
 
-Keys are stored in Windows Credential Manager, never in `settings.json`. Groq and Gemini free tiers are subject to each provider's current account quotas; Dubira cannot guarantee ongoing free availability.
+### macOS and Linux
 
-If WinGet could not install FFmpeg during setup, run:
+Download the matching `Lingora-Darwin-*.zip` or `Lingora-Linux-*.zip` from Releases and launch Lingora. On Linux, the release uses Qt; on macOS it uses WKWebView. FFmpeg must be available on `PATH` for Media Studio.
 
-```powershell
-winget install --id Gyan.FFmpeg --exact --scope user
-```
+Live desktop capture is platform-specific:
+
+- **Windows:** route the source app to AMM/VB-Cable and select its loopback input in Lingora.
+- **macOS:** select a loopback input such as BlackHole. macOS does not expose system-output capture as a normal input by default.
+- **Linux:** select the PipeWire/PulseAudio monitor source for the output you want to translate.
+
+Uploaded files do not need virtual audio routing on any platform.
 
 ### Chrome/Edge extension
 
-1. Download and extract `Dubira-Extension.zip`.
+1. Download and extract `Lingora-Extension.zip`.
 2. Open `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode**, choose **Load unpacked**, and select the extracted folder.
-4. Pin Dubira, enter the Gemini key for this browser session, open a media tab, and press Start.
+4. Pin Lingora, enter the Gemini key for this browser session, open a normal web page with media, and press Start.
 
-The extension is fully independent from the Windows app. Chrome only offers true one-click consumer installation after publication in the Chrome Web Store; GitHub-hosted unpacked extensions require the steps above.
+Chrome blocks injection into internal pages such as `chrome://`. One-click consumer installation is only available after a signed Chrome Web Store publication; GitHub cannot silently install an unpacked extension.
 
-## Desktop live audio routing
+## Desktop audio routing (Windows)
 
-Uploaded files and the extension need no virtual device. Only **live desktop-app capture** needs this route:
+Only live capture from another desktop program needs this route:
 
 1. Source browser/app **Output** → `Speakers (AMM Virtual Audio Device)`.
-2. Dubira **Input** → `Microphone (AMM Virtual Audio Device)`.
-3. Dubira **Output** → `Default` or physical headphones/speakers.
-4. Keep Original volume at `0%` for dub-only listening.
+2. Lingora **Input** → `Microphone (AMM Virtual Audio Device)`.
+3. Lingora **Output** → `Default` or physical headphones/speakers.
+4. Never route Lingora output back into AMM; that creates feedback.
 
-Never route Dubira's output back to AMM Virtual; that creates echo and feedback. See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app).
+See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app). The extension handles tab audio itself and does not need this setup.
 
 ## Development
 
-Requirements: Windows 10/11, Python 3.12, Node.js 20+, FFmpeg, and Inno Setup 6 for the installer.
+Requirements: Python 3.12, Node.js 20+, and FFmpeg for Media Studio.
 
 ```powershell
 python -m venv .venv
@@ -116,27 +125,27 @@ python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
 node --test tests\*.test.mjs
-.\scripts\dev.ps1
+python -m lingora
 ```
 
-Build release artifacts:
+Build the current platform and package the extension:
 
 ```powershell
-.\scripts\build.ps1
+python scripts/build.py
 .\scripts\package-extension.ps1
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 ```
+
+CI runs tests, lint, type-checking, and extension validation on Windows, macOS, and Linux. Tagged releases build all three desktop artifacts plus the standalone extension and Windows installer.
 
 ## Privacy and limits
 
-- The app binds only to `127.0.0.1`; original uploads and generated files remain under the local Dubira data directory.
-- Uploaded audio chunks are sent to Groq for transcription; transcript text is sent to Gemini for translation and speech generation.
-- Live desktop/tab audio is sent to Gemini Live only after the user starts dubbing.
-- A local rolling governor reserves at most 15,000 Gemini tokens per 60 seconds, below the requested 20,000-token ceiling.
-- `gemini-3.5-live-translate-preview` and `gemini-3.1-flash-live-preview` are preview services. Accuracy, voice stability, availability, latency, and quotas can change.
-- Windows SmartScreen warnings disappear reliably only after signing the installer with a trusted code-signing certificate and building publisher reputation.
+- The app binds only to `127.0.0.1`; uploads and generated files remain in the local Lingora data directory.
+- Uploaded audio chunks go to Groq for transcription; text goes to Gemini for translation and speech generation.
+- Live desktop/tab audio goes to Gemini only after an explicit Start action.
+- Extension API keys stay in `chrome.storage.session` and disappear when the browser session ends. For Chrome Web Store production, replace long-lived BYOK with a small HTTPS service that mints Google ephemeral Live API tokens.
+- Preview model accuracy, availability, voice stability, latency, and quota can change upstream.
 
-See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [ARCHITECTURE.md](ARCHITECTURE.md).
+See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md).
 
 ## License
 

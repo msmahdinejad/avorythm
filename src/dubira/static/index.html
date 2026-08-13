@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>Dubira</title>
-  <link rel="icon" href="/assets/dubira-logo.png" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=0.7.1">
+  <title>Lingora</title>
+  <link rel="icon" href="/assets/lingora-logo.png" type="image/png">
+  <link rel="stylesheet" href="/styles.css?v=0.8.0">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="Dubira">
-      <span class="brand-mark" aria-hidden="true"><img src="/assets/dubira-logo.png" alt=""></span>
-      <span><b>Dubira</b><small data-i18n="tagline">دوبلهٔ زنده، بدون دردسر</small></span>
+    <a class="brand" href="/" aria-label="Lingora">
+      <span class="brand-mark" aria-hidden="true"><img src="/assets/lingora-logo.png" alt=""></span>
+      <span><b>Lingora</b><small data-i18n="tagline">ترجمهٔ زنده، بدون دردسر</small></span>
     </a>
     <nav class="product-nav" aria-label="Primary">
       <a href="#liveWorkspace" data-i18n="navLive">زنده</a>
@@ -83,14 +83,23 @@
         <details class="setup-card" open>
           <summary><span class="step-number">1</span><span><b data-i18n="quickSetup">تنظیم دستی صدای برنامه‌ها</b><small id="setupSummary" data-i18n="setupDescription">یک مرحله در Windows Volume Mixer</small></span></summary>
           <div class="setup-body">
-            <p data-i18n="setupHelp">برای ویدیوهای مرورگر، اکستنشن خودش صدا را جدا می‌کند. برای برنامه‌های ویندوز، دستگاه مجازی لازم است.</p>
+            <p id="setupHelpText" data-i18n="setupHelp">برای ویدیوهای مرورگر، اکستنشن خودش صدا را جدا می‌کند. برای برنامه‌های ویندوز، دستگاه مجازی لازم است.</p>
             <button id="openMixerButton" class="button secondary wide" type="button" data-i18n="openWindowsMixer">باز کردن میکسر صدای ویندوز</button>
-            <a class="text-button wide guide-link" href="/audio-guide.html" data-i18n="audioGuide">آموزش تصویری تنظیم صدا</a>
+            <a id="audioGuideLink" class="text-button wide guide-link" href="/audio-guide.html" data-i18n="audioGuide">آموزش تصویری تنظیم صدا</a>
           </div>
         </details>
 
         <form id="settingsForm">
           <label class="field"><span data-i18n="targetLanguage">زبان مقصد</span><select id="targetLanguage"></select></label>
+          <label class="field"><span data-i18n="liveMode">حالت ترجمهٔ زنده</span><select id="liveMode"><option value="dub" data-i18n="modeDub">دوبلهٔ زنده</option><option value="subtitles" data-i18n="modeSubtitles">صدای اصلی + زیرنویس شناور</option></select></label>
+          <section id="subtitleSettings" class="subtitle-settings" hidden>
+            <div class="mixer-title"><span data-i18n="floatingSubtitles">زیرنویس شناور</span><small data-i18n="floatingHint">روی همهٔ پنجره‌ها بماند</small></div>
+            <button id="openSubtitleButton" class="button subtitle-button wide" type="button" data-i18n="openSubtitleWindow">بازکردن کادر زیرنویس</button>
+            <label class="range-field"><span><b data-i18n="subtitleSize">اندازهٔ متن</b><output id="subtitleFontSizeValue">26px</output></span><input id="subtitleFontSize" type="range" min="14" max="52" step="1"></label>
+            <label class="range-field"><span><b data-i18n="subtitleWidth">عرض کادر</b><output id="subtitleWidthValue">720px</output></span><input id="subtitleWidth" type="range" min="320" max="1200" step="20"></label>
+            <label class="range-field"><span><b data-i18n="subtitleOpacity">شفافیت پس‌زمینه</b><output id="subtitleOpacityValue">88%</output></span><input id="subtitleOpacity" type="range" min="45" max="98" step="1"></label>
+            <label class="check subtitle-source"><input id="subtitleShowSource" type="checkbox"><span data-i18n="showSourceLine">نمایش متن اصلی بالای ترجمه</span></label>
+          </section>
           <label class="field"><span data-i18n="captureDevice">ورودی صدای برنامه</span><select id="captureDevice"></select></label>
           <label class="field"><span data-i18n="outputDevice">خروجی شنیداری</span><select id="outputDevice"></select></label>
 
@@ -165,7 +174,7 @@
             <div class="video-stage">
               <video id="mediaPlayer" controls preload="metadata" muted></video>
               <div id="audioSourceStage" class="audio-source-stage" hidden>
-                <img src="/assets/dubira-logo.png" alt="">
+                <img src="/assets/lingora-logo.png" alt="">
                 <b id="audioSourceName"></b>
                 <audio id="sourceAudioPlayer" controls preload="metadata"></audio>
               </div>
@@ -198,8 +207,8 @@
     </section>
   </main>
 
-  <div id="shutdownScreen" class="shutdown-screen" hidden><img src="/assets/dubira-logo.png" alt=""><strong data-i18n="appClosed">Dubira بسته شد.</strong><span data-i18n="closeTab">اکنون می‌توانی این تب را ببندی.</span></div>
-  <footer><span>Dubira · Open source</span><a href="https://github.com/msmahdinejad/dubira" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
-  <script src="/app.js?v=0.7.1" defer></script>
+  <div id="shutdownScreen" class="shutdown-screen" hidden><img src="/assets/lingora-logo.png" alt=""><strong data-i18n="appClosed">Lingora بسته شد.</strong><span data-i18n="closeTab">اکنون می‌توانی این پنجره را ببندی.</span></div>
+  <footer><span>Lingora · Open source</span><a href="https://github.com/msmahdinejad/lingora" target="_blank" rel="noreferrer">GitHub ↗</a></footer>
+  <script src="/app.js?v=0.8.0" defer></script>
 </body>
 </html>

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import mimetypes
+import platform
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -49,8 +50,8 @@ def create_app(
         await media.close()
 
     app = FastAPI(
-        title="Dubira Desktop",
-        version="0.7.1",
+        title="Lingora Desktop",
+        version="0.8.0",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -78,11 +79,12 @@ def create_app(
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
-        return {"status": "ok"}
+        return {"status": "ok", "app": "Lingora", "version": "0.8.0"}
 
     @app.get("/api/bootstrap")
     def bootstrap() -> dict[str, object]:
         return {
+            "platform": platform.system().lower(),
             "devices": DeviceCatalog.scan().to_dict(),
             "languages": sorted(SUPPORTED_LANGUAGES),
             "voices": sorted(VOICE_NAMES),
