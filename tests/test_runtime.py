@@ -91,7 +91,7 @@ async def test_runtime_reconnects_after_a_live_session_ends(
 
 
 @pytest.mark.asyncio
-async def test_subtitle_mode_outputs_only_original_audio(
+async def test_disabled_audio_channel_is_silent(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -103,7 +103,9 @@ async def test_subtitle_mode_outputs_only_original_audio(
     )
     monkeypatch.setattr("dubira.runtime.DeviceCatalog.scan", lambda: catalog)
     runtime = DubRuntime(ConfigStore(tmp_path / "config"), tmp_path / "recordings")
-    runtime.settings = runtime.settings.model_copy(update={"live_mode": "subtitles"})
+    runtime.settings = runtime.settings.model_copy(
+        update={"original_audio_enabled": True, "dub_audio_enabled": False}
+    )
     played = asyncio.Event()
     output: list[bytes] = []
 

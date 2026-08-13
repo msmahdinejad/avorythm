@@ -36,14 +36,12 @@
 
 Both products are independent, bilingual (English/Persian), use Vazirmatn, and render RTL/LTR content with automatic direction.
 
-## Live modes
+## Custom live output
 
-| Mode | Original audio | Translated audio | Translated subtitles |
-|---|---:|---:|---:|
-| Dub only | Off | On | Dashboard |
-| Original + floating subtitles | On | Off | Always-on-top card |
-| Smart mix (extension) | Adjustable | Adjustable | Dashboard |
-| Original only (extension) | On | Off | Dashboard |
+The desktop app and extension expose the same four independent channels: original audio,
+translated audio, source subtitles, and translated subtitles. Enable any combination. When
+both audio channels are active, their volume sliders create the exact mix you want; subtitle
+appearance stays available whenever either subtitle channel is active.
 
 The subtitle window uses Document Picture-in-Picture in compatible browsers and a separate popup fallback. Native builds use a dedicated pywebview window with the operating system's always-on-top behavior.
 

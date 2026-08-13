@@ -2,6 +2,23 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [0.9.0] - 2026-08-13
+
+### Added
+
+- One unified live-output mixer with independent original audio, dubbed audio, source subtitle, and translated subtitle channels in both apps.
+
+### Changed
+
+- Replaced live-output presets with direct channel switches and contextual audio/subtitle controls.
+- Migrated legacy subtitle presets without silently carrying their old zero-volume mixer value.
+
+## [0.8.1] - 2026-08-13
+
+### Fixed
+
+- Completed live-subtitle sentences now start a fresh line instead of accumulating indefinitely.
+
 ## [0.8.0] - 2026-08-13
 
 ### Added
@@ -185,7 +202,9 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/msmahdinejad/lingora/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/msmahdinejad/lingora/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/msmahdinejad/lingora/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/msmahdinejad/lingora/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/msmahdinejad/lingora/compare/v0.6.0...v0.7.0

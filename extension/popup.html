@@ -29,7 +29,19 @@
     <section class="controls">
       <label><span data-i18n="language">زبان مقصد</span><select id="targetLanguage"></select></label>
       <p class="privacy" data-i18n="nativeVoiceHelp">Gemini Live صدای گوینده را خودکار بازتولید می‌کند.</p>
-      <label><span data-i18n="audioMode">حالت ترجمه</span><select id="audioMode"><option value="dub" data-i18n="dubOnly">فقط دوبله</option><option value="subtitles" data-i18n="subtitlesOnly">صدای اصلی + زیرنویس شناور</option><option value="original" data-i18n="originalOnly">فقط صدای اصلی</option><option value="mix" data-i18n="smartMix">میکس هوشمند</option></select></label>
+      <div class="control-title"><b data-i18n="outputMixer">خروجی دلخواه من</b><small data-i18n="outputMixerHint">هر چهار کانال مستقل‌اند</small></div>
+      <div class="channel-grid">
+        <label class="channel-option"><input id="originalAudioEnabled" type="checkbox"><span data-i18n="sourceVolume">صدای اصلی</span></label>
+        <label class="channel-option"><input id="dubAudioEnabled" type="checkbox"><span data-i18n="dubVolume">صدای دوبله</span></label>
+        <label class="channel-option"><input id="sourceSubtitlesEnabled" type="checkbox"><span data-i18n="sourceSubtitles">زیرنویس اصلی</span></label>
+        <label class="channel-option"><input id="translatedSubtitlesEnabled" type="checkbox"><span data-i18n="translatedSubtitles">زیرنویس ترجمه</span></label>
+      </div>
+
+      <div id="audioControls" class="mix-controls">
+        <label><span><b data-i18n="sourceVolume">صدای اصلی</b><output id="originalValue">100%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+        <label><span><b data-i18n="dubVolume">صدای دوبله</b><output id="dubValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+        <label class="check"><input id="autoDuck" type="checkbox"><span><b>Auto-duck</b><small data-i18n="duckHelp">هنگام صحبت دوبله، صدای اصلی خودکار کم شود</small></span></label>
+      </div>
 
       <div id="subtitleControls" class="subtitle-controls" hidden>
         <div class="control-title"><b data-i18n="subtitleBox">کادر زیرنویس</b><small data-i18n="dragHint">روی نوار بالای کادر بکش تا جابه‌جا شود</small></div>
@@ -37,13 +49,6 @@
         <label class="slider"><span><b data-i18n="subtitleSize">اندازهٔ متن</b><output id="subtitleFontSizeValue">24px</output></span><input id="subtitleFontSize" type="range" min="14" max="52" step="1"></label>
         <label class="slider"><span><b data-i18n="subtitleWidth">عرض کادر</b><output id="subtitleWidthValue">680px</output></span><input id="subtitleWidth" type="range" min="280" max="1200" step="20"></label>
         <label class="slider"><span><b data-i18n="subtitleOpacity">شفافیت پس‌زمینه</b><output id="subtitleOpacityValue">88%</output></span><input id="subtitleOpacity" type="range" min="45" max="98" step="1"></label>
-        <label class="check"><input id="subtitleShowSource" type="checkbox"><span><b data-i18n="showSourceLine">نمایش متن اصلی</b><small data-i18n="sourceLineHelp">ترجمه و متن اصلی را هم‌زمان ببین</small></span></label>
-      </div>
-
-      <div id="mixControls" class="mix-controls" hidden>
-        <label><span><b data-i18n="sourceVolume">صدای اصلی</b><output id="originalValue">20%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
-        <label><span><b data-i18n="dubVolume">صدای دوبله</b><output id="dubValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
-        <label class="check"><input id="autoDuck" type="checkbox"><span><b>Auto-duck</b><small data-i18n="duckHelp">هنگام صحبت دوبله، صدای اصلی خودکار کم شود</small></span></label>
       </div>
 
       <label class="check recording"><input id="recording" type="checkbox"><span><b data-i18n="saveOutputs">ذخیرهٔ چهار خروجی</b><small data-i18n="outputsHelp">دو فایل WAV و دو زیرنویس SRT</small></span></label>

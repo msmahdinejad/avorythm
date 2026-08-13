@@ -1,4 +1,4 @@
-import {DEFAULT_SETTINGS, LANGUAGES} from './core.mjs';
+import {DEFAULT_SETTINGS, LANGUAGES, normalizeSettings, subtitlesEnabled} from './core.mjs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
 const defaultState = {
@@ -70,7 +70,7 @@ async function bootstrap() {
   ]);
   return {
     languages: LANGUAGES,
-    settings: {...DEFAULT_SETTINGS, ...settings},
+    settings: normalizeSettings(settings),
     api_key_set: Boolean(apiKey)
   };
 }
@@ -83,7 +83,7 @@ async function start(config) {
   await ensureOffscreenDocument();
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   if (!tab?.id) throw new Error('active_tab_missing');
-  if (config.audioMode === 'subtitles') await injectOverlay(tab.id);
+  if (subtitlesEnabled(config)) await injectOverlay(tab.id);
   const streamId = await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
   await setState({active: true, status: 'connecting', error: '', sourceText: '', translatedText: '', recordingReady: false, captureTabId: tab.id, config});
   await broadcastOverlay(await getState());
@@ -117,6 +117,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.session.set({state: defaultState});
   const {settings} = await chrome.storage.local.get('settings');
   if (!settings) await chrome.storage.local.set({settings: DEFAULT_SETTINGS});
+  else await chrome.storage.local.set({settings: normalizeSettings(settings)});
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -151,7 +152,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if (message.type === 'audio') {
       let state = await getState();
       if (state.active) {
-        if (message.config.audioMode === 'subtitles') await injectOverlay(state.captureTabId);
+        if (subtitlesEnabled(message.config)) await injectOverlay(state.captureTabId);
         state = await setState({config: message.config});
         await broadcastOverlay(state);
       }

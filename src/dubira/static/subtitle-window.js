@@ -13,8 +13,10 @@ async function refresh() {
     card.style.setProperty('--size', `${settings.subtitle_font_size}px`);
     card.style.setProperty('--opacity', String(settings.subtitle_opacity / 100));
     source.textContent = state.source_text || '';
-    source.hidden = !settings.subtitle_show_source || !state.source_text;
+    source.hidden = !settings.source_subtitles_enabled || !state.source_text;
     translation.textContent = state.translated_text || (settings.target_language === 'fa' ? 'منتظر ترجمه…' : 'Waiting for translation…');
+    translation.hidden = !settings.translated_subtitles_enabled;
+    card.classList.toggle('source-only', settings.source_subtitles_enabled && !settings.translated_subtitles_enabled);
     source.dir = state.source_dir || 'auto';
     translation.dir = state.translated_dir || 'auto';
   } catch {}

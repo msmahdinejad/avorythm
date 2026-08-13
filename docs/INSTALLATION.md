@@ -57,13 +57,13 @@ The local rolling governor reserves at most 15,000 estimated tokens per minute. 
 6. Enter the Gemini API key for the current browser session.
 7. Open a normal web page with audio and click **Start translating this tab**.
 
-The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Lingora recreates only the selected original/dub mix. This prevents the two voices from overlapping in **Dubbed audio only** mode.
+The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Lingora recreates the exact original/dub mix selected by the two independent audio switches and volume sliders.
 
 The key lives only in `chrome.storage.session` and must be entered again after the browser fully exits. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
 
-### Floating subtitle mode
+### Floating subtitles
 
-Choose **Original audio + floating subtitles** before Start. Lingora keeps the tab's original sound, suppresses generated speech, and injects a frosted-glass caption card only into the selected page. Drag its top handle to move it and drag the browser resize grip to resize it. Text size, initial position, width, opacity, and the optional source line are configurable in the popup. Chrome internal pages, the Web Store, and some protected pages do not allow injection.
+Enable **Source subtitles**, **Translated subtitles**, or both in **My output mix**. Audio remains independently configurable, so captions can accompany original audio, dubbed audio, both, or neither. Lingora injects the frosted-glass card only into the selected page. Drag its top handle to move it and use the browser resize grip to resize it. Text size, initial position, width, and opacity are configurable in the popup. Chrome internal pages, the Web Store, and some protected pages do not allow injection.
 
 ### Proxy
 

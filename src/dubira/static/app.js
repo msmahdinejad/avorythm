@@ -37,12 +37,12 @@ const messages = {
     setupHelpLinux: 'در Linux ورودی monitor مربوط به PipeWire/PulseAudio را انتخاب کن. استودیوی فایل و اکستنشن به مسیر مجازی نیاز ندارند.',
     openWindowsMixer: 'باز کردن میکسر صدای ویندوز', audioGuide: 'آموزش تصویری تنظیم صدا',
     targetLanguage: 'زبان مقصد', speaker: 'گویندهٔ فایل',
-    liveMode: 'حالت ترجمهٔ زنده', modeDub: 'دوبلهٔ زنده', modeSubtitles: 'صدای اصلی + زیرنویس شناور',
+    outputMixer: 'خروجی دلخواه من', outputMixerHint: 'صدا و زیرنویس را آزادانه ترکیب کن',
     floatingSubtitles: 'زیرنویس شناور', floatingHint: 'قابل جابه‌جایی و تغییر اندازه', openSubtitleWindow: 'بازکردن کادر زیرنویس', closeSubtitleWindow: 'بستن کادر زیرنویس',
     subtitleSize: 'اندازهٔ متن', subtitleWidth: 'عرض کادر', subtitleOpacity: 'شفافیت پس‌زمینه', showSourceLine: 'نمایش متن اصلی بالای ترجمه', subtitlePopupBlocked: 'مرورگر بازشدن پنجرهٔ زیرنویس را مسدود کرد.', subtitleWaiting: 'منتظر ترجمه…',
     nativeVoiceHelp: 'فقط برای دوبلهٔ فایل‌های صوتی و ویدئویی.', captureDevice: 'ورودی صدای برنامه',
-    outputDevice: 'خروجی شنیداری', soundMix: 'ترکیب صدا', soundMixHint: 'هر کدام را مستقل بشنو',
-    originalSound: 'صدای اصلی', dubbedSound: 'صدای دوبله', advanced: 'تنظیمات پیشرفته', save: 'ذخیره',
+    outputDevice: 'خروجی شنیداری',
+    originalSound: 'صدای اصلی', dubbedSound: 'صدای دوبله', sourceSubtitles: 'زیرنویس اصلی', translatedSubtitles: 'زیرنویس ترجمه', audioLevels: 'میکس صدا', advanced: 'تنظیمات پیشرفته', save: 'ذخیره',
     proxy: 'پروکسی', saveSettings: 'ذخیرهٔ تنظیمات', saved: 'ذخیره شد.', keySaved: 'کلید امن ذخیره شد.',
     keyExists: 'کلید API تنظیم شده است', keyMissing: 'کلید API را وارد کنید', groqKeyMissing: 'برای پردازش فایل، Groq API Key را در تنظیمات پیشرفته وارد کنید.',
     mixerOpened: 'میکسر ویندوز باز شد؛ مسیر AMM را طبق آموزش تنظیم کن.', requestFailed: 'درخواست انجام نشد',
@@ -97,12 +97,12 @@ const messages = {
     setupHelpLinux: 'On Linux, select the relevant PipeWire/PulseAudio monitor source. Media Studio and the extension need no virtual route.',
     openWindowsMixer: 'Open Windows volume mixer', audioGuide: 'Open the visual audio guide',
     targetLanguage: 'Target language', speaker: 'File dubbing voice',
-    liveMode: 'Live translation mode', modeDub: 'Live dubbing', modeSubtitles: 'Original audio + floating subtitles',
+    outputMixer: 'My output mix', outputMixerHint: 'Combine audio and subtitles freely',
     floatingSubtitles: 'Floating subtitles', floatingHint: 'Move and resize freely', openSubtitleWindow: 'Open subtitle window', closeSubtitleWindow: 'Close subtitle window',
     subtitleSize: 'Text size', subtitleWidth: 'Card width', subtitleOpacity: 'Background opacity', showSourceLine: 'Show source above translation', subtitlePopupBlocked: 'The browser blocked the subtitle window.', subtitleWaiting: 'Waiting for translation…',
     nativeVoiceHelp: 'Used only for uploaded audio and video files.', captureDevice: 'Application audio input',
-    outputDevice: 'Listening output', soundMix: 'Audio mix', soundMixHint: 'Listen independently',
-    originalSound: 'Original audio', dubbedSound: 'Dubbed audio', advanced: 'Advanced settings', save: 'Save',
+    outputDevice: 'Listening output',
+    originalSound: 'Original audio', dubbedSound: 'Dubbed audio', sourceSubtitles: 'Source subtitles', translatedSubtitles: 'Translated subtitles', audioLevels: 'Audio mix', advanced: 'Advanced settings', save: 'Save',
     proxy: 'Proxy', saveSettings: 'Save settings', saved: 'Saved.', keySaved: 'Key stored securely.',
     keyExists: 'API key is configured', keyMissing: 'Enter an API key', groqKeyMissing: 'Enter a Groq API key in Advanced settings to process files.',
     mixerOpened: 'Windows mixer opened; follow the AMM route in the guide.', requestFailed: 'Request failed',
@@ -162,6 +162,7 @@ function buildSubtitleWindow(target) {
       overflow-y:auto;scrollbar-gutter:stable;backdrop-filter:blur(26px) saturate(155%);-webkit-backdrop-filter:blur(26px) saturate(155%)}
     p{margin:2px 0;text-align:center;unicode-bidi:plaintext;text-wrap:balance;overflow-wrap:anywhere}
     .source{font-size:calc(var(--size,26px)*.65);line-height:1.55;color:rgba(226,232,240,.7)}
+    .source-only .source{font-size:var(--size,26px);font-weight:650;color:#fff}
     .translation{font-size:var(--size,26px);font-weight:680;line-height:1.65;text-shadow:0 2px 14px rgba(0,0,0,.7)}
     [hidden]{display:none}`;
   const card = doc.createElement('main'); card.className = 'card';
@@ -174,9 +175,11 @@ function buildSubtitleWindow(target) {
 }
 
 async function openSubtitleWindow() {
+  if (!$('#sourceSubtitlesEnabled').checked && !$('#translatedSubtitlesEnabled').checked) return;
+  const doubleLine = $('#sourceSubtitlesEnabled').checked && $('#translatedSubtitlesEnabled').checked;
   if (window.pywebview?.api?.show_subtitles) {
     nativeSubtitleOpen = await window.pywebview.api.show_subtitles(
-      Number($('#subtitleWidth').value), $('#subtitleShowSource').checked ? 190 : 145
+      Number($('#subtitleWidth').value), doubleLine ? 190 : 145
     );
     renderSubtitleButton();
     return;
@@ -185,7 +188,7 @@ async function openSubtitleWindow() {
   try {
     if ('documentPictureInPicture' in window) {
       subtitleWindow = await window.documentPictureInPicture.requestWindow({
-        width: Number($('#subtitleWidth').value), height: $('#subtitleShowSource').checked ? 190 : 145
+        width: Number($('#subtitleWidth').value), height: doubleLine ? 190 : 145
       });
     } else {
       subtitleWindow = window.open('', 'lingora-subtitles', `popup,width=${$('#subtitleWidth').value},height=180,resizable=yes`);
@@ -210,13 +213,18 @@ function renderSubtitleButton() {
 function updateSubtitleAppearance(state = null) {
   if (!subtitleNodes) return;
   const settings = bootstrap?.settings || formSettings();
+  const sourceEnabled = $('#sourceSubtitlesEnabled').checked;
+  const translatedEnabled = $('#translatedSubtitlesEnabled').checked;
   subtitleNodes.card.style.setProperty('--size', `${Number($('#subtitleFontSize').value || settings.subtitle_font_size)}px`);
   subtitleNodes.card.style.setProperty('--opacity', String(Number($('#subtitleOpacity').value || settings.subtitle_opacity) / 100));
-  subtitleNodes.source.hidden = !$('#subtitleShowSource').checked;
+  subtitleNodes.card.classList.toggle('source-only', sourceEnabled && !translatedEnabled);
+  subtitleNodes.source.hidden = !sourceEnabled;
+  subtitleNodes.translation.hidden = !translatedEnabled;
   if (state) {
     subtitleNodes.source.textContent = state.source_text || '';
-    subtitleNodes.source.hidden = !$('#subtitleShowSource').checked || !state.source_text;
+    subtitleNodes.source.hidden = !sourceEnabled || !state.source_text;
     subtitleNodes.translation.textContent = state.translated_text || t('subtitleWaiting');
+    subtitleNodes.translation.hidden = !translatedEnabled;
     subtitleNodes.translation.dir = state.translated_dir || 'auto';
     subtitleNodes.source.dir = state.source_dir || 'auto';
   } else if (!subtitleNodes.translation.textContent) subtitleNodes.translation.textContent = t('subtitleWaiting');
@@ -296,15 +304,17 @@ function formSettings() {
   const device = (selector) => selector.value === '' ? null : Number(selector.value);
   return {
     target_language: $('#targetLanguage').value,
-    live_mode: $('#liveMode').value,
     capture_device: device($('#captureDevice')),
     output_device: device($('#outputDevice')),
+    original_audio_enabled: $('#originalAudioEnabled').checked,
+    dub_audio_enabled: $('#dubAudioEnabled').checked,
+    source_subtitles_enabled: $('#sourceSubtitlesEnabled').checked,
+    translated_subtitles_enabled: $('#translatedSubtitlesEnabled').checked,
     original_volume: Number($('#originalVolume').value),
     dub_volume: Number($('#dubVolume').value),
     subtitle_font_size: Number($('#subtitleFontSize').value),
     subtitle_width: Number($('#subtitleWidth').value),
     subtitle_opacity: Number($('#subtitleOpacity').value),
-    subtitle_show_source: $('#subtitleShowSource').checked,
     proxy_url: $('#proxyUrl').value.trim()
   };
 }
@@ -315,16 +325,18 @@ function applySettings(settings) {
   fillSelect($('#captureDevice'), bootstrap.devices.captures, settings.capture_device);
   fillSelect($('#outputDevice'), bootstrap.devices.outputs, settings.output_device);
   fillSelect($('#mediaVoice'), bootstrap.voices, localStorage.getItem('lingora.mediaVoice') || localStorage.getItem('dubira.mediaVoice') || 'Kore', (voice) => voice);
-  $('#liveMode').value = settings.live_mode;
-  $('#subtitleSettings').hidden = settings.live_mode !== 'subtitles';
+  $('#originalAudioEnabled').checked = settings.original_audio_enabled;
+  $('#dubAudioEnabled').checked = settings.dub_audio_enabled;
+  $('#sourceSubtitlesEnabled').checked = settings.source_subtitles_enabled;
+  $('#translatedSubtitlesEnabled').checked = settings.translated_subtitles_enabled;
   $('#subtitleFontSize').value = settings.subtitle_font_size;
   $('#subtitleWidth').value = settings.subtitle_width;
   $('#subtitleOpacity').value = settings.subtitle_opacity;
-  $('#subtitleShowSource').checked = settings.subtitle_show_source;
   $('#proxyUrl').value = settings.proxy_url;
   $('#originalVolume').value = settings.original_volume;
   $('#dubVolume').value = settings.dub_volume;
   updateRangeLabels();
+  updateOutputControls();
   $('#targetCode').textContent = settings.target_language.toUpperCase();
   applyPlatformAudioHelp();
 }
@@ -335,6 +347,18 @@ function updateRangeLabels() {
   $('#subtitleFontSizeValue').textContent = `${$('#subtitleFontSize').value}px`;
   $('#subtitleWidthValue').textContent = `${$('#subtitleWidth').value}px`;
   $('#subtitleOpacityValue').textContent = `${$('#subtitleOpacity').value}%`;
+  updateSubtitleAppearance();
+}
+
+function updateOutputControls() {
+  const originalAudio = $('#originalAudioEnabled').checked;
+  const dubAudio = $('#dubAudioEnabled').checked;
+  const subtitles = $('#sourceSubtitlesEnabled').checked || $('#translatedSubtitlesEnabled').checked;
+  $('#audioLevels').hidden = !originalAudio && !dubAudio;
+  $('#originalVolume').disabled = !originalAudio;
+  $('#dubVolume').disabled = !dubAudio;
+  $('#subtitleSettings').hidden = !subtitles;
+  if (!subtitles && (nativeSubtitleOpen || (subtitleWindow && !subtitleWindow.closed))) closeSubtitleWindow();
   updateSubtitleAppearance();
 }
 
@@ -589,9 +613,6 @@ $('#settingsForm').addEventListener('submit', async (event) => {
     notify(t('saved'), true);
   } catch (error) { notify(error.message); }
 });
-$('#liveMode').addEventListener('change', () => {
-  $('#subtitleSettings').hidden = $('#liveMode').value !== 'subtitles';
-});
 $('#openSubtitleButton').addEventListener('click', async () => {
   if (window.pywebview?.api?.subtitles_are_visible) {
     nativeSubtitleOpen = await window.pywebview.api.subtitles_are_visible();
@@ -629,7 +650,7 @@ $('#startButton').addEventListener('click', async () => {
   try {
     const state = await request('/state');
     if (!state.running) {
-      if ($('#liveMode').value === 'subtitles') await openSubtitleWindow();
+      if ($('#sourceSubtitlesEnabled').checked || $('#translatedSubtitlesEnabled').checked) await openSubtitleWindow();
       const result = await request('/settings', {method: 'POST', body: JSON.stringify(formSettings())});
       bootstrap.settings = result.settings;
     }
@@ -649,7 +670,7 @@ $('#clearTranscript').addEventListener('click', () => {
   $('#translatedText').textContent = t('waitingTranslation'); $('#translatedText').classList.remove('has-text');
 });
 ['originalVolume', 'dubVolume', 'subtitleFontSize', 'subtitleWidth', 'subtitleOpacity'].forEach((id) => $(`#${id}`).addEventListener('input', updateRangeLabels));
-$('#subtitleShowSource').addEventListener('change', updateSubtitleAppearance);
+['originalAudioEnabled', 'dubAudioEnabled', 'sourceSubtitlesEnabled', 'translatedSubtitlesEnabled'].forEach((id) => $(`#${id}`).addEventListener('change', updateOutputControls));
 
 $('#mediaFile').addEventListener('change', (event) => selectMediaFile(event.target.files[0]));
 $('#mediaVoice').addEventListener('change', () => localStorage.setItem('lingora.mediaVoice', $('#mediaVoice').value));

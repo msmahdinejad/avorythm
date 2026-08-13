@@ -91,7 +91,8 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     apiKey: 'test-key',
     config: {
       targetLanguage: 'fa',
-      audioMode: 'dub',
+      originalAudioEnabled: false,
+      dubAudioEnabled: true,
       originalVolume: 0,
       dubVolume: 1,
       autoDuck: true,

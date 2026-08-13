@@ -26,6 +26,7 @@
       p { margin: 5px 0 0; text-align:center; line-height:1.65; font-size:var(--size,24px);
         font-weight:650; text-wrap:balance; unicode-bidi:plaintext; }
       .source { color:rgba(226,232,240,.72); font-size:calc(var(--size,24px) * .68); font-weight:500; }
+      .source-only .source { color:#fff; font-size:var(--size,24px); font-weight:650; }
       .translation { color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.75); }
       [hidden] { display:none !important; }
     </style>
@@ -55,13 +56,17 @@
 
   function render(message) {
     const settings = message.settings || {};
-    host.style.display = message.active && settings.audioMode === 'subtitles' ? 'block' : 'none';
+    const sourceEnabled = Boolean(settings.sourceSubtitlesEnabled);
+    const translatedEnabled = Boolean(settings.translatedSubtitlesEnabled);
+    host.style.display = message.active && (sourceEnabled || translatedEnabled) ? 'block' : 'none';
+    card.classList.toggle('source-only', sourceEnabled && !translatedEnabled);
     card.style.width = `${Math.max(280, Math.min(1200, Number(settings.subtitleWidth) || 680))}px`;
     card.style.setProperty('--size', `${Math.max(14, Math.min(52, Number(settings.subtitleFontSize) || 24))}px`);
     card.style.setProperty('--opacity', String(Math.max(.45, Math.min(.98, Number(settings.subtitleOpacity || 88) / 100))));
     source.textContent = message.sourceText || '';
-    source.hidden = !settings.subtitleShowSource || !source.textContent;
+    source.hidden = !sourceEnabled || !source.textContent;
     translation.textContent = message.translatedText || (settings.locale === 'fa' ? 'منتظر ترجمه…' : 'Waiting for translation…');
+    translation.hidden = !translatedEnabled;
     const nextPosition = settings.subtitlePosition || 'bottom-center';
     if (nextPosition !== lastPosition) { dragged = false; lastPosition = nextPosition; }
     position(nextPosition);

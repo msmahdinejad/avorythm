@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import __version__
 from .audio import DeviceCatalog
 from .config import ConfigStore
 from .constants import RTL_LANGUAGES, SUPPORTED_LANGUAGES, VOICE_NAMES
@@ -51,7 +52,7 @@ def create_app(
 
     app = FastAPI(
         title="Lingora Desktop",
-        version="0.8.1",
+        version=__version__,
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,
@@ -79,7 +80,7 @@ def create_app(
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
-        return {"status": "ok", "app": "Lingora", "version": "0.8.1"}
+        return {"status": "ok", "app": "Lingora", "version": __version__}
 
     @app.get("/api/bootstrap")
     def bootstrap() -> dict[str, object]:

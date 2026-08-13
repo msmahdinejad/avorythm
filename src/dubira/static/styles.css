@@ -126,11 +126,16 @@ select{cursor:pointer}
 [dir=rtl] .input-action input{border-radius:0 8px 8px 0}
 [dir=rtl] .input-action button{border-radius:8px 0 0 8px;border-inline-start:1px solid var(--line)}
 #proxyUrl{direction:ltr}
-.mixer-block,.subtitle-settings{border:1px solid var(--line);border-radius:14px;padding:11px;margin:3px 0 13px;background:rgba(5,9,18,.46)}
-.subtitle-settings{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 12px 30px rgba(49,34,109,.13)}
+.output-mixer{border:1px solid rgba(145,132,255,.3);border-radius:16px;padding:13px;margin:3px 0 13px;background:linear-gradient(145deg,rgba(58,43,122,.16),rgba(5,9,18,.58));box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 34px rgba(39,27,91,.14)}
+.channel-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.channel-option{min-height:42px;display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(7,12,22,.68);color:#aeb7c2;font-size:9px;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.channel-option:has(input:checked){border-color:rgba(130,115,255,.58);background:linear-gradient(135deg,rgba(130,115,255,.2),rgba(69,212,202,.08));color:var(--text)}
+.channel-option input{width:15px;height:15px;flex:0 0 auto;accent-color:var(--accent)}
+.output-section{margin-top:11px;padding-top:10px;border-top:1px solid var(--line-soft)}
+.section-label{display:flex;justify-content:space-between;gap:10px;color:#c5cdd5;font-size:9px}
+.section-label small{color:var(--muted);font-size:8px}
+.subtitle-settings{margin-bottom:0}
 .subtitle-button{min-height:38px;margin-bottom:11px;background:linear-gradient(135deg,rgba(130,115,255,.32),rgba(69,212,202,.14));border:1px solid rgba(157,145,255,.35)}
-.subtitle-source{display:flex;align-items:center;gap:8px;font-size:9px;color:#c6ced8;cursor:pointer}
-.subtitle-source input{width:15px;height:15px;accent-color:var(--accent)}
 .mixer-title{display:flex;justify-content:space-between;margin-bottom:10px}
 .mixer-title small{font-size:8px;color:var(--muted)}
 .range-field{display:block;margin:10px 0}
@@ -138,6 +143,7 @@ select{cursor:pointer}
 .range-field b{font-weight:500}
 .range-field output{color:var(--accent-2);font-family:ui-monospace,monospace}
 .range-field input{height:4px;padding:0;accent-color:var(--accent);cursor:pointer;background:#242d35;border:0}
+.range-field input:disabled{cursor:not-allowed;opacity:.38}
 .advanced summary{font-size:10px;color:#c7cdd2}
 .advanced>.field{padding:0 11px}
 

@@ -56,6 +56,19 @@ class ConfigStore:
                 data = json.loads(settings_path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 data = {}
+        if "live_mode" in data and "original_audio_enabled" not in data:
+            mode = data.pop("live_mode")
+            if mode == "subtitles":
+                # The legacy subtitle preset always monitored original audio at full volume.
+                data["original_volume"] = 1.0
+            data["original_audio_enabled"] = mode == "subtitles" or (
+                mode == "dub" and float(data.get("original_volume", 0)) > 0
+            )
+            data["dub_audio_enabled"] = mode != "subtitles"
+            data["source_subtitles_enabled"] = mode == "subtitles" and bool(
+                data.pop("subtitle_show_source", False)
+            )
+            data["translated_subtitles_enabled"] = mode == "subtitles"
         if proxy := os.getenv("PROXY_URL"):
             data.setdefault("proxy_url", proxy)
         return Settings.model_validate(data)

@@ -41,8 +41,8 @@ function elapsed() {
 function applyVolumes() {
   if (!context || !sourceGain || !dubGain) return;
   const now = context.currentTime;
-  sourceGain.gain.setTargetAtTime(audioChannelVolume(config.audioMode, 'original', config), now, 0.02);
-  dubGain.gain.setTargetAtTime(audioChannelVolume(config.audioMode, 'dub', config), now, 0.02);
+  sourceGain.gain.setTargetAtTime(audioChannelVolume('original', config), now, 0.02);
+  dubGain.gain.setTargetAtTime(audioChannelVolume('dub', config), now, 0.02);
 }
 
 class PcmWriter {
@@ -152,7 +152,7 @@ function playDubbed(pcm) {
   const duration = samples.length / 24000;
   nextDubTime = begins + duration;
   recorder?.dubbed.appendAt(pcm, begins - contextStartedAt);
-  if (config.audioMode === 'original' || config.audioMode === 'subtitles') return;
+  if (!config.dubAudioEnabled) return;
 
   const buffer = context.createBuffer(1, samples.length, 24000);
   const channel = buffer.getChannelData(0);
@@ -160,8 +160,8 @@ function playDubbed(pcm) {
   const player = context.createBufferSource();
   player.buffer = buffer;
   player.connect(dubGain);
-  if (config.audioMode === 'mix' && config.autoDuck) {
-    const base = audioChannelVolume('mix', 'original', config);
+  if (config.originalAudioEnabled && config.autoDuck) {
+    const base = audioChannelVolume('original', config);
     sourceGain.gain.cancelScheduledValues(begins);
     sourceGain.gain.setTargetAtTime(base * 0.12, begins, 0.025);
     sourceGain.gain.setTargetAtTime(base, nextDubTime, 0.08);

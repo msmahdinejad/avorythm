@@ -9,22 +9,41 @@ export const LANGUAGES = [
 export const DEFAULT_SETTINGS = Object.freeze({
   locale: 'fa',
   targetLanguage: 'fa',
-  audioMode: 'dub',
-  originalVolume: 0,
+  originalAudioEnabled: false,
+  dubAudioEnabled: true,
+  sourceSubtitlesEnabled: false,
+  translatedSubtitlesEnabled: false,
+  originalVolume: 1,
   dubVolume: 1,
   autoDuck: true,
   recording: false,
   subtitlePosition: 'bottom-center',
   subtitleFontSize: 24,
   subtitleWidth: 680,
-  subtitleOpacity: 88,
-  subtitleShowSource: false
+  subtitleOpacity: 88
 });
 
-export function audioChannelVolume(mode, channel, settings) {
-  if (mode === 'dub') return channel === 'dub' ? 1 : 0;
-  if (mode === 'original' || mode === 'subtitles') return channel === 'original' ? 1 : 0;
-  return Number(channel === 'original' ? settings.originalVolume : settings.dubVolume);
+export function normalizeSettings(input = {}) {
+  const settings = {...DEFAULT_SETTINGS, ...input};
+  if ('audioMode' in input) {
+    if (input.audioMode === 'subtitles') settings.originalVolume = 1;
+    if (!('originalAudioEnabled' in input)) settings.originalAudioEnabled = ['original', 'subtitles', 'mix'].includes(input.audioMode);
+    if (!('dubAudioEnabled' in input)) settings.dubAudioEnabled = ['dub', 'mix'].includes(input.audioMode);
+    if (!('sourceSubtitlesEnabled' in input)) settings.sourceSubtitlesEnabled = input.audioMode === 'subtitles' && Boolean(input.subtitleShowSource);
+    if (!('translatedSubtitlesEnabled' in input)) settings.translatedSubtitlesEnabled = input.audioMode === 'subtitles';
+  }
+  delete settings.audioMode;
+  delete settings.subtitleShowSource;
+  return settings;
+}
+
+export function subtitlesEnabled(settings) {
+  return Boolean(settings.sourceSubtitlesEnabled || settings.translatedSubtitlesEnabled);
+}
+
+export function audioChannelVolume(channel, settings) {
+  const enabled = channel === 'original' ? settings.originalAudioEnabled : settings.dubAudioEnabled;
+  return enabled ? Number(channel === 'original' ? settings.originalVolume : settings.dubVolume) : 0;
 }
 
 export function liveUrl(apiKey) {

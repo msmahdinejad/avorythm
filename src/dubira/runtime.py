@@ -16,7 +16,7 @@ from .transcripts import TranscriptTracker
 class DubRuntime:
     """Coordinates desktop capture, translation, playback, transcripts, and recording."""
 
-    RESTART_FIELDS = {"target_language", "capture_device", "output_device", "live_mode"}
+    RESTART_FIELDS = {"target_language", "capture_device", "output_device"}
 
     def __init__(self, store: ConfigStore, recordings: Path) -> None:
         self.store = store
@@ -276,12 +276,10 @@ class DubRuntime:
                     mix_pcm(
                         source,
                         translation,
-                        (
-                            1.0
-                            if self.settings.live_mode == "subtitles"
-                            else self.settings.original_volume
-                        ),
-                        0.0 if self.settings.live_mode == "subtitles" else self.settings.dub_volume,
+                        self.settings.original_volume
+                        if self.settings.original_audio_enabled
+                        else 0.0,
+                        self.settings.dub_volume if self.settings.dub_audio_enabled else 0.0,
                     )
                 )
             finally:

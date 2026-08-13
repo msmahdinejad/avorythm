@@ -10,15 +10,17 @@ from .constants import SUPPORTED_LANGUAGES
 
 class Settings(BaseModel):
     target_language: str = "fa"
-    live_mode: Literal["dub", "subtitles"] = "dub"
     capture_device: int | None = None
     output_device: int | None = None
-    original_volume: float = Field(default=0.0, ge=0.0, le=1.5)
+    original_audio_enabled: bool = False
+    dub_audio_enabled: bool = True
+    source_subtitles_enabled: bool = False
+    translated_subtitles_enabled: bool = False
+    original_volume: float = Field(default=1.0, ge=0.0, le=1.5)
     dub_volume: float = Field(default=1.0, ge=0.0, le=1.5)
     subtitle_font_size: int = Field(default=26, ge=14, le=52)
     subtitle_width: int = Field(default=720, ge=320, le=1200)
     subtitle_opacity: int = Field(default=88, ge=45, le=98)
-    subtitle_show_source: bool = False
     proxy_url: str = ""
 
     @field_validator("target_language")

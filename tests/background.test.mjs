@@ -65,14 +65,20 @@ test('keeps the key session-only and starts tab capture without the desktop app'
 
   let response = await message({type: 'bootstrap'});
   assert.equal(response.data.api_key_set, false);
-  assert.equal(local.settings.audioMode, 'dub');
+  assert.equal(local.settings.dubAudioEnabled, true);
+  assert.equal(local.settings.originalAudioEnabled, false);
 
   response = await message({type: 'set-key', apiKey: 'test-api-key-123'});
   assert.equal(response.ok, true);
   assert.equal(session.apiKey, 'test-api-key-123');
   assert.equal('apiKey' in local, false);
 
-  const subtitleSettings = {...local.settings, audioMode: 'subtitles'};
+  const subtitleSettings = {
+    ...local.settings,
+    dubAudioEnabled: false,
+    originalAudioEnabled: true,
+    translatedSubtitlesEnabled: true
+  };
   response = await message({type: 'start', config: subtitleSettings});
   assert.equal(response.ok, true);
   assert.equal(capturedTab, 42);
@@ -80,7 +86,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.state.status, 'connecting');
   assert.equal(response.state.active, true);
   assert.equal(injectedTab, 42);
-  assert.equal(overlayMessages.at(-1).message.settings.audioMode, 'subtitles');
+  assert.equal(overlayMessages.at(-1).message.settings.translatedSubtitlesEnabled, true);
 
   response = await message({type: 'clear-key'});
   assert.equal(response.ok, true);

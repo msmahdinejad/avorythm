@@ -21,22 +21,49 @@ def test_settings_are_saved_atomically_without_api_key(tmp_path: Path) -> None:
     assert store.load().proxy_url == "http://127.0.0.1:10808"
 
 
-def test_subtitle_mode_settings_round_trip(tmp_path: Path) -> None:
+def test_output_channel_settings_round_trip(tmp_path: Path) -> None:
     store = ConfigStore(tmp_path)
     settings = Settings(
-        live_mode="subtitles",
+        original_audio_enabled=True,
+        dub_audio_enabled=True,
+        source_subtitles_enabled=True,
+        translated_subtitles_enabled=False,
         subtitle_font_size=34,
         subtitle_width=840,
-        subtitle_show_source=True,
     )
 
     store.save(settings)
 
     loaded = store.load()
-    assert loaded.live_mode == "subtitles"
+    assert loaded.original_audio_enabled is True
+    assert loaded.dub_audio_enabled is True
+    assert loaded.source_subtitles_enabled is True
+    assert loaded.translated_subtitles_enabled is False
     assert loaded.subtitle_font_size == 34
     assert loaded.subtitle_width == 840
-    assert loaded.subtitle_show_source is True
+
+
+def test_legacy_subtitle_mode_migrates_to_independent_channels(tmp_path: Path) -> None:
+    store = ConfigStore(tmp_path)
+    store.path.parent.mkdir(parents=True, exist_ok=True)
+    store.path.write_text(
+        json.dumps(
+            {
+                "live_mode": "subtitles",
+                "subtitle_show_source": True,
+                "original_volume": 0,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = store.load()
+
+    assert loaded.original_audio_enabled is True
+    assert loaded.dub_audio_enabled is False
+    assert loaded.source_subtitles_enabled is True
+    assert loaded.translated_subtitles_enabled is True
+    assert loaded.original_volume == 1
 
 
 def test_api_key_is_delegated_to_os_keyring(

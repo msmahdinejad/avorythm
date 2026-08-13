@@ -8,15 +8,49 @@ import {
   base64ToBytes,
   liveUrl,
   mergeTranscript,
+  normalizeSettings,
   setupMessage,
   srt,
+  subtitlesEnabled,
   wavHeader
 } from '../extension/core.mjs';
 
-test('subtitle mode preserves source audio and mutes generated speech', () => {
-  const settings = {originalVolume: 0.2, dubVolume: 1};
-  assert.equal(audioChannelVolume('subtitles', 'original', settings), 1);
-  assert.equal(audioChannelVolume('subtitles', 'dub', settings), 0);
+test('mixes four output channels independently', () => {
+  const settings = normalizeSettings({
+    originalAudioEnabled: true,
+    dubAudioEnabled: false,
+    sourceSubtitlesEnabled: true,
+    translatedSubtitlesEnabled: false,
+    originalVolume: 0.35,
+    dubVolume: 1
+  });
+  assert.equal(audioChannelVolume('original', settings), 0.35);
+  assert.equal(audioChannelVolume('dub', settings), 0);
+  assert.equal(subtitlesEnabled(settings), true);
+});
+
+test('migrates legacy subtitle preset without muting its original audio', () => {
+  assert.deepEqual(
+    normalizeSettings({audioMode: 'subtitles', subtitleShowSource: true, originalVolume: 0}),
+    {
+      ...normalizeSettings(),
+      originalAudioEnabled: true,
+      dubAudioEnabled: false,
+      sourceSubtitlesEnabled: true,
+      translatedSubtitlesEnabled: true
+    }
+  );
+});
+
+test('app and extension expose the same four output controls', () => {
+  const app = readFileSync(new URL('../src/dubira/static/index.html', import.meta.url), 'utf8');
+  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  for (const id of ['originalAudioEnabled', 'dubAudioEnabled', 'sourceSubtitlesEnabled', 'translatedSubtitlesEnabled']) {
+    assert.match(app, new RegExp(`id="${id}"`));
+    assert.match(popup, new RegExp(`id="${id}"`));
+  }
+  assert.doesNotMatch(app, /id="liveMode"/);
+  assert.doesNotMatch(popup, /id="audioMode"/);
 });
 
 test('builds the documented Gemini Live Translate protocol', () => {

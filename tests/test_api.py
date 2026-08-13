@@ -48,6 +48,7 @@ def test_health_and_bootstrap(
     tmp_path: Path,
 ) -> None:
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr("dubira.config.load_dotenv", lambda: False)
     monkeypatch.setattr("dubira.config.keyring.get_password", lambda service, user: None)
 

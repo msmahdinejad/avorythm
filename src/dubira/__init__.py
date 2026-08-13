@@ -1,3 +1,3 @@
 """Lingora implementation package kept at this import path for compatibility."""
 
-__version__ = "0.8.1"
+__version__ = "0.9.0"
