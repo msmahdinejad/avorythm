@@ -4,6 +4,13 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-08-13
+
+### Fixed
+
+- Place Live API transcription options at the WebSocket setup level accepted by the current v1beta endpoint, preventing immediate Gemini close code 1007.
+- Keep the output-download notice hidden until a recorded session actually finishes.
+
 ## [0.7.0] - 2026-08-13
 
 ### Added
@@ -160,7 +167,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/dubira/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/msmahdinejad/dubira/compare/v0.7.1...HEAD
+[0.7.1]: https://github.com/msmahdinejad/dubira/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/msmahdinejad/dubira/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/msmahdinejad/dubira/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/msmahdinejad/dubira/compare/v0.5.0...v0.5.1

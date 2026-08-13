@@ -3,7 +3,7 @@
   "name": "Dubira — Live AI Dubbing",
   "short_name": "Dubira",
   "description": "Translate and dub the current tab live with Gemini, with independent source and dubbed audio controls.",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "minimum_chrome_version": "116",
   "permissions": ["activeTab", "tabCapture", "offscreen", "storage", "downloads"],
   "host_permissions": ["https://generativelanguage.googleapis.com/*"],

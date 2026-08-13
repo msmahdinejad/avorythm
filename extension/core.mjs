@@ -25,13 +25,13 @@ export function setupMessage(targetLanguage) {
       model: `models/${LIVE_MODEL}`,
       generationConfig: {
         responseModalities: ['AUDIO'],
-        inputAudioTranscription: {},
-        outputAudioTranscription: {},
         translationConfig: {
           targetLanguageCode: targetLanguage,
           echoTargetLanguage: false
         }
-      }
+      },
+      inputAudioTranscription: {},
+      outputAudioTranscription: {}
     }
   };
 }

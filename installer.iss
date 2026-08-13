@@ -1,5 +1,5 @@
 #define MyAppName "Dubira"
-#define MyAppVersion "0.7.0"
+#define MyAppVersion "0.7.1"
 #define MyAppPublisher "Mohammad Saleh Mahdinejad"
 #define MyAppURL "https://github.com/msmahdinejad/dubira"
 

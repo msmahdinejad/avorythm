@@ -50,7 +50,7 @@ def create_app(
 
     app = FastAPI(
         title="Dubira Desktop",
-        version="0.7.0",
+        version="0.7.1",
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan,

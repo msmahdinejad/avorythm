@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -16,11 +17,16 @@ test('builds the documented Gemini Live Translate protocol', () => {
   const setup = setupMessage('fa').setup;
   assert.equal(setup.model, 'models/gemini-3.5-live-translate-preview');
   assert.equal(setup.generationConfig.translationConfig.targetLanguageCode, 'fa');
-  assert.deepEqual(setup.generationConfig.inputAudioTranscription, {});
-  assert.deepEqual(setup.generationConfig.outputAudioTranscription, {});
-  assert.equal('inputAudioTranscription' in setup, false);
+  assert.deepEqual(setup.inputAudioTranscription, {});
+  assert.deepEqual(setup.outputAudioTranscription, {});
+  assert.equal('inputAudioTranscription' in setup.generationConfig, false);
   assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
   assert.equal(audioMessage(Uint8Array.from([0, 1, 255])).realtimeInput.audio.data, 'AAH/');
+});
+
+test('hidden popup notices stay hidden', () => {
+  const css = readFileSync(new URL('../extension/popup.css', import.meta.url), 'utf8');
+  assert.match(css, /\[hidden\]\s*\{\s*display:\s*none\s*!important/);
 });
 
 test('merges cumulative and delta transcripts', () => {

@@ -119,4 +119,6 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     type: 'stop'
   }, {}, resolve));
   assert.deepEqual(stopped, {ok: true});
+  assert.equal(reports.some((message) => message.type === 'download'), false);
+  assert.equal(reports.some((message) => message.update?.recordingReady), false);
 });
