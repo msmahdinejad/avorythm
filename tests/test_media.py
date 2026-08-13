@@ -61,6 +61,7 @@ def test_media_tools_find_winget_package_without_alias(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setattr(sys, "platform", "win32")
     executable = (
         tmp_path
         / "Microsoft"
