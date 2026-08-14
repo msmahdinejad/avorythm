@@ -7,7 +7,7 @@ Describe the user-visible outcome and why this is the smallest suitable change.
 - [ ] Python tests pass
 - [ ] Ruff and mypy pass
 - [ ] Extension JavaScript syntax passes
-- [ ] I tested the relevant Windows/browser audio path
+- [ ] I tested the relevant desktop/browser audio path
 - [ ] I added no key, private audio, or generated build
 
 ## Risk

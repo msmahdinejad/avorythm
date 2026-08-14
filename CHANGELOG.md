@@ -7,8 +7,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Added
 
 - Release-ready English and Persian extension metadata, first-capture data consent, and direct project/privacy links.
-- Chrome Web Store listing copy, permission declarations, reviewer instructions, and required promotional assets.
-- Public code-signing policy and a SignPath-ready GitHub Actions signing stage for the Windows installer.
+- Public code-signing policy and a verified Windows release-signing stage.
 
 ### Changed
 
@@ -187,7 +186,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 - Standalone extension authentication, direct Gemini Live connections, and browser-local recording.
 - Four independent WAV/SRT downloads backed by temporary Origin Private File System storage.
-- Chrome Web Store publication checklist and bilingual privacy policy.
+- Bilingual privacy policy.
 
 ### Changed
 

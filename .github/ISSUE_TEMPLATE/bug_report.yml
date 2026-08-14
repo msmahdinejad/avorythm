@@ -10,7 +10,7 @@ body:
     id: version
     attributes:
       label: Lingora version
-      placeholder: 0.1.0
+      placeholder: 1.0.0
     validations:
       required: true
   - type: input
@@ -24,7 +24,7 @@ body:
     id: path
     attributes:
       label: Audio path
-      options: [Browser extension, Desktop WASAPI, Dashboard, Recording]
+      options: [Browser extension, Desktop live audio, Media Studio upload, Installation or update, Other]
     validations:
       required: true
   - type: textarea

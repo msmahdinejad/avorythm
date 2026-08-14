@@ -1,27 +1,24 @@
 # Roadmap
 
-## 0.1 — foundation
+Lingora is developed in public. Priorities are shaped by real-world use, accessibility needs, and community feedback rather than fixed release dates.
 
-- [x] Gemini 3.5 Live Translate streaming
-- [x] Windows WASAPI loopback companion
-- [x] Chrome/Edge MV3 tab capture with dub-only playback
-- [x] Persian/English dashboard and extension UI
-- [x] Independent source/dub volume and automatic ducking
-- [x] Four aligned recording outputs
-- [x] OS keyring, CI, Windows packages, and contributor documentation
-- [x] Independent app and standalone extension runtimes
+## Available today
 
-## Next
+- Live translation and dubbing for desktop audio and browser tabs
+- Independent original audio, dubbed audio, source subtitles, and translated subtitles
+- Movable, resizable floating subtitles
+- Uploaded audio and video processing with a synchronized player and four export files
+- English and Persian interfaces
+- Standalone desktop and browser-extension experiences
+- Secure operating-system key storage in the desktop app and session-only keys in the extension
 
-- [x] Uploaded audio/video processing, synchronized player, and four file outputs
-- [x] Rolling token governor, job recovery, and cancellation
-- [x] Long-session renewal for desktop and extension Live streams
+## Next priorities
 
-- [ ] Authenticated ephemeral-token broker for the public extension
-- [ ] Signed Chrome Web Store and Edge Add-ons packages
-- [ ] Native per-process Windows loopback capture without a virtual device
-- [ ] Signed installer and automatic update channel
-- [ ] Speaker-aware transcript timeline and searchable recording library
-- [ ] macOS companion after an equivalent secure capture design is validated
+- Easier extension distribution and automatic updates
+- Signed desktop releases and a reliable update channel
+- Native per-application Windows audio capture without a virtual audio device
+- Speaker-aware transcripts and a searchable recording library
+- Better accessibility, keyboard navigation, and additional interface languages
+- Microsoft Edge Add-ons distribution
 
-Items are prioritized through issues and real user feedback. A checked roadmap item is not a promise of a release date.
+Feature requests and bug reports are welcome in [GitHub Issues](https://github.com/msmahdinejad/lingora/issues).

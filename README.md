@@ -7,8 +7,8 @@
 <p align="center"><strong>Hear every voice—or just read it—in your language.</strong></p>
 
 <p align="center">
-  Translate desktop and browser audio live, show an always-on-top translated subtitle card,
-  or turn uploaded audio/video into a synchronized dub and four downloadable outputs.
+  Live translation and dubbing for desktop and browser audio, plus synchronized processing
+  for uploaded audio and video.
 </p>
 
 <p align="center">
@@ -22,102 +22,70 @@
 <p align="center">
   <a href="README.fa.md">فارسی</a> ·
   <a href="docs/INSTALLATION.md">Installation</a> ·
-  <a href="docs/CHROME_WEB_STORE.md">Chrome Web Store</a> ·
   <a href="PRIVACY.md">Privacy</a> ·
-  <a href="CODE_SIGNING_POLICY.md">Code signing policy</a> ·
-  <a href="docs/SIGNPATH_APPLICATION.md">SignPath application</a>
+  <a href="SUPPORT.md">Support</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-![The real Lingora desktop workspace in English](docs/store-assets/en/app-live-workspace.jpg)
+![Lingora desktop app](docs/images/app-en.jpg)
 
-## What ships
+## Choose how you use Lingora
 
-- **Native desktop app for Windows, macOS, and Linux:** a standalone pywebview window—Chrome is not opened or required—with live translation, live dubbing, recording, and Media Studio.
-- **Standalone Chrome/Edge extension:** captures only the tab explicitly started by the user and needs no desktop app, Python, FFmpeg, localhost, or virtual audio device.
-- **Floating subtitles:** retain original audio while translation appears in a frosted-glass card. Adjust text size, width, opacity, and source-text visibility. The native app card is resizable, draggable, and always on top; the extension card lives in the selected page and can be dragged or resized.
+| Use case | What you need | Virtual audio device |
+|---|---|---|
+| Translate a Chrome or Edge tab | Standalone extension | No |
+| Process an audio or video file | Desktop app and FFmpeg | No |
+| Translate VLC, a course player, or another desktop app live | Desktop app and a loopback/monitor input | Usually |
 
-Both products are independent, bilingual (English/Persian), use Vazirmatn, and render RTL/LTR content with automatic direction.
+The desktop app and browser extension are independent. The extension does not require the app,
+Python, FFmpeg, localhost, or a virtual audio cable.
 
-## Custom live output
+## Features
 
-The desktop app and extension expose the same four independent channels: original audio,
-translated audio, source subtitles, and translated subtitles. Enable any combination. When
-both audio channels are active, their volume sliders create the exact mix you want; subtitle
-appearance stays available whenever either subtitle channel is active.
+- Live translated speech with source and translated captions.
+- Four independent output channels: original audio, dubbed audio, source subtitles, and translated subtitles.
+- A movable, resizable frosted-glass subtitle card with adjustable size, width, and opacity.
+- Optional recording of `original.wav`, `dubbed.wav`, `source.srt`, and `translated.srt`.
+- Audio/video upload with timestamped transcription, translation, generated speech, and synchronized playback.
+- A ZIP download containing all generated outputs.
+- Persian and English interfaces with automatic RTL/LTR text direction.
+- Native desktop windows for Windows, macOS, and Linux.
 
-The subtitle window uses Document Picture-in-Picture in compatible browsers and a separate popup fallback. Native builds use a dedicated pywebview window with the operating system's always-on-top behavior.
+![Lingora standalone browser extension](docs/images/extension-en.jpg)
 
-## Uploaded-media pipeline
+## Quick start
 
-```text
-Audio/video
-  → local FFmpeg extraction and timeline
-  → Groq Whisper Large v3 transcription with timestamps
-  → strongest available Gemini/Gemma free-tier text model
-  → Gemini 3.1 Flash Live translated speech
-  → local alignment, movie-sized captions, synchronized player, ZIP
-```
+### Desktop app
 
-Every successful job provides `original.wav`, `source.srt`, `dubbed.wav`, `translated.srt`, and `all-outputs.zip`. The player uses the source media as its master clock, corrects dub drift above 120 ms, truly mutes source audio when its switch is off, and can show either or both subtitle tracks.
+Download the build for your operating system from [Releases](https://github.com/msmahdinejad/lingora/releases).
+Windows users can install `Lingora-Setup-x64.exe`; macOS and Linux users can extract the matching
+ZIP. Keep FFmpeg enabled during Windows setup if you want to process uploaded media.
 
-The default **Precise** mode uses `whisper-large-v3` and verifies generated-speech transcripts against each translated segment. **Fast** uses `whisper-large-v3-turbo`. Long media is sent as small 16 kHz mono FLAC chunks with timestamp overlap and deduplication.
+The app needs a Gemini API key. Media Studio additionally needs a Groq API key for Whisper.
+Keys are stored in the operating-system keyring.
 
-### Translation model pool
+### Browser extension
 
-Lingora falls back strongest-first when a free-tier text model is rate-limited or unavailable:
+Use the Chrome Web Store version when it is available. For a manual installation from a release:
 
-`gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3-flash-preview` → `gemini-2.5-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemini-2.5-flash-lite` → `gemma-4-31b-it` → `gemma-4-26b-a4b-it`
-
-Only text-output models with an applicable free quota are candidates. A local governor reserves at most 15,000 estimated Gemini tokens per rolling 60 seconds, below the requested 20,000 TPM ceiling. AI Studio remains authoritative because quotas vary by account and model.
-
-## Quick install
-
-### Windows
-
-1. Download `Lingora-Setup-x64.exe` from [Releases](https://github.com/msmahdinejad/lingora/releases).
-2. Keep **Install FFmpeg** enabled for uploaded-media processing.
-3. Save a [Gemini API key](https://aistudio.google.com/app/apikey); save a [Groq API key](https://console.groq.com/keys) for Media Studio.
-4. Leave the proxy at `http://127.0.0.1:10808` when your connection needs it.
-
-Legacy `0.x` Windows installers are unsigned and can trigger SmartScreen. Starting with the public `1.x` workflow, no Windows installer is published unless SignPath returns a valid Authenticode-signed artifact. A valid certificate plus publisher reputation is what progressively removes SmartScreen warnings.
-
-## Code signing policy
-
-Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
-
-The SignPath integration is prepared but activates only after Foundation approval and provisioning. Once active, GitHub Actions publishes the Windows installer only after origin verification, manual approval, and local Authenticode validation. Until then, release notes explicitly identify unsigned installers. See the [complete code signing policy](CODE_SIGNING_POLICY.md).
-
-### macOS and Linux
-
-Download the matching `Lingora-Darwin-*.zip` or `Lingora-Linux-*.zip` from Releases and launch Lingora. On Linux, the release uses Qt; on macOS it uses WKWebView. FFmpeg must be available on `PATH` for Media Studio.
-
-Live desktop capture is platform-specific:
-
-- **Windows:** route the source app to AMM/VB-Cable and select its loopback input in Lingora.
-- **macOS:** select a loopback input such as BlackHole. macOS does not expose system-output capture as a normal input by default.
-- **Linux:** select the PipeWire/PulseAudio monitor source for the output you want to translate.
-
-Uploaded files do not need virtual audio routing on any platform.
-
-### Chrome/Edge extension
-
-1. Download and extract `Lingora-Extension.zip`.
+1. Extract `Lingora-Extension.zip` into a permanent folder.
 2. Open `chrome://extensions` or `edge://extensions`.
-3. Enable **Developer mode**, choose **Load unpacked**, and select the extracted folder.
-4. Pin Lingora, enter the Gemini key for this browser session, open a normal web page with media, and press Start.
+3. Enable **Developer mode**, select **Load unpacked**, and choose the extracted folder.
+4. Pin Lingora, enter your Gemini key for the current browser session, and start translation on a normal media tab.
 
-Chrome blocks injection into internal pages such as `chrome://`. One-click consumer installation is only available after a signed Chrome Web Store publication; GitHub cannot silently install an unpacked extension.
+The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
 
-## Desktop audio routing (Windows)
+See the [complete installation and audio-routing guide](docs/INSTALLATION.md) for Windows AMM,
+macOS loopback, Linux monitor sources, proxy setup, and troubleshooting.
 
-Only live capture from another desktop program needs this route:
+## Data processing
 
-1. Source browser/app **Output** → `Speakers (AMM Virtual Audio Device)`.
-2. Lingora **Input** → `Microphone (AMM Virtual Audio Device)`.
-3. Lingora **Output** → `Default` or physical headphones/speakers.
-4. Never route Lingora output back into AMM; that creates feedback.
+- Live desktop and selected-tab audio is sent to Google Gemini only after the user starts translation.
+- Uploaded media stays on the computer; extracted audio chunks go to Groq Whisper, while transcript text and generated speech requests go to Gemini.
+- Preferences and generated files remain local. Lingora has no analytics, advertising, or developer telemetry.
+- Recording is optional and disabled by default.
 
-See the [illustrated audio guide](docs/INSTALLATION.md#audio-routing-for-the-windows-app). The extension handles tab audio itself and does not need this setup.
+Read the bilingual [privacy policy](PRIVACY.md) before processing private or copyrighted media.
 
 ## Development
 
@@ -141,17 +109,21 @@ python scripts/build.py
 .\scripts\package-extension.ps1
 ```
 
-CI runs tests, lint, type-checking, and extension validation on Windows, macOS, and Linux. Tagged releases build all three desktop artifacts plus the standalone extension and Windows installer.
+Contributor documentation: [architecture](ARCHITECTURE.md), [contributing guide](CONTRIBUTING.md),
+[security policy](SECURITY.md), [support](SUPPORT.md), and [changelog](CHANGELOG.md).
 
-## Privacy and limits
+## Release trust
 
-- The app binds only to `127.0.0.1`; uploads and generated files remain in the local Lingora data directory.
-- Uploaded audio chunks go to Groq for transcription; text goes to Gemini for translation and speech generation.
-- Live desktop/tab audio goes to Gemini only after an explicit Start action.
-- Extension API keys stay in `chrome.storage.session` and disappear when the browser session ends. For each connection, the extension exchanges the user's key directly with Google for a constrained, single-use ephemeral Live API token; no maintainer credential is embedded.
-- Preview model accuracy, availability, voice stability, latency, and quota can change upstream.
+Verify downloads against `SHA256SUMS.txt` from the same GitHub Release. Windows signing and
+verification rules are documented in the [code-signing policy](CODE_SIGNING_POLICY.md).
 
-See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md), the [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md), and its [Persian companion](docs/CHROME_WEB_STORE.fa.md).
+Free code signing provided by [SignPath.io](https://signpath.io/), certificate by
+[SignPath Foundation](https://signpath.org/).
+
+## Project status
+
+Lingora is under active development and uses preview AI services. Accuracy, voices, latency,
+availability, and upstream quotas can change. Review important translations before relying on them.
 
 ## License
 

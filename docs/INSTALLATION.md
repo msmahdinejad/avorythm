@@ -14,7 +14,7 @@ Live translation requires a Gemini key and access to `gemini-3.5-live-translate-
 
 ## Windows app
 
-The normal launcher opens Lingora in its own native window. Chrome is neither opened nor required; browser mode is available only to developers through the explicit `--browser` flag.
+The normal launcher opens Lingora in its own native window. Chrome is neither opened nor required.
 
 1. Download `Lingora-Setup-x64.exe` from Releases.
 2. Install without administrator privileges.
@@ -22,7 +22,7 @@ The normal launcher opens Lingora in its own native window. Chrome is neither op
 4. Launch Lingora and open **Advanced settings**.
 5. Save both the Gemini and Groq API keys. Set `http://127.0.0.1:10808` when that proxy is required.
 
-Both keys are stored separately in the operating-system keyring, not `settings.json`. A developer can copy `.env.example` to `.env`; `.env` is ignored by Git.
+Both keys are stored separately in the operating-system keyring, not `settings.json`.
 
 If WinGet was unavailable during setup, install FFmpeg manually:
 
@@ -75,7 +75,7 @@ If the proxy listens on `127.0.0.1:10808`, enable it for Chrome/Edge in the prox
 
 [Chrome on Windows and macOS only allows direct end-user installation for extensions hosted and signed by the Chrome Web Store](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). GitHub cannot silently install a local CRX or unpacked folder. A real **Add to Chrome** button requires publishing Lingora in the Chrome Web Store; Edge needs a separate Microsoft Edge Add-ons listing. Enterprise policy deployment is a separate administrator workflow.
 
-See [CHROME_WEB_STORE.md](CHROME_WEB_STORE.md) and [PRIVACY.md](../PRIVACY.md) before submission.
+Read the [privacy policy](../PRIVACY.md) to understand how browser audio and credentials are handled.
 
 ## Live desktop audio: exact AMM route
 

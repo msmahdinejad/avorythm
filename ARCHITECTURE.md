@@ -91,6 +91,5 @@ The source file never leaves localhost. Only extracted audio chunks go to Groq; 
 - Gemini file processing reserves no more than 15,000 estimated tokens per rolling 60 seconds.
 - Extension source injection is temporary, user-initiated, and limited to the active tab.
 - The extension has no localhost permission, arbitrary-site host permission, remote executable code, analytics, or advertising.
-- A public Web Store deployment should mint short-lived Google ephemeral Live API tokens from a minimal HTTPS service instead of distributing long-lived credentials.
 
 No JavaScript framework, bundler, database, task broker, or cloud storage is required.

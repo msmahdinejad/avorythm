@@ -16,7 +16,7 @@
 
 ## اپ ویندوز
 
-اجرای عادی Lingora را در پنجرهٔ مستقل خود برنامه باز می‌کند؛ Chrome نه باز می‌شود و نه لازم است. حالت مرورگر فقط برای توسعه‌دهنده و با آرگومان صریح `--browser` در دسترس است.
+اجرای عادی Lingora را در پنجرهٔ مستقل خود برنامه باز می‌کند؛ Chrome نه باز می‌شود و نه لازم است.
 
 1. `Lingora-Setup-x64.exe` را از Releases دانلود کن.
 2. بدون Administrator نصب کن.
@@ -24,7 +24,7 @@
 4. Lingora را باز و وارد **تنظیمات پیشرفته** شو.
 5. هر دو کلید Gemini و Groq را ذخیره و در صورت نیاز Proxy را روی `http://127.0.0.1:10808` بگذار.
 
-کلیدها جداگانه در keyring سیستم‌عامل هستند و در `settings.json` نوشته نمی‌شوند. توسعه‌دهنده می‌تواند `.env.example` را به `.env` کپی کند؛ این فایل وارد Git نمی‌شود.
+کلیدها جداگانه در فضای امن سیستم‌عامل نگه‌داری می‌شوند و در `settings.json` نوشته نمی‌شوند.
 
 اگر WinGet هنگام Setup موجود نبود:
 
@@ -77,7 +77,7 @@ winget install --id Gyan.FFmpeg --exact --scope user
 
 [Chrome در Windows/macOS نصب مستقیم را فقط برای افزونهٔ میزبانی و امضاشده در Chrome Web Store مجاز می‌داند](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). GitHub نمی‌تواند CRX یا پوشهٔ unpacked را مخفیانه نصب کند. دکمهٔ واقعی **Add to Chrome** بعد از انتشار در Store ممکن است؛ Edge فهرست جداگانه می‌خواهد.
 
-پیش از ارسال، [راهنمای فارسی Chrome Web Store](CHROME_WEB_STORE.fa.md) و [PRIVACY.md](../PRIVACY.md) را ببین.
+برای آشنایی با شیوهٔ پردازش صدای مرورگر و نگه‌داری کلیدها، [سیاست حریم خصوصی دوزبانه](../PRIVACY.md) را بخوان.
 
 ## مسیر دقیق AMM برای دوبلهٔ زندهٔ دسکتاپ
 

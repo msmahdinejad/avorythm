@@ -8,7 +8,7 @@ Lingora processes only content the user explicitly selects: a started browser ta
 
 - **Live audio and transcripts:** sent from the selected product to Google Gemini solely to provide translation and dubbing. They are not sent to the Lingora developer.
 - **Uploaded media:** remains on the user's computer. The Windows app extracts small audio chunks locally with FFmpeg and sends them to Groq Whisper for transcription. Transcript text is sent to Google Gemini for translation, and translated text is sent to Gemini Live for speech generation. Jobs, source files, WAV/SRT/VTT outputs, and ZIP archives remain in the local Lingora data directory until the user deletes them.
-- **Desktop API keys:** Gemini and Groq keys are stored separately in the operating-system keyring. Developers may opt into a private, Git-ignored `.env` file.
+- **Desktop API keys:** Gemini and Groq keys are stored separately in the operating-system keyring.
 - **Extension Gemini API key:** supplied by the user, stored only in Chrome session storage, not synced, and cleared when the browser fully exits. For each user-requested connection it is sent only to Google's token endpoint, which returns a constrained, single-use ephemeral token for the Gemini Live WebSocket.
 - **Preferences:** language, file voice, audio mix, floating-caption size/position/opacity, locale, recording choice, devices, and proxy settings are stored locally. The extension's Live Translate voice remains automatic.
 - **Recordings:** the desktop app writes local files. The extension temporarily writes PCM to the browser's Origin Private File System, exports two WAV and two SRT files to Downloads, then removes the temporary audio files.
@@ -28,7 +28,7 @@ Lingora فقط محتوایی را پردازش می‌کند که کاربر ص
 
 - **صدا و متن زنده:** فقط برای ترجمه و دوبله از محصول انتخاب‌شده به Google Gemini فرستاده می‌شوند و برای توسعه‌دهندهٔ Lingora ارسال نمی‌شوند.
 - **رسانهٔ آپلودشده:** روی رایانهٔ کاربر می‌ماند. اپ قطعه‌های کوچک صوتی را با FFmpeg محلی استخراج و برای تبدیل به متن به Groq Whisper می‌فرستد؛ متن برای ترجمه و ساخت صدا به Gemini می‌رود. Job، فایل منبع و همهٔ خروجی‌ها تا زمان حذف کاربر محلی می‌مانند.
-- **کلیدهای API اپ:** کلیدهای Gemini و Groq جداگانه در keyring سیستم‌عامل ذخیره می‌شوند. توسعه‌دهنده می‌تواند از فایل خصوصی و Git-ignored `.env` استفاده کند.
+- **کلیدهای API اپ:** کلیدهای Gemini و Groq جداگانه در فضای امن سیستم‌عامل ذخیره می‌شوند.
 - **Gemini API Key اکستنشن:** توسط کاربر وارد می‌شود، فقط در Session Storage کروم می‌ماند، Sync نمی‌شود و با بسته‌شدن کامل مرورگر پاک می‌شود. برای هر اتصال درخواستی فقط به Endpoint توکن Google می‌رود و Google یک توکن محدود، کوتاه‌عمر و یک‌بارمصرف برای WebSocket جمنای برمی‌گرداند.
 - **تنظیمات:** زبان، گویندهٔ فایل، میکس صدا، زبان رابط، ضبط، دستگاه‌ها و پروکسی فقط محلی هستند. صدای Live Translate اکستنشن خودکار است.
 - **ضبط:** اپ فایل محلی می‌نویسد. اکستنشن PCM را موقتاً در OPFS نگه می‌دارد، دو WAV و دو SRT را در Downloads خروجی می‌دهد و سپس فایل صوتی موقت را حذف می‌کند.
