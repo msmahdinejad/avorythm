@@ -1,5 +1,5 @@
 {
   "appName": {"message": "Lingora — ترجمهٔ زنده"},
-  "appDescription": {"message": "صدای همین تب را با Gemini زنده ترجمه، دوبله یا زیرنویس کن."},
+  "appDescription": {"message": "صدای همین تب را با Gemini زنده ترجمه کن، دوبله‌اش را بشنو یا زیرنویس را دنبال کن."},
   "actionTitle": {"message": "بازکردن ترجمهٔ زندهٔ Lingora"}
 }

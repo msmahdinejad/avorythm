@@ -28,7 +28,7 @@
   <a href="docs/SIGNPATH_APPLICATION.md">SignPath application</a>
 </p>
 
-![Lingora English dashboard](docs/images/dashboard-en.png)
+![The real Lingora desktop workspace in English](docs/store-assets/en/app-live-workspace.jpg)
 
 ## What ships
 
@@ -151,7 +151,7 @@ CI runs tests, lint, type-checking, and extension validation on Windows, macOS, 
 - Extension API keys stay in `chrome.storage.session` and disappear when the browser session ends. For each connection, the extension exchanges the user's key directly with Google for a constrained, single-use ephemeral Live API token; no maintainer credential is embedded.
 - Preview model accuracy, availability, voice stability, latency, and quota can change upstream.
 
-See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md).
+See [PRIVACY.md](PRIVACY.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), [ARCHITECTURE.md](ARCHITECTURE.md), the [Chrome Web Store checklist](docs/CHROME_WEB_STORE.md), and its [Persian companion](docs/CHROME_WEB_STORE.fa.md).
 
 ## License
 

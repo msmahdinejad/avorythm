@@ -2,6 +2,8 @@
 
 This worksheet contains ready-to-paste application values and the post-approval configuration for Lingora.
 
+For a complete natural-language Persian companion, see [SIGNPATH_APPLICATION.fa.md](SIGNPATH_APPLICATION.fa.md).
+
 ## Application values
 
 | Field | Value |

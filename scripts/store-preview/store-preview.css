@@ -1,0 +1,20 @@
+html {
+  width: 100%;
+  min-height: 800px;
+  display: flex;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(87, 229, 224, .12), transparent 34%),
+    radial-gradient(circle at 80% 30%, rgba(139, 92, 246, .18), transparent 38%),
+    #050713;
+}
+
+body {
+  zoom: 1.5;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .48);
+}
+
+@media (max-width: 800px) {
+  html { min-height: 400px; overflow: hidden; }
+  body { zoom: 1; }
+}

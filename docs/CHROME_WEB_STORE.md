@@ -51,33 +51,46 @@ Capture starts only after you consent and press Start. Audio and transcripts fro
 The extension is standalone: the Lingora desktop app, Python, FFmpeg, localhost, and virtual audio devices are not required. A user-provided Gemini credential is kept only for the browser session. Lingora exchanges it directly with Google for a short-lived, single-use Live API token and never embeds a developer API key.
 ```
 
-## Store listing — فارسی
+## Store listing — فارسی (localized listing)
 
 - **Name:** `Lingora — ترجمهٔ زنده`
-- **Summary:** `صدای همین تب را با Gemini زنده ترجمه، دوبله یا زیرنویس کن.`
+- **Summary:** `صدای همین تب را با Gemini زنده ترجمه کن؛ دوبله بشنو یا زیرنویس ببین.`
+- **Category:** `Tools`
+- **Listing language:** `Persian — فارسی`
+- **Homepage URL:** `https://github.com/msmahdinejad/lingora`
+- **Support URL:** `https://github.com/msmahdinejad/lingora/issues`
+- **Privacy Policy URL:** `https://github.com/msmahdinejad/lingora/blob/main/PRIVACY.md`
+- **Mature content:** `No`
 
 Detailed description:
 
 ```text
-Lingora صدای همان تبی را که کاربر صریحاً انتخاب می‌کند ترجمه می‌کند. صدای دوبله را بشنوید، زیرنویس اصلی و ترجمه را در کادر شناور ببینید و صدای اصلی و دوبله را مستقل ترکیب کنید. ضبط اختیاری دو فایل WAV و دو فایل SRT را روی دستگاه شما ذخیره می‌کند.
+با Lingora صدای همان تبی را که خودت انتخاب کرده‌ای، همان لحظه ترجمه کن. می‌توانی دوبله را بشنوی، متن اصلی و ترجمه را داخل کادر شناور ببینی و میزان صدای اصلی و دوبله را جداگانه تنظیم کنی. اگر ذخیرهٔ خروجی را روشن کنی، صدای اصلی، صدای دوبله و هر دو فایل زیرنویس روی دستگاهت ذخیره می‌شوند.
 
-Capture فقط پس از تأیید کاربر و فشردن Start آغاز می‌شود. صدا و متن همان تب فقط برای ترجمهٔ زنده به‌صورت امن به Google Gemini فرستاده می‌شود. Lingora تب‌های دیگر را Capture نمی‌کند، تبلیغ یا Analytics ندارد و محتوا را برای توسعه‌دهنده نمی‌فرستد. ضبط پیش‌فرض خاموش است.
+پردازش صدا فقط پس از تأیید تو و زدن دکمهٔ «شروع» آغاز می‌شود. صدا و متن به‌دست‌آمده از همان تب، فقط برای ترجمه و دوبله به Google Gemini فرستاده می‌شوند. Lingora به تب‌های دیگر دسترسی نمی‌گیرد، تبلیغ و سامانهٔ تحلیل رفتار ندارد و محتوایت را برای تیم پروژه نمی‌فرستد. ذخیرهٔ خروجی نیز به‌طور پیش‌فرض خاموش است.
 
-اکستنشن مستقل است و به اپ دسکتاپ Lingora، Python، FFmpeg، localhost یا دستگاه صوتی مجازی نیاز ندارد. کلید Gemini خود کاربر فقط در Session مرورگر می‌ماند و برای گرفتن توکن کوتاه‌عمر و یک‌بارمصرف مستقیم به Google فرستاده می‌شود؛ هیچ کلید توسعه‌دهنده داخل اکستنشن نیست.
+این اکستنشن کاملاً مستقل است؛ برای استفاده از آن لازم نیست اپ دسکتاپ Lingora، Python، FFmpeg یا کابل صوتی مجازی نصب باشد. کلید Gemini فقط تا پایان همان نشست مرورگر نگه داشته می‌شود و اکستنشن آن را مستقیماً برای دریافت توکن کوتاه‌عمر و یک‌بارمصرف به Google می‌فرستد. هیچ کلید متعلق به توسعه‌دهنده داخل بسته قرار نگرفته است.
 ```
 
 ## Graphic assets
 
-Upload the files in `docs/store-assets/`:
+Upload the assets from the locale matching the listing:
 
-- `icon-128.png` — 128×128 Store icon.
-- `screenshot-01-live-translation.png` — 1280×800.
-- `screenshot-02-output-mixer.png` — 1280×800.
-- `screenshot-03-floating-captions.png` — 1280×800.
-- `small-promo-440x280.png` — mandatory small promo tile.
-- `marquee-1400x560.png` — optional marquee tile.
+- Shared `docs/store-assets/icon-128.png` — 128×128 Store icon.
+- English `docs/store-assets/en/screenshot-01-live-extension.jpg` — 640×400.
+- English `docs/store-assets/en/screenshot-02-output-mixer.jpg` — 640×400.
+- English `docs/store-assets/en/screenshot-03-floating-captions.jpg` — 640×400.
+- English `docs/store-assets/en/small-promo-440x280.jpg` and `marquee-1400x560.jpg`.
+- Persian `docs/store-assets/fa/screenshot-01-live-extension.jpg` — 640×400.
+- Persian `docs/store-assets/fa/screenshot-02-output-mixer.jpg` — 640×400.
+- Persian `docs/store-assets/fa/screenshot-03-floating-captions.jpg` — 640×400.
+- Persian `docs/store-assets/fa/small-promo-440x280.jpg` and `marquee-1400x560.jpg`.
 
-Screenshots must match the submitted build and must not contain an API key or private content.
+The six screenshots are captures of the submitted production HTML/CSS/JavaScript. The deterministic preview supplies only non-secret demo state in place of Chrome APIs. The overlay screenshots run the packaged `content.js` over real Lingora desktop captures. Rebuild them with `node scripts/prepare-store-preview.mjs`; never add an API key or private media.
+
+Validate every required file and exact pixel size with `node scripts/validate-store-assets.mjs`.
+
+The complete natural-language Persian worksheet is [CHROME_WEB_STORE.fa.md](CHROME_WEB_STORE.fa.md).
 
 ## Privacy practices
 

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Lingora floating captions</title>
+  <style>
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#060915}
+    body{background-position:center;background-size:cover;background-repeat:no-repeat}
+    body::after{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(4,7,16,.08),rgba(4,7,16,.18));pointer-events:none}
+  </style>
+</head>
+<body>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const locale = params.get('locale') === 'fa' ? 'fa' : 'en';
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === 'fa' ? 'rtl' : 'ltr';
+    document.body.style.backgroundImage = `url('/store-backgrounds/${locale}.jpg')`;
+    let overlayListener;
+    globalThis.__previewChrome = {
+      runtime: {
+        getURL: (path) => path,
+        onMessage: {addListener: (listener) => { overlayListener = listener; }},
+      },
+    };
+  </script>
+  <script src="content.js"></script>
+  <script>
+    const persian = locale === 'fa';
+    overlayListener({
+      type: 'lingora-overlay',
+      active: true,
+      sourceText: persian
+        ? 'The brain filters background sounds without conscious effort.'
+        : 'مغز بدون تلاش آگاهانه، صداهای پس‌زمینه را فیلتر می‌کند.',
+      translatedText: persian
+        ? 'مغز بدون تلاش آگاهانه، صداهای پس‌زمینه را فیلتر می‌کند.'
+        : 'The brain filters background sounds without conscious effort.',
+      settings: {
+        locale,
+        sourceSubtitlesEnabled: true,
+        translatedSubtitlesEnabled: true,
+        subtitlePosition: 'bottom-center',
+        subtitleFontSize: 22,
+        subtitleWidth: 560,
+        subtitleOpacity: 88,
+      },
+    });
+  </script>
+</body>
+</html>

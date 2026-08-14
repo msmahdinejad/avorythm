@@ -77,7 +77,7 @@ winget install --id Gyan.FFmpeg --exact --scope user
 
 [Chrome در Windows/macOS نصب مستقیم را فقط برای افزونهٔ میزبانی و امضاشده در Chrome Web Store مجاز می‌داند](https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions). GitHub نمی‌تواند CRX یا پوشهٔ unpacked را مخفیانه نصب کند. دکمهٔ واقعی **Add to Chrome** بعد از انتشار در Store ممکن است؛ Edge فهرست جداگانه می‌خواهد.
 
-پیش از ارسال، [CHROME_WEB_STORE.md](CHROME_WEB_STORE.md) و [PRIVACY.md](../PRIVACY.md) را ببین.
+پیش از ارسال، [راهنمای فارسی Chrome Web Store](CHROME_WEB_STORE.fa.md) و [PRIVACY.md](../PRIVACY.md) را ببین.
 
 ## مسیر دقیق AMM برای دوبلهٔ زندهٔ دسکتاپ
 
