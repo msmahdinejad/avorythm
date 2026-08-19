@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="icons/icon32.png" type="image/png">
+  <link rel="stylesheet" href="options.css">
+  <title>Avorythm · Settings</title>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="popup.html">
+      <span class="brand-mark"><img src="assets/avorythm-logo.png" alt=""></span>
+      <span><b>Avorythm</b><small data-i18n="settingsTitle">تنظیمات اکستنشن</small></span>
+    </a>
+    <div class="top-actions">
+      <span id="saveState" class="save-state" data-i18n="saved">تغییرات خودکار ذخیره می‌شوند</span>
+      <button id="localeToggle" class="small-button" type="button">EN</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <span class="eyebrow">AVORYTHM / SETTINGS</span>
+      <h1 data-i18n="heading">تجربهٔ ترجمه را دقیقاً برای خودت تنظیم کن.</h1>
+      <p data-i18n="intro">کنترل صدا، زیرنویس، ضبط و پلیر هماهنگ در یک جای آرام و خوانا؛ صفحهٔ اصلی اکستنشن فقط برای شروع سریع می‌ماند.</p>
+    </section>
+
+    <div id="notice" class="notice" role="status" hidden></div>
+
+    <div class="settings-layout">
+      <nav class="section-nav" aria-label="Settings sections">
+        <a href="#connection" data-i18n="navConnection">اتصال</a>
+        <a href="#output" data-i18n="navOutput">خروجی</a>
+        <a href="#captions" data-i18n="navCaptions">زیرنویس</a>
+        <a href="#sync" data-i18n="navSync">هماهنگی</a>
+        <a href="#privacy" data-i18n="navPrivacy">حریم خصوصی</a>
+      </nav>
+
+      <div class="settings-stack">
+        <section id="connection" class="settings-card">
+          <div class="card-heading"><span class="card-icon">01</span><div><h2 data-i18n="connection">اتصال به Gemini</h2><p data-i18n="connectionHelp">کلید فقط در حافظهٔ همین نشست مرورگر نگه‌داری می‌شود.</p></div></div>
+          <label class="field"><span>Gemini API Key</span><div class="input-action"><input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…"><button id="saveKeyButton" type="button" data-i18n="saveKey">ذخیره</button></div><small id="keyStatus"></small></label>
+          <button id="clearKeyButton" class="text-button danger" type="button" data-i18n="clearKey">پاک‌کردن کلید این نشست</button>
+        </section>
+
+        <section id="output" class="settings-card">
+          <div class="card-heading"><span class="card-icon">02</span><div><h2 data-i18n="output">ترکیب خروجی</h2><p data-i18n="outputHelp">هر چهار کانال مستقل‌اند؛ هر ترکیبی که می‌خواهی انتخاب کن.</p></div></div>
+          <div class="channel-grid">
+            <label class="channel-option"><input id="originalAudioEnabled" type="checkbox"><span><b data-i18n="originalAudio">صدای اصلی</b><small data-i18n="originalAudioHelp">صدای واقعی ویدئو یا صفحه</small></span></label>
+            <label class="channel-option"><input id="dubAudioEnabled" type="checkbox"><span><b data-i18n="dubbedAudio">صدای دوبله</b><small data-i18n="dubbedAudioHelp">صدای ترجمه‌شدهٔ Gemini</small></span></label>
+            <label class="channel-option"><input id="sourceSubtitlesEnabled" type="checkbox"><span><b data-i18n="sourceSubtitles">زیرنویس اصلی</b><small data-i18n="sourceSubtitlesHelp">متن زبان گوینده</small></span></label>
+            <label class="channel-option"><input id="translatedSubtitlesEnabled" type="checkbox"><span><b data-i18n="translatedSubtitles">زیرنویس ترجمه</b><small data-i18n="translatedSubtitlesHelp">متن زبان مقصد</small></span></label>
+          </div>
+          <div class="range-grid">
+            <label class="range-field"><span><b data-i18n="originalVolume">بلندی صدای اصلی</b><output id="originalVolumeValue">100%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+            <label class="range-field"><span><b data-i18n="dubVolume">بلندی صدای دوبله</b><output id="dubVolumeValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+          </div>
+          <label class="switch-row"><input id="autoDuck" type="checkbox"><span><b data-i18n="autoDuck">کاهش هوشمند صدای اصلی</b><small data-i18n="autoDuckHelp">هنگام صحبت دوبله، صدای اصلی آرام‌تر می‌شود.</small></span></label>
+          <label class="switch-row"><input id="recording" type="checkbox"><span><b data-i18n="recording">ذخیرهٔ چهار خروجی</b><small data-i18n="recordingHelp">دو WAV و دو SRT در Downloads؛ پیش‌فرض خاموش است.</small></span></label>
+        </section>
+
+        <section id="captions" class="settings-card">
+          <div class="card-heading"><span class="card-icon">03</span><div><h2 data-i18n="captions">کادر زیرنویس</h2><p data-i18n="captionsHelp">کادر روی صفحه قابل جابه‌جایی، تغییر اندازه و اسکرول است.</p></div></div>
+          <div class="field-grid">
+            <label class="field"><span data-i18n="position">جای اولیه</span><select id="subtitlePosition"><option value="bottom-center" data-i18n="bottomCenter">پایین، وسط</option><option value="bottom-left" data-i18n="bottomLeft">پایین، چپ</option><option value="bottom-right" data-i18n="bottomRight">پایین، راست</option><option value="top-center" data-i18n="topCenter">بالا، وسط</option></select></label>
+            <label class="range-field"><span><b data-i18n="fontSize">اندازهٔ متن</b><output id="subtitleFontSizeValue">24px</output></span><input id="subtitleFontSize" type="range" min="14" max="52" step="1"></label>
+            <label class="range-field"><span><b data-i18n="width">عرض کادر</b><output id="subtitleWidthValue">680px</output></span><input id="subtitleWidth" type="range" min="280" max="1200" step="20"></label>
+            <label class="range-field"><span><b data-i18n="opacity">شفافیت پس‌زمینه</b><output id="subtitleOpacityValue">88%</output></span><input id="subtitleOpacity" type="range" min="45" max="98" step="1"></label>
+          </div>
+        </section>
+
+        <section id="sync" class="settings-card featured-card">
+          <div class="card-heading"><span class="card-icon">04</span><div><h2 data-i18n="syncPlayer">پلیر هماهنگ</h2><p data-i18n="syncHelp">ویدئوی تب را بافر می‌کند تا دوبله روی timeline نزدیک‌تری پخش شود.</p></div></div>
+          <label class="range-field buffer-range"><span><b data-i18n="buffer">بافر صوت و تصویر</b><output id="syncBufferValue">4.5s</output></span><input id="syncBufferSeconds" type="range" min="2.5" max="12" step="0.5"><small data-i18n="bufferHelp">بافر بیشتر، هماهنگی پایدارتر؛ بافر کمتر، شروع سریع‌تر.</small></label>
+          <div class="sync-scale"><span data-i18n="faster">شروع سریع‌تر</span><span data-i18n="steadier">هماهنگی پایدارتر</span></div>
+        </section>
+
+        <section id="privacy" class="settings-card privacy-card">
+          <div class="card-heading"><span class="card-icon">05</span><div><h2 data-i18n="privacyTitle">اجازه و حریم خصوصی</h2><p data-i18n="privacyHelp">Avorythm تبلیغ، آنالیتیکس یا سرور توسعه‌دهنده ندارد.</p></div></div>
+          <label class="consent-row"><input id="dataConsent" type="checkbox"><span><b data-i18n="consentTitle">ارسال صدای تب انتخاب‌شده به Google Gemini را تأیید می‌کنم</b><small data-i18n="consentBody">پردازش فقط بعد از زدن «شروع» انجام می‌شود. ضبط جداگانه و به‌طور پیش‌فرض خاموش است.</small></span></label>
+          <div class="policy-links"><a href="https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">سیاست حریم خصوصی ↗</a><a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="projectPage">صفحهٔ پروژه ↗</a></div>
+        </section>
+
+        <button id="resetButton" class="reset-button" type="button" data-i18n="reset">بازگرداندن تنظیمات پیش‌فرض</button>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

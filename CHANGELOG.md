@@ -2,27 +2,33 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
-## [1.0.0] - 2026-08-13
+## [1.0.0] - 2026-08-18
 
 ### Added
 
-- Release-ready English and Persian extension metadata, first-capture data consent, and direct project/privacy links.
-- Public code-signing policy and a verified Windows release-signing stage.
+- Complete Avorythm identity across the desktop apps, browser extension, packages, installer, documentation, and release artifacts.
+- A simplified extension popup plus a dedicated bilingual Settings page with four independent output channels, volume mixing, captions, recording, consent, and session-only key management.
+- A dedicated synchronized extension player that locally buffers captured audio/video and schedules generated speech and short captions on one timeline.
+- Low-latency on-page playback with continuous 100 ms PCM input, pause-aware reconnect buffering, automatic ducking, and a movable caption overlay.
+- Release-ready English and Persian metadata, first-capture consent, project/privacy links, and a new minimal Avorythm visual identity.
+- Public code-signing policy and an explicit unsigned-installer path while SignPath review is pending.
 
 ### Changed
 
-- Recording downloads now use an optional permission requested only when the user enables recording.
-- Windows installer metadata now exposes a consistent product/file version and displays the license and privacy policy before installation.
+- Moved configuration out of the popup so starting or stopping a session stays fast and uncluttered.
+- Recording downloads use an optional permission requested only when the user enables recording.
+- Windows installer metadata exposes a consistent product/file version and displays the license and privacy policy before installation.
 
 ### Fixed
 
-- Extension authentication now uses the constrained ephemeral-token WebSocket method and setup schema implemented by Google's current GenAI SDK; the complete token-to-`setupComplete` handshake is verified through the configured proxy.
+- Extension authentication uses Google's current v1beta WebSocket and the setup schema accepted by the Live Translate service, with the user's session-only key sent directly to Google.
+- Original audio is muted in synchronized mode unless its channel is explicitly enabled; dub playback suspends whenever buffered video stalls.
 
 ## [0.9.1] - 2026-08-13
 
 ### Fixed
 
-- Normal desktop launches never open Chrome when Lingora's local service is already running.
+- Normal desktop launches never open Chrome when Avorythm's local service is already running.
 - Desktop builds now require and explicitly bundle the native pywebview shell.
 
 ## [0.9.0] - 2026-08-13
@@ -53,7 +59,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Changed
 
-- Renamed the public product, executable, installer, extension, repository, and artifacts to Lingora while keeping the previous Python import path as a compatibility layer.
+- Introduced a native cross-platform desktop shell and a unified product identity.
 - Reworked both interfaces around a translucent glass visual system.
 - Expanded CI and release validation to all three desktop operating systems.
 
@@ -78,7 +84,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Changed
 
-- Renamed the product, package, executable, installer, extension, repository, and artifacts to Dubira.
+- Consolidated package, executable, installer, extension, and artifact naming.
 - Moved file-voice selection into Media Studio and persisted it per media job.
 - Reworked the dashboard into a compact broadcast-console interface.
 
@@ -95,12 +101,12 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Groq Whisper Large v3/turbo transcription with timestamp-preserving FLAC chunking.
 - Structured Gemini 3.1 Flash Lite translation and Gemini 3.1 Flash Live file narration.
 - Separate Groq/Gemini key management and a selectable file-dubbing voice.
-- New Voxilyra brand, generated logo, English README dashboard, and bilingual documentation.
+- A generated visual identity, English README dashboard, and bilingual documentation.
 
 ### Changed
 
 - Replaced uploaded-media Gemini Live Translate speech-to-speech processing with a three-stage transcription, translation, and narration pipeline.
-- Renamed the package, executable, installer, extension, artifacts, and user-facing documentation.
+- Consolidated package, executable, installer, extension, artifact, and documentation naming.
 
 ### Fixed
 
@@ -203,7 +209,7 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- New generated Lingora brand mark across the app, installer, extension, and documentation.
+- Added a generated brand mark across the app, installer, extension, and documentation.
 - Bilingual in-app audio-routing guide with a Windows Volume Mixer illustration.
 - Post-install helper that prepares the unpacked extension folder and opens the browser setup page.
 
@@ -225,20 +231,20 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/lingora/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/msmahdinejad/lingora/compare/v0.9.1...v1.0.0
-[0.9.1]: https://github.com/msmahdinejad/lingora/compare/v0.9.0...v0.9.1
-[0.9.0]: https://github.com/msmahdinejad/lingora/compare/v0.8.1...v0.9.0
-[0.8.1]: https://github.com/msmahdinejad/lingora/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/msmahdinejad/lingora/compare/v0.7.1...v0.8.0
-[0.7.1]: https://github.com/msmahdinejad/lingora/compare/v0.7.0...v0.7.1
-[0.7.0]: https://github.com/msmahdinejad/lingora/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/msmahdinejad/lingora/compare/v0.5.1...v0.6.0
-[0.5.1]: https://github.com/msmahdinejad/lingora/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/msmahdinejad/lingora/compare/v0.4.1...v0.5.0
-[0.4.1]: https://github.com/msmahdinejad/lingora/compare/v0.4.0...v0.4.1
-[0.4.0]: https://github.com/msmahdinejad/lingora/compare/v0.3.1...v0.4.0
-[0.3.1]: https://github.com/msmahdinejad/lingora/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/msmahdinejad/lingora/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/msmahdinejad/lingora/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/msmahdinejad/lingora/releases/tag/v0.1.0
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/msmahdinejad/avorythm/compare/v0.9.1...v1.0.0
+[0.9.1]: https://github.com/msmahdinejad/avorythm/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/msmahdinejad/avorythm/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/msmahdinejad/avorythm/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/msmahdinejad/avorythm/compare/v0.7.1...v0.8.0
+[0.7.1]: https://github.com/msmahdinejad/avorythm/compare/v0.7.0...v0.7.1
+[0.7.0]: https://github.com/msmahdinejad/avorythm/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/msmahdinejad/avorythm/compare/v0.5.1...v0.6.0
+[0.5.1]: https://github.com/msmahdinejad/avorythm/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/msmahdinejad/avorythm/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/msmahdinejad/avorythm/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/msmahdinejad/avorythm/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/msmahdinejad/avorythm/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/msmahdinejad/avorythm/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/msmahdinejad/avorythm/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/msmahdinejad/avorythm/releases/tag/v0.1.0

@@ -7,6 +7,9 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   let offscreen = false;
   let capturedTab = 0;
   let injectedTab = 0;
+  let createdTab = 0;
+  const removedTabs = [];
+  let lastOffscreenMessage = null;
   let offscreenResponse = {ok: true};
   const overlayMessages = [];
   const local = {};
@@ -34,6 +37,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       async getContexts() { return offscreen ? [{}] : []; },
       async sendMessage(message) {
         assert.equal(message.target, 'offscreen');
+        lastOffscreenMessage = message;
         return offscreenResponse;
       }
     },
@@ -42,7 +46,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       async closeDocument() { offscreen = false; }
     },
     tabs: {
-      async query() { return [{id: 42}]; },
+      onRemoved: {addListener() {}},
+      async query() { return [{id: 42, title: 'Test video'}]; },
+      async create() { createdTab = 84; return {id: 84}; },
+      async remove(tabId) { removedTabs.push(tabId); },
       async sendMessage(tabId, message) { overlayMessages.push({tabId, message}); }
     },
     scripting: {
@@ -107,4 +114,20 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   response = await message({type: 'state'});
   assert.equal(response.state.captureTabId, null);
   assert.equal(offscreen, false);
+
+  offscreenResponse = {ok: true};
+  const synchronizedSettings = {
+    ...subtitleSettings,
+    playbackMode: 'synchronized',
+    syncBufferSeconds: 5,
+    dubAudioEnabled: true
+  };
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, true);
+  assert.equal(createdTab, 84);
+  assert.equal(response.state.playerTabId, 84);
+  assert.equal(lastOffscreenMessage.config.playbackMode, 'synchronized');
+  assert.equal(lastOffscreenMessage.config.syncBufferSeconds, 5);
+  await message({type: 'stop'});
+  assert.deepEqual(removedTabs, [84]);
 });

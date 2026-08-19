@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import tempfile
+from contextlib import suppress
 from pathlib import Path
 from typing import Any, Literal
 
@@ -11,15 +12,25 @@ from dotenv import load_dotenv
 
 from .models import Settings
 
-APP_NAME = "Lingora"
-LEGACY_APP_NAMES = ("Dubira", "Voxilyra", "LingoDub")
+APP_NAME = "Avorythm"
+LEGACY_APP_NAMES = ("Lingora", "Dubira", "Voxilyra", "LingoDub")
 KEYRING_SERVICES = {
-    "gemini": "Lingora Gemini API",
-    "groq": "Lingora Groq API",
+    "gemini": "Avorythm Gemini API",
+    "groq": "Avorythm Groq API",
 }
 LEGACY_KEYRING_SERVICES = {
-    "gemini": ("Dubira Gemini API", "Voxilyra Gemini API", "LingoDub Gemini API"),
-    "groq": ("Dubira Groq API", "Voxilyra Groq API", "LingoDub Groq API"),
+    "gemini": (
+        "Lingora Gemini API",
+        "Dubira Gemini API",
+        "Voxilyra Gemini API",
+        "LingoDub Gemini API",
+    ),
+    "groq": (
+        "Lingora Groq API",
+        "Dubira Groq API",
+        "Voxilyra Groq API",
+        "LingoDub Groq API",
+    ),
 }
 KEYRING_USER = "default"
 ApiProvider = Literal["gemini", "groq"]
@@ -71,7 +82,11 @@ class ConfigStore:
             data["translated_subtitles_enabled"] = mode == "subtitles"
         if proxy := os.getenv("PROXY_URL"):
             data.setdefault("proxy_url", proxy)
-        return Settings.model_validate(data)
+        settings = Settings.model_validate(data)
+        if settings_path != self.path and settings_path.is_file():
+            with suppress(OSError):
+                self.save(settings)
+        return settings
 
     def save(self, settings: Settings) -> None:
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -94,6 +109,9 @@ class ConfigStore:
                 if key:
                     break
                 key = (keyring.get_password(service, KEYRING_USER) or "").strip()
+                if key:
+                    with suppress(keyring.errors.KeyringError):
+                        keyring.set_password(KEYRING_SERVICES[provider], KEYRING_USER, key)
             return key
         except keyring.errors.KeyringError:
             return ""

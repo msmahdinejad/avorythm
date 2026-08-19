@@ -7,10 +7,10 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from dubira.api import create_app
-from dubira.audio import AudioDevice, DeviceCatalog
-from dubira.config import ConfigStore
-from dubira.models import Settings
+from avorythm.api import create_app
+from avorythm.audio import AudioDevice, DeviceCatalog
+from avorythm.config import ConfigStore
+from avorythm.models import Settings
 
 
 def catalog() -> DeviceCatalog:
@@ -29,10 +29,10 @@ def client(
 ) -> TestClient:
     store = ConfigStore(tmp_path / "config")
     store.save(Settings(capture_device=4, output_device=7))
-    monkeypatch.setattr("dubira.api.DeviceCatalog.scan", catalog)
+    monkeypatch.setattr("avorythm.api.DeviceCatalog.scan", catalog)
     static = tmp_path / "static"
     static.mkdir()
-    (static / "index.html").write_text("Lingora", encoding="utf-8")
+    (static / "index.html").write_text("Avorythm", encoding="utf-8")
     return TestClient(
         create_app(
             store,
@@ -49,8 +49,8 @@ def test_health_and_bootstrap(
 ) -> None:
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
-    monkeypatch.setattr("dubira.config.load_dotenv", lambda: False)
-    monkeypatch.setattr("dubira.config.keyring.get_password", lambda service, user: None)
+    monkeypatch.setattr("avorythm.config.load_dotenv", lambda: False)
+    monkeypatch.setattr("avorythm.config.keyring.get_password", lambda service, user: None)
 
     with client(monkeypatch, tmp_path) as app:
         assert app.get("/api/health").json()["status"] == "ok"

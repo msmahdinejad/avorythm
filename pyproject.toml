@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "lingora"
+name = "avorythm"
 version = "1.0.0"
 description = "Live and file-based multilingual translation for desktop and Chrome"
 readme = "README.md"
@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
   "fastapi==0.141.1",
-  "google-genai==2.17.0",
+  "google-genai==2.18.1",
   "httpx==0.28.1",
   "keyring==25.7.0",
   "numpy==2.4.6",
@@ -42,19 +42,18 @@ dev = [
 build = ["pyinstaller==6.21.0"]
 
 [project.urls]
-Homepage = "https://github.com/msmahdinejad/lingora"
-Documentation = "https://github.com/msmahdinejad/lingora#readme"
-Issues = "https://github.com/msmahdinejad/lingora/issues"
+Homepage = "https://github.com/msmahdinejad/avorythm"
+Documentation = "https://github.com/msmahdinejad/avorythm#readme"
+Issues = "https://github.com/msmahdinejad/avorythm/issues"
 
 [project.scripts]
-lingora = "lingora.__main__:main"
-dubira = "dubira.__main__:main"
+avorythm = "avorythm.__main__:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/dubira", "src/lingora"]
+packages = ["src/avorythm"]
 
 [tool.hatch.build]
-include = ["src/dubira/static/**/*"]
+include = ["src/avorythm/static/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -72,4 +71,4 @@ python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-packages = ["dubira", "lingora"]
+packages = ["avorythm"]

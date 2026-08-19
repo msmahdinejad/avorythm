@@ -13,7 +13,7 @@ try {
         if ($LASTEXITCODE) { throw "Lint failed." }
         & $python -m mypy src
         if ($LASTEXITCODE) { throw "Type checking failed." }
-        node --test tests\extension.test.mjs tests\offscreen.test.mjs tests\background.test.mjs
+        node --test tests\background.test.mjs tests\extension.test.mjs tests\offscreen.test.mjs tests\player.test.mjs
         if ($LASTEXITCODE) { throw "Extension tests failed." }
     }
 

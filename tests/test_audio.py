@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from dubira.audio import (
+from avorythm.audio import (
     input_to_output_pcm,
     is_virtual_device,
     mix_pcm,
     to_device_pcm,
     to_input_pcm,
 )
-from dubira.constants import INPUT_FRAMES, OUTPUT_FRAMES
+from avorythm.constants import INPUT_FRAMES, OUTPUT_FRAMES
 
 
 def test_to_input_pcm_downmixes_stereo_and_normalizes_length() -> None:

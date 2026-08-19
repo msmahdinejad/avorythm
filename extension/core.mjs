@@ -1,8 +1,8 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
 export const LIVE_ENDPOINT =
-  'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained';
-export const TOKEN_ENDPOINT = 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens';
+  'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
+const SENTENCE_PATTERN = /[^.!?\u061f\u3002\uff01\uff1f\u2026]+[.!?\u061f\u3002\uff01\uff1f\u2026]+|[^.!?\u061f\u3002\uff01\uff1f\u2026]+$/gu;
 
 export const LANGUAGES = [
   'af','ak','sq','am','ar','hy','az','eu','be','bn','bg','my','ca','zh-Hans','zh-Hant','hr','cs','da','nl','en','et','fil','fi','fr','gl','ka','de','el','gu','ha','he','hi','hu','is','id','it','ja','jv','kn','kk','km','rw','ko','lo','lv','lt','mk','ms','ml','mr','mn','ne','no','nb','fa','pl','pt-BR','pt-PT','pa','ro','ru','sr','sd','si','sk','sl','es','su','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu'
@@ -22,7 +22,9 @@ export const DEFAULT_SETTINGS = Object.freeze({
   subtitlePosition: 'bottom-center',
   subtitleFontSize: 24,
   subtitleWidth: 680,
-  subtitleOpacity: 88
+  subtitleOpacity: 88,
+  playbackMode: 'low-latency',
+  syncBufferSeconds: 4.5
 });
 
 export function normalizeSettings(input = {}) {
@@ -36,6 +38,8 @@ export function normalizeSettings(input = {}) {
   }
   delete settings.audioMode;
   delete settings.subtitleShowSource;
+  settings.playbackMode = settings.playbackMode === 'synchronized' ? 'synchronized' : 'low-latency';
+  settings.syncBufferSeconds = Math.max(2.5, Math.min(12, Number(settings.syncBufferSeconds) || 4.5));
   return settings;
 }
 
@@ -48,33 +52,47 @@ export function audioChannelVolume(channel, settings) {
   return enabled ? Number(channel === 'original' ? settings.originalVolume : settings.dubVolume) : 0;
 }
 
-export function ephemeralLiveUrl(token) {
-  return `${LIVE_ENDPOINT}?access_token=${encodeURIComponent(token)}`;
-}
-
-export function ephemeralTokenRequest(targetLanguage, now = Date.now()) {
-  return {
-    uses: 1,
-    expireTime: new Date(now + 30 * 60 * 1000).toISOString(),
-    bidiGenerateContentSetup: setupMessage(targetLanguage).setup
-  };
+export function liveUrl(key) {
+  return `${LIVE_ENDPOINT}?key=${encodeURIComponent(key)}`;
 }
 
 export function setupMessage(targetLanguage) {
   return {
     setup: {
       model: `models/${LIVE_MODEL}`,
+      inputAudioTranscription: {},
+      outputAudioTranscription: {},
       generationConfig: {
         responseModalities: ['AUDIO'],
         translationConfig: {
           targetLanguageCode: targetLanguage,
           echoTargetLanguage: false
         }
-      },
-      inputAudioTranscription: {},
-      outputAudioTranscription: {}
+      }
     }
   };
+}
+
+export function captionSegments(value, maxCharacters = 84) {
+  const normalized = String(value || '').replace(/\s+/gu, ' ').trim();
+  if (!normalized) return [];
+  const sentences = normalized.match(SENTENCE_PATTERN) || [normalized];
+  const result = [];
+  for (const sentence of sentences) {
+    let remaining = sentence.trim();
+    while (remaining.length > maxCharacters) {
+      let split = remaining.lastIndexOf(' ', maxCharacters);
+      if (split < Math.floor(maxCharacters * 0.55)) split = maxCharacters;
+      result.push(remaining.slice(0, split).trim());
+      remaining = remaining.slice(split).trim();
+    }
+    if (remaining) result.push(remaining);
+  }
+  return result;
+}
+
+export function latestCaption(value, maxCharacters = 84) {
+  return captionSegments(value, maxCharacters).at(-1) || '';
 }
 
 export function bytesToBase64(input) {

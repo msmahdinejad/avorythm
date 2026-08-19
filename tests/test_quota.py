@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from dubira.quota import TokenGovernor
+from avorythm.quota import TokenGovernor
 
 
 @pytest.mark.asyncio

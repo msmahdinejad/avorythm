@@ -37,7 +37,7 @@ jobs:
         shell: pwsh
         run: Get-ChildItem extension -File | Where-Object Extension -in '.js','.mjs' | ForEach-Object { node --check $_.FullName }
       - name: Test standalone extension
-        run: node --test tests/extension.test.mjs tests/offscreen.test.mjs tests/background.test.mjs
+        run: node --test tests/background.test.mjs tests/extension.test.mjs tests/offscreen.test.mjs tests/player.test.mjs
       - name: Validate manifest
         shell: pwsh
         run: Get-Content extension/manifest.json | ConvertFrom-Json | Out-Null

@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from dubira.config import ConfigStore
-from dubira.models import Settings
+from avorythm.config import ConfigStore
+from avorythm.models import Settings
 
 
 def test_settings_are_saved_atomically_without_api_key(tmp_path: Path) -> None:
@@ -66,6 +66,36 @@ def test_legacy_subtitle_mode_migrates_to_independent_channels(tmp_path: Path) -
     assert loaded.original_volume == 1
 
 
+def test_legacy_settings_are_written_once_to_the_current_path(tmp_path: Path) -> None:
+    store = ConfigStore(tmp_path / "Avorythm")
+    legacy = tmp_path / "Lingora" / "settings.json"
+    legacy.parent.mkdir(parents=True)
+    legacy.write_text(json.dumps({"target_language": "tr"}), encoding="utf-8")
+    store.legacy_paths = [legacy]
+
+    assert store.load().target_language == "tr"
+    assert json.loads(store.path.read_text(encoding="utf-8"))["target_language"] == "tr"
+
+
+def test_legacy_key_is_copied_to_current_keyring_service(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    saved: dict[str, str] = {"Lingora Gemini API": "legacy-secret-key"}
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setattr(
+        "avorythm.config.keyring.get_password",
+        lambda service, user: saved.get(service),
+    )
+    monkeypatch.setattr(
+        "avorythm.config.keyring.set_password",
+        lambda service, user, key: saved.__setitem__(service, key),
+    )
+
+    assert ConfigStore(tmp_path).get_api_key() == "legacy-secret-key"
+    assert saved["Avorythm Gemini API"] == "legacy-secret-key"
+
+
 def test_api_key_is_delegated_to_os_keyring(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -73,11 +103,11 @@ def test_api_key_is_delegated_to_os_keyring(
     saved: dict[str, str] = {}
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.setattr(
-        "dubira.config.keyring.set_password",
+        "avorythm.config.keyring.set_password",
         lambda service, user, key: saved.update(key=key),
     )
     monkeypatch.setattr(
-        "dubira.config.keyring.get_password",
+        "avorythm.config.keyring.get_password",
         lambda service, user: saved.get("key"),
     )
     store = ConfigStore(tmp_path)
@@ -96,11 +126,11 @@ def test_groq_key_is_separate_from_gemini_key(
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr(
-        "dubira.config.keyring.set_password",
+        "avorythm.config.keyring.set_password",
         lambda service, user, key: saved.__setitem__(service, key),
     )
     monkeypatch.setattr(
-        "dubira.config.keyring.get_password",
+        "avorythm.config.keyring.get_password",
         lambda service, user: saved.get(service),
     )
     store = ConfigStore(tmp_path)

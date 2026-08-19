@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from dubira.media import (
+from avorythm.media import (
     MediaTools,
     TimeWindow,
     fixed_windows,
@@ -14,7 +14,7 @@ from dubira.media import (
     supported_media,
     write_subtitles,
 )
-from dubira.recording import SubtitleEntry
+from avorythm.recording import SubtitleEntry
 
 
 def test_speech_windows_are_bounded_and_monotonic() -> None:
@@ -77,7 +77,7 @@ def test_media_tools_find_winget_package_without_alias(
     monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
     monkeypatch.setenv("PROGRAMFILES", str(tmp_path / "Program Files"))
     monkeypatch.setattr(sys, "_MEIPASS", str(tmp_path / "bundle"), raising=False)
-    monkeypatch.setattr("dubira.media.shutil.which", lambda _: None)
+    monkeypatch.setattr("avorythm.media.shutil.which", lambda _: None)
 
     assert MediaTools._find("ffmpeg") == str(executable)
 

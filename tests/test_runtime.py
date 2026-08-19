@@ -7,9 +7,9 @@ from types import TracebackType
 import numpy as np
 import pytest
 
-from dubira.audio import AudioDevice, DeviceCatalog
-from dubira.config import ConfigStore
-from dubira.runtime import DubRuntime
+from avorythm.audio import AudioDevice, DeviceCatalog
+from avorythm.config import ConfigStore
+from avorythm.runtime import DubRuntime
 
 
 class FakeAudio:
@@ -59,9 +59,9 @@ async def test_runtime_reconnects_after_a_live_session_ends(
         default_capture=1,
         default_output=2,
     )
-    monkeypatch.setattr("dubira.runtime.DeviceCatalog.scan", lambda: catalog)
-    monkeypatch.setattr("dubira.runtime.AudioEngine", FakeAudio)
-    monkeypatch.setattr("dubira.runtime.GeminiGateway", FakeGateway)
+    monkeypatch.setattr("avorythm.runtime.DeviceCatalog.scan", lambda: catalog)
+    monkeypatch.setattr("avorythm.runtime.AudioEngine", FakeAudio)
+    monkeypatch.setattr("avorythm.runtime.GeminiGateway", FakeGateway)
     store = ConfigStore(tmp_path / "config")
     monkeypatch.setattr(store, "get_api_key", lambda: "test-api-key-123")
     runtime = DubRuntime(store, tmp_path / "recordings")
@@ -101,7 +101,7 @@ async def test_disabled_audio_channel_is_silent(
         default_capture=1,
         default_output=2,
     )
-    monkeypatch.setattr("dubira.runtime.DeviceCatalog.scan", lambda: catalog)
+    monkeypatch.setattr("avorythm.runtime.DeviceCatalog.scan", lambda: catalog)
     runtime = DubRuntime(ConfigStore(tmp_path / "config"), tmp_path / "recordings")
     runtime.settings = runtime.settings.model_copy(
         update={"original_audio_enabled": True, "dub_audio_enabled": False}

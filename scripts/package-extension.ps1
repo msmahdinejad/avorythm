@@ -5,7 +5,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $repository = Split-Path -Parent $PSScriptRoot
 $source = Join-Path $repository "extension"
 $sourcePrefix = $source.TrimEnd("\") + "\"
-$destination = Join-Path $repository "dist\Lingora-Extension.zip"
+$destination = Join-Path $repository "dist\Avorythm-Extension.zip"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destination) | Out-Null
 if (Test-Path -LiteralPath $destination) { Remove-Item -LiteralPath $destination -Force }
 
@@ -13,7 +13,7 @@ $stream = [IO.File]::Open($destination, [IO.FileMode]::CreateNew)
 $archive = [IO.Compression.ZipArchive]::new($stream, [IO.Compression.ZipArchiveMode]::Create)
 try {
     Get-ChildItem -LiteralPath $source -Recurse -File |
-        Where-Object Name -NE "Lingora.ico" |
+        Where-Object Name -NE "Avorythm.ico" |
         Sort-Object FullName |
         ForEach-Object {
             $relative = $_.FullName.Substring($sourcePrefix.Length).Replace("\", "/")
@@ -24,6 +24,18 @@ try {
                 [IO.Compression.CompressionLevel]::Optimal
             ) | Out-Null
         }
+    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $archive,
+        (Join-Path $repository "THIRD_PARTY_NOTICES.md"),
+        "THIRD_PARTY_NOTICES.md",
+        [IO.Compression.CompressionLevel]::Optimal
+    ) | Out-Null
+    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $archive,
+        (Join-Path $repository "licenses\OFL-Vazirmatn.txt"),
+        "licenses/OFL-Vazirmatn.txt",
+        [IO.Compression.CompressionLevel]::Optimal
+    ) | Out-Null
 }
 finally {
     $archive.Dispose()

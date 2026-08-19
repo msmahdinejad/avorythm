@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="icons/icon32.png" type="image/png">
+  <link rel="stylesheet" href="player.css">
+  <title>Avorythm · Synchronized Player</title>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"><img src="assets/avorythm-logo.png" alt=""></span><span><b>Avorythm</b><small data-i18n="playerTitle">پلیر هماهنگ</small></span></div>
+    <div class="session-meta"><span id="liveBadge" class="live-badge"><i></i><span data-i18n="buffering">در حال بافر…</span></span><span id="delayBadge" class="delay-badge">−4.5s</span><button id="localeToggle" class="icon-button" type="button">EN</button><button id="stopButton" class="stop-button" type="button" data-i18n="stop">توقف</button></div>
+  </header>
+
+  <main class="shell">
+    <section class="player-heading"><div><span class="eyebrow">SYNCHRONIZED LIVE</span><h1 id="sourceTitle" data-i18n="sourceTab">ویدئوی تب انتخاب‌شده</h1></div><p data-i18n="playerHelp">صوت و تصویر چند ثانیه عقب نگه داشته می‌شوند تا دوبله روی همان خط زمانی پخش شود.</p></section>
+
+    <section class="stage-card">
+      <div class="video-stage">
+        <video id="video" playsinline></video>
+        <div id="captionStack" class="caption-stack">
+          <p id="sourceCaption" class="caption source-caption" dir="auto" hidden></p>
+          <p id="translatedCaption" class="caption translated-caption" dir="auto" hidden></p>
+        </div>
+        <div id="bufferOverlay" class="buffer-overlay">
+          <div class="buffer-ring"><span id="bufferPercent">0%</span></div>
+          <h2 id="bufferTitle" data-i18n="preparing">در حال آماده‌سازی پلیر هماهنگ</h2>
+          <p id="bufferText" data-i18n="preparingHelp">ویدئو و اولین جملهٔ دوبله در حال بافرشدن هستند.</p>
+          <button id="activateButton" class="activate-button" type="button" data-i18n="activate" disabled>آماده‌ام؛ پس از بافر پخش کن</button>
+        </div>
+        <div id="stageError" class="stage-error" hidden><b data-i18n="playerError">پلیر هماهنگ آماده نشد</b><p id="stageErrorText"></p></div>
+      </div>
+
+      <div class="transport">
+        <button id="playButton" class="play-button" type="button" aria-label="Play">▶</button>
+        <div class="live-track"><span id="bufferTrack"></span><i id="playhead"></i></div>
+        <span id="timeLabel" class="time-label">LIVE −4.5s</span>
+      </div>
+    </section>
+
+    <section class="control-dock">
+      <div class="dock-title"><span><b data-i18n="outputMix">ترکیب خروجی</b><small data-i18n="outputHelp">همین‌جا و در لحظه تغییرش بده</small></span><button id="settingsButton" type="button" data-i18n="allSettings">همهٔ تنظیمات ↗</button></div>
+      <div class="channel-grid">
+        <label class="channel"><input id="originalAudioEnabled" type="checkbox"><span><b data-i18n="originalAudio">صدای اصلی</b><small id="originalValue">100%</small></span></label>
+        <label class="channel"><input id="dubAudioEnabled" type="checkbox"><span><b data-i18n="dubbedAudio">صدای دوبله</b><small id="dubValue">100%</small></span></label>
+        <label class="channel"><input id="sourceSubtitlesEnabled" type="checkbox"><span><b data-i18n="sourceSubtitles">زیرنویس اصلی</b><small data-i18n="captionChannel">نمایش روی ویدئو</small></span></label>
+        <label class="channel"><input id="translatedSubtitlesEnabled" type="checkbox"><span><b data-i18n="translatedSubtitles">زیرنویس ترجمه</b><small data-i18n="captionChannel">نمایش روی ویدئو</small></span></label>
+      </div>
+      <div class="volume-grid">
+        <label><span><b data-i18n="originalAudio">صدای اصلی</b><output id="originalVolumeValue">100%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+        <label><span><b data-i18n="dubbedAudio">صدای دوبله</b><output id="dubVolumeValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="player.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Architecture
 
-Lingora contains two independent products: a cross-platform desktop application and a Manifest V3 browser extension. Neither requires the other.
+Avorythm contains two independent products: a cross-platform desktop application and a Manifest V3 browser extension. Neither requires the other.
 
 ## Product boundaries
 
@@ -8,9 +8,9 @@ Lingora contains two independent products: a cross-platform desktop application 
 |---|---|---|---|---|
 | Desktop live | selected loopback/monitor input | Gemini 3.5 Live Translate | Gemini key in the OS keyring | playback, floating captions, WAV/SRT/ZIP |
 | Media Studio | local audio/video + FFmpeg | Groq Whisper → Gemini text pool → Gemini Live speech | Groq + Gemini keys in the OS keyring | synchronized player, four files, ZIP |
-| Browser extension | explicit `chrome.tabCapture` session | direct Gemini Live WebSocket | session-only `chrome.storage.session` | playback, page overlay, optional four Downloads |
+| Browser extension | explicit `chrome.tabCapture` session | direct Gemini Live WebSocket | session-only `chrome.storage.session` | low-latency playback or buffered A/V player, page overlay, optional four Downloads |
 
-The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI natively on Windows (WebView2), macOS (WKWebView), and Linux (Qt WebEngine). The browser fallback remains available with `lingora --browser`.
+The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI natively on Windows (WebView2), macOS (WKWebView), and Linux (Qt WebEngine). The browser fallback remains available with `avorythm --browser`.
 
 ## Desktop modules
 
@@ -27,7 +27,14 @@ The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI 
 | `TokenGovernor` | conservative rolling Gemini reservations |
 | FastAPI | loopback-only dashboard API and allowlisted local files |
 
-`src/lingora` is the public entry point. The implementation remains under `src/dubira` for one compatibility cycle so existing installations and third-party imports do not break during the public rename.
+`src/avorythm` is the desktop application's only package and public entry point. Configuration and keyring migration reads earlier local application names once, then writes only to Avorythm's paths.
+
+## Browser playback paths
+
+- **Low latency:** tab audio is streamed as continuous 16 kHz mono PCM in 100 ms chunks. Original audio and translated 24 kHz PCM are mixed in the offscreen document; captions use a temporary Shadow DOM overlay on the selected tab.
+- **Synchronized player:** captured tab audio/video is encoded locally by `MediaRecorder`, streamed to an extension-owned `MediaSource`, and held behind a configurable 2.5–12 second buffer. Generated PCM and short captions carry session-relative timestamps and are scheduled against the player's current time. Pause/resume also controls the source media element.
+
+Live Translate input is never cut at sentence boundaries. A lightweight local energy detector observes pauses only to align returned speech; punctuation-aware caption segmentation keeps displayed and recorded cues short. Protected/DRM media may reject video capture, in which case the user can use low-latency mode.
 
 ## Live subtitle flow
 

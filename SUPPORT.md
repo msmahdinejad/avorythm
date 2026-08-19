@@ -3,6 +3,6 @@
 - Installation and audio routing: read [`docs/INSTALLATION.md`](docs/INSTALLATION.md).
 - Reproducible bug or feature request: open a GitHub issue using a template.
 - Security concern: follow [`SECURITY.md`](SECURITY.md), not a public issue.
-- Gemini service status, quota, or billing: use Google's support channels; Lingora does not operate the upstream service.
+- Gemini service status, quota, or billing: use Google's support channels; Avorythm does not operate the upstream service.
 
-Community support is best-effort. Include your Windows version, browser version, Lingora version, audio mode, Media Studio mode when relevant, FFmpeg version, and sanitized error message. Never include an API key, private recording, uploaded media, transcript, or unredacted local path.
+Community support is best-effort. Include your Windows version, browser version, Avorythm version, audio mode, Media Studio mode when relevant, FFmpeg version, and sanitized error message. Never include an API key, private recording, uploaded media, transcript, or unredacted local path.

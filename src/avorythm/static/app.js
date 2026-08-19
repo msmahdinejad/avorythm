@@ -1,6 +1,6 @@
 const $ = (selector) => document.querySelector(selector);
 const API = '/api';
-let locale = localStorage.getItem('lingora.locale') || localStorage.getItem('dubira.locale') || localStorage.getItem('voxilyra.locale') || 'fa';
+let locale = localStorage.getItem('avorythm.locale') || localStorage.getItem('lingora.locale') || localStorage.getItem('dubira.locale') || localStorage.getItem('voxilyra.locale') || 'fa';
 let bootstrap = null;
 let lastError = '';
 let selectedMediaFile = null;
@@ -17,10 +17,11 @@ let nativeSubtitleOpen = false;
 const messages = {
   fa: {
     navLive: 'زنده', navStudio: 'استودیوی فایل', navGuide: 'تنظیم صدا', quitApp: 'خروج کامل',
-    appClosed: 'Lingora بسته شد.', closeTab: 'اکنون می‌توانی این پنجره را ببندی.', translationModel: 'مدل ترجمه',
+    appClosed: 'Avorythm بسته شد.', closeTab: 'اکنون می‌توانی این پنجره را ببندی.', translationModel: 'مدل ترجمه',
     appOnline: 'اپ دسکتاپ آنلاین است', tagline: 'ترجمهٔ زنده، بدون دردسر',
     eyebrow: 'ترجمه و دوبلهٔ هم‌زمان با Gemini', heroTitle: 'هر صدایی را به زبان خودت بشنو.',
     heroText: 'صدای فیلم، کلاس و فایل صوتی را زنده ترجمه کن یا رسانه را برای پخش کاملاً هماهنگ پردازش کن.',
+    heroLive: 'ترجمهٔ پیوسته', heroSync: 'پخش هماهنگ فایل', heroLocal: 'خروجی محلی',
     start: 'شروع ترجمه', stop: 'توقف ترجمه', record: 'شروع ضبط', stopRecord: 'پایان ضبط',
     status: 'وضعیت', idle: 'آماده', connecting: 'در حال اتصال', connected: 'در حال ترجمه',
     error: 'خطا', detectedLanguage: 'زبان تشخیص‌داده‌شده', recording: 'ضبط', off: 'خاموش', on: 'روشن',
@@ -32,8 +33,8 @@ const messages = {
     setupDescription: 'یک مرحله در Windows Volume Mixer',
     setupDescriptionDarwin: 'انتخاب ورودی loopback در macOS',
     setupDescriptionLinux: 'انتخاب monitor صدا در Linux',
-    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی Lingora را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
-    setupHelpDarwin: 'در macOS یک ورودی loopback مثل BlackHole را به‌عنوان ورودی Lingora انتخاب کن. استودیوی فایل و اکستنشن به آن نیاز ندارند.',
+    setupHelp: 'برای اپ دسکتاپ، خروجی برنامهٔ منبع را روی AMM Virtual بگذار و خروجی Avorythm را روی هدفون واقعی نگه دار. اکستنشن و پردازش فایل به این مسیر نیاز ندارند.',
+    setupHelpDarwin: 'در macOS یک ورودی loopback مثل BlackHole را به‌عنوان ورودی Avorythm انتخاب کن. استودیوی فایل و اکستنشن به آن نیاز ندارند.',
     setupHelpLinux: 'در Linux ورودی monitor مربوط به PipeWire/PulseAudio را انتخاب کن. استودیوی فایل و اکستنشن به مسیر مجازی نیاز ندارند.',
     openWindowsMixer: 'باز کردن میکسر صدای ویندوز', audioGuide: 'آموزش تصویری تنظیم صدا',
     targetLanguage: 'زبان مقصد', speaker: 'گویندهٔ فایل',
@@ -77,10 +78,11 @@ const messages = {
   },
   en: {
     navLive: 'Live', navStudio: 'File studio', navGuide: 'Audio setup', quitApp: 'Quit app',
-    appClosed: 'Lingora is closed.', closeTab: 'You can close this window now.', translationModel: 'Translation model',
+    appClosed: 'Avorythm is closed.', closeTab: 'You can close this window now.', translationModel: 'Translation model',
     appOnline: 'Desktop app is online', tagline: 'Live translation, minus the friction',
     eyebrow: 'Real-time translation and dubbing with Gemini', heroTitle: 'Hear anything in your language.',
     heroText: 'Translate live audio or process audio/video files for timeline-locked playback.',
+    heroLive: 'Continuous translation', heroSync: 'Synchronized media', heroLocal: 'Local outputs',
     start: 'Start translation', stop: 'Stop translation', record: 'Start recording', stopRecord: 'Stop recording',
     status: 'Status', idle: 'Ready', connecting: 'Connecting', connected: 'Translating live', error: 'Error',
     detectedLanguage: 'Detected language', recording: 'Recording', off: 'Off', on: 'On',
@@ -92,8 +94,8 @@ const messages = {
     setupDescription: 'One step in Windows Volume Mixer',
     setupDescriptionDarwin: 'Select a macOS loopback input',
     setupDescriptionLinux: 'Select a Linux monitor source',
-    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep Lingora on physical headphones. The extension and file processor do not need this route.',
-    setupHelpDarwin: 'On macOS, select a loopback input such as BlackHole in Lingora. Media Studio and the extension do not need it.',
+    setupHelp: 'For desktop live dubbing, route the source app to AMM Virtual and keep Avorythm on physical headphones. The extension and file processor do not need this route.',
+    setupHelpDarwin: 'On macOS, select a loopback input such as BlackHole in Avorythm. Media Studio and the extension do not need it.',
     setupHelpLinux: 'On Linux, select the relevant PipeWire/PulseAudio monitor source. Media Studio and the extension need no virtual route.',
     openWindowsMixer: 'Open Windows volume mixer', audioGuide: 'Open the visual audio guide',
     targetLanguage: 'Target language', speaker: 'File dubbing voice',
@@ -151,7 +153,7 @@ function buildSubtitleWindow(target) {
   const doc = target.document;
   doc.documentElement.lang = locale;
   doc.documentElement.dir = locale === 'fa' ? 'rtl' : 'ltr';
-  doc.title = 'Lingora · Subtitles';
+  doc.title = 'Avorythm · Subtitles';
   doc.head.replaceChildren(); doc.body.replaceChildren();
   const style = doc.createElement('style');
   style.textContent = `
@@ -194,7 +196,7 @@ async function openSubtitleWindow() {
         width: Number($('#subtitleWidth').value), height: doubleLine ? 190 : 145
       });
     } else {
-      subtitleWindow = window.open('', 'lingora-subtitles', `popup,width=${$('#subtitleWidth').value},height=180,resizable=yes`);
+      subtitleWindow = window.open('', 'avorythm-subtitles', `popup,width=${$('#subtitleWidth').value},height=180,resizable=yes`);
     }
     if (!subtitleWindow) throw new Error('blocked');
     buildSubtitleWindow(subtitleWindow); renderSubtitleButton();
@@ -327,7 +329,7 @@ function applySettings(settings) {
   fillLanguages($('#mediaTargetLanguage'), bootstrap.languages, settings.target_language);
   fillSelect($('#captureDevice'), bootstrap.devices.captures, settings.capture_device);
   fillSelect($('#outputDevice'), bootstrap.devices.outputs, settings.output_device);
-  fillSelect($('#mediaVoice'), bootstrap.voices, localStorage.getItem('lingora.mediaVoice') || localStorage.getItem('dubira.mediaVoice') || 'Kore', (voice) => voice);
+  fillSelect($('#mediaVoice'), bootstrap.voices, localStorage.getItem('avorythm.mediaVoice') || localStorage.getItem('lingora.mediaVoice') || localStorage.getItem('dubira.mediaVoice') || 'Kore', (voice) => voice);
   $('#originalAudioEnabled').checked = settings.original_audio_enabled;
   $('#dubAudioEnabled').checked = settings.dub_audio_enabled;
   $('#sourceSubtitlesEnabled').checked = settings.source_subtitles_enabled;
@@ -593,7 +595,7 @@ async function loadPlayer(job) {
 
 $('#localeToggle').addEventListener('click', () => {
   locale = locale === 'fa' ? 'en' : 'fa';
-  localStorage.setItem('lingora.locale', locale);
+  localStorage.setItem('avorythm.locale', locale);
   translatePage();
   renderSubtitleButton();
 });
@@ -676,7 +678,7 @@ $('#clearTranscript').addEventListener('click', () => {
 ['originalAudioEnabled', 'dubAudioEnabled', 'sourceSubtitlesEnabled', 'translatedSubtitlesEnabled'].forEach((id) => $(`#${id}`).addEventListener('change', updateOutputControls));
 
 $('#mediaFile').addEventListener('change', (event) => selectMediaFile(event.target.files[0]));
-$('#mediaVoice').addEventListener('change', () => localStorage.setItem('lingora.mediaVoice', $('#mediaVoice').value));
+$('#mediaVoice').addEventListener('change', () => localStorage.setItem('avorythm.mediaVoice', $('#mediaVoice').value));
 ['dragenter', 'dragover'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.add('dragging'); }));
 ['dragleave', 'drop'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.remove('dragging'); }));
 $('#dropZone').addEventListener('drop', (event) => selectMediaFile(event.dataTransfer.files[0]));

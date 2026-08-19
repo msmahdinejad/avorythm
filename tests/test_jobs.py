@@ -8,11 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from dubira.config import ConfigStore
-from dubira.gemini import Narration, TextTranslation
-from dubira.groq import TranscriptSegment
-from dubira.jobs import MediaJobManager, subtitle_entries, transcript_score
-from dubira.media import MediaInfo, MediaTools, TranscriptionChunk
+from avorythm.config import ConfigStore
+from avorythm.gemini import Narration, TextTranslation
+from avorythm.groq import TranscriptSegment
+from avorythm.jobs import MediaJobManager, subtitle_entries, transcript_score
+from avorythm.media import MediaInfo, MediaTools, TranscriptionChunk
 
 
 class FakeTools:

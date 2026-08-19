@@ -10,6 +10,8 @@ const defaultState = {
   sourceLanguage: '',
   recordingReady: false,
   captureTabId: null,
+  playerTabId: null,
+  sourceTitle: '',
   config: null
 };
 
@@ -26,7 +28,7 @@ async function broadcastOverlay(state) {
   if (!state.captureTabId || !chrome.tabs?.sendMessage) return;
   try {
     await chrome.tabs.sendMessage(state.captureTabId, {
-      type: 'lingora-overlay',
+      type: 'avorythm-overlay',
       active: state.active,
       sourceText: state.sourceText,
       translatedText: state.translatedText,
@@ -78,8 +80,9 @@ async function bootstrap() {
 async function start(config) {
   const current = await getState();
   if (current.active) return current;
-  if (config?.consentVersion !== 1) throw new Error('consent_required');
-  if (config.recording && !await chrome.permissions.contains({permissions: ['downloads']})) {
+  const nextConfig = normalizeSettings(config);
+  if (nextConfig.consentVersion !== 1) throw new Error('consent_required');
+  if (nextConfig.recording && !await chrome.permissions.contains({permissions: ['downloads']})) {
     throw new Error('downloads_permission_missing');
   }
   const {apiKey} = await chrome.storage.session.get('apiKey');
@@ -87,22 +90,40 @@ async function start(config) {
   await ensureOffscreenDocument();
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   if (!tab?.id) throw new Error('active_tab_missing');
-  if (subtitlesEnabled(config)) await injectOverlay(tab.id);
+  if (subtitlesEnabled(nextConfig) && nextConfig.playbackMode !== 'synchronized') await injectOverlay(tab.id);
   const streamId = await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
-  await setState({active: true, status: 'connecting', error: '', sourceText: '', translatedText: '', recordingReady: false, captureTabId: tab.id, config});
+  let playerTabId = null;
+  if (nextConfig.playbackMode === 'synchronized') {
+    const player = await chrome.tabs.create({url: chrome.runtime.getURL('player.html'), active: true});
+    playerTabId = player.id || null;
+  }
+  await setState({
+    active: true,
+    status: 'connecting',
+    error: '',
+    sourceText: '',
+    translatedText: '',
+    sourceLanguage: '',
+    recordingReady: false,
+    captureTabId: tab.id,
+    playerTabId,
+    sourceTitle: tab.title || '',
+    config: nextConfig
+  });
   await broadcastOverlay(await getState());
-  const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config, apiKey});
+  const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config: nextConfig, apiKey});
   if (!response?.ok) {
     if (await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
+    if (playerTabId && chrome.tabs?.remove) await chrome.tabs.remove(playerTabId).catch(() => {});
     const failed = await setState({active: false, status: 'error', error: response?.error || 'capture_failed'});
     await broadcastOverlay(failed);
-    await setState({captureTabId: null, config: null});
+    await setState({captureTabId: null, playerTabId: null, config: null});
     throw new Error(response?.error || 'capture_failed');
   }
   return getState();
 }
 
-async function stop() {
+async function stop(requestingTabId = null) {
   const current = await getState();
   let failure = '';
   if (await hasOffscreenDocument()) {
@@ -112,7 +133,10 @@ async function stop() {
   }
   const state = await setState({active: false, status: 'idle'});
   await broadcastOverlay({...current, active: false});
-  const stopped = await setState({...state, captureTabId: null, config: null});
+  if (current.playerTabId && current.playerTabId !== requestingTabId && chrome.tabs?.remove) {
+    await chrome.tabs.remove(current.playerTabId).catch(() => {});
+  }
+  const stopped = await setState({...state, captureTabId: null, playerTabId: null, config: null});
   if (failure) throw new Error(failure);
   return stopped;
 }
@@ -152,24 +176,49 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       await chrome.storage.session.remove('apiKey');
       sendResponse({ok: true});
     } else if (message.type === 'start') sendResponse({ok: true, state: await start(message.config)});
-    else if (message.type === 'stop') sendResponse({ok: true, state: await stop()});
+    else if (message.type === 'stop') sendResponse({ok: true, state: await stop(sender.tab?.id || null)});
     else if (message.type === 'audio') {
       let state = await getState();
       if (state.active) {
-        if (subtitlesEnabled(message.config)) await injectOverlay(state.captureTabId);
-        state = await setState({config: message.config});
+        const nextConfig = normalizeSettings(message.config);
+        if (subtitlesEnabled(nextConfig) && nextConfig.playbackMode !== 'synchronized') await injectOverlay(state.captureTabId);
+        state = await setState({config: nextConfig});
         await broadcastOverlay(state);
       }
       if (await hasOffscreenDocument()) await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: message.config});
       sendResponse({ok: true});
+    } else if (message.type === 'media-control') {
+      const state = await getState();
+      if (!state.captureTabId) throw new Error('active_tab_missing');
+      const [{result} = {}] = await chrome.scripting.executeScript({
+        target: {tabId: state.captureTabId},
+        func: (action) => {
+          const media = [...document.querySelectorAll('video,audio')]
+            .filter((element) => element.duration > 0 || !element.paused)
+            .sort((left, right) => (right.clientWidth * right.clientHeight) - (left.clientWidth * left.clientHeight))[0];
+          if (!media) return {ok: false};
+          if (action === 'pause') media.pause();
+          else media.play().catch(() => {});
+          return {ok: true, paused: media.paused, currentTime: media.currentTime};
+        },
+        args: [message.action]
+      });
+      sendResponse({ok: Boolean(result?.ok), result});
     }
   })().catch(async (error) => {
     const current = await getState();
     const failed = await setState({active: false, status: 'error', error: error.message});
     await broadcastOverlay(failed);
     if (current.active && await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
-    await setState({captureTabId: null, config: null});
+    await setState({captureTabId: null, playerTabId: null, config: null});
     sendResponse({ok: false, error: error.message});
   });
   return true;
+});
+
+chrome.tabs?.onRemoved?.addListener(async (tabId) => {
+  const state = await getState();
+  if (state.active && (tabId === state.captureTabId || tabId === state.playerTabId)) {
+    await stop().catch(() => {});
+  }
 });

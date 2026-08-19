@@ -1,6 +1,6 @@
 # Roadmap
 
-Lingora is developed in public. Priorities are shaped by real-world use, accessibility needs, and community feedback rather than fixed release dates.
+Avorythm is developed in public. Priorities are shaped by real-world use, accessibility needs, and community feedback rather than fixed release dates.
 
 ## Available today
 
@@ -21,4 +21,4 @@ Lingora is developed in public. Priorities are shaped by real-world use, accessi
 - Better accessibility, keyboard navigation, and additional interface languages
 - Microsoft Edge Add-ons distribution
 
-Feature requests and bug reports are welcome in [GitHub Issues](https://github.com/msmahdinejad/lingora/issues).
+Feature requests and bug reports are welcome in [GitHub Issues](https://github.com/msmahdinejad/avorythm/issues).

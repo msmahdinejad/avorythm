@@ -7,7 +7,7 @@ from types import SimpleNamespace, TracebackType
 import pytest
 from google.genai import types as genai_types
 
-from dubira.gemini import (
+from avorythm.gemini import (
     GeminiFileGateway,
     GeminiGateway,
     LiveEvent,
@@ -17,7 +17,7 @@ from dubira.gemini import (
     transient_live_error,
     trim_stream_padding,
 )
-from dubira.models import Settings
+from avorythm.models import Settings
 
 
 class FakeSession:
@@ -151,7 +151,7 @@ def test_gateway_disables_websocket_ping_timeout(monkeypatch: pytest.MonkeyPatch
         captured.update(kwargs)
         return SimpleNamespace()
 
-    monkeypatch.setattr("dubira.gemini.genai.Client", client)
+    monkeypatch.setattr("avorythm.gemini.genai.Client", client)
     GeminiGateway("test-key")
 
     options = captured["http_options"]

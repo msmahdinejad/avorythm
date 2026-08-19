@@ -6,15 +6,15 @@ import {
   audioChannelVolume,
   audioMessage,
   base64ToBytes,
-  ephemeralLiveUrl,
-  ephemeralTokenRequest,
+  captionSegments,
+  latestCaption,
+  liveUrl,
   mergeTranscript,
   normalizeSettings,
   setupMessage,
   srt,
   subtitlesEnabled,
   LIVE_ENDPOINT,
-  TOKEN_ENDPOINT,
   wavHeader
 } from '../extension/core.mjs';
 
@@ -46,36 +46,37 @@ test('migrates legacy subtitle preset without muting its original audio', () => 
 });
 
 test('app and extension expose the same four output controls', () => {
-  const app = readFileSync(new URL('../src/dubira/static/index.html', import.meta.url), 'utf8');
-  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/avorythm/static/index.html', import.meta.url), 'utf8');
+  const options = readFileSync(new URL('../extension/options.html', import.meta.url), 'utf8');
   for (const id of ['originalAudioEnabled', 'dubAudioEnabled', 'sourceSubtitlesEnabled', 'translatedSubtitlesEnabled']) {
     assert.match(app, new RegExp(`id="${id}"`));
-    assert.match(popup, new RegExp(`id="${id}"`));
+    assert.match(options, new RegExp(`id="${id}"`));
   }
   assert.doesNotMatch(app, /id="liveMode"/);
-  assert.doesNotMatch(popup, /id="audioMode"/);
+  assert.doesNotMatch(options, /id="audioMode"/);
 });
 
 test('public surfaces link to the canonical project and privacy policy', () => {
-  const app = readFileSync(new URL('../src/dubira/static/index.html', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/avorythm/static/index.html', import.meta.url), 'utf8');
   const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  const options = readFileSync(new URL('../extension/options.html', import.meta.url), 'utf8');
   const manifest = JSON.parse(readFileSync(new URL('../extension/manifest.json', import.meta.url), 'utf8'));
-  const homepage = 'https://github.com/msmahdinejad/lingora';
+  const homepage = 'https://github.com/msmahdinejad/avorythm';
   assert.equal(manifest.homepage_url, homepage);
   assert.match(app, new RegExp(homepage));
   assert.match(popup, new RegExp(homepage));
-  assert.match(popup, /PRIVACY\.md/);
+  assert.match(options, /PRIVACY\.md/);
   assert.equal(manifest.default_locale, 'en');
   assert.deepEqual(manifest.optional_permissions, ['downloads']);
 });
 
 test('extension requires explicit first-capture consent', () => {
-  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
-  const script = readFileSync(new URL('../extension/popup.js', import.meta.url), 'utf8');
+  const options = readFileSync(new URL('../extension/options.html', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('../extension/options.js', import.meta.url), 'utf8');
   const background = readFileSync(new URL('../extension/background.js', import.meta.url), 'utf8');
-  assert.match(popup, /id="dataConsent"/);
+  assert.match(options, /id="dataConsent"/);
   assert.match(script, /CONSENT_VERSION = 1/);
-  assert.match(background, /config\?\.consentVersion !== 1/);
+  assert.match(background, /nextConfig\.consentVersion !== 1/);
 });
 
 test('builds the documented Gemini Live Translate protocol', () => {
@@ -84,17 +85,26 @@ test('builds the documented Gemini Live Translate protocol', () => {
   assert.equal(setup.generationConfig.translationConfig.targetLanguageCode, 'fa');
   assert.deepEqual(setup.inputAudioTranscription, {});
   assert.deepEqual(setup.outputAudioTranscription, {});
-  assert.equal('inputAudioTranscription' in setup.generationConfig, false);
-  assert.equal('outputAudioTranscription' in setup.generationConfig, false);
   assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
   assert.equal(audioMessage(Uint8Array.from([0, 1, 255])).realtimeInput.audio.data, 'AAH/');
-  assert.match(LIVE_ENDPOINT, /v1alpha\.GenerativeService\.BidiGenerateContentConstrained$/);
-  assert.equal(TOKEN_ENDPOINT, 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens');
-  assert.match(ephemeralLiveUrl('auth_tokens/a+b'), /access_token=auth_tokens%2Fa%2Bb$/);
-  const token = ephemeralTokenRequest('fa', Date.UTC(2026, 7, 13));
-  assert.equal(token.uses, 1);
-  assert.equal(token.bidiGenerateContentSetup.model, 'models/gemini-3.5-live-translate-preview');
-  assert.equal(token.bidiGenerateContentSetup.generationConfig.translationConfig.targetLanguageCode, 'fa');
+  assert.match(LIVE_ENDPOINT, /v1beta\.GenerativeService\.BidiGenerateContent$/);
+  assert.match(liveUrl('AIza/a+b'), /\?key=AIza%2Fa%2Bb$/);
+});
+
+test('keeps live captions sentence-sized', () => {
+  assert.deepEqual(captionSegments('First sentence. Second sentence?'), ['First sentence.', 'Second sentence?']);
+  assert.equal(latestCaption('First sentence. Second sentence?'), 'Second sentence?');
+  assert.ok(captionSegments('word '.repeat(60), 42).every((part) => part.length <= 42));
+});
+
+test('ships a dedicated synchronized player and separate settings page', () => {
+  const manifest = JSON.parse(readFileSync(new URL('../extension/manifest.json', import.meta.url), 'utf8'));
+  const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
+  const player = readFileSync(new URL('../extension/player.js', import.meta.url), 'utf8');
+  assert.equal(manifest.options_ui.page, 'options.html');
+  assert.match(popup, /value="synchronized"/);
+  assert.match(player, /MediaSource/);
+  assert.match(player, /avorythm-sync/);
 });
 
 test('hidden popup notices stay hidden', () => {
@@ -126,11 +136,11 @@ test('drops a committed prefix from cumulative transcript updates', () => {
 test('subtitle surfaces remain scrollable', () => {
   const overlay = readFileSync(new URL('../extension/content.js', import.meta.url), 'utf8');
   const popup = readFileSync(new URL('../extension/popup.css', import.meta.url), 'utf8');
-  const native = readFileSync(new URL('../src/dubira/static/subtitle-window.css', import.meta.url), 'utf8');
-  const dashboard = readFileSync(new URL('../src/dubira/static/styles.css', import.meta.url), 'utf8');
-  const browserPopup = readFileSync(new URL('../src/dubira/static/app.js', import.meta.url), 'utf8');
+  const native = readFileSync(new URL('../src/avorythm/static/subtitle-window.css', import.meta.url), 'utf8');
+  const dashboard = readFileSync(new URL('../src/avorythm/static/styles.css', import.meta.url), 'utf8');
+  const browserPopup = readFileSync(new URL('../src/avorythm/static/app.js', import.meta.url), 'utf8');
   assert.match(overlay, /overflow:\s*auto/);
-  assert.match(popup, /\.transcripts>div\{[^}]*overflow-y:\s*auto/);
+  assert.doesNotMatch(popup, /\.live-copy/);
   assert.match(native, /overflow-y:\s*auto/);
   assert.match(dashboard, /\.transcript\{[^}]*overflow-y:\s*auto/);
   assert.match(browserPopup, /\.card\{[^}]*overflow-y:\s*auto/s);

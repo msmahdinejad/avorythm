@@ -51,7 +51,7 @@ def create_app(
         await media.close()
 
     app = FastAPI(
-        title="Lingora Desktop",
+        title="Avorythm Desktop",
         version=__version__,
         docs_url=None,
         redoc_url=None,
@@ -80,7 +80,7 @@ def create_app(
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
-        return {"status": "ok", "app": "Lingora", "version": __version__}
+        return {"status": "ok", "app": "Avorythm", "version": __version__}
 
     @app.get("/api/bootstrap")
     def bootstrap() -> dict[str, object]:

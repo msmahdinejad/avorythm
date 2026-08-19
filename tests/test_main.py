@@ -5,9 +5,9 @@ import importlib
 
 import pytest
 
-from dubira.__main__ import NativeApi
+from avorythm.__main__ import NativeApi
 
-main_module = importlib.import_module("dubira.__main__")
+main_module = importlib.import_module("avorythm.__main__")
 
 
 class FakeWindow:
@@ -58,7 +58,7 @@ def test_native_subtitle_window_is_created_lazily() -> None:
     assert api._subtitle_window is None
     assert api.show_subtitles(720, 180) is True
     assert webview.created is not None
-    assert webview.created["title"] == "Lingora Subtitles"
+    assert webview.created["title"] == "Avorythm Subtitles"
     assert webview.created["on_top"] is True
     assert webview.created["frameless"] is True
     assert api._subtitle_window is not None
@@ -73,7 +73,7 @@ def test_normal_desktop_launch_never_opens_a_browser(
         "parse_args",
         lambda: argparse.Namespace(no_browser=False, browser=False),
     )
-    monkeypatch.setattr(main_module, "running_app", lambda: "lingora")
+    monkeypatch.setattr(main_module, "running_app", lambda: "avorythm")
     monkeypatch.setattr(main_module.webbrowser, "open", opened.append)
 
     main_module.main()
@@ -88,7 +88,7 @@ def test_browser_launch_opens_existing_local_app(monkeypatch: pytest.MonkeyPatch
         "parse_args",
         lambda: argparse.Namespace(no_browser=False, browser=True),
     )
-    monkeypatch.setattr(main_module, "running_app", lambda: "lingora")
+    monkeypatch.setattr(main_module, "running_app", lambda: "avorythm")
     monkeypatch.setattr(main_module.webbrowser, "open", opened.append)
 
     main_module.main()

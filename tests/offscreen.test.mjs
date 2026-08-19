@@ -17,16 +17,6 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
       }
     }
   };
-  let tokenNumber = 0;
-  globalThis.fetch = async (url, options) => {
-    assert.equal(url, 'https://generativelanguage.googleapis.com/v1alpha/auth_tokens');
-    assert.equal(options.headers['x-goog-api-key'], 'test-key');
-    const request = JSON.parse(options.body);
-    assert.equal(request.bidiGenerateContentSetup.model, 'models/gemini-3.5-live-translate-preview');
-    tokenNumber += 1;
-    return {ok: true, async json() { return {name: `auth_tokens/test-${tokenNumber}`}; }};
-  };
-
   class AudioNode {
     connect() { return this; }
     disconnect() {}
@@ -63,7 +53,7 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
     readyState = 0;
     sent = [];
     constructor(url) {
-      assert.match(url, /v1alpha\.GenerativeService\.BidiGenerateContentConstrained\?access_token=auth_tokens%2Ftest-/);
+      assert.match(url, /v1beta\.GenerativeService\.BidiGenerateContent\?key=test-key$/);
       WebSocket.instances.push(this);
       queueMicrotask(() => {
         this.readyState = WebSocket.OPEN;
@@ -121,9 +111,14 @@ test('serializes consecutive Blob-framed Gemini messages', async () => {
   assert.equal(WebSocket.instances[0].sent.at(-1).realtimeInput.audio.data, 'AAE=');
 
   WebSocket.instances[0].onmessage({data: new Blob([JSON.stringify({goAway: {timeLeft: '10s'}})])});
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  for (let index = 0; index < 25; index += 1) {
+    worklet.port.onmessage({data: Uint8Array.from([index, 0])});
+  }
   await new Promise((resolve) => setTimeout(resolve, 700));
   assert.equal(WebSocket.instances.length, 2);
   assert.equal(WebSocket.instances[1].sent[0].setup.model, 'models/gemini-3.5-live-translate-preview');
+  assert.equal(WebSocket.instances[1].sent.filter((message) => message.realtimeInput?.audio).length, 25);
 
   const stopped = await new Promise((resolve) => receive({
     target: 'offscreen',

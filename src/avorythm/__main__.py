@@ -31,7 +31,7 @@ class NativeApi:
     def show_subtitles(self, width: int = 720, height: int = 180) -> bool:
         if self._subtitle_window is None and self._webview is not None:
             self._subtitle_window = self._webview.create_window(
-                "Lingora Subtitles",
+                "Avorythm Subtitles",
                 "http://127.0.0.1:8765/subtitle-window.html",
                 js_api=self,
                 width=720,
@@ -63,7 +63,7 @@ class NativeApi:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Lingora desktop application")
+    parser = argparse.ArgumentParser(description="Avorythm desktop application")
     parser.add_argument("--no-browser", action="store_true")
     parser.add_argument("--browser", action="store_true", help="open in the default browser")
     return parser.parse_args()
@@ -75,13 +75,13 @@ def running_app() -> str:
             payload = json.loads(response.read().decode("utf-8"))
             if response.status != 200 or payload.get("status") != "ok":
                 return "none"
-            return "lingora" if payload.get("app") == "Lingora" else "legacy"
+            return "avorythm" if payload.get("app") == "Avorythm" else "legacy"
     except (OSError, ValueError, urllib.error.URLError):
         return "none"
 
 
 def app_is_running() -> bool:
-    return running_app() == "lingora"
+    return running_app() == "avorythm"
 
 
 def stop_legacy_app() -> None:
@@ -92,7 +92,7 @@ def stop_legacy_app() -> None:
         if running_app() == "none":
             return
         time.sleep(0.1)
-    raise SystemExit("Close the older Lingora/Dubira process before starting Lingora.")
+    raise SystemExit("Close the older translation process before starting Avorythm.")
 
 
 def main() -> None:
@@ -130,16 +130,16 @@ def main() -> None:
         server.run()
         return
 
-    thread = Thread(target=server.run, name="lingora-server", daemon=True)
+    thread = Thread(target=server.run, name="avorythm-server", daemon=True)
     thread.start()
     for _ in range(80):
         if app_is_running():
             break
         if not thread.is_alive():
-            raise SystemExit("Lingora local server could not start.")
+            raise SystemExit("Avorythm local server could not start.")
         time.sleep(0.05)
     else:
-        raise SystemExit("Lingora local server did not become ready.")
+        raise SystemExit("Avorythm local server did not become ready.")
 
     try:
         import webview  # type: ignore[import-not-found]
@@ -147,7 +147,7 @@ def main() -> None:
         native_api = NativeApi(webview)
         webview.settings["ALLOW_DOWNLOADS"] = True
         main_window = webview.create_window(
-            "Lingora",
+            "Avorythm",
             "http://127.0.0.1:8765",
             js_api=native_api,
             width=1360,
@@ -156,7 +156,7 @@ def main() -> None:
             background_color="#070914",
         )
         if main_window is None:
-            raise RuntimeError("Lingora native window could not be created")
+            raise RuntimeError("Avorythm native window could not be created")
         def close_native_windows() -> None:
             server.should_exit = True
             if native_api._subtitle_window is not None:
@@ -166,7 +166,7 @@ def main() -> None:
         main_window.events.closed += close_native_windows
         webview.start(
             private_mode=False,
-            storage_path=str(Path.home() / ".lingora-webview"),
+            storage_path=str(Path.home() / ".avorythm-webview"),
         )
     finally:
         server.should_exit = True

@@ -1,5 +1,5 @@
 {
-  "appName": {"message": "Lingora — Live Translation"},
-  "appDescription": {"message": "Translate, dub, or caption audio from the current tab live with Gemini."},
-  "actionTitle": {"message": "Open Lingora live translation"}
+  "appName": {"message": "Avorythm — Live Translation"},
+  "appDescription": {"message": "Translate, dub, or caption a tab live with Gemini, with optional buffered playback for tighter sync."},
+  "actionTitle": {"message": "Open Avorythm live translation"}
 }

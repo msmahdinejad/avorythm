@@ -3,8 +3,8 @@ from pathlib import Path
 import httpx
 import pytest
 
-from dubira.groq import GroqWhisperGateway, TranscriptSegment, merge_segments, parse_transcription
-from dubira.media import TranscriptionChunk
+from avorythm.groq import GroqWhisperGateway, TranscriptSegment, merge_segments, parse_transcription
+from avorythm.media import TranscriptionChunk
 
 
 def test_overlap_keeps_only_each_chunks_core() -> None:
@@ -58,7 +58,7 @@ async def test_gateway_retries_rate_limit_and_returns_verbose_json(
     async def no_sleep(seconds: float) -> None:
         assert seconds == 0.5
 
-    monkeypatch.setattr("dubira.groq.asyncio.sleep", no_sleep)
+    monkeypatch.setattr("avorythm.groq.asyncio.sleep", no_sleep)
     path = tmp_path / "chunk.flac"
     path.write_bytes(b"flac")
     client = httpx.AsyncClient(transport=httpx.MockTransport(handler))

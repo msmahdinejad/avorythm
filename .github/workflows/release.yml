@@ -40,9 +40,13 @@ jobs:
           $packageVersion = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
           if ($tagVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Release tag must be vMAJOR.MINOR.PATCH" }
           if ($tagVersion -ne $packageVersion) { throw "Tag $tagVersion does not match package $packageVersion" }
-      - name: Install Linux audio runtime
+      - name: Install Linux media and audio runtime
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libportaudio2
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg libportaudio2
+      - name: Install Windows media tools for bundling
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install ffmpeg --version=9.0.1 --no-progress -y
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev,build]"
       - run: python scripts/build.py
@@ -69,10 +73,10 @@ jobs:
       - name: Upload unsigned installer for SignPath
         if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
         id: upload-unsigned-installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signpath-unsigned-installer
-          path: dist/Lingora-Setup-x64.exe
+          path: dist/Avorythm-Setup-x64.exe
           if-no-files-found: error
       - name: Submit installer to SignPath
         if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
@@ -94,35 +98,35 @@ jobs:
         if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED == 'true'
         shell: pwsh
         run: |
-          $signed = Get-ChildItem -Path dist/signpath-signed -Recurse -File -Filter Lingora-Setup-x64.exe | Select-Object -First 1
-          if (-not $signed) { throw "SignPath did not return Lingora-Setup-x64.exe" }
-          Copy-Item -LiteralPath $signed.FullName -Destination dist/Lingora-Setup-x64.exe -Force
-          $signature = Get-AuthenticodeSignature -LiteralPath dist/Lingora-Setup-x64.exe
+          $signed = Get-ChildItem -Path dist/signpath-signed -Recurse -File -Filter Avorythm-Setup-x64.exe | Select-Object -First 1
+          if (-not $signed) { throw "SignPath did not return Avorythm-Setup-x64.exe" }
+          Copy-Item -LiteralPath $signed.FullName -Destination dist/Avorythm-Setup-x64.exe -Force
+          $signature = Get-AuthenticodeSignature -LiteralPath dist/Avorythm-Setup-x64.exe
           if ($signature.Status -ne 'Valid') { throw "Signed installer verification failed: $($signature.StatusMessage)" }
-      - name: Keep unsigned installer out of public release
+      - name: Mark installer as unsigned while SignPath is pending
         if: runner.os == 'Windows' && vars.SIGNPATH_ENABLED != 'true'
         shell: pwsh
-        run: Remove-Item -LiteralPath dist/Lingora-Setup-x64.exe -Force
-      - uses: actions/upload-artifact@v4
+        run: Move-Item -LiteralPath dist/Avorythm-Setup-x64.exe -Destination dist/Avorythm-Setup-x64-unsigned.exe
+      - uses: actions/upload-artifact@v7
         with:
           name: release-${{ runner.os }}
           path: |
-            dist/Lingora-*.zip
-            dist/Lingora-Setup-x64.exe
+            dist/Avorythm-*.zip
+            dist/Avorythm-Setup-x64*.exe
           if-no-files-found: error
 
   publish:
     needs: desktop
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: release-*
           path: dist
           merge-multiple: true
       - name: Create checksums
         working-directory: dist
-        run: sha256sum Lingora-* > SHA256SUMS.txt
+        run: sha256sum Avorythm-* > SHA256SUMS.txt
       - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.RELEASE_TAG }}
@@ -130,10 +134,10 @@ jobs:
           body: |
             ## Code signing policy
 
-            Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+            SignPath Foundation review is pending. An installer ending in `-unsigned.exe` is authentic to this repository but is not code-signed yet, so Windows SmartScreen may show an unrecognized-publisher warning. After approval, releases will contain the SignPath-signed `Avorythm-Setup-x64.exe` instead.
 
-            Windows installers are published only after SignPath origin verification and manual approval. See the [complete code signing policy](https://github.com/msmahdinejad/lingora/blob/main/CODE_SIGNING_POLICY.md) and [privacy policy](https://github.com/msmahdinejad/lingora/blob/main/PRIVACY.md).
+            See the [code-signing policy](https://github.com/msmahdinejad/avorythm/blob/main/CODE_SIGNING_POLICY.md) and [privacy policy](https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md).
           files: |
-            dist/Lingora-*.zip
-            dist/Lingora-Setup-x64.exe
+            dist/Avorythm-*.zip
+            dist/Avorythm-Setup-x64*.exe
             dist/SHA256SUMS.txt

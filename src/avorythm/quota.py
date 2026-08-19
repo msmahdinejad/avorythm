@@ -14,7 +14,7 @@ class TokenCharge:
 
 
 class TokenGovernor:
-    """Conservative rolling budget for Lingora's own Gemini traffic."""
+    """Conservative rolling budget for Avorythm's own Gemini traffic."""
 
     def __init__(
         self,

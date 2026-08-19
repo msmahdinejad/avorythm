@@ -15,12 +15,12 @@ VSVersionInfo(
         "040904B0",
         [
           StringStruct("CompanyName", "Mohammad Saleh Mahdinejad"),
-          StringStruct("FileDescription", "Lingora multilingual live translation"),
+          StringStruct("FileDescription", "Avorythm multilingual live translation"),
           StringStruct("FileVersion", "1.0.0"),
-          StringStruct("InternalName", "Lingora"),
+          StringStruct("InternalName", "Avorythm"),
           StringStruct("LegalCopyright", "Copyright (c) 2026 Mohammad Saleh Mahdinejad"),
-          StringStruct("OriginalFilename", "Lingora.exe"),
-          StringStruct("ProductName", "Lingora Live Translator"),
+          StringStruct("OriginalFilename", "Avorythm.exe"),
+          StringStruct("ProductName", "Avorythm Live Translator"),
           StringStruct("ProductVersion", "1.0.0"),
         ],
       )

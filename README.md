@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/branding/lingora-logo.png" width="148" alt="Lingora logo">
+  <img src="assets/branding/avorythm-logo.png" width="148" alt="Avorythm logo">
 </p>
 
-<h1 align="center">Lingora</h1>
+<h1 align="center">Avorythm</h1>
 
 <p align="center"><strong>Hear every voice—or just read it—in your language.</strong></p>
 
@@ -12,8 +12,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/msmahdinejad/lingora/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/lingora/ci.yml?branch=main&label=CI"></a>
-  <a href="https://github.com/msmahdinejad/lingora/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/lingora?label=Release"></a>
+  <a href="https://github.com/msmahdinejad/avorythm/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/msmahdinejad/avorythm/ci.yml?branch=main&label=CI"></a>
+  <a href="https://github.com/msmahdinejad/avorythm/releases"><img alt="Release" src="https://img.shields.io/github/v/release/msmahdinejad/avorythm?label=Release"></a>
   <img alt="Python 3.12" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Node 20+" src="https://img.shields.io/badge/Node-20%2B-339933?logo=nodedotjs&logoColor=white">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-8B5CF6"></a>
@@ -27,9 +27,9 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-![Lingora desktop app](docs/images/app-en.jpg)
+![Avorythm desktop app](docs/images/app-en.png)
 
-## Choose how you use Lingora
+## Choose how you use Avorythm
 
 | Use case | What you need | Virtual audio device |
 |---|---|---|
@@ -44,6 +44,7 @@ Python, FFmpeg, localhost, or a virtual audio cable.
 
 - Live translated speech with source and translated captions.
 - Four independent output channels: original audio, dubbed audio, source subtitles, and translated subtitles.
+- Two extension playback paths: low-latency output on the current page, or a dedicated buffered player that keeps captured video, dub, and both caption tracks on one timeline.
 - A movable, resizable frosted-glass subtitle card with adjustable size, width, and opacity.
 - Optional recording of `original.wav`, `dubbed.wav`, `source.srt`, and `translated.srt`.
 - Audio/video upload with timestamped transcription, translation, generated speech, and synchronized playback.
@@ -51,27 +52,32 @@ Python, FFmpeg, localhost, or a virtual audio cable.
 - Persian and English interfaces with automatic RTL/LTR text direction.
 - Native desktop windows for Windows, macOS, and Linux.
 
-![Lingora standalone browser extension](docs/images/extension-en.jpg)
+![Avorythm standalone browser extension](store-assets/en/01-popup.png)
 
 ## Quick start
 
 ### Desktop app
 
-Download the build for your operating system from [Releases](https://github.com/msmahdinejad/lingora/releases).
-Windows users can install `Lingora-Setup-x64.exe`; macOS and Linux users can extract the matching
-ZIP. Keep FFmpeg enabled during Windows setup if you want to process uploaded media.
+Download the build for your operating system from [Releases](https://github.com/msmahdinejad/avorythm/releases).
+Until SignPath approval is complete, Windows users install the clearly named
+`Avorythm-Setup-x64-unsigned.exe`; macOS and Linux users can extract the matching ZIP. The Windows
+build already contains FFmpeg for uploaded-media processing.
 
 The app needs a Gemini API key. Media Studio additionally needs a Groq API key for Whisper.
 Keys are stored in the operating-system keyring.
 
 ### Browser extension
 
-Use the Chrome Web Store version when it is available. For a manual installation from a release:
+For a manual installation from a GitHub release:
 
-1. Extract `Lingora-Extension.zip` into a permanent folder.
+1. Extract `Avorythm-Extension.zip` into a permanent folder.
 2. Open `chrome://extensions` or `edge://extensions`.
 3. Enable **Developer mode**, select **Load unpacked**, and choose the extracted folder.
-4. Pin Lingora, enter your Gemini key for the current browser session, and start translation on a normal media tab.
+4. Pin Avorythm, complete the one-time setup on its separate Settings page, then start translation on a normal media tab.
+
+Choose **On this page** for the lowest practical delay, or **Synchronized player** to hold a few
+seconds of captured audio/video and place the generated dub on the same playback timeline. Protected
+DRM media can block video capture; Avorythm reports the limitation and on-page mode remains available.
 
 The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
 
@@ -82,7 +88,7 @@ macOS loopback, Linux monitor sources, proxy setup, and troubleshooting.
 
 - Live desktop and selected-tab audio is sent to Google Gemini only after the user starts translation.
 - Uploaded media stays on the computer; extracted audio chunks go to Groq Whisper, while transcript text and generated speech requests go to Gemini.
-- Preferences and generated files remain local. Lingora has no analytics, advertising, or developer telemetry.
+- Preferences and generated files remain local. Avorythm has no analytics, advertising, or developer telemetry.
 - Recording is optional and disabled by default.
 
 Read the bilingual [privacy policy](PRIVACY.md) before processing private or copyrighted media.
@@ -98,8 +104,8 @@ python -m pip install -e ".[dev,build]"
 python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
-node --test tests\*.test.mjs
-python -m lingora
+node --test tests/background.test.mjs tests/extension.test.mjs tests/offscreen.test.mjs tests/player.test.mjs
+python -m avorythm
 ```
 
 Build the current platform and package the extension:
@@ -114,17 +120,17 @@ Contributor documentation: [architecture](ARCHITECTURE.md), [contributing guide]
 
 ## Release trust
 
-Verify downloads against `SHA256SUMS.txt` from the same GitHub Release. Windows signing and
-verification rules are documented in the [code-signing policy](CODE_SIGNING_POLICY.md).
-
-Free code signing provided by [SignPath.io](https://signpath.io/), certificate by
-[SignPath Foundation](https://signpath.org/).
+Verify downloads against `SHA256SUMS.txt` from the same GitHub Release. The current Windows installer
+is explicitly marked unsigned while the SignPath Foundation application is pending, so SmartScreen may
+show an unrecognized-publisher warning. Signing and verification rules are documented in the
+[code-signing policy](CODE_SIGNING_POLICY.md).
 
 ## Project status
 
-Lingora is under active development and uses preview AI services. Accuracy, voices, latency,
+Avorythm is under active development and uses preview AI services. Accuracy, voices, latency,
 availability, and upstream quotas can change. Review important translations before relying on them.
 
 ## License
 
-[MIT](LICENSE) © Mohammad Saleh Mahdinejad
+[MIT](LICENSE) © Mohammad Saleh Mahdinejad. The Windows package also contains FFmpeg under GPLv3;
+see the [third-party notices](THIRD_PARTY_NOTICES.md).

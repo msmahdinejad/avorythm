@@ -7,10 +7,9 @@ import sys
 import wave
 from pathlib import Path
 
-from dubira.config import ConfigStore
-from dubira.gemini import GeminiGateway
-from dubira.jobs import complete_translation
-from dubira.models import Settings
+from avorythm.config import ConfigStore
+from avorythm.gemini import GeminiGateway
+from avorythm.models import Settings
 
 
 def arguments() -> argparse.Namespace:
@@ -50,8 +49,7 @@ async def smoke(wav_path: Path, target_language: str) -> None:
         print(f"Translation ({settings.target_language}): {result.translated_text}")
         print(f"Audio bytes: {len(result.audio)}")
         print(f"Tokens: {result.total_tokens}")
-        seconds = len(source_16khz) / (16_000 * 2)
-        if not complete_translation(result, seconds):
+        if not result.translated_text.strip() or len(result.audio) < 24_000:
             raise RuntimeError("Live Translate returned incomplete output")
     finally:
         await gateway.close()

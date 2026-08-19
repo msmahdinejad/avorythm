@@ -1,10 +1,10 @@
 (() => {
-  if (window.__lingoraSubtitleOverlay) return;
+  if (window.__avorythmSubtitleOverlay) return;
 
   const host = document.createElement('div');
   const arabicFont = chrome.runtime.getURL('assets/vazirmatn-arabic.woff2');
   const latinFont = chrome.runtime.getURL('assets/vazirmatn-latin.woff2');
-  host.id = 'lingora-subtitle-host';
+  host.id = 'avorythm-subtitle-host';
   host.style.cssText = 'position:fixed;z-index:2147483647;inset:auto;pointer-events:none;display:none;';
   const shadow = host.attachShadow({mode: 'open'});
   shadow.innerHTML = `
@@ -87,7 +87,7 @@
   });
 
   chrome.runtime.onMessage.addListener((message) => {
-    if (message?.type === 'lingora-overlay') render(message);
+    if (message?.type === 'avorythm-overlay') render(message);
   });
-  window.__lingoraSubtitleOverlay = {render};
+  window.__avorythmSubtitleOverlay = {render};
 })();

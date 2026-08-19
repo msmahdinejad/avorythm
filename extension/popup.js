@@ -1,174 +1,177 @@
-import {normalizeSettings, subtitlesEnabled} from './core.mjs';
+import {normalizeSettings} from './core.mjs';
 
 const $ = (selector) => document.querySelector(selector);
-let settings = null;
+const CONSENT_VERSION = 1;
+let settings = normalizeSettings();
 let bootstrap = null;
 let timer = null;
-const CONSENT_VERSION = 1;
 
 const copy = {
-  fa:{tagline:'ترجمهٔ زندهٔ همین تب',keyHelp:'کلید فقط تا وقتی مرورگر باز است نگه‌داری می‌شود و مستقیم به Google فرستاده می‌شود.',ready:'آمادهٔ ترجمه',connecting:'در حال اتصال…',connected:'ترجمهٔ زنده فعال است',error:'خطا در اتصال',source:'متن اصلی',translated:'ترجمه',waiting:'منتظر صدا…',waitingTranslation:'ترجمه اینجا می‌آید…',language:'زبان مقصد',nativeVoiceHelp:'Gemini Live صدای گوینده را خودکار بازتولید می‌کند.',outputMixer:'خروجی دلخواه من',outputMixerHint:'هر چهار کانال مستقل‌اند',sourceSubtitles:'زیرنویس اصلی',translatedSubtitles:'زیرنویس ترجمه',subtitleBox:'کادر زیرنویس',dragHint:'روی نوار بالای کادر بکش تا جابه‌جا شود',subtitlePosition:'جای اولیه',bottomCenter:'پایین وسط',bottomLeft:'پایین چپ',bottomRight:'پایین راست',topCenter:'بالا وسط',subtitleSize:'اندازهٔ متن',subtitleWidth:'عرض کادر',subtitleOpacity:'شفافیت پس‌زمینه',sourceVolume:'صدای اصلی',dubVolume:'صدای دوبله',duckHelp:'هنگام صحبت دوبله، صدای اصلی خودکار کم شود',saveOutputs:'ذخیرهٔ چهار خروجی',outputsHelp:'دو WAV و دو SRT مستقیم در Downloads',start:'شروع ترجمهٔ این تب',stop:'توقف ترجمه',downloadReady:'چهار فایل در Downloads ذخیره شدند.',privacy:'با شروع، صدای همین تب به Google Gemini فرستاده می‌شود؛ ضبط فقط با فعال‌کردن گزینهٔ بالا انجام می‌شود.',keyMissing:'Gemini API Key را وارد کن',keyMissingShort:'تنظیم نشده',keyReady:'برای این نشست مرورگر آماده است',saveKey:'ذخیره',clearKey:'حذف کلید',api_key_missing:'Gemini API Key را وارد کن',api_key_invalid:'API Key معتبر نیست',gemini_socket_failed:'اتصال مستقیم به Gemini ممکن نشد؛ پروکسی مرورگر را بررسی کن.',gemini_socket_closed:'اتصال Gemini بسته شد.',active_tab_missing:'تب فعالی پیدا نشد.',capture_failed:'Capture صدای تب ممکن نشد.',subtitle_overlay_unavailable:'نمایش زیرنویس روی این صفحه مجاز نیست؛ یک صفحهٔ عادی وب را باز کن.'},
-  en:{tagline:'Translate this tab live',keyHelp:'The key is kept only for this browser session and sent directly to Google.',ready:'Ready to translate',connecting:'Connecting…',connected:'Live translation is active',error:'Connection error',source:'Source transcript',translated:'Translation',waiting:'Waiting for audio…',waitingTranslation:'Translation appears here…',language:'Target language',nativeVoiceHelp:'Gemini Live automatically reproduces the speaker voice.',outputMixer:'My output mix',outputMixerHint:'Four independent channels',sourceSubtitles:'Source subtitles',translatedSubtitles:'Translated subtitles',subtitleBox:'Subtitle card',dragHint:'Drag the top handle to move it',subtitlePosition:'Initial position',bottomCenter:'Bottom center',bottomLeft:'Bottom left',bottomRight:'Bottom right',topCenter:'Top center',subtitleSize:'Text size',subtitleWidth:'Card width',subtitleOpacity:'Background opacity',sourceVolume:'Original audio',dubVolume:'Dubbed audio',duckHelp:'Lower source automatically while dubbed speech plays',saveOutputs:'Save four outputs',outputsHelp:'Two WAV and two SRT files in Downloads',start:'Start translating this tab',stop:'Stop translation',downloadReady:'Four files were saved to Downloads.',privacy:'Starting sends audio from this tab to Google Gemini; recording stays off unless you enable it above.',keyMissing:'Enter a Gemini API Key',keyMissingShort:'Not configured',keyReady:'Ready for this browser session',saveKey:'Save',clearKey:'Clear key',api_key_missing:'Enter a Gemini API Key.',api_key_invalid:'The API key is invalid.',gemini_socket_failed:'Could not connect directly to Gemini; check the browser proxy.',gemini_socket_closed:'The Gemini connection closed.',active_tab_missing:'No active tab was found.',capture_failed:'Could not capture tab audio.',subtitle_overlay_unavailable:'Subtitles cannot be shown on this restricted page; open a regular website.'}
+  fa: {
+    tagline: 'ترجمهٔ زندهٔ همین تب', ready: 'آمادهٔ ترجمه', connecting: 'در حال اتصال…', connected: 'ترجمهٔ زنده فعال است', error: 'خطا در اتصال',
+    setupNeeded: 'راه‌اندازی کوتاه لازم است', setupMessage: 'کلید Gemini و اجازهٔ پردازش را در تنظیمات وارد کن.', openSettings: 'بازکردن تنظیمات',
+    language: 'زبان مقصد', playbackMode: 'روش پخش', lowLatency: 'داخل همین صفحه', lowLatencyHelp: 'سریع‌ترین حالت برای صدا و زیرنویس زنده', synchronized: 'پلیر هماهنگ', synchronizedHelp: 'ویدئو را با چند ثانیه بافر، هم‌زمان با دوبله پخش می‌کند', bestSync: 'بهترین هماهنگی',
+    start: 'شروع ترجمه', stop: 'توقف ترجمه', startHint: 'صدای همین تب ترجمه می‌شود', syncHint: 'پلیر هماهنگ در یک تب تازه باز می‌شود', stopHint: 'جلسه و دریافت صدا متوقف می‌شود',
+    yourOutput: 'خروجی انتخاب‌شده', edit: 'ویرایش', selectedCount: (count) => `${count} مورد فعال`, noOutput: 'هیچ خروجی‌ای فعال نیست',
+    originalAudio: 'صدای اصلی', dubbedAudio: 'صدای دوبله', sourceSubtitles: 'زیرنویس اصلی', translatedSubtitles: 'زیرنویس ترجمه',
+    source: 'گفتار اصلی', translated: 'ترجمهٔ زنده', waiting: 'منتظر صدا…', waitingTranslation: 'ترجمه اینجا نمایش داده می‌شود…',
+    downloadReady: 'چهار فایل در Downloads ذخیره شدند.', privacy: 'صدا فقط پس از شروع به Google Gemini فرستاده می‌شود.', project: 'پروژه ↗',
+    api_key_missing: 'کلید Gemini را در تنظیمات وارد کن.', api_key_invalid: 'کلید Gemini معتبر نیست.', consent_required: 'اجازهٔ پردازش صدا را در تنظیمات تأیید کن.',
+    gemini_socket_failed: 'اتصال مستقیم به Gemini برقرار نشد؛ پروکسی مرورگر را بررسی کن.', gemini_socket_closed: 'اتصال Gemini بسته شد.', gemini_socket_timeout: 'پاسخی از Gemini دریافت نشد.', gemini_token_failed: 'Google توکن کوتاه‌عمر صادر نکرد؛ کلید و اتصال را بررسی کن.', gemini_quota_exceeded: 'سهمیهٔ Gemini تمام شده است؛ کمی بعد دوباره امتحان کن.',
+    active_tab_missing: 'تب فعالی پیدا نشد.', capture_failed: 'دریافت صدا از این تب ممکن نشد.', synchronized_player_unavailable: 'این تب امکان ساخت پلیر هماهنگ را نمی‌دهد؛ حالت داخل صفحه را انتخاب کن.', synchronized_player_failed: 'بافر ویدئو ساخته نشد؛ حالت داخل صفحه را امتحان کن.', downloads_permission_missing: 'برای ذخیرهٔ چهار خروجی، دسترسی Downloads لازم است.'
+  },
+  en: {
+    tagline: 'Translate this tab live', ready: 'Ready to translate', connecting: 'Connecting…', connected: 'Live translation is active', error: 'Connection error',
+    setupNeeded: 'Quick setup required', setupMessage: 'Add your Gemini key and processing consent in Settings.', openSettings: 'Open settings',
+    language: 'Target language', playbackMode: 'Playback', lowLatency: 'On this page', lowLatencyHelp: 'Fastest live audio and subtitle path', synchronized: 'Synchronized player', synchronizedHelp: 'Buffers video briefly and plays it with the dub', bestSync: 'Best sync',
+    start: 'Start translating', stop: 'Stop translation', startHint: 'Audio from this tab will be translated', syncHint: 'A synchronized player opens in a new tab', stopHint: 'Stops capture and the live session',
+    yourOutput: 'Selected output', edit: 'Edit', selectedCount: (count) => `${count} enabled`, noOutput: 'No output is enabled',
+    originalAudio: 'Original audio', dubbedAudio: 'Dubbed audio', sourceSubtitles: 'Source subtitles', translatedSubtitles: 'Translated subtitles',
+    source: 'Source speech', translated: 'Live translation', waiting: 'Waiting for audio…', waitingTranslation: 'Translation appears here…',
+    downloadReady: 'Four files were saved to Downloads.', privacy: 'Audio goes to Google Gemini only after you start.', project: 'Project ↗',
+    api_key_missing: 'Add your Gemini key in Settings.', api_key_invalid: 'The Gemini key is invalid.', consent_required: 'Confirm audio processing in Settings.',
+    gemini_socket_failed: 'Could not connect to Gemini; check the browser proxy.', gemini_socket_closed: 'The Gemini connection closed.', gemini_socket_timeout: 'Gemini did not respond in time.', gemini_token_failed: 'Google could not issue a short-lived token; check the key and connection.', gemini_quota_exceeded: 'The Gemini quota is exhausted; try again shortly.',
+    active_tab_missing: 'No active tab was found.', capture_failed: 'Could not capture audio from this tab.', synchronized_player_unavailable: 'This tab cannot provide synchronized video; use on-page mode.', synchronized_player_failed: 'The video buffer could not start; try on-page mode.', downloads_permission_missing: 'Downloads access is required to save four outputs.'
+  }
 };
 
-Object.assign(copy.fa, {
-  tagline: 'ترجمهٔ زندهٔ صدای همین تب',
-  keyHelp: 'کلید فقط تا پایان همین نشست مرورگر نگه داشته می‌شود و تنها برای دریافت توکن کوتاه‌عمر به Google فرستاده می‌شود.',
-  source: 'گفتار اصلی',
-  translated: 'ترجمهٔ زنده',
-  waitingTranslation: 'ترجمه اینجا نمایش داده می‌شود…',
-  outputMixer: 'ترکیب خروجی',
-  outputMixerHint: 'هرکدام را جداگانه روشن یا خاموش کن',
-  sourceSubtitles: 'زیرنویس زبان اصلی',
-  translatedSubtitles: 'زیرنویس ترجمه‌شده',
-  subtitlePosition: 'محل نمایش',
-  bottomCenter: 'پایین، وسط',
-  bottomLeft: 'پایین، چپ',
-  bottomRight: 'پایین، راست',
-  topCenter: 'بالا، وسط',
-  autoDuck: 'کاهش خودکار صدای اصلی',
-  duckHelp: 'هنگام پخش دوبله، صدای اصلی خودکار کمتر شود',
-  saveOutputs: 'ذخیرهٔ چهار فایل خروجی',
-  outputsHelp: 'صدای اصلی، دوبله و دو فایل زیرنویس در پوشهٔ Downloads',
-  downloadReady: 'چهار فایل با موفقیت در پوشهٔ Downloads ذخیره شدند.',
-  moreFeatures: 'مشاهدهٔ امکانات بیشتر در GitHub ↗',
-  privacyPolicy: 'سیاست حریم خصوصی',
-  consentTitle: 'اجازهٔ پردازش صدای این تب',
-  consentBody: 'با زدن «شروع»، صدای همین تب و متن‌های به‌دست‌آمده برای ترجمه و دوبله به Google Gemini فرستاده می‌شوند. تیم Lingora به این محتوا دسترسی ندارد و ضبط نیز به‌طور پیش‌فرض خاموش است.',
-  privacy: 'با شروع ترجمه، صدای همین تب به Google Gemini فرستاده می‌شود. ضبط فقط زمانی انجام می‌شود که گزینهٔ ذخیره را روشن کرده باشی.',
-  keyMissing: 'کلید Gemini را وارد کن',
-  downloadsDenied: 'برای ذخیرهٔ خروجی‌ها باید دسترسی Downloads را تأیید کنی.',
-  consent_required: 'پیش از شروع، انتقال صدای این تب به Google Gemini را تأیید کن.',
-  downloads_permission_missing: 'برای ضبط چهار خروجی، دسترسی Downloads لازم است.',
-  gemini_token_failed: 'گرفتن توکن کوتاه‌عمر از Google ممکن نشد؛ اتصال یا حساب را بررسی کن.',
-  gemini_quota_exceeded: 'سهمیهٔ Gemini فعلاً تمام شده است؛ کمی بعد دوباره امتحان کن.'
-});
-Object.assign(copy.en, {
-  keyHelp: 'The key remains only for this browser session and goes directly to Google to mint a short-lived token.',
-  moreFeatures: 'More features and project page ↗',
-  privacyPolicy: 'Privacy policy',
-  consentTitle: 'Allow translation for this tab',
-  consentBody: 'When you press Start, only audio and transcripts from the selected tab go to Google Gemini for translation and dubbing. Lingora maintainers cannot access this content, and recording is off by default.',
-  autoDuck: 'Automatic source ducking',
-  downloadsDenied: 'Allow Downloads access to save recording outputs.',
-  consent_required: 'Confirm the selected-tab transfer to Google Gemini before starting.',
-  downloads_permission_missing: 'Downloads access is required to record the four outputs.',
-  gemini_token_failed: 'Google could not issue a short-lived token; check the connection and account.',
-  gemini_quota_exceeded: 'The Gemini quota is currently exhausted; try again shortly.'
-});
-
-function t(key){ return copy[settings?.locale || 'fa'][key] || key; }
-function send(message){ return chrome.runtime.sendMessage(message); }
-
-async function loadSettings(){
-  const stored = await chrome.storage.local.get('settings');
-  settings = normalizeSettings(stored.settings);
+function t(key) {
+  return copy[settings.locale]?.[key] ?? copy.en[key] ?? key;
 }
 
-async function saveSettings(liveAudio = false){
-  settings = {...settings,targetLanguage:$('#targetLanguage').value,originalAudioEnabled:$('#originalAudioEnabled').checked,dubAudioEnabled:$('#dubAudioEnabled').checked,sourceSubtitlesEnabled:$('#sourceSubtitlesEnabled').checked,translatedSubtitlesEnabled:$('#translatedSubtitlesEnabled').checked,originalVolume:Number($('#originalVolume').value),dubVolume:Number($('#dubVolume').value),autoDuck:$('#autoDuck').checked,recording:$('#recording').checked,subtitlePosition:$('#subtitlePosition').value,subtitleFontSize:Number($('#subtitleFontSize').value),subtitleWidth:Number($('#subtitleWidth').value),subtitleOpacity:Number($('#subtitleOpacity').value)};
-  await chrome.storage.local.set({settings});
-  if (liveAudio) await send({type:'audio',config:settings});
-  renderStatic();
+function send(message) {
+  return chrome.runtime.sendMessage(message);
 }
 
-function translate(){
+function translate() {
   const locale = settings.locale;
-  document.documentElement.lang=locale; document.documentElement.dir=locale==='fa'?'rtl':'ltr';
-  document.querySelectorAll('[data-i18n]').forEach((node)=>{node.textContent=t(node.dataset.i18n);});
-  $('#localeToggle').textContent=locale==='fa'?'EN':'فا';
+  document.documentElement.lang = locale;
+  document.documentElement.dir = locale === 'fa' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach((node) => { node.setAttribute('aria-label', t(node.dataset.i18nAria)); });
+  $('#localeToggle').textContent = locale === 'fa' ? 'EN' : 'فا';
 }
 
-function fill(element, items, selected, label){
-  element.replaceChildren(...items.map((item)=>{const option=document.createElement('option');option.value=item;option.textContent=label(item);option.selected=item===selected;return option;}));
+function languageName(code) {
+  try {
+    const names = new Intl.DisplayNames([settings.locale], {type: 'language'});
+    return `${names.of(code) || names.of(code.split('-')[0]) || code} · ${code}`;
+  } catch {
+    return code;
+  }
 }
 
-function renderKey(){
-  const ready=Boolean(bootstrap?.api_key_set);
-  $('#keyStatus').textContent=t(ready?'keyReady':'keyMissingShort');
-  $('#keyStatus').classList.toggle('ready',ready);
-  $('#keyNotice').hidden=ready;
-  $('#toggleButton').disabled=!ready||settings.consentVersion!==CONSENT_VERSION;
+function fillLanguages() {
+  if (!bootstrap) return;
+  $('#targetLanguage').replaceChildren(...bootstrap.languages.map((code) => {
+    const option = document.createElement('option');
+    option.value = code;
+    option.textContent = languageName(code);
+    option.selected = code === settings.targetLanguage;
+    return option;
+  }));
 }
 
-function renderStatic(){
+function outputItems() {
+  return [
+    ['originalAudioEnabled', 'originalAudio'],
+    ['dubAudioEnabled', 'dubbedAudio'],
+    ['sourceSubtitlesEnabled', 'sourceSubtitles'],
+    ['translatedSubtitlesEnabled', 'translatedSubtitles']
+  ].filter(([key]) => settings[key]);
+}
+
+function renderSettings() {
   translate();
-  if (bootstrap){
-    const names = new Intl.DisplayNames([settings.locale],{type:'language'});
-    fill($('#targetLanguage'),bootstrap.languages,settings.targetLanguage,(code)=>{try{return `${names.of(code.split('-')[0])||code} · ${code}`;}catch{return code;}});
-  }
-  $('#originalAudioEnabled').checked=settings.originalAudioEnabled; $('#dubAudioEnabled').checked=settings.dubAudioEnabled;
-  $('#sourceSubtitlesEnabled').checked=settings.sourceSubtitlesEnabled; $('#translatedSubtitlesEnabled').checked=settings.translatedSubtitlesEnabled;
-  $('#originalVolume').value=settings.originalVolume; $('#dubVolume').value=settings.dubVolume;
-  $('#autoDuck').checked=settings.autoDuck; $('#recording').checked=settings.recording;
-  $('#dataConsent').checked=settings.consentVersion===CONSENT_VERSION;
-  $('#audioControls').hidden=!settings.originalAudioEnabled&&!settings.dubAudioEnabled;
-  $('#originalVolume').disabled=!settings.originalAudioEnabled; $('#dubVolume').disabled=!settings.dubAudioEnabled; $('#autoDuck').disabled=!settings.originalAudioEnabled||!settings.dubAudioEnabled;
-  $('#subtitleControls').hidden=!subtitlesEnabled(settings);
-  $('#subtitlePosition').value=settings.subtitlePosition; $('#subtitleFontSize').value=settings.subtitleFontSize; $('#subtitleWidth').value=settings.subtitleWidth; $('#subtitleOpacity').value=settings.subtitleOpacity;
-  $('#subtitleFontSizeValue').textContent=`${settings.subtitleFontSize}px`; $('#subtitleWidthValue').textContent=`${settings.subtitleWidth}px`; $('#subtitleOpacityValue').textContent=`${settings.subtitleOpacity}%`;
-  $('#originalValue').textContent=`${Math.round(settings.originalVolume*100)}%`; $('#dubValue').textContent=`${Math.round(settings.dubVolume*100)}%`;
-  $('#languageBadge').textContent=`AUTO → ${settings.targetLanguage.toUpperCase()}`;
-  renderKey();
+  fillLanguages();
+  document.querySelector(`input[name="playbackMode"][value="${settings.playbackMode}"]`).checked = true;
+  $('#actionHint').textContent = t(settings.playbackMode === 'synchronized' ? 'syncHint' : 'startHint');
+  const items = outputItems();
+  $('#outputCount').textContent = t('selectedCount')(items.length);
+  $('#outputChips').replaceChildren(...(items.length ? items.map(([, key]) => {
+    const chip = document.createElement('span');
+    chip.className = 'output-chip';
+    chip.textContent = t(key);
+    return chip;
+  }) : [Object.assign(document.createElement('span'), {className: 'output-chip', textContent: t('noOutput')})]));
+  const configured = Boolean(bootstrap?.api_key_set) && settings.consentVersion === CONSENT_VERSION;
+  $('#setupNotice').hidden = configured;
+  $('#toggleButton').disabled = !configured;
+  $('#languageBadge').textContent = `AUTO → ${settings.targetLanguage.toUpperCase()}`;
 }
 
-function renderState(state){
-  const status=state.status==='connected'?'connected':state.status==='connecting'?'connecting':state.status==='error'?'error':'ready';
-  $('#statusText').textContent=state.error?t(state.error):t(status); $('#statusDot').className=`status-dot ${state.active?'active':''} ${state.status==='error'?'error':''}`;
-  $('#toggleButton').disabled=!state.active&&(!bootstrap?.api_key_set||settings.consentVersion!==CONSENT_VERSION); $('#toggleButton').classList.toggle('stopping',state.active);
-  $('#toggleButton b').textContent=t(state.active?'stop':'start'); $('#toggleButton span').textContent=state.active?'■':'▶';
-  $('#sourceText').textContent=state.sourceText||t('waiting'); $('#translatedText').textContent=state.translatedText||t('waitingTranslation');
-  $('#languageBadge').textContent=`${(state.sourceLanguage||'AUTO').toUpperCase()} → ${settings.targetLanguage.toUpperCase()}`;
-  $('#downloadReady').hidden=!state.recordingReady;
-  const liveControls=['originalAudioEnabled','dubAudioEnabled','sourceSubtitlesEnabled','translatedSubtitlesEnabled','originalVolume','dubVolume','autoDuck','subtitlePosition','subtitleFontSize','subtitleWidth','subtitleOpacity'];
-  document.querySelectorAll('.controls select,.controls input').forEach((node)=>{node.disabled=state.active && !liveControls.includes(node.id);});
+async function saveSettings() {
+  await chrome.storage.local.set({settings});
+  renderSettings();
 }
 
-async function refresh(){
-  const response=await send({type:'state'}); if(response?.ok) renderState(response.state);
+function showError(message) {
+  const box = $('#errorMessage');
+  box.textContent = t(message) || message;
+  box.hidden = !message;
 }
 
-async function connect(){
-  const response=await send({type:'bootstrap'});
-  if(!response?.ok) throw new Error(response?.error);
-  bootstrap=response.data;
-  settings=normalizeSettings({...settings,...bootstrap.settings});
-  renderStatic();
-  await refresh();
+function renderState(state) {
+  const active = Boolean(state.active);
+  const status = state.status === 'connected' ? 'connected' : state.status === 'connecting' ? 'connecting' : state.status === 'error' ? 'error' : 'ready';
+  $('#statusText').textContent = state.error ? t(state.error) : t(status);
+  $('#statusDot').className = `status-dot ${active ? 'active' : ''} ${status}`;
+  $('#toggleButton').classList.toggle('stopping', active);
+  $('#toggleButton .action-icon').textContent = active ? '■' : '▶';
+  $('#toggleButton b').textContent = t(active ? 'stop' : 'start');
+  $('#actionHint').textContent = t(active ? 'stopHint' : settings.playbackMode === 'synchronized' ? 'syncHint' : 'startHint');
+  $('#toggleButton').disabled = !active && (!bootstrap?.api_key_set || settings.consentVersion !== CONSENT_VERSION);
+  $('#targetLanguage').disabled = active;
+  document.querySelectorAll('input[name="playbackMode"]').forEach((input) => { input.disabled = active; });
+  $('#languageBadge').textContent = `${(state.sourceLanguage || 'AUTO').toUpperCase()} → ${settings.targetLanguage.toUpperCase()}`;
+  $('#downloadReady').hidden = !state.recordingReady;
+  showError(state.error || '');
 }
 
-$('#localeToggle').addEventListener('click',async()=>{settings.locale=settings.locale==='fa'?'en':'fa';await saveSettings();});
-$('#dataConsent').addEventListener('change',async()=>{settings.consentVersion=$('#dataConsent').checked?CONSENT_VERSION:0;await saveSettings();});
-$('#saveKeyButton').addEventListener('click',async()=>{
-  const apiKey=$('#apiKey').value.trim();
-  const response=await send({type:'set-key',apiKey});
-  if(response?.ok){bootstrap.api_key_set=true;$('#apiKey').value='';renderKey();}
-  else {$('#keyNotice').hidden=false;$('#keyNotice b').textContent=t(response?.error||'api_key_invalid');}
-});
-$('#clearKeyButton').addEventListener('click',async()=>{await send({type:'clear-key'});bootstrap.api_key_set=false;renderKey();});
-$('#toggleButton').addEventListener('click',async()=>{
-  $('#toggleButton').disabled=true;
-  const current=await send({type:'state'});
-  const response=await send(current.state.active?{type:'stop'}:{type:'start',config:settings});
-  if(!response?.ok){$('#keyNotice').hidden=false;$('#keyNotice b').textContent=t(response?.error||'error');}
-  await refresh();
-});
-$('#targetLanguage').addEventListener('change',()=>saveSettings());
-$('#recording').addEventListener('change',async()=>{
-  if ($('#recording').checked) {
-    const granted=await chrome.permissions.request({permissions:['downloads']});
-    if (!granted) {
-      $('#recording').checked=false;
-      $('#keyNotice').hidden=false;
-      $('#keyNotice b').textContent=t('downloadsDenied');
-    }
-  }
+async function refresh() {
+  const response = await send({type: 'state'});
+  if (response?.ok) renderState(response.state);
+}
+
+async function openSettings() {
+  await chrome.runtime.openOptionsPage();
+}
+
+$('#localeToggle').addEventListener('click', async () => {
+  settings.locale = settings.locale === 'fa' ? 'en' : 'fa';
   await saveSettings();
 });
-['originalAudioEnabled','dubAudioEnabled','sourceSubtitlesEnabled','translatedSubtitlesEnabled'].forEach((id)=>$(`#${id}`).addEventListener('change',()=>saveSettings(true)));
-$('#autoDuck').addEventListener('change',()=>saveSettings(true));
-['originalVolume','dubVolume'].forEach((id)=>$(`#${id}`).addEventListener('input',()=>saveSettings(true)));
-$('#subtitlePosition').addEventListener('change',()=>saveSettings(true));
-['subtitleFontSize','subtitleWidth','subtitleOpacity'].forEach((id)=>$(`#${id}`).addEventListener('input',()=>saveSettings(true)));
+$('#settingsButton').addEventListener('click', openSettings);
+$('#setupButton').addEventListener('click', openSettings);
+$('#editOutputButton').addEventListener('click', openSettings);
+$('#targetLanguage').addEventListener('change', async () => {
+  settings.targetLanguage = $('#targetLanguage').value;
+  await saveSettings();
+});
+document.querySelectorAll('input[name="playbackMode"]').forEach((input) => input.addEventListener('change', async () => {
+  settings.playbackMode = input.value;
+  await saveSettings();
+}));
+$('#toggleButton').addEventListener('click', async () => {
+  $('#toggleButton').disabled = true;
+  showError('');
+  const current = await send({type: 'state'});
+  const response = await send(current.state.active ? {type: 'stop'} : {type: 'start', config: settings});
+  if (!response?.ok) showError(response?.error || 'error');
+  await refresh();
+});
 
-(async()=>{await loadSettings();renderStatic();await connect();timer=setInterval(refresh,750);})().catch((error)=>{$('#keyNotice').hidden=false;$('#keyNotice b').textContent=error.message;});
+(async () => {
+  const [{settings: stored}, response] = await Promise.all([
+    chrome.storage.local.get('settings'),
+    send({type: 'bootstrap'})
+  ]);
+  if (!response?.ok) throw new Error(response?.error || 'bootstrap_failed');
+  bootstrap = response.data;
+  settings = normalizeSettings({...stored, ...stored?.settings, ...bootstrap.settings});
+  renderSettings();
+  await refresh();
+  timer = setInterval(refresh, 750);
+})().catch((error) => showError(error.message));
+
+window.addEventListener('unload', () => clearInterval(timer));

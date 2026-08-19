@@ -5,13 +5,13 @@
     <parameter name="fileVersion" required="true" />
   </parameters>
   <zip-file>
-    <pe-file path="Lingora-Setup-x64.exe"
-             product-name="Lingora Live Translator"
+    <pe-file path="Avorythm-Setup-x64.exe"
+             product-name="Avorythm Live Translator"
              product-version="${version}"
              file-version="${fileVersion}">
       <authenticode-sign
-        description="Lingora live translator"
-        description-url="https://github.com/msmahdinejad/lingora" />
+        description="Avorythm live translator"
+        description-url="https://github.com/msmahdinejad/avorythm" />
     </pe-file>
   </zip-file>
 </artifact-configuration>

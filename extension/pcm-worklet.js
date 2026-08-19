@@ -38,4 +38,4 @@ class PcmCaptureProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('lingora-pcm-capture', PcmCaptureProcessor);
+registerProcessor('avorythm-pcm-capture', PcmCaptureProcessor);
