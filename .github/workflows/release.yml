@@ -40,9 +40,9 @@ jobs:
           $packageVersion = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
           if ($tagVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Release tag must be vMAJOR.MINOR.PATCH" }
           if ($tagVersion -ne $packageVersion) { throw "Tag $tagVersion does not match package $packageVersion" }
-      - name: Install Linux media and audio runtime
+      - name: Install Linux audio runtime
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg libportaudio2
+        run: sudo apt-get update && sudo apt-get install -y libportaudio2
       - name: Install Windows media tools for bundling
         if: runner.os == 'Windows'
         shell: pwsh
