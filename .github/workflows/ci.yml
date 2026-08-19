@@ -27,7 +27,15 @@ jobs:
           node-version: "22"
       - name: Install Linux audio runtime
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libportaudio2
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          if dpkg-query -W -f='${Status}' libportaudio2 2>/dev/null | grep -q 'install ok installed'; then
+            echo 'libportaudio2 is already available'
+          else
+            sudo timeout 120s apt-get -o Acquire::ForceIPv4=true -o Acquire::Retries=3 update
+            sudo env DEBIAN_FRONTEND=noninteractive timeout 120s apt-get -o Acquire::ForceIPv4=true install -y libportaudio2
+          fi
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev]"
       - run: python -m pytest -q
