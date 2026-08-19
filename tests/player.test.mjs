@@ -21,6 +21,7 @@ test('buffers media and keeps player controls independent from the source produc
     if (!elements.has(selector)) elements.set(selector, new FakeElement());
     return elements.get(selector);
   };
+  element('#stageError').hidden = true;
   const video = element('#video');
   video.currentTime = 0;
   video.paused = true;
@@ -43,9 +44,10 @@ test('buffers media and keeps player controls independent from the source produc
   globalThis.clearInterval = () => {};
 
   let channel;
+  const playerMessages = [];
   globalThis.BroadcastChannel = class {
     constructor(name) { assert.equal(name, 'avorythm-sync'); channel = this; }
-    postMessage() {}
+    postMessage(message) { playerMessages.push(message); }
   };
 
   let sourceBuffer;
@@ -95,10 +97,13 @@ test('buffers media and keeps player controls independent from the source produc
 
   const mediaControls = [];
   globalThis.chrome = {
-    storage: {local: {async get() { return {settings: {locale: 'en', playbackMode: 'synchronized', syncBufferSeconds: 4.5, originalAudioEnabled: true, dubAudioEnabled: true, sourceSubtitlesEnabled: true, translatedSubtitlesEnabled: true, originalVolume: .5, dubVolume: 1}}; }, async set() {}}},
+    storage: {
+      local: {async get() { return {settings: {locale: 'en', playbackMode: 'synchronized', syncBufferSeconds: 4.5, originalAudioEnabled: true, dubAudioEnabled: true, sourceSubtitlesEnabled: true, translatedSubtitlesEnabled: true, originalVolume: .5, dubVolume: 1}}; }, async set() {}},
+      session: {async get() { return {playerSession: {currentTime: .5, wantedPlaying: false, started: true}}; }, async set() {}}
+    },
     runtime: {
       async sendMessage(message) {
-        if (message.type === 'state') return {ok: true, state: {sourceTitle: 'Test video'}};
+        if (message.type === 'state') return {ok: true, state: {active: true, sourceTitle: 'Test video'}};
         if (message.type === 'media-control') mediaControls.push(message.action);
         return {ok: true};
       },
@@ -108,6 +113,11 @@ test('buffers media and keeps player controls independent from the source produc
 
   await import('../extension/player.js');
   await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.deepEqual(
+    playerMessages.find((message) => message.type === 'ready'),
+    {type: 'ready', position: .5},
+    'refresh must request an OPFS replay at the persisted player position'
+  );
   channel.onmessage({data: {type: 'media-init', mimeType: 'video/webm', bufferSeconds: 4.5}});
   await new Promise((resolve) => setTimeout(resolve, 0));
   channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([1, 2, 3])])}});
@@ -117,7 +127,7 @@ test('buffers media and keeps player controls independent from the source produc
 
   await element('#activateButton').listeners.click();
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
-  assert.deepEqual(starts, [{when: 3, offset: 0}]);
+  assert.deepEqual(starts, [{when: 2.5, offset: 0}]);
 
   const producerControlCount = mediaControls.length;
   await element('#playButton').listeners.click();
@@ -137,6 +147,20 @@ test('buffers media and keeps player controls independent from the source produc
   channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([4, 5, 6])])}});
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(video.paused, false, 'playback must resume after the safety buffer is rebuilt');
+
+  video.play = async () => {
+    throw new DOMException('The play() request was interrupted by a call to pause().', 'AbortError');
+  };
+  video.paused = false;
+  await video.listeners.waiting();
+  channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([7, 8, 9])])}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(
+    element('#stageError').hidden,
+    true,
+    'an interrupted play request is recoverable and must never leave a blocking error overlay'
+  );
+  video.play = async () => { video.paused = false; };
 
   channel.onmessage({data: {type: 'media-final', fileName: 'capture.webm'}});
   assert.equal(element('#downloadVideoButton').disabled, false);

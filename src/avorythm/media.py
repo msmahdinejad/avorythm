@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import math
 import os
 import re
@@ -86,6 +85,18 @@ def parse_silences(output: str) -> list[TimeWindow]:
     return [TimeWindow(start, end) for start, end in zip(starts, ends, strict=False) if end > start]
 
 
+def parse_media_info(output: str) -> MediaInfo:
+    match = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", output)
+    has_audio = re.search(r"^\s*Stream #.*\bAudio:\s*", output, re.MULTILINE) is not None
+    if not match or not has_audio:
+        raise ValueError("media file has no readable audio track")
+    hours, minutes, seconds = match.groups()
+    duration = int(hours) * 3600 + int(minutes) * 60 + float(seconds)
+    if duration <= 0:
+        raise ValueError("media file has no readable audio track")
+    return MediaInfo(duration, True)
+
+
 def fixed_windows(duration: float, maximum: float = 45.0) -> list[TimeWindow]:
     if duration <= 0:
         return []
@@ -145,9 +156,8 @@ def write_subtitles(path: Path, entries: list[SubtitleEntry], *, vtt: bool = Fal
 
 
 class MediaTools:
-    def __init__(self, ffmpeg: str | None = None, ffprobe: str | None = None) -> None:
+    def __init__(self, ffmpeg: str | None = None) -> None:
         self.ffmpeg = ffmpeg or self._find("ffmpeg")
-        self.ffprobe = ffprobe or self._find("ffprobe")
 
     @staticmethod
     def _find(name: str) -> str:
@@ -205,24 +215,23 @@ class MediaTools:
         return stdout, text
 
     async def probe(self, source: Path) -> MediaInfo:
-        stdout, _ = await self._run(
-            self.ffprobe,
-            "-v",
-            "error",
-            "-show_entries",
-            "format=duration:stream=codec_type",
-            "-of",
-            "json",
-            str(source),
-        )
-        payload = json.loads(stdout)
-        duration = float(payload.get("format", {}).get("duration") or 0)
-        has_audio = any(
-            stream.get("codec_type") == "audio" for stream in payload.get("streams", [])
-        )
-        if duration <= 0 or not has_audio:
-            raise ValueError("media file has no readable audio track")
-        return MediaInfo(duration, has_audio)
+        try:
+            _, stderr = await self._run(
+                self.ffmpeg,
+                "-hide_banner",
+                "-i",
+                str(source),
+                "-map",
+                "0:a:0",
+                "-frames:a",
+                "0",
+                "-f",
+                "null",
+                "-",
+            )
+        except RuntimeError as error:
+            raise ValueError("media file has no readable audio track") from error
+        return parse_media_info(stderr)
 
     async def extract_audio(self, source: Path, destination: Path, duration: float) -> None:
         await self._run(

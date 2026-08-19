@@ -8,7 +8,7 @@ Avorythm contains two independent products: a cross-platform desktop application
 |---|---|---|---|---|
 | Desktop live | selected loopback/monitor input | Gemini 3.5 Live Translate | Gemini key in the OS keyring | playback, floating captions, WAV/SRT/ZIP |
 | Media Studio | local audio/video + FFmpeg | Groq Whisper → Gemini text pool → Gemini Live speech | Groq + Gemini keys in the OS keyring | synchronized player, four files, ZIP |
-| Browser extension | explicit `chrome.tabCapture` session | direct Gemini Live WebSocket | session-only `chrome.storage.session` | low-latency playback or buffered A/V player, page overlay, optional four Downloads |
+| Browser extension | explicit `chrome.tabCapture` session | Gemini 3.5 Live Translate, or Groq Whisper → Gemini text pool → Gemini 3.1 Flash Live | session-only Gemini/Groq keys | low-latency playback or buffered A/V player, page overlay, optional four Downloads |
 
 The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI natively on Windows (WebView2), macOS (WKWebView), and Linux (Qt WebEngine). The browser fallback remains available with `avorythm --browser`.
 
@@ -23,7 +23,7 @@ The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI 
 | `GroqWhisperGateway` | timestamped transcription, bounded multipart requests, retries |
 | `DubRuntime` | live lifecycle, transcripts, subtitle-only source/dub policy, recording |
 | `MediaJobManager` | upload queue, recovery, cancellation, quotas, pipeline orchestration |
-| `MediaTools` | FFprobe, extraction, FLAC chunks, time fitting, archives |
+| `MediaTools` | FFmpeg probing/extraction, FLAC chunks, time fitting, archives |
 | `TokenGovernor` | conservative rolling Gemini reservations |
 | FastAPI | loopback-only dashboard API and allowlisted local files |
 
@@ -32,9 +32,11 @@ The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI 
 ## Browser playback paths
 
 - **Low latency:** tab audio is streamed as continuous 16 kHz mono PCM in 100 ms chunks. Original audio and translated 24 kHz PCM are mixed in the offscreen document; captions use a temporary Shadow DOM overlay on the selected tab.
-- **Synchronized player:** captured tab audio/video is encoded locally by `MediaRecorder`, streamed to an extension-owned `MediaSource`, and held behind a configurable 2.5–12 second buffer. Generated PCM and short captions carry session-relative timestamps and are scheduled against the player's current time. Pause/resume also controls the source media element.
+- **Synchronized player:** captured tab audio/video is encoded locally by `MediaRecorder`, written incrementally to OPFS, replayed through an extension-owned `MediaSource`, and held behind a configurable 8–60 second lead (20 seconds by default). The producer keeps recording independently while the consumer pauses, seeks, refreshes, or enters fullscreen. OPFS snapshots rebuild an active player after refresh; finalized video, dub audio, and both subtitle timelines remain locally restorable until the next synchronized session.
+- **Fast synchronized engine:** Gemini 3.5 Live Translate returns speech and transcripts continuously. A local energy detector maps returned speech to the recorded timeline.
+- **Precise synchronized engine:** overlapping 12-second PCM windows go to Groq Whisper. `PreciseDubbingPipeline` holds incomplete utterances across windows, translates complete timestamped sentences through the strongest-first free Gemini/Gemma pool, renders the selected voice with Gemini 3.1 Flash Live, and fits PCM plus both caption tracks to the exact source interval. A processing frontier prevents the consumer from outrunning unfinished AI work.
 
-Live Translate input is never cut at sentence boundaries. A lightweight local energy detector observes pauses only to align returned speech; punctuation-aware caption segmentation keeps displayed and recorded cues short. Protected/DRM media may reject video capture, in which case the user can use low-latency mode.
+The direct Live Translate path is never cut at sentence boundaries. The precise path deliberately waits for a punctuation, a natural pause, or a bounded ten-second utterance before translation. Punctuation-aware caption segmentation keeps displayed and recorded cues short. Playback operations use cancellable revisions so expected `play()` interruptions and page-visibility/fullscreen transitions are recoverable rather than fatal. The source bridge combines native media events with a short poll to finalize native `ended` events and same-element SPA/autoplay transitions. Protected/DRM media may reject video capture, in which case the user can use low-latency mode.
 
 ## Live subtitle flow
 

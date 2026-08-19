@@ -6,7 +6,7 @@ Thank you for improving Avorythm. English and Persian issues are both welcome.
 2. Fork the repository and branch from `main`.
 3. Keep changes focused. Preserve the module boundaries in `ARCHITECTURE.md`.
 4. Add or update tests for behavior changes.
-5. Run `pytest -q`, `ruff check src tests scripts/*.py`, `mypy src`, JavaScript syntax checks, and `node --test tests/background.test.mjs tests/extension.test.mjs tests/offscreen.test.mjs tests/player.test.mjs`.
+5. Run `pytest -q`, `ruff check src tests scripts/*.py`, `mypy src`, JavaScript syntax checks, and every `tests/*.test.mjs` test (the CI workflow contains the cross-platform command).
 6. Submit a pull request using the template and explain user-visible impact, risks, and verification.
 
 Use Conventional Commit subjects where practical, for example `fix(extension): restore source gain after ducking`.

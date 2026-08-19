@@ -15,7 +15,7 @@ Font Name was declared by the package metadata used for this distribution.
 ## FFmpeg
 
 Avorythm's Windows release build pins Chocolatey's FFmpeg package to `9.0.1` and includes
-unmodified `ffmpeg.exe` and `ffprobe.exe` from the
+unmodified `ffmpeg.exe` from the
 [Gyan.dev FFmpeg Windows builds](https://www.gyan.dev/ffmpeg/builds/). The bundled build
 is licensed under GNU GPL version 3 and its license text is included at
 `licenses/FFmpeg-GPL-3.0.txt` in the source repository and `LICENSES/FFmpeg-GPL-3.0.txt`

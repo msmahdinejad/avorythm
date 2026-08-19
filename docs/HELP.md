@@ -61,7 +61,7 @@ File Studio keeps the source and generated outputs on your computer. It sends ex
 
 - **No live input:** verify the source program and Avorythm use the matching AMM output/loopback pair. Do not route Avorythm’s listening output back into AMM.
 - **Original and dub overlap:** disable Original audio, lower it, or enable smart ducking.
-- **Uploaded-media error:** use the current Windows installer, which bundles FFmpeg and ffprobe. On source installations, install FFmpeg and ensure both commands are on `PATH`.
+- **Uploaded-media error:** use the current Windows installer, which bundles FFmpeg. On source installations, install FFmpeg and ensure the command is on `PATH`.
 - **Google connection error:** verify the Gemini key, quota, target language, and proxy. The app proxy affects API traffic, not your entire system.
 - **Close the app completely:** use **Quit app** in the top bar instead of only closing a browser tab or subtitle window.
 
@@ -90,7 +90,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 
 ![Synchronized recorder settings](../store-assets/en/03-sync-settings.png)
 
-Gemini Live timing is the default and needs no extra key. Optionally select **Groq Whisper** for segment timestamps. Chrome then asks for access to `api.groq.com`, and the Groq key is also session-only. Gemini 3.5 Live still creates the translated speech.
+The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and Gemini 3.1 Flash Live renders the selected voice. Avorythm fits that speech and both subtitle tracks to the same recorded interval. Chrome asks for access to `api.groq.com`; both API keys remain session-only.
 
 ### Use the synchronized recorder & player
 
@@ -116,7 +116,7 @@ Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle 
 - **Gemini connection closed:** confirm the key, quota, selected media tab, and that the page is not a Chrome-internal page. Restart the session after reconnecting your proxy/VPN.
 - **Player keeps buffering:** leave the source video playing; wait for the safety lead to rebuild. If the source or network repeatedly stalls, increase Recording lead in Settings.
 - **No download:** grant the optional Downloads permission when prompted. Avorythm never claims files were saved until Chrome confirms the download request.
-- **Whisper warning:** verify the Groq key/quota. Avorythm falls back to Gemini caption timing without stopping the dub.
+- **Precise-engine warning:** verify the Groq key/quota and Gemini availability. Capture remains usable and stoppable; retry the session after the service recovers if you need a complete precise dub.
 - **No captured video:** DRM-protected playback may block tab video capture. Switch to On this page.
 
 ## Privacy and responsible use

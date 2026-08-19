@@ -79,6 +79,7 @@ For a manual installation from a GitHub release:
 Choose **On this page** for the lowest practical delay, or **Synchronized recorder & player** to keep
 capture around 20 seconds ahead of an independently seekable player and place the generated dub on the same timeline. Protected
 DRM media can block video capture; Avorythm reports the limitation and on-page mode remains available.
+The synchronized player offers a fast Gemini 3.5 Live path and a precise Whisper → Gemini text pool → Gemini 3.1 Flash Live path. The precise path groups complete utterances and fits speech plus both subtitle tracks to one recorded timeline. Recording can be stopped manually, media transitions such as YouTube autoplay are finalized automatically, and an active/finalized session survives a player-page refresh.
 
 The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
 
@@ -105,7 +106,7 @@ python -m pip install -e ".[dev,build]"
 python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
-node --test tests/background.test.mjs tests/extension.test.mjs tests/offscreen.test.mjs tests/player.test.mjs
+node --test tests/*.test.mjs
 python -m avorythm
 ```
 

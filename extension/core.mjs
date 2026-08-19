@@ -1,4 +1,5 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
+export const FILE_VOICE_MODEL = 'gemini-3.1-flash-live-preview';
 export const LIVE_ENDPOINT =
   'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
@@ -7,6 +8,7 @@ const SENTENCE_PATTERN = /[^.!?\u061f\u3002\uff01\uff1f\u2026]+[.!?\u061f\u3002\
 export const LANGUAGES = [
   'af','ak','sq','am','ar','hy','az','eu','be','bn','bg','my','ca','zh-Hans','zh-Hant','hr','cs','da','nl','en','et','fil','fi','fr','gl','ka','de','el','gu','ha','he','hi','hu','is','id','it','ja','jv','kn','kk','km','rw','ko','lo','lv','lt','mk','ms','ml','mr','mn','ne','no','nb','fa','pl','pt-BR','pt-PT','pa','ro','ru','sr','sd','si','sk','sl','es','su','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu'
 ];
+export const VOICE_NAMES = ['Aoede','Charon','Fenrir','Kore','Leda','Orus','Puck','Zephyr'];
 
 export const DEFAULT_SETTINGS = Object.freeze({
   locale: 'en',
@@ -25,7 +27,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   subtitleOpacity: 88,
   playbackMode: 'low-latency',
   syncBufferSeconds: 20,
-  syncCaptionEngine: 'gemini'
+  syncCaptionEngine: 'gemini',
+  syncVoiceName: 'Kore'
 });
 
 export function normalizeSettings(input = {}) {
@@ -42,6 +45,7 @@ export function normalizeSettings(input = {}) {
   settings.playbackMode = settings.playbackMode === 'synchronized' ? 'synchronized' : 'low-latency';
   settings.syncBufferSeconds = Math.max(8, Math.min(60, Number(settings.syncBufferSeconds) || 20));
   settings.syncCaptionEngine = settings.syncCaptionEngine === 'whisper' ? 'whisper' : 'gemini';
+  settings.syncVoiceName = VOICE_NAMES.includes(settings.syncVoiceName) ? settings.syncVoiceName : 'Kore';
   return settings;
 }
 
@@ -73,6 +77,42 @@ export function setupMessage(targetLanguage) {
       }
     }
   };
+}
+
+export function fileVoiceSetupMessage(languageCode, voiceName = 'Kore') {
+  return {
+    setup: {
+      model: `models/${FILE_VOICE_MODEL}`,
+      outputAudioTranscription: {},
+      generationConfig: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          languageCode,
+          voiceConfig: {prebuiltVoiceConfig: {voiceName}}
+        },
+        thinkingConfig: {thinkingBudget: 0}
+      },
+      systemInstruction: {parts: [{text: 'You are a precise speech renderer. Speak exactly the supplied text once in a natural pace. Do not translate, paraphrase, answer, introduce it, or add any words.'}]}
+    }
+  };
+}
+
+export function fitPcm(input, targetSamples) {
+  const source = input instanceof Int16Array ? input : new Int16Array(input.buffer || input);
+  const length = Math.max(0, Math.round(targetSamples));
+  if (!length || !source.length) return new Int16Array(length);
+  if (length === source.length) return source.slice();
+  if (length === 1) return Int16Array.of(source[0]);
+  const output = new Int16Array(length);
+  const scale = (source.length - 1) / (length - 1);
+  for (let index = 0; index < length; index += 1) {
+    const position = index * scale;
+    const left = Math.floor(position);
+    const right = Math.min(source.length - 1, left + 1);
+    const fraction = position - left;
+    output[index] = Math.round(source[left] * (1 - fraction) + source[right] * fraction);
+  }
+  return output;
 }
 
 export function captionSegments(value, maxCharacters = 84) {

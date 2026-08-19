@@ -7,6 +7,8 @@ import {
   audioMessage,
   base64ToBytes,
   captionSegments,
+  fileVoiceSetupMessage,
+  fitPcm,
   latestCaption,
   liveUrl,
   mergeTranscript,
@@ -91,6 +93,20 @@ test('builds the documented Gemini Live Translate protocol', () => {
   assert.equal(audioMessage(Uint8Array.from([0, 1, 255])).realtimeInput.audio.data, 'AAH/');
   assert.match(LIVE_ENDPOINT, /v1beta\.GenerativeService\.BidiGenerateContent$/);
   assert.match(liveUrl('AIza/a+b'), /\?key=AIza%2Fa%2Bb$/);
+});
+
+test('builds the Gemini 3.1 Live speech renderer used by the precise sync pipeline', () => {
+  const setup = fileVoiceSetupMessage('fa', 'Kore').setup;
+  assert.equal(setup.model, 'models/gemini-3.1-flash-live-preview');
+  assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
+  assert.equal(setup.generationConfig.speechConfig.languageCode, 'fa');
+  assert.equal(setup.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Kore');
+  assert.match(setup.systemInstruction.parts[0].text, /exactly the supplied text/i);
+
+  const fitted = fitPcm(Int16Array.from([0, 1000, 2000, 3000]), 8);
+  assert.equal(fitted.length, 8);
+  assert.equal(fitted[0], 0);
+  assert.equal(fitted.at(-1), 3000);
 });
 
 test('keeps live captions sentence-sized', () => {

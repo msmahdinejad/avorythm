@@ -13,8 +13,11 @@ const defaultState = {
   captureTabId: null,
   playerTabId: null,
   sourceTitle: '',
+  syncArtifacts: null,
+  completionReason: '',
   config: null
 };
+let stopPromise = null;
 
 async function injectOverlay(tabId) {
   if (!chrome.scripting?.executeScript) return;
@@ -140,13 +143,20 @@ async function start(config) {
     sourceLanguage: '',
     recordingReady: false,
     videoRecordingReady: false,
+    syncArtifacts: null,
+    completionReason: '',
     captureTabId: tab.id,
     playerTabId,
     sourceTitle: tab.title || '',
     config: nextConfig
   });
   await broadcastOverlay(await getState());
-  const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config: nextConfig, apiKey, groqApiKey: groqApiKey || ''});
+  let response;
+  try {
+    response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'start', streamId, config: nextConfig, apiKey, groqApiKey: groqApiKey || ''});
+  } catch (error) {
+    response = {ok: false, error: error.message || 'capture_failed'};
+  }
   if (!response?.ok) {
     if (await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
     if (playerTabId && chrome.tabs?.remove) await chrome.tabs.remove(playerTabId).catch(() => {});
@@ -170,22 +180,42 @@ async function start(config) {
   return getState();
 }
 
-async function stop(requestingTabId = null, keepPlayer = false) {
+async function performStop(requestingTabId = null, keepPlayer = false, completionReason = 'manual') {
   const current = await getState();
-  let failure = '';
+  if (!current.active && !await hasOffscreenDocument()) return current;
+  await setState({status: 'finalizing', completionReason});
+  let failure = null;
   if (await hasOffscreenDocument()) {
-    const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'stop'});
-    await chrome.offscreen.closeDocument();
-    if (!response?.ok) failure = response?.error || 'stop_failed';
+    try {
+      const response = await chrome.runtime.sendMessage({target: 'offscreen', type: 'stop'});
+      if (!response?.ok) failure = new Error(response?.error || 'stop_failed');
+    } catch (error) {
+      failure = error;
+    }
+    try {
+      await chrome.offscreen.closeDocument();
+    } catch (error) {
+      failure ||= error;
+    }
   }
-  const state = await setState({active: false, status: 'idle'});
+  const state = await setState({
+    active: false,
+    status: failure ? 'error' : 'idle',
+    error: failure ? failure.message || 'stop_failed' : ''
+  });
   await broadcastOverlay({...current, active: false});
   if (!keepPlayer && current.playerTabId && current.playerTabId !== requestingTabId && chrome.tabs?.remove) {
     await chrome.tabs.remove(current.playerTabId).catch(() => {});
   }
   const stopped = await setState({...state, captureTabId: null, playerTabId: null, config: null});
-  if (failure) throw new Error(failure);
+  if (failure) throw failure;
   return stopped;
+}
+
+function stop(requestingTabId = null, keepPlayer = false, completionReason = 'manual') {
+  if (stopPromise) return stopPromise;
+  stopPromise = performStop(requestingTabId, keepPlayer, completionReason).finally(() => { stopPromise = null; });
+  return stopPromise;
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -235,8 +265,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if (message.type === 'stop') sendResponse({ok: true, state: await stop(sender.tab?.id || null, Boolean(message.keepPlayer))});
     else if (message.type === 'source-media-state') {
       const state = await getState();
-      if (sender.tab?.id === state.captureTabId && message.state?.ended && state.active) {
-        sendResponse({ok: true, state: await stop(null, true)});
+      if (sender.tab?.id === state.captureTabId && (message.state?.ended || message.state?.completed) && state.active) {
+        sendResponse({ok: true, state: await stop(null, true, message.state?.completionReason || 'ended')});
       } else sendResponse({ok: true});
     }
     else if (message.type === 'audio') {
@@ -256,11 +286,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ok: Boolean(result?.ok), result});
     }
   })().catch(async (error) => {
-    const current = await getState();
-    const failed = await setState({active: false, status: 'error', error: error.message});
-    await broadcastOverlay(failed);
-    if (current.active && await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
-    await setState({captureTabId: null, playerTabId: null, config: null});
+    if (message.type === 'start') {
+      const current = await getState();
+      const failed = await setState({active: false, status: 'error', error: error.message});
+      await broadcastOverlay(failed);
+      if (current.active && await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
+      if (current.playerTabId && chrome.tabs?.remove) await chrome.tabs.remove(current.playerTabId).catch(() => {});
+      await setState({captureTabId: null, playerTabId: null, config: null});
+    }
     sendResponse({ok: false, error: error.message});
   });
   return true;

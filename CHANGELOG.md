@@ -2,6 +2,29 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.1] - 2026-08-19
+
+### Added
+
+- A precise synchronized extension engine: Groq Whisper utterances, the strongest-first free Gemini text pool, and Gemini 3.1 Flash Live speech share one recorded timeline and a selectable voice.
+- Refresh recovery for active OPFS recordings and finalized local video, dub-audio, and subtitle timelines.
+- Manual recording finalization plus same-element YouTube/SPA autoplay-end detection.
+
+### Changed
+
+- Incomplete Whisper utterances now stay pending across overlapping windows so translation and narration receive complete sentences.
+- Synchronized capture and playback remain independent while the source tab changes visibility or fullscreen state.
+- Player and privacy/help documentation now describe both synchronized engines and their direct Google/Groq data flows.
+- Windows packages now use the bundled FFmpeg executable for media probing as well as processing, removing a redundant FFprobe binary and excluding development-only modules from release builds.
+
+### Fixed
+
+- Treat expected `play()` `AbortError` races as recoverable and clear the blocking stage overlay after playback recovers.
+- Prevent stale append/play promises from corrupting a rebuilt MediaSource after refresh, seek, fullscreen, or rebuffer transitions.
+- Freeze visible captions while playback is paused, then select the correct recorded cue on resume or seek.
+- Preserve bounded memory during long refresh replays by chunking OPFS snapshots and pruning pre-restore MediaSource ranges.
+- Always close capture resources and leave a recoverable stopped state when finalization or offscreen messaging fails.
+
 ## [1.1.0] - 2026-08-19
 
 ### Added
@@ -255,7 +278,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/msmahdinejad/avorythm/compare/v0.9.1...v1.0.0
 [0.9.1]: https://github.com/msmahdinejad/avorythm/compare/v0.9.0...v0.9.1

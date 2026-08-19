@@ -14,6 +14,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   const removedTabs = [];
   let lastOffscreenMessage = null;
   let offscreenResponse = {ok: true};
+  let rejectOffscreenStop = false;
   const overlayMessages = [];
   const local = {};
   const session = {};
@@ -46,6 +47,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       async sendMessage(message) {
         assert.equal(message.target, 'offscreen');
         lastOffscreenMessage = message;
+        if (rejectOffscreenStop && message.type === 'stop') throw new Error('offscreen_stop_failed');
         return offscreenResponse;
       }
     },
@@ -86,8 +88,8 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   await import('../extension/background.js');
   await installed();
 
-  const message = (payload) => new Promise((resolve) => {
-    assert.equal(receive(payload, {}, resolve), true);
+  const message = (payload, sender = {}) => new Promise((resolve) => {
+    assert.equal(receive(payload, sender, resolve), true);
   });
 
   let response = await message({type: 'bootstrap'});
@@ -155,6 +157,23 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(lastOffscreenMessage.config.syncCaptionEngine, 'whisper');
   assert.equal(lastOffscreenMessage.groqApiKey, 'test-groq-key-123');
   assert.deepEqual(sourceControls, ['pause', 'play']);
-  await message({type: 'stop'});
-  assert.deepEqual(removedTabs, [84]);
+  response = await message({type: 'source-media-state', state: {completed: true, completionReason: 'media-transition'}}, {tab: {id: 42}});
+  assert.equal(response.ok, true);
+  assert.equal(response.state.completionReason, 'media-transition');
+  assert.equal(response.state.active, false);
+  assert.deepEqual(removedTabs, []);
+
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, true);
+  rejectOffscreenStop = true;
+  response = await message({type: 'stop'}, {tab: {id: 84}});
+  assert.equal(response.ok, false);
+  assert.equal(response.error, 'offscreen_stop_failed');
+  assert.equal(offscreen, false, 'the offscreen document must close even when finalization fails');
+  response = await message({type: 'state'});
+  assert.equal(response.state.active, false);
+  assert.equal(response.state.status, 'error');
+  assert.equal(response.state.captureTabId, null);
+
+  assert.deepEqual(removedTabs, []);
 });

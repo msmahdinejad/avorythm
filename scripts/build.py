@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import platform
 import shutil
 import subprocess
@@ -9,19 +10,23 @@ from pathlib import Path
 
 
 def _real_media_binary(name: str) -> Path:
-    discovered = shutil.which(name)
-    if not discovered:
-        raise SystemExit(f"{name} is required to build the self-contained Windows package")
-    candidate = Path(discovered).resolve()
-    if candidate.stat().st_size >= 1_000_000:
-        return candidate
-
+    candidates: list[Path] = []
+    if discovered := shutil.which(name):
+        candidates.append(Path(discovered).resolve())
     chocolatey = Path("C:/ProgramData/chocolatey/lib")
-    matches = list(chocolatey.glob(f"ffmpeg*/tools/**/{name}")) if chocolatey.is_dir() else []
-    binaries = [path.resolve() for path in matches if path.stat().st_size >= 1_000_000]
+    if chocolatey.is_dir():
+        candidates.extend(path.resolve() for path in chocolatey.glob(f"ffmpeg*/tools/**/{name}"))
+    winget = Path(os.getenv("LOCALAPPDATA", "")) / "Microsoft" / "WinGet" / "Packages"
+    if winget.is_dir():
+        candidates.extend(path.resolve() for path in winget.glob(f"Gyan.FFmpeg*/**/bin/{name}"))
+    binaries = [
+        path
+        for path in set(candidates)
+        if path.is_file() and path.stat().st_size >= 1_000_000
+    ]
     if not binaries:
-        raise SystemExit(f"{name} resolved to a package-manager shim, not the real executable")
-    return max(binaries, key=lambda path: path.stat().st_size)
+        raise SystemExit(f"{name} is required to build the self-contained Windows package")
+    return min(binaries, key=lambda path: path.stat().st_size)
 
 
 def main() -> None:
@@ -54,6 +59,26 @@ def main() -> None:
         "pytest",
         "--exclude-module",
         "ruff",
+        "--exclude-module",
+        "IPython",
+        "--exclude-module",
+        "matplotlib",
+        "--exclude-module",
+        "tkinter",
+        "--exclude-module",
+        "jedi",
+        "--exclude-module",
+        "pygments",
+        "--exclude-module",
+        "Cython",
+        "--exclude-module",
+        "zmq",
+        "--exclude-module",
+        "black",
+        "--exclude-module",
+        "nbformat",
+        "--exclude-module",
+        "jsonschema",
         "--add-data",
         f"THIRD_PARTY_NOTICES.md{data_separator}.",
         "--add-data",
@@ -61,7 +86,6 @@ def main() -> None:
     ]
     if system == "Windows":
         ffmpeg = _real_media_binary("ffmpeg.exe")
-        ffprobe = _real_media_binary("ffprobe.exe")
         command.extend(
             [
                 "--icon",
@@ -74,8 +98,6 @@ def main() -> None:
                 "keyring.backends.Windows",
                 "--add-binary",
                 f"{ffmpeg};.",
-                "--add-binary",
-                f"{ffprobe};.",
                 "--add-data",
                 "licenses/FFmpeg-GPL-3.0.txt;LICENSES",
             ]

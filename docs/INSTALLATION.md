@@ -57,7 +57,7 @@ The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable.
 
 **On this page** is the shortest path for live listening. **Synchronized recorder & player** keeps capture 8–60 seconds ahead (20 seconds by default) and feeds an independent, seekable player. Pausing, seeking, switching tabs, or fullscreening the Avorythm player does not stop the source producer. A temporary underrun pauses only the consumer until its safety lead is rebuilt. The source media ending finalizes a downloadable WebM automatically. Literal zero delay is impossible because translation must receive speech before it can generate output; the recording lead trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
 
-Gemini Live supplies caption timing by default. In extension Settings you can optionally choose Groq Whisper timestamps; Chrome asks for the optional `api.groq.com` permission and the Groq key is kept only for the browser session. Gemini 3.5 Live still generates the dub.
+The extension's faster synchronized engine uses Gemini 3.5 Live Translate directly. Its precise engine uses Groq Whisper for complete-utterance timestamps, the free Gemini text pool for translation, and Gemini 3.1 Flash Live for the selected voice; audio and both subtitle tracks are fitted to one recorded timeline. Chrome asks for the optional `api.groq.com` permission and keeps the Groq key only for the browser session.
 
 The key lives only in `chrome.storage.session` and must be entered again after the browser fully exits. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
 
