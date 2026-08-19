@@ -20,6 +20,7 @@ let dubGain = null;
 let socket = null;
 let config = null;
 let apiKey = '';
+let groqApiKey = '';
 let liveReady = false;
 let nextDubTime = 0;
 let contextStartedAt = 0;
@@ -31,6 +32,8 @@ let sourceTracker = {partial: '', started: 0};
 let translatedTracker = {partial: '', started: 0};
 let audioBacklog = [];
 let mediaRecorder = null;
+let mediaStopPromise = null;
+let capturedVideo = null;
 let syncChannel = null;
 let syncReady = false;
 let syncQueue = [];
@@ -38,10 +41,21 @@ let currentDubStart = null;
 let currentDubOffset = 0;
 let players = new Set();
 let speech = {active: false, started: 0, silentFor: 0, completed: []};
+let whisperChunks = [];
+let whisperBytes = 0;
+let whisperOffset = 0;
+let whisperCommittedUntil = 0;
+let whisperBusy = Promise.resolve();
+let whisperFailed = false;
+let translatedCue = {id: 0, text: ''};
+let lastDubEnd = 0;
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const RECORDING_PREFIX = 'avorythm-recording-';
+const CAPTURE_PREFIX = 'avorythm-capture-';
 const RECONNECT_BUFFER_CHUNKS = 1200;
+const WHISPER_WINDOW_BYTES = 12 * 16000 * 2;
+const WHISPER_OVERLAP_BYTES = 1.5 * 16000 * 2;
 
 function report(update) {
   return chrome.runtime.sendMessage({target: 'background', type: 'bridge-state', update});
@@ -79,11 +93,12 @@ function openSyncBridge() {
   syncChannel.postMessage({type: 'bridge-ready'});
 }
 
-function startMediaBridge() {
+async function startMediaBridge() {
   if (!stream?.getVideoTracks().length || typeof MediaRecorder !== 'function') {
     throw new Error('synchronized_player_unavailable');
   }
   openSyncBridge();
+  capturedVideo = await CapturedVideo.create();
   const candidates = [
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
@@ -94,10 +109,26 @@ function startMediaBridge() {
   const resolvedType = mediaRecorder.mimeType || mimeType || 'video/webm';
   postSync({type: 'media-init', mimeType: resolvedType, bufferSeconds: config.syncBufferSeconds});
   mediaRecorder.ondataavailable = ({data}) => {
-    if (data?.size) postSync({type: 'media-chunk', data});
+    if (!data?.size) return;
+    capturedVideo.append(data);
+    postSync({type: 'media-chunk', data});
   };
   mediaRecorder.onerror = () => report({status: 'error', error: 'synchronized_player_failed'});
+  mediaStopPromise = new Promise((resolve) => { mediaRecorder.onstop = resolve; });
   mediaRecorder.start(250);
+}
+
+async function stopMediaBridge() {
+  if (!mediaRecorder || !capturedVideo) return;
+  if (mediaRecorder.state !== 'inactive') {
+    try { mediaRecorder.requestData(); } catch {}
+    mediaRecorder.stop();
+  }
+  await mediaStopPromise;
+  const result = await capturedVideo.finish();
+  postSync({type: 'media-final', ...result});
+  await report({videoRecordingReady: true});
+  await wait(250);
 }
 
 function trackSpeech(pcm, at) {
@@ -170,6 +201,93 @@ class PcmWriter {
     await this.writable.close();
     return this.handle.getFile();
   }
+}
+
+class CapturedVideo {
+  static async create() {
+    const root = await navigator.storage.getDirectory();
+    if (typeof root.entries === 'function') {
+      for await (const [name] of root.entries()) {
+        if (name.startsWith(CAPTURE_PREFIX)) await root.removeEntry(name).catch(() => {});
+      }
+    }
+    const fileName = `${CAPTURE_PREFIX}${crypto.randomUUID()}.webm`;
+    const handle = await root.getFileHandle(fileName, {create: true});
+    const writable = await handle.createWritable();
+    return new CapturedVideo(fileName, handle, writable);
+  }
+
+  constructor(fileName, handle, writable) {
+    this.fileName = fileName;
+    this.handle = handle;
+    this.writable = writable;
+    this.pending = Promise.resolve();
+    this.bytes = 0;
+  }
+
+  append(blob) {
+    this.bytes += blob.size;
+    this.pending = this.pending.then(() => this.writable.write(blob));
+  }
+
+  async finish() {
+    await this.pending;
+    await this.writable.close();
+    return {fileName: this.fileName, bytes: this.bytes};
+  }
+}
+
+async function transcribeWhisper(pcm, offset) {
+  const form = new FormData();
+  form.append('file', new Blob([wavHeader(pcm.byteLength, 16000), pcm], {type: 'audio/wav'}), 'capture.wav');
+  form.append('model', 'whisper-large-v3');
+  form.append('response_format', 'verbose_json');
+  form.append('timestamp_granularities[]', 'segment');
+  form.append('temperature', '0');
+  const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+    method: 'POST', headers: {Authorization: `Bearer ${groqApiKey}`}, body: form
+  });
+  if (!response.ok) throw new Error(response.status === 429 ? 'groq_quota_exceeded' : 'groq_transcription_failed');
+  const result = await response.json();
+  for (const segment of result.segments || []) {
+    const start = offset + Number(segment.start || 0);
+    const end = offset + Number(segment.end || segment.start || 0.6);
+    if (end <= whisperCommittedUntil + 0.05 || !String(segment.text || '').trim()) continue;
+    const pieces = captionSegments(segment.text);
+    const slice = Math.max(0.6, end - start) / pieces.length;
+    pieces.forEach((text, index) => {
+      const cue = {id: `whisper-${start.toFixed(2)}-${index}`, text, start: start + slice * index, end: start + slice * (index + 1)};
+      postSync({type: 'caption', translated: false, ...cue});
+      recorder?.addSubtitle(false, cue);
+    });
+    whisperCommittedUntil = Math.max(whisperCommittedUntil, end);
+    await report({sourceText: latestCaption(segment.text)});
+  }
+}
+
+function queueWhisper(pcm, flush = false) {
+  if (config?.syncCaptionEngine !== 'whisper' || whisperFailed) return;
+  if (pcm?.byteLength) {
+    const bytes = pcm instanceof Uint8Array ? pcm.slice() : new Uint8Array(pcm).slice();
+    whisperChunks.push(bytes);
+    whisperBytes += bytes.byteLength;
+  }
+  if (whisperBytes < WHISPER_WINDOW_BYTES && !(flush && whisperBytes >= 32000)) return;
+  const merged = new Uint8Array(whisperBytes);
+  let cursor = 0;
+  for (const chunk of whisperChunks) { merged.set(chunk, cursor); cursor += chunk.byteLength; }
+  const window = flush ? merged : merged.subarray(0, WHISPER_WINDOW_BYTES);
+  const consumed = flush ? merged.byteLength : WHISPER_WINDOW_BYTES - WHISPER_OVERLAP_BYTES;
+  const remainder = flush ? new Uint8Array() : merged.slice(consumed);
+  const offset = whisperOffset;
+  whisperOffset += consumed / 32000;
+  whisperChunks = remainder.byteLength ? [remainder] : [];
+  whisperBytes = remainder.byteLength;
+  whisperBusy = whisperBusy.then(() => transcribeWhisper(window, offset)).catch(async (error) => {
+    whisperFailed = true;
+    postSync({type: 'warning', error: error.message});
+    await report({sourceText: latestCaption(sourceTracker.partial)});
+  });
 }
 
 class SessionRecorder {
@@ -250,11 +368,13 @@ function playDubbed(pcm) {
   const samples = new Int16Array(pcm.buffer, pcm.byteOffset, Math.floor(pcm.byteLength / 2));
   const duration = samples.length / 24000;
   if (config.playbackMode === 'synchronized') {
-    if (currentDubStart === null) currentDubStart = nextSpeechStart(elapsed());
+    if (currentDubStart === null) currentDubStart = Math.max(nextSpeechStart(elapsed()), lastDubEnd);
     const start = currentDubStart + currentDubOffset;
     currentDubOffset += duration;
+    lastDubEnd = Math.max(lastDubEnd, start + duration);
     recorder?.dubbed.appendAt(pcm, start);
     postSync({type: 'dub-chunk', data: pcm.slice().buffer, start, duration});
+    if (translatedCue.text) postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, text: translatedCue.text, start: currentDubStart, end: lastDubEnd + 0.35});
     return;
   }
   const begins = Math.max(context.currentTime + 0.03, nextDubTime);
@@ -287,6 +407,7 @@ function clearDubPlayback() {
   if (context) nextDubTime = context.currentTime;
   currentDubStart = null;
   currentDubOffset = 0;
+  translatedCue = {id: translatedCue.id + 1, text: ''};
   if (config?.playbackMode === 'synchronized') postSync({type: 'dub-interrupted'});
 }
 
@@ -294,14 +415,18 @@ async function handleTranscript(translated, transcription) {
   const tracker = translated ? translatedTracker : sourceTracker;
   const completed = mergeTranscript(tracker, transcription.text || '', transcription.finished, elapsed());
   const text = latestCaption(completed?.text || tracker.partial);
-  if (completed) {
+  if (completed && !(config.playbackMode === 'synchronized' && (translated || config.syncCaptionEngine === 'whisper'))) {
     recorder?.addSubtitle(translated, completed);
   }
   if (!text) return;
-  if (config.playbackMode === 'synchronized') {
+  if (config.playbackMode === 'synchronized' && translated) {
+    translatedCue.text = text;
+    if (currentDubStart !== null) postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, text, start: currentDubStart, end: Math.max(currentDubStart + 0.8, lastDubEnd + 0.35)});
+  } else if (config.playbackMode === 'synchronized' && (config.syncCaptionEngine !== 'whisper' || whisperFailed)) {
     postSync({
       type: 'caption',
       translated,
+      id: `${translated ? 'translated' : 'source'}-${(completed?.start ?? elapsed()).toFixed(2)}`,
       text,
       start: completed?.start ?? (speech.active ? speech.started : Math.max(0, elapsed() - 1)),
       end: completed?.end ?? elapsed() + 0.8
@@ -351,6 +476,12 @@ async function handleLiveMessage(message) {
   }
   if (content.turnComplete) {
     await flushTranscripts();
+    if (config.playbackMode === 'synchronized' && translatedCue.text && currentDubStart !== null) {
+      const cue = {text: translatedCue.text, start: currentDubStart, end: Math.max(currentDubStart + 0.8, lastDubEnd + 0.35)};
+      postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, ...cue});
+      recorder?.addSubtitle(true, cue);
+      translatedCue = {id: translatedCue.id + 1, text: ''};
+    }
     currentDubStart = null;
     currentDubOffset = 0;
   }
@@ -427,10 +558,11 @@ async function reconnectSocket() {
   }
 }
 
-async function begin(streamId, nextConfig, nextApiKey) {
+async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   if (stream) throw new Error('capture_already_active');
   config = nextConfig;
   apiKey = nextApiKey;
+  groqApiKey = nextGroqApiKey || '';
   stopping = false;
   reconnecting = false;
   liveReady = false;
@@ -440,6 +572,14 @@ async function begin(streamId, nextConfig, nextApiKey) {
   speech = {active: false, started: 0, silentFor: 0, completed: []};
   currentDubStart = null;
   currentDubOffset = 0;
+  lastDubEnd = 0;
+  translatedCue = {id: 0, text: ''};
+  whisperChunks = [];
+  whisperBytes = 0;
+  whisperOffset = 0;
+  whisperCommittedUntil = 0;
+  whisperBusy = Promise.resolve();
+  whisperFailed = false;
   if (config.recording) recorder = await SessionRecorder.create();
   await openSocket();
   const synchronized = config.playbackMode === 'synchronized';
@@ -459,7 +599,7 @@ async function begin(streamId, nextConfig, nextApiKey) {
   source.connect(sourceGain).connect(context.destination);
   source.connect(captureNode).connect(silent).connect(context.destination);
   dubGain.connect(context.destination);
-  if (synchronized) startMediaBridge();
+  if (synchronized) await startMediaBridge();
   contextStartedAt = context.currentTime;
   nextDubTime = context.currentTime;
   applyVolumes();
@@ -467,6 +607,7 @@ async function begin(streamId, nextConfig, nextApiKey) {
     recorder?.original.append(data);
     const pcm = data instanceof Uint8Array ? data : new Uint8Array(data);
     trackSpeech(pcm, elapsed());
+    queueWhisper(pcm);
     if (liveReady && socket?.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(audioMessage(pcm)));
     } else {
@@ -485,7 +626,9 @@ async function end(sendAudioEnd = true) {
     await wait(700);
   }
   await flushTranscripts();
-  if (mediaRecorder?.state && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  queueWhisper(null, true);
+  await whisperBusy;
+  await stopMediaBridge();
   socket?.close();
   stream?.getTracks().forEach((track) => track.stop());
   captureNode?.disconnect(); source?.disconnect(); sourceGain?.disconnect(); dubGain?.disconnect();
@@ -497,12 +640,14 @@ async function end(sendAudioEnd = true) {
   syncChannel?.close();
   stream = context = source = captureNode = sourceGain = dubGain = socket = recorder = null;
   mediaRecorder = syncChannel = null;
+  mediaStopPromise = capturedVideo = null;
   syncReady = false;
   syncQueue = [];
   audioBacklog = [];
   players.clear();
   config = null;
   apiKey = '';
+  groqApiKey = '';
   nextDubTime = 0;
   liveReady = false;
   reconnecting = false;
@@ -512,7 +657,7 @@ async function end(sendAudioEnd = true) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target !== 'offscreen') return false;
   (async () => {
-    if (message.type === 'start') await begin(message.streamId, message.config, message.apiKey);
+    if (message.type === 'start') await begin(message.streamId, message.config, message.apiKey, message.groqApiKey);
     else if (message.type === 'stop') await end();
     else if (message.type === 'audio') { config = {...config, ...message.config}; applyVolumes(); }
     sendResponse({ok: true});

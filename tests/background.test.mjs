@@ -7,7 +7,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   let offscreen = false;
   let capturedTab = 0;
   let injectedTab = 0;
+  let sourceBridgeTab = 0;
+  const sourceControls = [];
   let createdTab = 0;
+  let activatedTab = 0;
   const removedTabs = [];
   let lastOffscreenMessage = null;
   let offscreenResponse = {ok: true};
@@ -30,6 +33,11 @@ test('keeps the key session-only and starts tab capture without the desktop app'
 
   globalThis.chrome = {
     storage: {local: storageArea(local), session: storageArea(session)},
+    permissions: {
+      async contains() { return true; },
+      async request() { return true; },
+      async remove() { return true; }
+    },
     runtime: {
       onInstalled: {addListener(listener) { installed = listener; }},
       onMessage: {addListener(listener) { receive = listener; }},
@@ -48,14 +56,22 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     tabs: {
       onRemoved: {addListener() {}},
       async query() { return [{id: 42, title: 'Test video'}]; },
-      async create() { createdTab = 84; return {id: 84}; },
+      async create(options) { createdTab = 84; assert.equal(options.active, false); return {id: 84}; },
+      async update(tabId, options) { if (options.active) activatedTab = tabId; return {id: tabId}; },
       async remove(tabId) { removedTabs.push(tabId); },
       async sendMessage(tabId, message) { overlayMessages.push({tabId, message}); }
     },
     scripting: {
-      async executeScript({target, files}) {
-        injectedTab = target.tabId;
-        assert.deepEqual(files, ['content.js']);
+      async executeScript({target, files, func, args}) {
+        if (func) {
+          sourceControls.push(args[0]);
+          return [{result: {ok: true, wasPaused: args[0] !== 'pause'}}];
+        }
+        if (files?.[0] === 'source-bridge.js') sourceBridgeTab = target.tabId;
+        else {
+          injectedTab = target.tabId;
+          assert.deepEqual(files, ['content.js']);
+        }
       }
     },
     tabCapture: {
@@ -78,6 +94,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.data.api_key_set, false);
   assert.equal(local.settings.dubAudioEnabled, true);
   assert.equal(local.settings.originalAudioEnabled, false);
+  assert.equal(local.settings.locale, 'en');
 
   response = await message({type: 'set-key', apiKey: 'test-api-key-123'});
   assert.equal(response.ok, true);
@@ -106,6 +123,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(offscreen, false);
 
   await message({type: 'set-key', apiKey: 'test-api-key-123'});
+  await message({type: 'set-groq-key', apiKey: 'test-groq-key-123'});
+  response = await message({type: 'bootstrap'});
+  assert.equal(response.data.api_key_set, true);
+  assert.equal(response.data.groq_api_key_set, true);
   offscreenResponse = {ok: false, error: 'gemini_closed'};
   response = await message({type: 'start', config: subtitleSettings});
   assert.equal(response.ok, false);
@@ -120,14 +141,20 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     ...subtitleSettings,
     playbackMode: 'synchronized',
     syncBufferSeconds: 5,
+    syncCaptionEngine: 'whisper',
     dubAudioEnabled: true
   };
   response = await message({type: 'start', config: synchronizedSettings});
   assert.equal(response.ok, true);
   assert.equal(createdTab, 84);
+  assert.equal(activatedTab, 84);
+  assert.equal(sourceBridgeTab, 42);
   assert.equal(response.state.playerTabId, 84);
   assert.equal(lastOffscreenMessage.config.playbackMode, 'synchronized');
-  assert.equal(lastOffscreenMessage.config.syncBufferSeconds, 5);
+  assert.equal(lastOffscreenMessage.config.syncBufferSeconds, 8);
+  assert.equal(lastOffscreenMessage.config.syncCaptionEngine, 'whisper');
+  assert.equal(lastOffscreenMessage.groqApiKey, 'test-groq-key-123');
+  assert.deepEqual(sourceControls, ['pause', 'play']);
   await message({type: 'stop'});
   assert.deepEqual(removedTabs, [84]);
 });

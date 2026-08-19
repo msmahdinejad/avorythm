@@ -21,6 +21,7 @@
 
 <p align="center">
   <a href="README.fa.md">فارسی</a> ·
+  <a href="docs/HELP.md">User guide</a> ·
   <a href="docs/INSTALLATION.md">Installation</a> ·
   <a href="PRIVACY.md">Privacy</a> ·
   <a href="SUPPORT.md">Support</a> ·
@@ -75,13 +76,13 @@ For a manual installation from a GitHub release:
 3. Enable **Developer mode**, select **Load unpacked**, and choose the extracted folder.
 4. Pin Avorythm, complete the one-time setup on its separate Settings page, then start translation on a normal media tab.
 
-Choose **On this page** for the lowest practical delay, or **Synchronized player** to hold a few
-seconds of captured audio/video and place the generated dub on the same playback timeline. Protected
+Choose **On this page** for the lowest practical delay, or **Synchronized recorder & player** to keep
+capture around 20 seconds ahead of an independently seekable player and place the generated dub on the same timeline. Protected
 DRM media can block video capture; Avorythm reports the limitation and on-page mode remains available.
 
 The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
 
-See the [complete installation and audio-routing guide](docs/INSTALLATION.md) for Windows AMM,
+See the illustrated [complete user guide](docs/HELP.md) and the [installation and audio-routing guide](docs/INSTALLATION.md) for Windows AMM,
 macOS loopback, Linux monitor sources, proxy setup, and troubleshooting.
 
 ## Data processing
@@ -89,7 +90,7 @@ macOS loopback, Linux monitor sources, proxy setup, and troubleshooting.
 - Live desktop and selected-tab audio is sent to Google Gemini only after the user starts translation.
 - Uploaded media stays on the computer; extracted audio chunks go to Groq Whisper, while transcript text and generated speech requests go to Gemini.
 - Preferences and generated files remain local. Avorythm has no analytics, advertising, or developer telemetry.
-- Recording is optional and disabled by default.
+- Four-output recording is optional and disabled by default. Synchronized playback records the selected tab locally so it can seek and export a WebM.
 
 Read the bilingual [privacy policy](PRIVACY.md) before processing private or copyrighted media.
 

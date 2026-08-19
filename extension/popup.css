@@ -22,4 +22,5 @@ footer{min-height:44px;padding:0 17px 12px;display:flex;align-items:flex-end;jus
 .setup-notice p,.setup-notice button,.mode-option small,.primary-button small,
 .section-title small,.section-title button,.output-chip,
 .success-message,.error-message,footer{font-size:11px}
+footer>div{display:flex;gap:10px}
 .mode-option em{font-size:10px}

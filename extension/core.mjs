@@ -9,7 +9,7 @@ export const LANGUAGES = [
 ];
 
 export const DEFAULT_SETTINGS = Object.freeze({
-  locale: 'fa',
+  locale: 'en',
   targetLanguage: 'fa',
   originalAudioEnabled: false,
   dubAudioEnabled: true,
@@ -24,7 +24,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   subtitleWidth: 680,
   subtitleOpacity: 88,
   playbackMode: 'low-latency',
-  syncBufferSeconds: 4.5
+  syncBufferSeconds: 20,
+  syncCaptionEngine: 'gemini'
 });
 
 export function normalizeSettings(input = {}) {
@@ -39,7 +40,8 @@ export function normalizeSettings(input = {}) {
   delete settings.audioMode;
   delete settings.subtitleShowSource;
   settings.playbackMode = settings.playbackMode === 'synchronized' ? 'synchronized' : 'low-latency';
-  settings.syncBufferSeconds = Math.max(2.5, Math.min(12, Number(settings.syncBufferSeconds) || 4.5));
+  settings.syncBufferSeconds = Math.max(8, Math.min(60, Number(settings.syncBufferSeconds) || 20));
+  settings.syncCaptionEngine = settings.syncCaptionEngine === 'whisper' ? 'whisper' : 'gemini';
   return settings;
 }
 

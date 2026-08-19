@@ -51,11 +51,13 @@ The local rolling governor reserves at most 15,000 estimated tokens per minute. 
 4. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
 5. Pin Avorythm and open its popup.
 6. Open **Settings**, enter the Gemini API key for the current browser session, choose any combination of the four output channels, and confirm the one-time processing consent.
-7. Return to the popup, choose **On this page** or **Synchronized player**, then start from a normal media tab.
+7. Return to the popup, choose **On this page** or **Synchronized recorder & player**, then start from a normal media tab.
 
 The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Avorythm recreates the exact original/dub mix selected by the two independent audio switches and volume sliders.
 
-**On this page** is the shortest path for live listening. **Synchronized player** opens an extension-owned player, buffers 2.5–12 seconds of captured audio/video, and schedules the returned dub and both caption tracks against that timeline. Pause and resume in the player also control the source media. Literal zero delay is impossible because translation must receive speech before it can generate output; the buffer trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
+**On this page** is the shortest path for live listening. **Synchronized recorder & player** keeps capture 8–60 seconds ahead (20 seconds by default) and feeds an independent, seekable player. Pausing, seeking, switching tabs, or fullscreening the Avorythm player does not stop the source producer. A temporary underrun pauses only the consumer until its safety lead is rebuilt. The source media ending finalizes a downloadable WebM automatically. Literal zero delay is impossible because translation must receive speech before it can generate output; the recording lead trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
+
+Gemini Live supplies caption timing by default. In extension Settings you can optionally choose Groq Whisper timestamps; Chrome asks for the optional `api.groq.com` permission and the Groq key is kept only for the browser session. Gemini 3.5 Live still generates the dub.
 
 The key lives only in `chrome.storage.session` and must be entered again after the browser fully exits. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
 
@@ -96,6 +98,7 @@ Do not route Avorythm output to AMM Virtual. That feeds dubbed speech back into 
 - **Extension asks for the key again:** expected after a full browser exit because the key is session-only.
 - **No tab audio:** use Chrome/Edge 116+, keep the target tab active when Start is clicked, and note that protected DRM pages may block capture.
 - **Synchronized player does not open or shows an unsupported-media message:** the page did not expose a capturable video track or uses protected media. Stop the session and choose **On this page**.
+- **Synchronized player waits on Buffering:** keep the source media playing and let the safety lead rebuild. Increase Recording lead when the source or network stalls often.
 - **Media Studio says FFmpeg is required:** reinstall the current Windows release. Source and macOS/Linux builds still require FFmpeg on `PATH`.
 - **The original track is still audible in the player:** leave **Original audio** unchecked. The switch enforces mute and zero volume even if the browser's native video controls try to unmute it.
 - **Close Avorythm completely:** use **Quit app** in the dashboard top bar or close the native main window.

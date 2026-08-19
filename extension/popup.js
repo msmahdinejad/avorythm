@@ -9,29 +9,29 @@ let timer = null;
 const copy = {
   fa: {
     tagline: 'ترجمهٔ زندهٔ همین تب', ready: 'آمادهٔ ترجمه', connecting: 'در حال اتصال…', connected: 'ترجمهٔ زنده فعال است', error: 'خطا در اتصال',
-    setupNeeded: 'راه‌اندازی کوتاه لازم است', setupMessage: 'کلید Gemini و اجازهٔ پردازش را در تنظیمات وارد کن.', openSettings: 'بازکردن تنظیمات',
-    language: 'زبان مقصد', playbackMode: 'روش پخش', lowLatency: 'داخل همین صفحه', lowLatencyHelp: 'سریع‌ترین حالت برای صدا و زیرنویس زنده', synchronized: 'پلیر هماهنگ', synchronizedHelp: 'ویدئو را با چند ثانیه بافر، هم‌زمان با دوبله پخش می‌کند', bestSync: 'بهترین هماهنگی',
-    start: 'شروع ترجمه', stop: 'توقف ترجمه', startHint: 'صدای همین تب ترجمه می‌شود', syncHint: 'پلیر هماهنگ در یک تب تازه باز می‌شود', stopHint: 'جلسه و دریافت صدا متوقف می‌شود',
+    setupNeeded: 'راه‌اندازی کوتاه لازم است', setupMessage: 'کلید Gemini را وارد کن و حتماً اجازهٔ ارسال صدای تب به Google Gemini را تأیید کن.', openSettings: 'بازکردن تنظیمات',
+    language: 'زبان مقصد', playbackMode: 'روش پخش', lowLatency: 'داخل همین صفحه', lowLatencyHelp: 'سریع‌ترین حالت برای صدا و زیرنویس زنده', synchronized: 'ضبط و پلیر هماهنگ', synchronizedHelp: 'ضبط جلوتر ادامه دارد؛ پلیر مستقل Seek و Fullscreen دارد', bestSync: 'سینک پایدار',
+    start: 'شروع ترجمه', stop: 'توقف ترجمه', startHint: 'صدای همین تب ترجمه می‌شود', syncHint: 'ضبط و پلیر هماهنگ در تب تازه باز می‌شود', stopHint: 'جلسه و دریافت صدا متوقف می‌شود',
     yourOutput: 'خروجی انتخاب‌شده', edit: 'ویرایش', selectedCount: (count) => `${count} مورد فعال`, noOutput: 'هیچ خروجی‌ای فعال نیست',
     originalAudio: 'صدای اصلی', dubbedAudio: 'صدای دوبله', sourceSubtitles: 'زیرنویس اصلی', translatedSubtitles: 'زیرنویس ترجمه',
     source: 'گفتار اصلی', translated: 'ترجمهٔ زنده', waiting: 'منتظر صدا…', waitingTranslation: 'ترجمه اینجا نمایش داده می‌شود…',
-    downloadReady: 'چهار فایل در Downloads ذخیره شدند.', privacy: 'صدا فقط پس از شروع به Google Gemini فرستاده می‌شود.', project: 'پروژه ↗',
+    downloadReady: 'چهار فایل در Downloads ذخیره شدند.', privacy: 'صدا فقط پس از شروع به Google Gemini فرستاده می‌شود.', help:'راهنما ↗', project: 'پروژه ↗',
     api_key_missing: 'کلید Gemini را در تنظیمات وارد کن.', api_key_invalid: 'کلید Gemini معتبر نیست.', consent_required: 'اجازهٔ پردازش صدا را در تنظیمات تأیید کن.',
-    gemini_socket_failed: 'اتصال مستقیم به Gemini برقرار نشد؛ پروکسی مرورگر را بررسی کن.', gemini_socket_closed: 'اتصال Gemini بسته شد.', gemini_socket_timeout: 'پاسخی از Gemini دریافت نشد.', gemini_token_failed: 'Google توکن کوتاه‌عمر صادر نکرد؛ کلید و اتصال را بررسی کن.', gemini_quota_exceeded: 'سهمیهٔ Gemini تمام شده است؛ کمی بعد دوباره امتحان کن.',
-    active_tab_missing: 'تب فعالی پیدا نشد.', capture_failed: 'دریافت صدا از این تب ممکن نشد.', synchronized_player_unavailable: 'این تب امکان ساخت پلیر هماهنگ را نمی‌دهد؛ حالت داخل صفحه را انتخاب کن.', synchronized_player_failed: 'بافر ویدئو ساخته نشد؛ حالت داخل صفحه را امتحان کن.', downloads_permission_missing: 'برای ذخیرهٔ چهار خروجی، دسترسی Downloads لازم است.'
+    gemini_socket_failed: 'اتصال مستقیم به Gemini برقرار نشد؛ پروکسی مرورگر را بررسی کن.', gemini_socket_closed: 'اتصال Gemini بسته شد.', gemini_socket_timeout: 'پاسخی از Gemini دریافت نشد.', gemini_token_failed: 'Google توکن کوتاه‌عمر صادر نکرد؛ کلید و اتصال را بررسی کن.', gemini_quota_exceeded: 'سهمیهٔ Gemini تمام شده است؛ کمی بعد دوباره امتحان کن.', groq_key_missing:'برای زمان‌بندی Whisper، کلید Groq را در تنظیمات وارد کن.',
+    active_tab_missing: 'تب فعالی پیدا نشد.', capture_failed: 'دریافت صدا از این تب ممکن نشد.', source_resume_failed:'ویدیوی تب منبع خودکار پخش نشد؛ پخش را یک‌بار دستی شروع کن و دوباره امتحان کن.', synchronized_player_unavailable: 'این تب امکان ساخت پلیر هماهنگ را نمی‌دهد؛ حالت داخل صفحه را انتخاب کن.', synchronized_player_failed: 'بافر ویدئو ساخته نشد؛ حالت داخل صفحه را امتحان کن.', downloads_permission_missing: 'برای ذخیرهٔ چهار خروجی، دسترسی Downloads لازم است.'
   },
   en: {
     tagline: 'Translate this tab live', ready: 'Ready to translate', connecting: 'Connecting…', connected: 'Live translation is active', error: 'Connection error',
-    setupNeeded: 'Quick setup required', setupMessage: 'Add your Gemini key and processing consent in Settings.', openSettings: 'Open settings',
-    language: 'Target language', playbackMode: 'Playback', lowLatency: 'On this page', lowLatencyHelp: 'Fastest live audio and subtitle path', synchronized: 'Synchronized player', synchronizedHelp: 'Buffers video briefly and plays it with the dub', bestSync: 'Best sync',
-    start: 'Start translating', stop: 'Stop translation', startHint: 'Audio from this tab will be translated', syncHint: 'A synchronized player opens in a new tab', stopHint: 'Stops capture and the live session',
+    setupNeeded: 'Quick setup required', setupMessage: 'Add your Gemini key and explicitly confirm permission to send selected-tab audio to Google Gemini.', openSettings: 'Open settings',
+    language: 'Target language', playbackMode: 'Playback', lowLatency: 'On this page', lowLatencyHelp: 'Fastest live audio and subtitle path', synchronized: 'Synchronized recorder & player', synchronizedHelp: 'Capture runs ahead; the independent player can seek and fullscreen', bestSync: 'Stable sync',
+    start: 'Start translating', stop: 'Stop translation', startHint: 'Audio from this tab will be translated', syncHint: 'The synchronized recorder opens in a new tab', stopHint: 'Stops capture and the live session',
     yourOutput: 'Selected output', edit: 'Edit', selectedCount: (count) => `${count} enabled`, noOutput: 'No output is enabled',
     originalAudio: 'Original audio', dubbedAudio: 'Dubbed audio', sourceSubtitles: 'Source subtitles', translatedSubtitles: 'Translated subtitles',
     source: 'Source speech', translated: 'Live translation', waiting: 'Waiting for audio…', waitingTranslation: 'Translation appears here…',
-    downloadReady: 'Four files were saved to Downloads.', privacy: 'Audio goes to Google Gemini only after you start.', project: 'Project ↗',
+    downloadReady: 'Four files were saved to Downloads.', privacy: 'Audio goes to Google Gemini only after you start.', help:'Guide ↗', project: 'Project ↗',
     api_key_missing: 'Add your Gemini key in Settings.', api_key_invalid: 'The Gemini key is invalid.', consent_required: 'Confirm audio processing in Settings.',
-    gemini_socket_failed: 'Could not connect to Gemini; check the browser proxy.', gemini_socket_closed: 'The Gemini connection closed.', gemini_socket_timeout: 'Gemini did not respond in time.', gemini_token_failed: 'Google could not issue a short-lived token; check the key and connection.', gemini_quota_exceeded: 'The Gemini quota is exhausted; try again shortly.',
-    active_tab_missing: 'No active tab was found.', capture_failed: 'Could not capture audio from this tab.', synchronized_player_unavailable: 'This tab cannot provide synchronized video; use on-page mode.', synchronized_player_failed: 'The video buffer could not start; try on-page mode.', downloads_permission_missing: 'Downloads access is required to save four outputs.'
+    gemini_socket_failed: 'Could not connect to Gemini; check the browser proxy.', gemini_socket_closed: 'The Gemini connection closed.', gemini_socket_timeout: 'Gemini did not respond in time.', gemini_token_failed: 'Google could not issue a short-lived token; check the key and connection.', gemini_quota_exceeded: 'The Gemini quota is exhausted; try again shortly.', groq_key_missing:'Add a Groq key in Settings to use Whisper timing.',
+    active_tab_missing: 'No active tab was found.', capture_failed: 'Could not capture audio from this tab.', source_resume_failed:'The source video could not resume automatically. Play it once, then try again.', synchronized_player_unavailable: 'This tab cannot provide synchronized video; use on-page mode.', synchronized_player_failed: 'The video buffer could not start; try on-page mode.', downloads_permission_missing: 'Downloads access is required to save four outputs.'
   }
 };
 
@@ -50,6 +50,7 @@ function translate() {
   document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach((node) => { node.setAttribute('aria-label', t(node.dataset.i18nAria)); });
   $('#localeToggle').textContent = locale === 'fa' ? 'EN' : 'فا';
+  $('#helpLink').href = `https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP${locale === 'fa' ? '.fa' : ''}.md`;
 }
 
 function languageName(code) {

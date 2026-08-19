@@ -13,3 +13,5 @@
 .sync-scale,.policy-links a,.reset-button{font-size:11px}
 .card-icon{font-size:10px}.field>span,.channel-option b,.switch-row b,
 .consent-row b,.range-field b,.section-nav a{font-size:12px}
+.consent-tip{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;margin-bottom:18px;padding:14px 16px;border:1px solid rgba(244,189,109,.34);border-radius:14px;background:rgba(91,66,28,.28);color:#f7deb4}.consent-tip b{font-size:12px}.consent-tip span{font-size:11px;color:#d9c8a8}.consent-tip a{color:#fff0c8;font-size:11px;text-decoration:none}.field.required{padding:12px;border:1px solid rgba(255,125,146,.3);border-radius:12px;background:rgba(82,25,38,.22)}
+@media(max-width:800px){.consent-tip{grid-template-columns:1fr}.consent-tip a{justify-self:start}}

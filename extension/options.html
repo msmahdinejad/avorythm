@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -13,11 +13,11 @@
   <header class="topbar">
     <a class="brand" href="popup.html">
       <span class="brand-mark"><img src="assets/avorythm-logo.png" alt=""></span>
-      <span><b>Avorythm</b><small data-i18n="settingsTitle">تنظیمات اکستنشن</small></span>
+      <span><b>Avorythm</b><small data-i18n="settingsTitle">Extension settings</small></span>
     </a>
     <div class="top-actions">
-      <span id="saveState" class="save-state" data-i18n="saved">تغییرات خودکار ذخیره می‌شوند</span>
-      <button id="localeToggle" class="small-button" type="button">EN</button>
+      <span id="saveState" class="save-state" data-i18n="saved">Changes save automatically</span>
+      <button id="localeToggle" class="small-button" type="button">فا</button>
     </div>
   </header>
 
@@ -29,6 +29,7 @@
     </section>
 
     <div id="notice" class="notice" role="status" hidden></div>
+    <div id="consentTip" class="consent-tip" role="note" hidden><b data-i18n="consentTipTitle">One required step</b><span data-i18n="consentTipBody">Before the first translation, open Privacy below and confirm that audio from the selected tab may be sent to Google Gemini.</span><a href="#privacy" data-i18n="consentTipAction">Review consent ↓</a></div>
 
     <div class="settings-layout">
       <nav class="section-nav" aria-label="Settings sections">
@@ -74,14 +75,16 @@
 
         <section id="sync" class="settings-card featured-card">
           <div class="card-heading"><span class="card-icon">04</span><div><h2 data-i18n="syncPlayer">پلیر هماهنگ</h2><p data-i18n="syncHelp">ویدئوی تب را بافر می‌کند تا دوبله روی timeline نزدیک‌تری پخش شود.</p></div></div>
-          <label class="range-field buffer-range"><span><b data-i18n="buffer">بافر صوت و تصویر</b><output id="syncBufferValue">4.5s</output></span><input id="syncBufferSeconds" type="range" min="2.5" max="12" step="0.5"><small data-i18n="bufferHelp">بافر بیشتر، هماهنگی پایدارتر؛ بافر کمتر، شروع سریع‌تر.</small></label>
+          <label class="range-field buffer-range"><span><b data-i18n="buffer">فاصلهٔ ضبط تا پخش</b><output id="syncBufferValue">20s</output></span><input id="syncBufferSeconds" type="range" min="8" max="60" step="1"><small data-i18n="bufferHelp">ضبط جلوتر از پلیر ادامه پیدا می‌کند؛ ۲۰ ثانیه برای پایداری پیشنهاد می‌شود.</small></label>
           <div class="sync-scale"><span data-i18n="faster">شروع سریع‌تر</span><span data-i18n="steadier">هماهنگی پایدارتر</span></div>
+          <label class="field"><span data-i18n="timingEngine">زمان‌بندی زیرنویس</span><select id="syncCaptionEngine"><option value="gemini" data-i18n="geminiTiming">Gemini Live · سریع و بدون کلید اضافه</option><option value="whisper" data-i18n="whisperTiming">Groq Whisper · زمان‌بندی دقیق‌تر</option></select><small data-i18n="timingEngineHelp">در حالت Whisper، دوبله همچنان با Gemini 3.5 Live ساخته می‌شود.</small></label>
+          <div id="groqConnection" class="field"><span>Groq API Key</span><div class="input-action"><input id="groqApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="gsk_…"><button id="saveGroqKeyButton" type="button" data-i18n="saveKey">ذخیره</button></div><small id="groqKeyStatus"></small><button id="clearGroqKeyButton" class="text-button danger" type="button" data-i18n="clearGroqKey">پاک‌کردن کلید Groq این نشست</button></div>
         </section>
 
         <section id="privacy" class="settings-card privacy-card">
           <div class="card-heading"><span class="card-icon">05</span><div><h2 data-i18n="privacyTitle">اجازه و حریم خصوصی</h2><p data-i18n="privacyHelp">Avorythm تبلیغ، آنالیتیکس یا سرور توسعه‌دهنده ندارد.</p></div></div>
-          <label class="consent-row"><input id="dataConsent" type="checkbox"><span><b data-i18n="consentTitle">ارسال صدای تب انتخاب‌شده به Google Gemini را تأیید می‌کنم</b><small data-i18n="consentBody">پردازش فقط بعد از زدن «شروع» انجام می‌شود. ضبط جداگانه و به‌طور پیش‌فرض خاموش است.</small></span></label>
-          <div class="policy-links"><a href="https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">سیاست حریم خصوصی ↗</a><a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="projectPage">صفحهٔ پروژه ↗</a></div>
+          <label class="consent-row"><input id="dataConsent" type="checkbox"><span><b data-i18n="consentTitle">ارسال صدای تب انتخاب‌شده به Google Gemini را تأیید می‌کنم</b><small data-i18n="consentBody">پردازش فقط پس از زدن «شروع» انجام می‌شود. ذخیرهٔ چهار خروجی پیش‌فرض خاموش است؛ پلیر هماهنگ برای Seek و خروجی WebM، تب را محلی ضبط می‌کند.</small></span></label>
+          <div class="policy-links"><a href="https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md" target="_blank" rel="noreferrer" data-i18n="privacyPolicy">سیاست حریم خصوصی ↗</a><a id="helpPageLink" href="https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.fa.md" target="_blank" rel="noreferrer" data-i18n="helpPage">راهنمای کامل ↗</a><a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="projectPage">صفحهٔ پروژه ↗</a></div>
         </section>
 
         <button id="resetButton" class="reset-button" type="button" data-i18n="reset">بازگرداندن تنظیمات پیش‌فرض</button>

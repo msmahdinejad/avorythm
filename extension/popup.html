@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,11 +12,11 @@
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark"><img src="assets/avorythm-logo.png" alt=""></span>
-      <span><b>Avorythm</b><small data-i18n="tagline">ترجمهٔ زندهٔ همین تب</small></span>
+      <span><b>Avorythm</b><small data-i18n="tagline">Translate this tab live</small></span>
     </div>
     <div class="header-actions">
-      <button id="localeToggle" class="icon-button" type="button" aria-label="Switch language">EN</button>
-      <button id="settingsButton" class="icon-button settings-button" type="button" data-i18n-aria="openSettings" aria-label="تنظیمات">⚙</button>
+      <button id="localeToggle" class="icon-button" type="button" aria-label="Switch language">فا</button>
+      <button id="settingsButton" class="icon-button settings-button" type="button" data-i18n-aria="openSettings" aria-label="Settings">⚙</button>
     </div>
   </header>
 
@@ -45,8 +45,8 @@
         </label>
         <label class="mode-option featured">
           <input type="radio" name="playbackMode" value="synchronized">
-          <span><b data-i18n="synchronized">پلیر هماهنگ</b><small data-i18n="synchronizedHelp">ویدئو را با چند ثانیه بافر، هم‌زمان با دوبله پخش می‌کند</small></span>
-          <em data-i18n="bestSync">بهترین هماهنگی</em>
+          <span><b data-i18n="synchronized">ضبط و پلیر هماهنگ</b><small data-i18n="synchronizedHelp">ضبط جلوتر ادامه دارد؛ پلیر مستقل Seek و Fullscreen دارد</small></span>
+          <em data-i18n="bestSync">سینک پایدار</em>
         </label>
       </fieldset>
 
@@ -67,7 +67,7 @@
 
   <footer>
     <span data-i18n="privacy">صدا فقط پس از شروع به Google Gemini فرستاده می‌شود.</span>
-    <a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="project">پروژه ↗</a>
+    <div><a id="helpLink" href="https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.md" target="_blank" rel="noreferrer" data-i18n="help">راهنما ↗</a><a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="project">پروژه ↗</a></div>
   </footer>
   <script type="module" src="popup.js"></script>
 </body>

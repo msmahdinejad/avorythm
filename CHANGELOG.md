@@ -2,6 +2,30 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.0] - 2026-08-19
+
+### Added
+
+- Independent producer/consumer synchronized capture: the source tab records ahead while the player can pause, seek, switch tabs, and fullscreen without controlling the producer.
+- Automatic media-end finalization and local WebM export from the synchronized player.
+- Optional session-only Groq Whisper segment timing with an optional host permission and automatic Gemini timing fallback.
+- Complete illustrated English and Persian guides in the desktop app and repository.
+- Full player transport controls, recording/safety-lead status, and a dedicated recovery state for temporary buffer underruns.
+
+### Changed
+
+- Increased the default synchronized recording lead to 20 seconds and separated recorder/player status from dubbing-output settings.
+- Defaulted new extension installations to English and made the required selected-tab audio consent more prominent.
+- Kept the complete synchronized capture in OPFS until the next session so users can seek and download it.
+
+### Fixed
+
+- Prevented player Pause and Seek controls from pausing or seeking the source producer.
+- Rebuilt playback safely after buffer underruns instead of remaining stuck on Buffering.
+- Preserved the complete video frame in fullscreen with `object-fit: contain`.
+- Aligned translated captions with the emitted dubbed-audio timeline and dropped late audio chunks after seeking.
+- Read both Gemini and Groq session-key states correctly in extension settings.
+
 ## [1.0.0] - 2026-08-18
 
 ### Added
@@ -231,7 +255,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/msmahdinejad/avorythm/compare/v0.9.1...v1.0.0
 [0.9.1]: https://github.com/msmahdinejad/avorythm/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/msmahdinejad/avorythm/compare/v0.8.1...v0.9.0

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "avorythm"
-version = "1.0.0"
+version = "1.1.0"
 description = "Live and file-based multilingual translation for desktop and Chrome"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"

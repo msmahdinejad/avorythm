@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-test('buffers media, schedules dub speech, and controls the source tab', async () => {
+test('buffers media and keeps player controls independent from the source producer', async () => {
   const elements = new Map();
   class FakeElement {
     constructor() {
@@ -28,8 +28,13 @@ test('buffers media, schedules dub speech, and controls the source tab', async (
   video.muted = false;
   video.play = async () => { video.paused = false; };
   video.pause = () => { video.paused = true; };
+  const stageCard = element('.stage-card');
+  let fullscreen = false;
+  stageCard.requestFullscreen = async () => { fullscreen = true; };
   globalThis.document = {
     documentElement: {lang: 'en', dir: 'ltr'},
+    fullscreenElement: null,
+    exitFullscreen: async () => { fullscreen = false; },
     querySelector: element,
     querySelectorAll: () => []
   };
@@ -56,7 +61,7 @@ test('buffers media, schedules dub speech, and controls the source tab', async (
     addEventListener(type, listener) { this.listeners[type] = listener; }
     appendBuffer(data) {
       this.appended.push(data);
-      this.end = 5;
+      this.end += 5;
       this.buffered.length = 1;
       this.listeners.updateend?.();
     }
@@ -64,8 +69,11 @@ test('buffers media, schedules dub speech, and controls the source tab', async (
   }
   globalThis.MediaSource = class {
     static isTypeSupported() { return true; }
+    readyState = 'open';
+    ended = false;
     addEventListener(type, listener) { if (type === 'sourceopen') queueMicrotask(listener); }
     addSourceBuffer() { sourceBuffer = new FakeSourceBuffer(); return sourceBuffer; }
+    endOfStream() { this.ended = true; }
   };
   globalThis.URL.createObjectURL = () => 'blob:player';
 
@@ -111,14 +119,30 @@ test('buffers media, schedules dub speech, and controls the source tab', async (
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
   assert.deepEqual(starts, [{when: 3, offset: 0}]);
 
+  const producerControlCount = mediaControls.length;
   await element('#playButton').listeners.click();
   assert.equal(suspended, true);
-  assert.equal(mediaControls.at(-1), 'pause');
   await element('#playButton').listeners.click();
   assert.equal(suspended, false);
-  assert.equal(mediaControls.at(-1), 'play');
+  assert.equal(mediaControls.length, producerControlCount, 'player controls must not control the recording producer');
+
+  assert.equal(typeof element('#seekRange').listeners.input, 'function');
+  assert.equal(typeof element('#fullscreenButton').listeners.click, 'function');
+  await element('#fullscreenButton').listeners.click();
+  assert.equal(fullscreen, true);
+
+  video.paused = false;
+  video.listeners.waiting();
+  assert.equal(video.paused, true, 'a stalled consumer must pause until its safety buffer is rebuilt');
+  channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([4, 5, 6])])}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(video.paused, false, 'playback must resume after the safety buffer is rebuilt');
+
+  channel.onmessage({data: {type: 'media-final', fileName: 'capture.webm'}});
+  assert.equal(element('#downloadVideoButton').disabled, false);
 
   video.currentTime = 2.5;
+  const scheduledBeforeLateChunk = starts.length;
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
-  assert.equal(starts.length, 1, 'fully late speech must be dropped instead of playing out of sync');
+  assert.equal(starts.length, scheduledBeforeLateChunk, 'fully late speech must be dropped instead of playing out of sync');
 });

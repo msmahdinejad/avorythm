@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync, readdirSync} from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -68,6 +68,8 @@ test('public surfaces link to the canonical project and privacy policy', () => {
   assert.match(options, /PRIVACY\.md/);
   assert.equal(manifest.default_locale, 'en');
   assert.deepEqual(manifest.optional_permissions, ['downloads']);
+  assert.deepEqual(manifest.optional_host_permissions, ['https://api.groq.com/*']);
+  assert.deepEqual(manifest.host_permissions, ['https://generativelanguage.googleapis.com/*']);
 });
 
 test('extension requires explicit first-capture consent', () => {
@@ -101,10 +103,52 @@ test('ships a dedicated synchronized player and separate settings page', () => {
   const manifest = JSON.parse(readFileSync(new URL('../extension/manifest.json', import.meta.url), 'utf8'));
   const popup = readFileSync(new URL('../extension/popup.html', import.meta.url), 'utf8');
   const player = readFileSync(new URL('../extension/player.js', import.meta.url), 'utf8');
+  const playerPage = readFileSync(new URL('../extension/player.html', import.meta.url), 'utf8');
+  const offscreen = readFileSync(new URL('../extension/offscreen.js', import.meta.url), 'utf8');
+  const sourceBridge = readFileSync(new URL('../extension/source-bridge.js', import.meta.url), 'utf8');
   assert.equal(manifest.options_ui.page, 'options.html');
   assert.match(popup, /value="synchronized"/);
   assert.match(player, /MediaSource/);
   assert.match(player, /avorythm-sync/);
+  assert.match(playerPage, /id="seekRange"/);
+  assert.match(playerPage, /id="fullscreenButton"/);
+  assert.match(playerPage, /id="downloadVideoButton"/);
+  assert.match(offscreen, /class CapturedVideo/);
+  assert.match(sourceBridge, /source-media-state/);
+});
+
+test('defaults new extension installs to English with a twenty-second recording lead', () => {
+  const settings = normalizeSettings();
+  assert.equal(settings.locale, 'en');
+  assert.equal(settings.syncBufferSeconds, 20);
+  assert.equal(settings.syncCaptionEngine, 'gemini');
+});
+
+test('ships bilingual illustrated user guides and locale-aware extension links', () => {
+  const english = readFileSync(new URL('../docs/HELP.md', import.meta.url), 'utf8');
+  const persian = readFileSync(new URL('../docs/HELP.fa.md', import.meta.url), 'utf8');
+  const options = readFileSync(new URL('../extension/options.js', import.meta.url), 'utf8');
+  const popup = readFileSync(new URL('../extension/popup.js', import.meta.url), 'utf8');
+  assert.match(english, /Synchronized recorder & player/);
+  assert.match(persian, /ضبط و پلیر هماهنگ/);
+  assert.match(options, /helpPageLink/);
+  assert.match(popup, /helpLink/);
+});
+
+test('ships the exact localized Chrome Web Store image set', () => {
+  const dimensions = (path) => {
+    const png = readFileSync(path);
+    assert.equal(png.subarray(1, 4).toString(), 'PNG');
+    return [png.readUInt32BE(16), png.readUInt32BE(20)];
+  };
+  const expected = ['01-popup.png', '02-settings.png', '03-sync-settings.png', '04-player.png', '05-subtitles.png'];
+  for (const locale of ['en', 'fa']) {
+    const directory = new URL(`../store-assets/${locale}/`, import.meta.url);
+    assert.deepEqual(readdirSync(directory).filter((name) => name.endsWith('.png')).sort(), expected);
+    for (const name of expected) assert.deepEqual(dimensions(new URL(name, directory)), [1280, 800]);
+  }
+  assert.deepEqual(dimensions(new URL('../store-assets/promo-small.png', import.meta.url)), [440, 280]);
+  assert.deepEqual(dimensions(new URL('../store-assets/promo-marquee.png', import.meta.url)), [1400, 560]);
 });
 
 test('hidden popup notices stay hidden', () => {

@@ -16,7 +16,7 @@ let nativeSubtitleOpen = false;
 
 const messages = {
   fa: {
-    navLive: 'زنده', navStudio: 'استودیوی فایل', navGuide: 'تنظیم صدا', quitApp: 'خروج کامل',
+    navLive: 'زنده', navStudio: 'استودیوی فایل', navHelp: 'راهنما', navGuide: 'تنظیم صدا', quitApp: 'خروج کامل',
     appClosed: 'Avorythm بسته شد.', closeTab: 'اکنون می‌توانی این پنجره را ببندی.', translationModel: 'مدل ترجمه',
     appOnline: 'اپ دسکتاپ آنلاین است', tagline: 'ترجمهٔ زنده، بدون دردسر',
     eyebrow: 'ترجمه و دوبلهٔ هم‌زمان با Gemini', heroTitle: 'هر صدایی را به زبان خودت بشنو.',
@@ -77,7 +77,7 @@ const messages = {
     segment_skipped: 'یک بازه پس از سه تلاش پاسخی نگرفت و با سکوت هماهنگ حفظ شد؛ آن بخش را بازبینی کن.'
   },
   en: {
-    navLive: 'Live', navStudio: 'File studio', navGuide: 'Audio setup', quitApp: 'Quit app',
+    navLive: 'Live', navStudio: 'File studio', navHelp: 'Guide', navGuide: 'Audio setup', quitApp: 'Quit app',
     appClosed: 'Avorythm is closed.', closeTab: 'You can close this window now.', translationModel: 'Translation model',
     appOnline: 'Desktop app is online', tagline: 'Live translation, minus the friction',
     eyebrow: 'Real-time translation and dubbing with Gemini', heroTitle: 'Hear anything in your language.',
