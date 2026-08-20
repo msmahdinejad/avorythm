@@ -54,7 +54,20 @@ jobs:
       - name: Install Windows media tools for bundling
         if: runner.os == 'Windows'
         shell: pwsh
-        run: choco install ffmpeg --version=9.0.1 --no-progress -y
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "ffmpeg-9.0.1-essentials_build.zip"
+          $target = Join-Path $env:RUNNER_TEMP "ffmpeg-essentials"
+          Invoke-WebRequest -UseBasicParsing `
+            "https://github.com/GyanD/codexffmpeg/releases/download/9.0.1/ffmpeg-9.0.1-essentials_build.zip" `
+            -OutFile $archive
+          $expected = "FEC81AE03971D9DD4BE3EBE02E263BD2EC1D789483F931BDBA5F5715E65DA2E9"
+          $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash
+          if ($actual -ne $expected) { throw "FFmpeg archive checksum mismatch" }
+          Expand-Archive -LiteralPath $archive -DestinationPath $target
+          $binary = Get-ChildItem -LiteralPath $target -Recurse -File -Filter ffmpeg.exe | Select-Object -First 1
+          if (-not $binary) { throw "FFmpeg essentials binary was not found" }
+          "AVORYTHM_FFMPEG_BINARY=$($binary.FullName)" >> $env:GITHUB_ENV
+          & $binary.FullName -version | Select-Object -First 1
       - run: python -m pip install --upgrade pip
       - run: python -m pip install -e ".[dev,build]"
       - run: python scripts/build.py

@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import {installCaptureWorker} from './fake-capture-worker.mjs';
 
 test('replays the recorded OPFS snapshot when the synchronized player refreshes', async () => {
   let receive;
   let channel;
   let mediaRecorder;
   const files = new Map();
+  installCaptureWorker(files);
   globalThis.chrome = {
     runtime: {
       onMessage: {addListener(listener) { receive = listener; }},
@@ -88,6 +90,13 @@ test('replays the recorded OPFS snapshot when the synchronized player refreshes'
   assert.equal(channel.messages.some((message) => message.type === 'media-init'), true);
   const replay = channel.messages.find((message) => message.type === 'media-chunk');
   assert.equal(replay?.data?.size, 4, 'refresh must replay bytes already recorded before it resumes live chunks');
+
+  channel.messages.length = 0;
+  const firstSeek = channel.onmessage({data: {type: 'ready', position: 2}});
+  channel.onmessage({data: {type: 'ready', position: 1.25}});
+  await firstSeek;
+  const resets = channel.messages.filter((message) => message.type === 'session-reset');
+  assert.equal(resets.at(-1)?.position, 1.25, 'rapid seek requests must converge on the newest recorded position');
 
   await new Promise((resolve) => receive({target: 'offscreen', type: 'stop'}, {}, resolve));
 });

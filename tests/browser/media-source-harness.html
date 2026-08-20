@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Avorythm MediaSource regression harness</title>
+<pre id="result">RUNNING</pre>
+<script>
+addEventListener('error', (event) => { document.querySelector('#result').textContent = `SCRIPT-ERROR ${event.message}`; });
+addEventListener('unhandledrejection', (event) => { document.querySelector('#result').textContent = `PROMISE-ERROR ${event.reason?.stack || event.reason}`; });
+</script>
+<script type="module">
+import {CaptureStore} from '../../extension/capture-store.mjs';
+
+const output = document.querySelector('#result');
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const once = (target, event, timeout = 5000) => Promise.race([
+  new Promise((resolve) => target.addEventListener(event, resolve, {once: true})),
+  new Promise((_, reject) => setTimeout(() => reject(new Error(`${event}_timeout`)), timeout))
+]);
+
+async function appendAll(video, chunks, mimeType, sequence = false) {
+  const mediaSource = new MediaSource();
+  video.src = URL.createObjectURL(mediaSource);
+  await once(mediaSource, 'sourceopen');
+  const sourceBuffer = mediaSource.addSourceBuffer(mimeType);
+  if (sequence) sourceBuffer.mode = 'sequence';
+  for (const chunk of chunks) {
+    const update = once(sourceBuffer, 'updateend');
+    sourceBuffer.appendBuffer(await chunk.arrayBuffer());
+    await update;
+  }
+  return {mediaSource, sourceBuffer};
+}
+
+async function seek(video, seconds) {
+  const completed = once(video, 'seeked');
+  video.currentTime = seconds;
+  await completed;
+  return video.currentTime;
+}
+
+async function run() {
+  output.textContent = 'STAGE legacy-open';
+  const opfsRoot = await navigator.storage.getDirectory();
+  const opfsHandle = await opfsRoot.getFileHandle('avorythm-opfs-open-writer-check.bin', {create: true});
+  const opfsWriter = await opfsHandle.createWritable();
+  await opfsWriter.write(Uint8Array.of(1, 2, 3, 4));
+  const visibleWhileOpen = (await opfsHandle.getFile()).size;
+  await opfsWriter.close();
+  const visibleAfterClose = (await opfsHandle.getFile()).size;
+  await opfsRoot.removeEntry('avorythm-opfs-open-writer-check.bin');
+  const storeName = `avorythm-opfs-worker-check-${crypto.randomUUID()}.bin`;
+  output.textContent = 'STAGE worker-create';
+  const store = await CaptureStore.create(storeName);
+  output.textContent = 'STAGE worker-append';
+  await store.append(new Blob([Uint8Array.of(5, 6, 7, 8, 9)]));
+  output.textContent = 'STAGE worker-snapshot';
+  const workerSnapshotSize = (await store.snapshot('application/octet-stream')).size;
+  await store.append(new Blob([Uint8Array.of(10, 11)]));
+  const workerSecondSnapshotSize = (await store.snapshot('application/octet-stream')).size;
+  output.textContent = 'STAGE worker-finish';
+  const workerResult = await store.finish();
+  const workerFinalSize = (await (await opfsRoot.getFileHandle(storeName)).getFile()).size;
+  await opfsRoot.removeEntry(storeName);
+  output.textContent = 'STAGE media-record';
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 360;
+  const context = canvas.getContext('2d');
+  let frame = 0;
+  const paint = setInterval(() => {
+    frame += 1;
+    context.fillStyle = `hsl(${frame % 360} 70% 35%)`;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = 'white';
+    context.font = '48px sans-serif';
+    context.fillText(String(frame), 40, 80);
+  }, 33);
+  const stream = canvas.captureStream(30);
+  const mimeType = [
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm'
+  ].find((type) => MediaRecorder.isTypeSupported(type));
+  if (!mimeType) throw new Error('webm_recorder_unavailable');
+  const chunks = [];
+  const recorder = new MediaRecorder(stream, {mimeType, videoBitsPerSecond: 900000});
+  recorder.ondataavailable = ({data}) => { if (data.size) chunks.push(data); };
+  recorder.start(250);
+  await wait(8000);
+  const stopped = once(recorder, 'stop');
+  recorder.stop();
+  await stopped;
+  if (chunks.length < 8) throw new Error('not_enough_media_chunks');
+
+  const independentSegments = [];
+  for (let index = 0; index < 3; index += 1) {
+    const segmentChunks = [];
+    const segmentRecorder = new MediaRecorder(stream, {mimeType, videoBitsPerSecond: 900000});
+    segmentRecorder.ondataavailable = ({data}) => { if (data.size) segmentChunks.push(data); };
+    const segmentStopped = once(segmentRecorder, 'stop');
+    segmentRecorder.start(250);
+    await wait(1800);
+    segmentRecorder.stop();
+    await segmentStopped;
+    independentSegments.push(new Blob(segmentChunks, {type: mimeType}));
+  }
+  clearInterval(paint);
+  stream.getTracks().forEach((track) => track.stop());
+
+  const replayVideo = document.createElement('video');
+  replayVideo.muted = true;
+  const replay = await appendAll(replayVideo, chunks, mimeType);
+  const ranges = Array.from({length: replay.sourceBuffer.buffered.length}, (_, index) => ({
+    start: replay.sourceBuffer.buffered.start(index),
+    end: replay.sourceBuffer.buffered.end(index)
+  }));
+  const end = ranges.at(-1)?.end || 0;
+  if (end < 6) throw new Error(`replay_too_short_${end}`);
+  const restored = await seek(replayVideo, 5.25);
+  const beginning = await seek(replayVideo, 1.0);
+  if (Math.abs(restored - 5.25) > 0.15 || Math.abs(beginning - 1) > 0.15) {
+    throw new Error(`mse_seek_failed_${restored}_${beginning}`);
+  }
+
+  const segmentedVideo = document.createElement('video');
+  segmentedVideo.muted = true;
+  const segmented = await appendAll(segmentedVideo, independentSegments, mimeType, true);
+  const segmentedRanges = Array.from({length: segmented.sourceBuffer.buffered.length}, (_, index) => ({
+    start: segmented.sourceBuffer.buffered.start(index),
+    end: segmented.sourceBuffer.buffered.end(index)
+  }));
+  const segmentedEnd = segmentedRanges.at(-1)?.end || 0;
+  if (segmentedEnd < 4) throw new Error(`segmented_replay_failed_${JSON.stringify(segmentedRanges)}`);
+  const segmentedSeek = await seek(segmentedVideo, 3.25);
+  const segmentedBeginning = await seek(segmentedVideo, 0.5);
+
+  const finalizedVideo = document.createElement('video');
+  finalizedVideo.muted = true;
+  finalizedVideo.src = URL.createObjectURL(new Blob(chunks, {type: mimeType}));
+  await once(finalizedVideo, 'loadedmetadata');
+  const initialDuration = finalizedVideo.duration;
+  const finalizedSeek = await seek(finalizedVideo, 4);
+  if (Math.abs(finalizedSeek - 4) > 0.15) throw new Error(`blob_seek_failed_${finalizedSeek}`);
+
+  return {ok: true, visibleWhileOpen, visibleAfterClose, workerSnapshotSize, workerSecondSnapshotSize, workerResult, workerFinalSize, chunks: chunks.length, ranges, segmentedRanges, segmentedSeek, segmentedBeginning, initialDuration, finalizedSeek};
+}
+
+run().then((result) => { output.textContent = `PASS ${JSON.stringify(result)}`; })
+  .catch((error) => { output.textContent = `FAIL ${error.stack || error.message}`; });
+</script>

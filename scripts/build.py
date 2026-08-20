@@ -11,6 +11,8 @@ from pathlib import Path
 
 def _real_media_binary(name: str) -> Path:
     candidates: list[Path] = []
+    if configured := os.getenv("AVORYTHM_FFMPEG_BINARY", "").strip():
+        candidates.append(Path(configured).resolve())
     if discovered := shutil.which(name):
         candidates.append(Path(discovered).resolve())
     chocolatey = Path("C:/ProgramData/chocolatey/lib")
@@ -26,6 +28,11 @@ def _real_media_binary(name: str) -> Path:
     ]
     if not binaries:
         raise SystemExit(f"{name} is required to build the self-contained Windows package")
+    if configured:
+        configured_path = Path(configured).resolve()
+        if configured_path not in binaries:
+            raise SystemExit("AVORYTHM_FFMPEG_BINARY must point to a real FFmpeg executable")
+        return configured_path
     return min(binaries, key=lambda path: path.stat().st_size)
 
 

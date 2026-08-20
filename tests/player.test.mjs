@@ -35,6 +35,9 @@ test('buffers media and keeps player controls independent from the source produc
   globalThis.document = {
     documentElement: {lang: 'en', dir: 'ltr'},
     fullscreenElement: null,
+    hidden: false,
+    listeners: {},
+    addEventListener(type, listener) { this.listeners[type] = listener; },
     exitFullscreen: async () => { fullscreen = false; },
     querySelector: element,
     querySelectorAll: () => []
@@ -55,10 +58,11 @@ test('buffers media and keeps player controls independent from the source produc
     constructor() {
       this.updating = false;
       this.listeners = {};
+      this.startValue = 0;
       this.end = 0;
       this.appended = [];
       this.removed = [];
-      this.buffered = {length: 0, start: () => 0, end: () => this.end};
+      this.buffered = {length: 0, start: () => this.startValue, end: () => this.end};
     }
     addEventListener(type, listener) { this.listeners[type] = listener; }
     appendBuffer(data) {
@@ -67,7 +71,7 @@ test('buffers media and keeps player controls independent from the source produc
       this.buffered.length = 1;
       this.listeners.updateend?.();
     }
-    remove(start, end) { this.removed.push({start, end}); }
+    remove(start, end) { this.removed.push({start, end}); this.startValue = Math.max(this.startValue, end); }
   }
   globalThis.MediaSource = class {
     static isTypeSupported() { return true; }
@@ -80,6 +84,7 @@ test('buffers media and keeps player controls independent from the source produc
   globalThis.URL.createObjectURL = () => 'blob:player';
 
   const starts = [];
+  let stoppedDubSources = 0;
   let suspended = false;
   class FakeAudioContext {
     constructor() { this.currentTime = 2; this.destination = {}; }
@@ -88,7 +93,7 @@ test('buffers media and keeps player controls independent from the source produc
       return {duration: length / rate, getChannelData: () => new Float32Array(length)};
     }
     createBufferSource() {
-      return {connect() {}, start: (when, offset) => starts.push({when, offset}), stop() {}};
+      return {connect() {}, start: (when, offset) => starts.push({when, offset}), stop() { stoppedDubSources += 1; }};
     }
     async resume() { suspended = false; }
     async suspend() { suspended = true; }
@@ -99,7 +104,7 @@ test('buffers media and keeps player controls independent from the source produc
   globalThis.chrome = {
     storage: {
       local: {async get() { return {settings: {locale: 'en', playbackMode: 'synchronized', syncBufferSeconds: 4.5, originalAudioEnabled: true, dubAudioEnabled: true, sourceSubtitlesEnabled: true, translatedSubtitlesEnabled: true, originalVolume: .5, dubVolume: 1}}; }, async set() {}},
-      session: {async get() { return {playerSession: {currentTime: .5, wantedPlaying: false, started: true}}; }, async set() {}}
+      session: {async get() { return {playerSession: {currentTime: 221.4, wantedPlaying: false, started: true}}; }, async set() {}}
     },
     runtime: {
       async sendMessage(message) {
@@ -115,19 +120,50 @@ test('buffers media and keeps player controls independent from the source produc
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.deepEqual(
     playerMessages.find((message) => message.type === 'ready'),
-    {type: 'ready', position: .5},
+    {type: 'ready', position: 221.4},
     'refresh must request an OPFS replay at the persisted player position'
   );
   channel.onmessage({data: {type: 'media-init', mimeType: 'video/webm', bufferSeconds: 4.5}});
   await new Promise((resolve) => setTimeout(resolve, 0));
+  for (let index = 0; index < 50; index += 1) {
+    channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([index])])}});
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+  assert.equal(sourceBuffer.appended.length, 50);
+  assert.ok(sourceBuffer.removed.length > 0, 'a far-forward restore may evict replay bytes while it catches up');
+  assert.equal(video.currentTime, 221.4, 'refresh must restore the exact persisted timeline position');
+  assert.equal(element('#seekRange').min, '0', 'the user-facing timeline must still expose the full local recording');
+  assert.equal(element('#activateButton').disabled, false);
+
+  element('#seekRange').value = '0.5';
+  await element('#seekRange').listeners.change();
+  assert.deepEqual(
+    playerMessages.at(-1),
+    {type: 'ready', position: 0.5, replay: true},
+    'seeking outside the in-memory range must rebuild that position from the OPFS recording'
+  );
+  channel.onmessage({data: {type: 'session-reset', position: 0.5, duration: 250}});
+  channel.onmessage({data: {type: 'media-init', mimeType: 'video/webm', bufferSeconds: 4.5}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
   channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([1, 2, 3])])}});
   await new Promise((resolve) => setTimeout(resolve, 0));
-  assert.equal(sourceBuffer.appended.length, 1);
-  assert.equal(element('#activateButton').disabled, false);
+  assert.equal(video.currentTime, 0.5, 'recorded media must remain seekable to the beginning after refresh');
 
   await element('#activateButton').listeners.click();
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
   assert.deepEqual(starts, [{when: 2.5, offset: 0}]);
+
+  const scheduledBeforeFarFuture = starts.length;
+  channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 30}});
+  assert.equal(
+    starts.length,
+    scheduledBeforeFarFuture,
+    'dub audio must be scheduled only in a short video-clock horizon so background suspension cannot scramble it'
+  );
+  assert.equal(typeof document.listeners.visibilitychange, 'function', 'tab visibility changes must trigger a clock resync');
+  document.hidden = true;
+  document.listeners.visibilitychange();
+  assert.ok(stoppedDubSources >= 1, 'moving the player to the background must cancel stale dub scheduling');
 
   const producerControlCount = mediaControls.length;
   await element('#playButton').listeners.click();

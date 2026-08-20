@@ -129,6 +129,11 @@ test('ships a dedicated synchronized player and separate settings page', () => {
   assert.match(playerPage, /id="seekRange"/);
   assert.match(playerPage, /id="fullscreenButton"/);
   assert.match(playerPage, /id="downloadVideoButton"/);
+  assert.match(
+    playerPage,
+    /class="sync-dock"[\s\S]*id="stopButton"/,
+    'Finish recording belongs with recorder state and exports, not in the global header'
+  );
   assert.match(offscreen, /class CapturedVideo/);
   assert.match(sourceBridge, /source-media-state/);
 });

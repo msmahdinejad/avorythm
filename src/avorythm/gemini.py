@@ -481,7 +481,10 @@ class GeminiFileGateway:
         for model, rpm, rpd, structured in TRANSLATION_MODELS:
             if not self._claim(model, rpm, rpd):
                 continue
-            config = types.GenerateContentConfig(system_instruction=instruction)
+            config = types.GenerateContentConfig(
+                system_instruction=instruction,
+                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+            )
             if structured:
                 config.response_mime_type = "application/json"
                 config.response_schema = list[TranslationItem]

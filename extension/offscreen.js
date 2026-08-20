@@ -3,6 +3,7 @@ import {
   audioMessage,
   base64ToBytes,
   captionSegments,
+  fitPcm,
   liveUrl,
   latestCaption,
   mergeTranscript,
@@ -11,6 +12,7 @@ import {
   wavHeader
 } from './core.mjs';
 import {PreciseDubbingPipeline} from './precise-pipeline.mjs';
+import {CaptureStore} from './capture-store.mjs';
 
 let stream = null;
 let context = null;
@@ -38,12 +40,10 @@ let capturedVideo = null;
 let syncChannel = null;
 let syncReady = false;
 let syncQueue = [];
-let currentDubStart = null;
-let currentDubOffset = 0;
 let players = new Set();
 let speech = {active: false, started: 0, silentFor: 0, completed: []};
-let translatedCue = {id: 0, text: ''};
-let lastDubEnd = 0;
+let captureTimeline = 0;
+let syncLiveTurn = {audio: [], source: [], translated: []};
 let syncInit = null;
 let syncFinal = null;
 let syncFrontier = null;
@@ -52,6 +52,7 @@ let syncDubSequence = 0;
 let syncDubHistory = [];
 let syncCaptionHistory = new Map();
 let syncReplayPending = false;
+let syncReplayRequestedPosition = null;
 let precisePipeline = null;
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -104,7 +105,11 @@ async function replaySyncSession(position = 0) {
   const dubs = syncDubHistory.slice();
   const captionSnapshot = [...syncCaptionHistory.values()];
   const media = await capturedVideo?.snapshot();
-  syncChannel.postMessage({type: 'session-reset', position: Math.max(0, Number(position) || 0)});
+  syncChannel.postMessage({
+    type: 'session-reset',
+    position: Math.max(0, Number(position) || 0),
+    duration: capturedVideo?.duration || 0
+  });
   syncChannel.postMessage(init);
   if (media?.size) {
     const sliceBytes=1024*1024;
@@ -123,9 +128,16 @@ function openSyncBridge() {
   syncChannel = new BroadcastChannel('avorythm-sync');
   syncChannel.onmessage = ({data}) => {
     if (data?.type !== 'ready') return;
+    syncReplayRequestedPosition = Math.max(0, Number(data.position) || 0);
     if (syncReplayPending) return syncReplay;
     syncReplayPending = true;
-    syncReplay = syncReplay.then(() => replaySyncSession(data.position)).catch(async (error) => {
+    syncReplay = syncReplay.then(async () => {
+      while (syncReplayRequestedPosition !== null) {
+        const position = syncReplayRequestedPosition;
+        syncReplayRequestedPosition = null;
+        await replaySyncSession(position);
+      }
+    }).catch(async (error) => {
       await report({status: 'error', error: error.message});
     }).finally(()=>{syncReplayPending=false;});
     return syncReplay;
@@ -138,20 +150,23 @@ async function startMediaBridge() {
     throw new Error('synchronized_player_unavailable');
   }
   openSyncBridge();
-  capturedVideo = await CapturedVideo.create();
   const candidates = [
     'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
     'video/webm'
   ];
   const mimeType = candidates.find((type) => MediaRecorder.isTypeSupported(type)) || '';
-  mediaRecorder = new MediaRecorder(stream, mimeType ? {mimeType, videoBitsPerSecond: 4_000_000} : undefined);
+  mediaRecorder = new MediaRecorder(stream, mimeType ? {mimeType, videoBitsPerSecond: 2_500_000} : undefined);
   const resolvedType = mediaRecorder.mimeType || mimeType || 'video/webm';
+  capturedVideo = await CapturedVideo.create(resolvedType);
   postSync({type: 'media-init', mimeType: resolvedType, bufferSeconds: config.syncBufferSeconds});
   mediaRecorder.ondataavailable = ({data}) => {
     if (!data?.size) return;
-    capturedVideo.append(data);
+    void capturedVideo.append(data, captureTimeline).catch(() => {
+      report({status: 'error', error: 'capture_store_write_failed'}).catch(() => {});
+    });
     postSync({type: 'media-chunk', data});
+    postSync({type: 'media-progress', duration: captureTimeline});
   };
   mediaRecorder.onerror = () => report({status: 'error', error: 'synchronized_player_failed'});
   mediaStopPromise = new Promise((resolve) => { mediaRecorder.onstop = resolve; });
@@ -186,13 +201,14 @@ async function persistSyncArtifacts(video) {
   const sourceName=await writeOpfsFile(root,`${token}-source.srt`,new Blob(['\ufeff',srt(source)],{type:'application/x-subrip'}));
   const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(translated)],{type:'application/x-subrip'}));
   const metadataName=`${token}-timeline.json`;
-  const artifacts={videoFileName:video.fileName,dubbedFileName:dubbedName,sourceSubtitleFileName:sourceName,translatedSubtitleFileName:translatedName,metadataFileName:metadataName,mimeType:syncInit?.mimeType||'video/webm'};
-  await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:1,artifacts,source,translated})],{type:'application/json'}));
+  const artifacts={videoFileName:video.fileName,dubbedFileName:dubbedName,sourceSubtitleFileName:sourceName,translatedSubtitleFileName:translatedName,metadataFileName:metadataName,mimeType:syncInit?.mimeType||'video/webm',duration:Number(video.duration)||0};
+  await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:2,artifacts,duration:artifacts.duration,source,translated})],{type:'application/json'}));
   return artifacts;
 }
 
 function trackSpeech(pcm, at) {
   const samples = new Int16Array(pcm.buffer, pcm.byteOffset, Math.floor(pcm.byteLength / 2));
+  const duration = samples.length / 16000;
   let energy = 0;
   for (let index = 0; index < samples.length; index += 8) {
     const sample = samples[index] / 32768;
@@ -202,7 +218,7 @@ function trackSpeech(pcm, at) {
   if (voiced) {
     if (!speech.active) {
       speech.active = true;
-      speech.started = Math.max(0, at - 0.18);
+      speech.started = Math.max(0, at - duration - 0.08);
     }
     speech.silentFor = 0;
   } else if (speech.active) {
@@ -216,8 +232,67 @@ function trackSpeech(pcm, at) {
   }
 }
 
-function nextSpeechStart(now) {
-  return speech.completed.shift()?.start ?? (speech.active ? speech.started : Math.max(0, now - 1.2));
+function claimSpeechInterval(now, fallbackDuration = 0.8) {
+  const completed = speech.completed.shift();
+  if (completed) return completed;
+  if (speech.active) {
+    return {start: speech.started, end: Math.max(speech.started + 0.2, now)};
+  }
+  const duration = Math.max(0.2, fallbackDuration);
+  return {start: Math.max(0, now - duration), end: Math.max(duration, now)};
+}
+
+function publishTurnCaption(translated, text, interval) {
+  const pieces = captionSegments(text);
+  if (!pieces.length) return;
+  const totalWeight = pieces.reduce((total, piece) => total + Math.max(1, piece.length), 0);
+  let cursor = interval.start;
+  pieces.forEach((piece, index) => {
+    const remaining = interval.end - cursor;
+    const duration = index === pieces.length - 1
+      ? remaining
+      : (interval.end - interval.start) * (Math.max(1, piece.length) / totalWeight);
+    const cue = {
+      id: `${translated ? 'translated' : 'source'}-${interval.start.toFixed(3)}-${index}`,
+      text: piece,
+      start: cursor,
+      end: index === pieces.length - 1 ? interval.end : Math.min(interval.end, cursor + duration)
+    };
+    postSync({type: 'caption', translated, ...cue});
+    recorder?.addSubtitle(translated, cue);
+    cursor = cue.end;
+  });
+}
+
+function combineTurnAudio(chunks) {
+  const bytes = chunks.reduce((total, chunk) => total + chunk.byteLength, 0);
+  const result = new Uint8Array(bytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return result;
+}
+
+function finalizeSynchronizedTurn() {
+  const raw = combineTurnAudio(syncLiveTurn.audio);
+  const rawDuration = raw.byteLength / 2 / 24000;
+  const interval = claimSpeechInterval(captureTimeline, rawDuration);
+  const duration = Math.max(0.2, interval.end - interval.start);
+  const exactInterval = {start: interval.start, end: interval.start + duration};
+  if (raw.byteLength) {
+    const fitted = fitPcm(
+      new Int16Array(raw.buffer, raw.byteOffset, Math.floor(raw.byteLength / 2)),
+      Math.max(1, Math.round(duration * 24000))
+    );
+    const data = new Uint8Array(fitted.buffer).slice();
+    recorder?.dubbed.appendAt(data, exactInterval.start);
+    postSync({type: 'dub-chunk', data: data.buffer, start: exactInterval.start, duration});
+  }
+  publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), exactInterval);
+  publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), exactInterval);
+  syncLiveTurn = {audio: [], source: [], translated: []};
 }
 
 class PcmWriter {
@@ -264,7 +339,7 @@ class PcmWriter {
 }
 
 class CapturedVideo {
-  static async create() {
+  static async create(mimeType) {
     const root = await navigator.storage.getDirectory();
     if (typeof root.entries === 'function') {
       for await (const [name] of root.entries()) {
@@ -272,36 +347,35 @@ class CapturedVideo {
       }
     }
     const fileName = `${CAPTURE_PREFIX}${crypto.randomUUID()}.webm`;
-    const handle = await root.getFileHandle(fileName, {create: true});
-    const writable = await handle.createWritable();
-    return new CapturedVideo(fileName, handle, writable);
+    const store = await CaptureStore.create(fileName);
+    return new CapturedVideo(fileName, mimeType, store);
   }
 
-  constructor(fileName, handle, writable) {
+  constructor(fileName, mimeType, store) {
     this.fileName = fileName;
-    this.handle = handle;
-    this.writable = writable;
+    this.mimeType = mimeType;
+    this.store = store;
     this.pending = Promise.resolve();
     this.bytes = 0;
+    this.duration = 0;
   }
 
-  append(blob) {
+  append(blob, duration = 0) {
     this.bytes += blob.size;
-    this.pending = this.pending.then(() => this.writable.write(blob));
+    this.duration = Math.max(this.duration, Number(duration) || 0);
+    this.pending = this.pending.then(() => this.store.append(blob));
+    return this.pending;
   }
 
   async finish() {
     await this.pending;
-    await this.writable.close();
-    return {fileName: this.fileName, bytes: this.bytes};
+    const result = await this.store.finish();
+    return {fileName: this.fileName, bytes: result.size, duration: this.duration};
   }
 
   async snapshot() {
-    const bytes = this.bytes;
-    const pending = this.pending;
-    await pending;
-    const file = await this.handle.getFile();
-    return file.slice(0, bytes, file.type || 'video/webm');
+    await this.pending;
+    return this.store.snapshot(this.mimeType);
   }
 }
 
@@ -383,13 +457,7 @@ function playDubbed(pcm) {
   const samples = new Int16Array(pcm.buffer, pcm.byteOffset, Math.floor(pcm.byteLength / 2));
   const duration = samples.length / 24000;
   if (config.playbackMode === 'synchronized') {
-    if (currentDubStart === null) currentDubStart = Math.max(nextSpeechStart(elapsed()), lastDubEnd);
-    const start = currentDubStart + currentDubOffset;
-    currentDubOffset += duration;
-    lastDubEnd = Math.max(lastDubEnd, start + duration);
-    recorder?.dubbed.appendAt(pcm, start);
-    postSync({type: 'dub-chunk', data: pcm.slice().buffer, start, duration});
-    if (translatedCue.text) postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, text: translatedCue.text, start: currentDubStart, end: lastDubEnd + 0.35});
+    syncLiveTurn.audio.push(pcm.slice());
     return;
   }
   const begins = Math.max(context.currentTime + 0.03, nextDubTime);
@@ -420,9 +488,7 @@ function clearDubPlayback() {
   }
   players.clear();
   if (context) nextDubTime = context.currentTime;
-  currentDubStart = null;
-  currentDubOffset = 0;
-  translatedCue = {id: translatedCue.id + 1, text: ''};
+  syncLiveTurn = {audio: [], source: [], translated: []};
   if (config?.playbackMode === 'synchronized') postSync({type: 'dub-interrupted'});
 }
 
@@ -434,18 +500,8 @@ async function handleTranscript(translated, transcription) {
     recorder?.addSubtitle(translated, completed);
   }
   if (!text) return;
-  if (config.playbackMode === 'synchronized' && translated) {
-    translatedCue.text = text;
-    if (currentDubStart !== null) postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, text, start: currentDubStart, end: Math.max(currentDubStart + 0.8, lastDubEnd + 0.35)});
-  } else if (config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
-    postSync({
-      type: 'caption',
-      translated,
-      id: `${translated ? 'translated' : 'source'}-${(completed?.start ?? elapsed()).toFixed(2)}`,
-      text,
-      start: completed?.start ?? (speech.active ? speech.started : Math.max(0, elapsed() - 1)),
-      end: completed?.end ?? elapsed() + 0.8
-    });
+  if (config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
+    if (completed?.text) syncLiveTurn[translated ? 'translated' : 'source'].push(completed.text);
   }
   await report({
     [translated ? 'translatedText' : 'sourceText']: text,
@@ -461,7 +517,9 @@ async function flushTranscripts() {
       continue;
     }
     const completed = mergeTranscript(tracker, tracker.partial, true, now);
-    recorder?.addSubtitle(translated, completed);
+    if (config?.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
+      if (completed?.text) syncLiveTurn[translated ? 'translated' : 'source'].push(completed.text);
+    } else recorder?.addSubtitle(translated, completed);
   }
 }
 
@@ -491,14 +549,9 @@ async function handleLiveMessage(message) {
   }
   if (content.turnComplete) {
     await flushTranscripts();
-    if (config.playbackMode === 'synchronized' && translatedCue.text && currentDubStart !== null) {
-      const cue = {text: translatedCue.text, start: currentDubStart, end: Math.max(currentDubStart + 0.8, lastDubEnd + 0.35)};
-      postSync({type: 'caption', translated: true, id: `translated-${translatedCue.id}`, ...cue});
-      recorder?.addSubtitle(true, cue);
-      translatedCue = {id: translatedCue.id + 1, text: ''};
+    if (config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
+      finalizeSynchronizedTurn();
     }
-    currentDubStart = null;
-    currentDubOffset = 0;
   }
   return '';
 }
@@ -585,16 +638,15 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   translatedTracker = {partial: '', started: 0};
   audioBacklog = [];
   speech = {active: false, started: 0, silentFor: 0, completed: []};
-  currentDubStart = null;
-  currentDubOffset = 0;
-  lastDubEnd = 0;
-  translatedCue = {id: 0, text: ''};
+  captureTimeline = 0;
+  syncLiveTurn = {audio: [], source: [], translated: []};
   precisePipeline = null;
   syncInit = null;
   syncFinal = null;
   syncFrontier = null;
   syncReplay = Promise.resolve();
   syncReplayPending = false;
+  syncReplayRequestedPosition = null;
   syncDubSequence = 0;
   syncDubHistory = [];
   syncCaptionHistory = new Map();
@@ -639,7 +691,8 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   captureNode.port.onmessage = ({data}) => {
     recorder?.original.append(data);
     const pcm = data instanceof Uint8Array ? data : new Uint8Array(data);
-    trackSpeech(pcm, elapsed());
+    captureTimeline += pcm.byteLength / 2 / 16000;
+    trackSpeech(pcm, captureTimeline);
     precisePipeline?.push(pcm);
     if (precise) return;
     if (liveReady && socket?.readyState === WebSocket.OPEN) {
@@ -685,6 +738,7 @@ async function end(sendAudioEnd = true) {
   syncQueue = [];
   syncInit = syncFinal = syncFrontier = null;
   syncReplayPending = false;
+  syncReplayRequestedPosition = null;
   syncDubHistory = [];
   syncCaptionHistory = new Map();
   precisePipeline = null;

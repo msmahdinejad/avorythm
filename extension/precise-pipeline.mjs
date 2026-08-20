@@ -232,7 +232,12 @@ export class PreciseDubbingPipeline {
           if (message.error) throw new Error(message.error.message || 'gemini_voice_error');
           if (message.setupComplete && !ready) {
             ready = true;
-            socket.send(JSON.stringify({realtimeInput: {text}}));
+            socket.send(JSON.stringify({
+              clientContent: {
+                turns: [{role: 'user', parts: [{text}]}],
+                turnComplete: true
+              }
+            }));
             return;
           }
           const content = message.serverContent;

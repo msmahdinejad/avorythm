@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {PreciseDubbingPipeline} from '../extension/precise-pipeline.mjs';
+import {installCaptureWorker} from './fake-capture-worker.mjs';
 
 test('holds an unfinished utterance across Whisper windows instead of dubbing a broken sentence', async () => {
   let groqCall = 0;
@@ -19,7 +20,7 @@ test('holds an unfinished utterance across Whisper windows instead of dubbing a 
   class VoiceSocket {
     static OPEN=1;readyState=0;
     constructor(){queueMicrotask(()=>{this.readyState=1;this.onopen();});}
-    send(payload){const message=JSON.parse(payload);socketPayloads.push(message);if(message.setup)queueMicrotask(()=>this.onmessage({data:JSON.stringify({setupComplete:{}})}));if(message.realtimeInput?.text){const pcm=Buffer.alloc(24000*2,1);queueMicrotask(()=>this.onmessage({data:JSON.stringify({serverContent:{modelTurn:{parts:[{inlineData:{data:pcm.toString('base64')}}]},turnComplete:true}})}));}}
+    send(payload){const message=JSON.parse(payload);socketPayloads.push(message);if(message.setup)queueMicrotask(()=>this.onmessage({data:JSON.stringify({setupComplete:{}})}));if(message.clientContent?.turns?.[0]?.parts?.[0]?.text){const pcm=Buffer.alloc(24000*2,1);queueMicrotask(()=>this.onmessage({data:JSON.stringify({serverContent:{modelTurn:{parts:[{inlineData:{data:pcm.toString('base64')}}]},turnComplete:true}})}));}}
     close(){this.readyState=3;}
   }
   const pipeline=new PreciseDubbingPipeline({
@@ -32,7 +33,7 @@ test('holds an unfinished utterance across Whisper windows instead of dubbing a 
   pipeline.push(new Uint8Array(10.5*16000*2));
   await pipeline.busy;
   assert.equal(sourceCaptions.map((cue)=>cue.text).join(' '),'Hello world.');
-  assert.equal(socketPayloads.find((message)=>message.realtimeInput)?.realtimeInput.text,'سلام دنیا.');
+  assert.equal(socketPayloads.find((message)=>message.clientContent)?.clientContent.turns[0].parts[0].text,'سلام دنیا.');
 });
 
 test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timeline', async () => {
@@ -43,6 +44,7 @@ test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timel
   const requests = [];
   const socketPayloads = [];
   const files = new Map();
+  installCaptureWorker(files);
   globalThis.chrome = {runtime: {onMessage: {addListener(listener) { receive = listener; }}, async sendMessage() { return {ok: true}; }}};
   class AudioNode { connect() { return this; } disconnect() {} }
   globalThis.AudioContext = class {
@@ -83,7 +85,7 @@ test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timel
     send(payload) {
       const message = JSON.parse(payload); socketPayloads.push(message);
       if (message.setup) queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
-      if (message.realtimeInput?.text) {
+      if (message.clientContent?.turns?.[0]?.parts?.[0]?.text) {
         const pcm = Buffer.alloc(24000 * 2); pcm.writeInt16LE(1200, 0); pcm.writeInt16LE(1200, pcm.length - 2);
         queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}, turnComplete: true}})}));
       }
@@ -104,6 +106,7 @@ test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timel
   assert.match(requests[0].url,/api\.groq\.com/);
   assert.match(requests[1].url,/models\/gemini-3\.6-flash:generateContent/);
   assert.equal(socketPayloads[0].setup.model,'models/gemini-3.1-flash-live-preview');
+  assert.equal(socketPayloads[1].clientContent.turnComplete, true);
   assert.equal(socketPayloads.some((message)=>message.setup?.model?.includes('3.5-live-translate')),false);
   const dub=channel.messages.find((message)=>message.type==='dub-chunk');
   assert.equal(dub.start,0);assert.equal(dub.duration,2);assert.equal(new Int16Array(dub.data).length,48000);

@@ -2,6 +2,23 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.2] - 2026-08-20
+
+### Changed
+
+- Synchronized recording now uses an isolated OPFS worker and an atomic release/read/reopen snapshot cycle, so an active recording can be replayed after refresh without loading the complete file into worker memory.
+- Live synchronized dubbing uses a short scheduling horizon and resynchronizes its audio clock when player-tab visibility changes.
+- Finalized WebM playback uses the persisted capture duration when Chrome reports an infinite media duration.
+- Windows release builds use the checksum-verified FFmpeg 9.0.1 essentials package; it contains the codecs Avorythm needs without the much larger full-build-only libraries.
+
+### Fixed
+
+- Send precise-mode narration text through Gemini Live `clientContent` turns instead of the unsupported realtime text payload, restoring the Whisper → Gemini text pool → Gemini 3.1 Live path.
+- Place every Gemini Live translated caption on the exact fitted dubbed-audio interval instead of timing text and speech independently.
+- Preserve the complete recorded timeline across MediaSource eviction, refresh, backward seek, and finalized playback while defaulting the output mix to dubbed audio.
+- Move manual recording finalization into the Recorder & playback card and suppress recoverable background `play()` races without leaving a blocking error overlay.
+- Disable automatic function calling for text-only file translation requests to avoid irrelevant SDK tool-calling behavior.
+
 ## [1.1.1] - 2026-08-19
 
 ### Added
@@ -278,7 +295,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/msmahdinejad/avorythm/compare/v0.9.1...v1.0.0

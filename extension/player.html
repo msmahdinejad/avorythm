@@ -12,7 +12,7 @@
   <div class="ambient" aria-hidden="true"></div>
   <header class="topbar">
     <div class="brand"><span class="brand-mark"><img src="assets/avorythm-logo.png" alt=""></span><span><b>Avorythm</b><small data-i18n="playerTitle">Synchronized player</small></span></div>
-    <div class="session-meta"><span id="liveBadge" class="live-badge"><i></i><span data-i18n="buffering">Rebuilding the safety buffer…</span></span><span id="delayBadge" class="delay-badge">+0.0s</span><button id="localeToggle" class="icon-button" type="button">فا</button><button id="stopButton" class="stop-button" type="button" data-i18n="stop">Finish recording</button><button id="closeButton" class="stop-button" type="button" data-i18n="close" hidden>Close</button></div>
+    <div class="session-meta"><span id="liveBadge" class="live-badge"><i></i><span data-i18n="buffering">Rebuilding the safety buffer…</span></span><span id="delayBadge" class="delay-badge">+0.0s</span><button id="localeToggle" class="icon-button" type="button">فا</button></div>
   </header>
 
   <main class="shell">
@@ -46,7 +46,7 @@
     </section>
 
     <section class="sync-dock">
-      <div class="dock-title"><span><b data-i18n="recorderTitle">ضبط و پخش</b><small data-i18n="recorderHelp">ضبط تب مستقل از Pause، Seek و Fullscreen پلیر ادامه دارد.</small></span><span id="downloadState" class="recording-state" data-i18n="recording">در حال ضبط…</span></div>
+      <div class="dock-title"><span><b data-i18n="recorderTitle">ضبط و پخش</b><small data-i18n="recorderHelp">ضبط تب مستقل از Pause، Seek و Fullscreen پلیر ادامه دارد.</small></span><div class="recorder-actions"><span id="downloadState" class="recording-state" data-i18n="recording">در حال ضبط…</span><button id="stopButton" class="stop-button" type="button" data-i18n="stop">پایان ضبط</button><button id="closeButton" class="stop-button" type="button" data-i18n="close" hidden>بستن</button></div></div>
       <div class="recorder-grid"><div><span data-i18n="recorded">ضبط‌شده</span><strong id="recordedValue">0:00</strong></div><div><span data-i18n="lead">فاصلهٔ امن</span><strong id="leadValue">0.0s</strong></div><div><span data-i18n="timing">زمان‌بندی</span><strong id="engineValue">Gemini Live</strong></div><button id="downloadVideoButton" class="download-video" type="button" data-i18n="downloadVideo" disabled>دریافت ویدیوی ضبط‌شده</button></div>
       <div id="playerWarning" class="player-warning" hidden><span>!</span><p id="warningText"></p></div>
     </section>
