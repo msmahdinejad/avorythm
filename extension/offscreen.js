@@ -65,12 +65,17 @@ let syncCaptionHistory = new Map();
 let syncReplayPending = false;
 let syncReplayRequestedPosition = null;
 let precisePipeline = null;
+let syncTurnIdleTimer = null;
+let syncTurnMaxTimer = null;
+let syncClaimedUntil = 0;
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const RECORDING_PREFIX = 'avorythm-recording-';
 const CAPTURE_PREFIX = 'avorythm-capture-';
 const SYNC_ARTIFACT_PREFIX = 'avorythm-sync-artifact-';
 const RECONNECT_BUFFER_CHUNKS = 1200;
+const SYNC_TURN_IDLE_MS = 500;
+const SYNC_TURN_MAX_MS = 3000;
 
 function report(update) {
   return chrome.runtime.sendMessage({target: 'background', type: 'bridge-state', update});
@@ -244,13 +249,23 @@ function trackSpeech(pcm, at) {
 }
 
 function claimSpeechInterval(now, fallbackDuration = 0.8) {
-  const completed = speech.completed.shift();
-  if (completed) return completed;
-  if (speech.active) {
-    return {start: speech.started, end: Math.max(speech.started + 0.2, now)};
+  while (speech.completed.length && speech.completed[0].end <= syncClaimedUntil + 0.001) {
+    speech.completed.shift();
   }
-  const duration = Math.max(0.2, fallbackDuration);
-  return {start: Math.max(0, now - duration), end: Math.max(duration, now)};
+  const completed = speech.completed.shift();
+  let interval;
+  if (completed) interval = completed;
+  if (speech.active) {
+    interval ||= {start: speech.started, end: Math.max(speech.started + 0.2, now)};
+  }
+  if (!interval) {
+    const duration = Math.max(0.2, fallbackDuration);
+    interval = {start: Math.max(0, now - duration), end: Math.max(duration, now)};
+  }
+  const start = Math.max(syncClaimedUntil, interval.start);
+  const end = Math.max(start + 0.2, interval.end);
+  syncClaimedUntil = end;
+  return {start, end};
 }
 
 function publishTurnCaption(translated, text, interval) {
@@ -284,6 +299,35 @@ function combineTurnAudio(chunks) {
     offset += chunk.byteLength;
   }
   return result;
+}
+
+function clearSynchronizedTurnTimer() {
+  if (syncTurnIdleTimer !== null) clearTimeout(syncTurnIdleTimer);
+  if (syncTurnMaxTimer !== null) clearTimeout(syncTurnMaxTimer);
+  syncTurnIdleTimer = null;
+  syncTurnMaxTimer = null;
+}
+
+function flushSynchronizedTurnOnTimer() {
+  clearSynchronizedTurnTimer();
+  void flushTranscripts(true)
+    .then(() => finalizeSynchronizedTurn(true))
+    .catch((error) => postSync({type: 'warning', error: error.message}));
+}
+
+function scheduleSynchronizedTurnFlush() {
+  if (config?.playbackMode !== 'synchronized' || config.syncCaptionEngine === 'whisper') return;
+  if (syncTurnIdleTimer !== null) clearTimeout(syncTurnIdleTimer);
+  syncTurnIdleTimer = setTimeout(() => {
+    syncTurnIdleTimer = null;
+    flushSynchronizedTurnOnTimer();
+  }, SYNC_TURN_IDLE_MS);
+  if (syncTurnMaxTimer === null) {
+    syncTurnMaxTimer = setTimeout(() => {
+      syncTurnMaxTimer = null;
+      flushSynchronizedTurnOnTimer();
+    }, SYNC_TURN_MAX_MS);
+  }
 }
 
 function finalizeSynchronizedTurn(closeTurn = true) {
@@ -484,6 +528,7 @@ function playDubbed(pcm) {
   const duration = samples.length / 24000;
   if (config.playbackMode === 'synchronized') {
     syncLiveTurn.audio.push(pcm.slice());
+    scheduleSynchronizedTurnFlush();
     return;
   }
   const mix = outputMix(config, 'low-latency');
@@ -510,6 +555,7 @@ function playDubbed(pcm) {
 }
 
 function clearDubPlayback() {
+  clearSynchronizedTurnTimer();
   for (const player of players) {
     try { player.stop(); } catch {}
   }
@@ -536,14 +582,16 @@ async function handleTranscript(translated, transcription) {
   });
 }
 
-async function flushTranscripts() {
+async function flushTranscripts(preserveCommittedPrefix = false) {
   const now = elapsed();
   for (const [translated, tracker] of [[false, sourceTracker], [true, translatedTracker]]) {
     if (!tracker.partial) {
       tracker.committedPrefix = '';
       continue;
     }
-    const completed = mergeTranscript(tracker, tracker.partial, true, now);
+    const partial = tracker.partial;
+    const completed = mergeTranscript(tracker, partial, true, now);
+    if (preserveCommittedPrefix) tracker.committedPrefix = partial;
     if (config?.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
       if (completed?.text) syncLiveTurn[translated ? 'translated' : 'source'].push(completed.text);
     } else recorder?.addSubtitle(translated, completed);
@@ -570,6 +618,7 @@ async function handleLiveMessage(message) {
   if (content.interrupted) clearDubPlayback();
   if (content.inputTranscription) await handleTranscript(false, content.inputTranscription);
   if (content.outputTranscription) await handleTranscript(true, content.outputTranscription);
+  if (content.inputTranscription || content.outputTranscription) scheduleSynchronizedTurnFlush();
   for (const part of content.modelTurn?.parts || []) {
     const inline = part.inlineData || part.inline_data;
     if (inline?.data) playDubbed(base64ToBytes(inline.data));
@@ -581,6 +630,7 @@ async function handleLiveMessage(message) {
     finalizeSynchronizedTurn(false);
   }
   if (content.turnComplete) {
+    clearSynchronizedTurnTimer();
     await flushTranscripts();
     if (config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
       finalizeSynchronizedTurn(true);
@@ -672,6 +722,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   audioBacklog = [];
   speech = {active: false, started: 0, silentFor: 0, completed: []};
   captureTimeline = 0;
+  syncClaimedUntil = 0;
   syncLiveTurn = emptySyncLiveTurn();
   precisePipeline = null;
   syncInit = null;
@@ -683,6 +734,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   syncDubSequence = 0;
   syncDubHistory = [];
   syncCaptionHistory = new Map();
+  clearSynchronizedTurnTimer();
   if (config.recording) recorder = await SessionRecorder.create();
   const synchronized = config.playbackMode === 'synchronized';
   const precise = synchronized && config.syncCaptionEngine === 'whisper';
@@ -752,7 +804,9 @@ async function end(sendAudioEnd = true) {
       await wait(700);
     });
   }
+  clearSynchronizedTurnTimer();
   await attempt(flushTranscripts);
+  await attempt(async () => finalizeSynchronizedTurn(true));
   await attempt(async () => precisePipeline?.flush());
   await attempt(stopMediaBridge);
   await attempt(async () => socket?.close());
@@ -775,12 +829,14 @@ async function end(sendAudioEnd = true) {
   syncDubHistory = [];
   syncCaptionHistory = new Map();
   precisePipeline = null;
+  clearSynchronizedTurnTimer();
   audioBacklog = [];
   players.clear();
   config = null;
   apiKey = '';
   groqApiKey = '';
   nextDubTime = 0;
+  syncClaimedUntil = 0;
   liveReady = false;
   reconnecting = false;
   await attempt(async () => report({active: false, status: 'idle'}));

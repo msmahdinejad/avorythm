@@ -233,10 +233,7 @@ export class PreciseDubbingPipeline {
           if (message.setupComplete && !ready) {
             ready = true;
             socket.send(JSON.stringify({
-              clientContent: {
-                turns: [{role: 'user', parts: [{text}]}],
-                turnComplete: true
-              }
+              realtimeInput: {text}
             }));
             return;
           }

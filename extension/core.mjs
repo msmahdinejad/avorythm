@@ -145,7 +145,7 @@ export function fileVoiceSetupMessage(languageCode, voiceName = 'Kore') {
           languageCode,
           voiceConfig: {prebuiltVoiceConfig: {voiceName}}
         },
-        thinkingConfig: {thinkingBudget: 0}
+        thinkingConfig: {thinkingLevel: 'minimal'}
       },
       systemInstruction: {parts: [{text: 'You are a precise speech renderer. Speak exactly the supplied text once in a natural pace. Do not translate, paraphrase, answer, introduce it, or add any words.'}]}
     }

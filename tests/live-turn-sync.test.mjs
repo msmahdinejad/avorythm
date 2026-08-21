@@ -97,40 +97,64 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   await channel.onmessage({data: {type: 'ready', position: 0}});
 
   const voiced = new Int16Array(16000).fill(5000);
-  const silence = new Int16Array(8000);
   worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
-  worklet.port.onmessage({data: new Uint8Array(silence.buffer)});
   const dubbed = new Int16Array(24000).fill(800);
   socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
-  // Google can emit generationComplete noticeably before turnComplete while it
-  // waits for assumed real-time playback. The synchronized player must not keep
-  // the finished audio trapped during that gap or playback reaches the cue in
-  // silence and subsequently drops it as late.
-  socket.onmessage({data: JSON.stringify({serverContent: {generationComplete: true}})});
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  socket.onmessage({data: JSON.stringify({serverContent: {inputTranscription: {text: 'Hello there'}}})});
+  socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'سلام دنیا'}}})});
+  // The real continuous Live Translate stream can return hundreds of audio and
+  // transcript messages without either completion flag, even after audioStreamEnd.
+  await new Promise((resolve) => setTimeout(resolve, 700));
 
   const dub = channel.messages.find((message) => message.type === 'dub-chunk');
-  assert.ok(dub, 'the Live turn must publish dubbed PCM');
+  assert.ok(dub, 'an idle continuous Live stream must release dubbed PCM without waiting for turnComplete');
 
-  // Transcription messages are independent incremental updates and can land
-  // after generationComplete. Keep the interval open until turnComplete so the
-  // late text still receives the exact audio timing.
-  socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'سلام.', finished: true}}})});
-  socket.onmessage({data: JSON.stringify({serverContent: {turnComplete: true}})});
-  await new Promise((resolve) => setTimeout(resolve, 0));
   const caption = channel.messages.find((message) => message.type === 'caption' && message.translated);
-  assert.ok(caption, 'the same Live turn must publish its translated caption');
+  assert.ok(caption, 'idle flushing must include an unfinished transcript fragment with its audio');
+  assert.equal(caption.text, 'سلام دنیا');
   assert.deepEqual(
     {start: caption.start, end: caption.end},
     {start: dub.start, end: dub.start + dub.duration},
     'translated text and translated speech must share one timeline interval'
   );
 
+  worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
+  socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
+  socket.onmessage({data: JSON.stringify({serverContent: {inputTranscription: {text: 'Again.'}}})});
+  socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'دوباره.'}}})});
+  await new Promise((resolve) => setTimeout(resolve, 700));
+  const dubs = channel.messages.filter((message) => message.type === 'dub-chunk');
+  assert.equal(dubs.length, 2, 'continuous speech must release every translated audio burst');
+  assert.ok(
+    dubs[1].start >= dubs[0].start + dubs[0].duration,
+    'successive dubbed bursts must advance monotonically instead of being dropped as overlapping late audio'
+  );
+
+  socket.onmessage({data: JSON.stringify({serverContent: {generationComplete: true}})});
+  socket.onmessage({data: JSON.stringify({serverContent: {turnComplete: true}})});
+  await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(
     channel.messages.filter((message) => message.type === 'dub-chunk').length,
-    1,
+    2,
     'turnComplete after generationComplete must not publish the same audio twice'
   );
 
+  worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
+  socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
+  for (let index = 0; index < 16; index += 1) {
+    socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'گفتار پیوسته بدون مکث'}}})});
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+  assert.equal(
+    channel.messages.filter((message) => message.type === 'dub-chunk').length,
+    3,
+    'continuous server traffic must be released on a bounded deadline even when the idle timer never fires'
+  );
+
   await new Promise((resolve) => receive({target: 'offscreen', type: 'stop'}, {}, resolve));
+  assert.equal(
+    channel.messages.filter((message) => message.type === 'caption' && message.text === 'گفتار پیوسته بدون مکث').length,
+    1,
+    'a bounded partial flush must not repeat a cumulative transcript at final shutdown'
+  );
 });

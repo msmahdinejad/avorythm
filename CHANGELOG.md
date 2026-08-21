@@ -2,6 +2,17 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.6] - 2026-08-22
+
+### Fixed
+
+- Release synchronized Gemini 3.5 Live Translate audio and transcripts after output becomes idle or a three-second streaming deadline expires; the continuous API can emit hundreds of valid media messages without either `generationComplete` or `turnComplete`.
+- Flush punctuation-free incremental transcript fragments with the exact dubbed-audio interval, so both subtitle tracks reach the player instead of remaining trapped in a partial-text buffer.
+- Preserve the committed prefix across bounded partial flushes so cumulative Live transcription updates do not duplicate subtitles.
+- Advance successive live dubbed intervals monotonically during continuous speech, preventing later PCM bursts from being discarded as overlapping late audio.
+- Send precise-pipeline narration through Gemini 3.1 Live's supported `realtimeInput.text` update and use its current `thinkingLevel` setup field.
+- Cover the full offscreen-to-player bridge with a regression test that receives audible PCM and both subtitle tracks without relying on completion flags.
+
 ## [1.1.5] - 2026-08-21
 
 ### Fixed
@@ -336,7 +347,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...v1.1.3

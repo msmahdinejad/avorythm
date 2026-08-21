@@ -141,6 +141,8 @@ test('builds the Gemini 3.1 Live speech renderer used by the precise sync pipeli
   assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
   assert.equal(setup.generationConfig.speechConfig.languageCode, 'fa');
   assert.equal(setup.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Kore');
+  assert.equal(setup.generationConfig.thinkingConfig.thinkingLevel, 'minimal');
+  assert.equal(setup.generationConfig.thinkingConfig.thinkingBudget, undefined);
   assert.match(setup.systemInstruction.parts[0].text, /exactly the supplied text/i);
 
   const fitted = fitPcm(Int16Array.from([0, 1000, 2000, 3000]), 8);
