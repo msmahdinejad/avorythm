@@ -1,4 +1,4 @@
-import {normalizeSettings} from './core.mjs';
+import {normalizeSettings, outputMix} from './core.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 const CONSENT_VERSION = 1;
@@ -74,12 +74,13 @@ function fillLanguages() {
 }
 
 function outputItems() {
+  const mix = outputMix(settings, settings.playbackMode);
   return [
     ['originalAudioEnabled', 'originalAudio'],
     ['dubAudioEnabled', 'dubbedAudio'],
     ['sourceSubtitlesEnabled', 'sourceSubtitles'],
     ['translatedSubtitlesEnabled', 'translatedSubtitles']
-  ].filter(([key]) => settings[key]);
+  ].filter(([key]) => mix[key]);
 }
 
 function renderSettings() {

@@ -1,4 +1,4 @@
-import {DEFAULT_SETTINGS, LANGUAGES, normalizeSettings, subtitlesEnabled} from './core.mjs';
+import {DEFAULT_SETTINGS, LANGUAGES, normalizeSettings, outputMix, subtitlesEnabled} from './core.mjs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
 const defaultState = {
@@ -36,7 +36,8 @@ async function broadcastOverlay(state) {
       active: state.active,
       sourceText: state.sourceText,
       translatedText: state.translatedText,
-      settings: state.config || DEFAULT_SETTINGS
+      settings: state.config || DEFAULT_SETTINGS,
+      output: outputMix(state.config || DEFAULT_SETTINGS, 'low-latency')
     });
   } catch {}
 }
@@ -280,13 +281,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     else if (message.type === 'audio') {
       let state = await getState();
+      const nextConfig = normalizeSettings(message.config);
       if (state.active) {
-        const nextConfig = normalizeSettings(message.config);
         if (subtitlesEnabled(nextConfig) && nextConfig.playbackMode !== 'synchronized') await injectOverlay(state.captureTabId);
         state = await setState({config: nextConfig});
         await broadcastOverlay(state);
       }
-      if (await hasOffscreenDocument()) await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: message.config});
+      if (await hasOffscreenDocument()) await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: nextConfig});
       sendResponse({ok: true});
     } else if (message.type === 'media-control') {
       const state = await getState();

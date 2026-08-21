@@ -48,18 +48,18 @@
         </section>
 
         <section id="output" class="settings-card">
-          <div class="card-heading"><span class="card-icon">02</span><div><h2 data-i18n="output">ترکیب خروجی</h2><p data-i18n="outputHelp">هر چهار کانال مستقل‌اند؛ هر ترکیبی که می‌خواهی انتخاب کن.</p></div></div>
+          <div class="card-heading"><span class="card-icon">02</span><div><h2 data-i18n="pageOutput">پخش داخل تب</h2><p data-i18n="pageOutputHelp">این تنظیمات فقط روی حالت سریع «داخل همین صفحه» اثر دارند.</p></div></div>
           <div class="channel-grid">
-            <label class="channel-option"><input id="originalAudioEnabled" type="checkbox"><span><b data-i18n="originalAudio">صدای اصلی</b><small data-i18n="originalAudioHelp">صدای واقعی ویدئو یا صفحه</small></span></label>
-            <label class="channel-option"><input id="dubAudioEnabled" type="checkbox"><span><b data-i18n="dubbedAudio">صدای دوبله</b><small data-i18n="dubbedAudioHelp">صدای ترجمه‌شدهٔ Gemini</small></span></label>
-            <label class="channel-option"><input id="sourceSubtitlesEnabled" type="checkbox"><span><b data-i18n="sourceSubtitles">زیرنویس اصلی</b><small data-i18n="sourceSubtitlesHelp">متن زبان گوینده</small></span></label>
-            <label class="channel-option"><input id="translatedSubtitlesEnabled" type="checkbox"><span><b data-i18n="translatedSubtitles">زیرنویس ترجمه</b><small data-i18n="translatedSubtitlesHelp">متن زبان مقصد</small></span></label>
+            <label class="channel-option"><input id="pageOriginalAudioEnabled" type="checkbox"><span><b data-i18n="originalAudio">صدای اصلی</b><small data-i18n="originalAudioHelp">صدای واقعی ویدئو یا صفحه</small></span></label>
+            <label class="channel-option"><input id="pageDubAudioEnabled" type="checkbox"><span><b data-i18n="dubbedAudio">صدای دوبله</b><small data-i18n="dubbedAudioHelp">صدای ترجمه‌شدهٔ Gemini</small></span></label>
+            <label class="channel-option"><input id="pageSourceSubtitlesEnabled" type="checkbox"><span><b data-i18n="sourceSubtitles">زیرنویس اصلی</b><small data-i18n="sourceSubtitlesHelp">متن زبان گوینده</small></span></label>
+            <label class="channel-option"><input id="pageTranslatedSubtitlesEnabled" type="checkbox"><span><b data-i18n="translatedSubtitles">زیرنویس ترجمه</b><small data-i18n="translatedSubtitlesHelp">متن زبان مقصد</small></span></label>
           </div>
           <div class="range-grid">
-            <label class="range-field"><span><b data-i18n="originalVolume">بلندی صدای اصلی</b><output id="originalVolumeValue">100%</output></span><input id="originalVolume" type="range" min="0" max="1.5" step="0.05"></label>
-            <label class="range-field"><span><b data-i18n="dubVolume">بلندی صدای دوبله</b><output id="dubVolumeValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+            <label class="range-field"><span><b data-i18n="originalVolume">بلندی صدای اصلی</b><output id="pageOriginalVolumeValue">100%</output></span><input id="pageOriginalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+            <label class="range-field"><span><b data-i18n="dubVolume">بلندی صدای دوبله</b><output id="pageDubVolumeValue">100%</output></span><input id="pageDubVolume" type="range" min="0" max="1.5" step="0.05"></label>
           </div>
-          <label class="switch-row"><input id="autoDuck" type="checkbox"><span><b data-i18n="autoDuck">کاهش هوشمند صدای اصلی</b><small data-i18n="autoDuckHelp">هنگام صحبت دوبله، صدای اصلی آرام‌تر می‌شود.</small></span></label>
+          <label class="switch-row"><input id="pageAutoDuck" type="checkbox"><span><b data-i18n="autoDuck">کاهش هوشمند صدای اصلی</b><small data-i18n="autoDuckHelp">هنگام صحبت دوبله، صدای اصلی آرام‌تر می‌شود.</small></span></label>
           <label class="switch-row"><input id="recording" type="checkbox"><span><b data-i18n="recording">ذخیرهٔ چهار خروجی</b><small data-i18n="recordingHelp">دو WAV و دو SRT در Downloads؛ پیش‌فرض خاموش است.</small></span></label>
         </section>
 
@@ -75,6 +75,20 @@
 
         <section id="sync" class="settings-card featured-card">
           <div class="card-heading"><span class="card-icon">04</span><div><h2 data-i18n="syncPlayer">پلیر هماهنگ</h2><p data-i18n="syncHelp">ویدئوی تب را بافر می‌کند تا دوبله روی timeline نزدیک‌تری پخش شود.</p></div></div>
+          <div class="output-scope">
+            <div class="scope-heading"><b data-i18n="syncOutput">پخش و خروجی پلیر هماهنگ</b><small data-i18n="syncOutputHelp">مستقل از پخش داخل تب؛ همین ترکیب در ویدیوی خروجی اعمال می‌شود.</small></div>
+            <div class="channel-grid">
+              <label class="channel-option"><input id="syncOriginalAudioEnabled" type="checkbox"><span><b data-i18n="originalAudio">صدای اصلی</b><small data-i18n="originalAudioHelp">صدای واقعی ویدئو یا صفحه</small></span></label>
+              <label class="channel-option"><input id="syncDubAudioEnabled" type="checkbox"><span><b data-i18n="dubbedAudio">صدای دوبله</b><small data-i18n="dubbedAudioHelp">صدای ترجمه‌شدهٔ Gemini</small></span></label>
+              <label class="channel-option"><input id="syncSourceSubtitlesEnabled" type="checkbox"><span><b data-i18n="sourceSubtitles">زیرنویس اصلی</b><small data-i18n="sourceSubtitlesHelp">متن زبان گوینده</small></span></label>
+              <label class="channel-option"><input id="syncTranslatedSubtitlesEnabled" type="checkbox"><span><b data-i18n="translatedSubtitles">زیرنویس ترجمه</b><small data-i18n="translatedSubtitlesHelp">متن زبان مقصد</small></span></label>
+            </div>
+            <div class="range-grid">
+              <label class="range-field"><span><b data-i18n="originalVolume">بلندی صدای اصلی</b><output id="syncOriginalVolumeValue">100%</output></span><input id="syncOriginalVolume" type="range" min="0" max="1.5" step="0.05"></label>
+              <label class="range-field"><span><b data-i18n="dubVolume">بلندی صدای دوبله</b><output id="syncDubVolumeValue">100%</output></span><input id="syncDubVolume" type="range" min="0" max="1.5" step="0.05"></label>
+            </div>
+            <label class="switch-row"><input id="syncAutoDuck" type="checkbox"><span><b data-i18n="autoDuck">کاهش هوشمند صدای اصلی</b><small data-i18n="autoDuckHelp">هنگام صحبت دوبله، صدای اصلی آرام‌تر می‌شود.</small></span></label>
+          </div>
           <label class="range-field buffer-range"><span><b data-i18n="buffer">فاصلهٔ ضبط تا پخش</b><output id="syncBufferValue">20s</output></span><input id="syncBufferSeconds" type="range" min="8" max="60" step="1"><small data-i18n="bufferHelp">ضبط جلوتر از پلیر ادامه پیدا می‌کند؛ ۲۰ ثانیه برای پایداری پیشنهاد می‌شود.</small></label>
           <div class="sync-scale"><span data-i18n="faster">شروع سریع‌تر</span><span data-i18n="steadier">هماهنگی پایدارتر</span></div>
           <label class="field"><span data-i18n="timingEngine">موتور دوبلهٔ هماهنگ</span><select id="syncCaptionEngine"><option value="gemini" data-i18n="geminiTiming">Gemini 3.5 Live · سریع‌تر</option><option value="whisper" data-i18n="whisperTiming">Whisper + LLM + Gemini 3.1 Live · دقیق‌تر</option></select><small data-i18n="timingEngineHelp">در حالت دقیق، جمله، صدا و هر دو زیرنویس روی یک بازهٔ ضبط‌شده قرار می‌گیرند.</small></label>

@@ -10,16 +10,31 @@ export const LANGUAGES = [
 ];
 export const VOICE_NAMES = ['Aoede','Charon','Fenrir','Kore','Leda','Orus','Puck','Zephyr'];
 
-export const DEFAULT_SETTINGS = Object.freeze({
-  locale: 'en',
-  targetLanguage: 'fa',
+const OUTPUT_FIELDS = [
+  'originalAudioEnabled',
+  'dubAudioEnabled',
+  'sourceSubtitlesEnabled',
+  'translatedSubtitlesEnabled',
+  'originalVolume',
+  'dubVolume',
+  'autoDuck'
+];
+
+export const DEFAULT_OUTPUT_MIX = Object.freeze({
   originalAudioEnabled: false,
   dubAudioEnabled: true,
   sourceSubtitlesEnabled: false,
   translatedSubtitlesEnabled: false,
   originalVolume: 1,
   dubVolume: 1,
-  autoDuck: true,
+  autoDuck: true
+});
+
+export const DEFAULT_SETTINGS = Object.freeze({
+  locale: 'en',
+  targetLanguage: 'fa',
+  onPageOutput: DEFAULT_OUTPUT_MIX,
+  synchronizedOutput: DEFAULT_OUTPUT_MIX,
   recording: false,
   subtitlePosition: 'bottom-center',
   subtitleFontSize: 24,
@@ -31,15 +46,42 @@ export const DEFAULT_SETTINGS = Object.freeze({
   syncVoiceName: 'Kore'
 });
 
-export function normalizeSettings(input = {}) {
-  const settings = {...DEFAULT_SETTINGS, ...input};
-  if ('audioMode' in input) {
-    if (input.audioMode === 'subtitles') settings.originalVolume = 1;
-    if (!('originalAudioEnabled' in input)) settings.originalAudioEnabled = ['original', 'subtitles', 'mix'].includes(input.audioMode);
-    if (!('dubAudioEnabled' in input)) settings.dubAudioEnabled = ['dub', 'mix'].includes(input.audioMode);
-    if (!('sourceSubtitlesEnabled' in input)) settings.sourceSubtitlesEnabled = input.audioMode === 'subtitles' && Boolean(input.subtitleShowSource);
-    if (!('translatedSubtitlesEnabled' in input)) settings.translatedSubtitlesEnabled = input.audioMode === 'subtitles';
+function normalizeOutputMix(input = {}) {
+  const mix = {
+    ...DEFAULT_OUTPUT_MIX,
+    ...Object.fromEntries(OUTPUT_FIELDS.filter((field) => field in input).map((field) => [field, input[field]]))
+  };
+  for (const field of OUTPUT_FIELDS.filter((field) => field.endsWith('Enabled') || field === 'autoDuck')) {
+    mix[field] = Boolean(mix[field]);
   }
+  for (const field of ['originalVolume', 'dubVolume']) {
+    const value = Number(mix[field]);
+    mix[field] = Number.isFinite(value) ? Math.max(0, Math.min(1.5, value)) : DEFAULT_OUTPUT_MIX[field];
+  }
+  return mix;
+}
+
+function legacyOutputMix(input) {
+  const legacy = Object.fromEntries(OUTPUT_FIELDS.filter((field) => field in input).map((field) => [field, input[field]]));
+  if ('audioMode' in input) {
+    if (input.audioMode === 'subtitles') legacy.originalVolume = 1;
+    if (!('originalAudioEnabled' in input)) legacy.originalAudioEnabled = ['original', 'subtitles', 'mix'].includes(input.audioMode);
+    if (!('dubAudioEnabled' in input)) legacy.dubAudioEnabled = ['dub', 'mix'].includes(input.audioMode);
+    if (!('sourceSubtitlesEnabled' in input)) legacy.sourceSubtitlesEnabled = input.audioMode === 'subtitles' && Boolean(input.subtitleShowSource);
+    if (!('translatedSubtitlesEnabled' in input)) legacy.translatedSubtitlesEnabled = input.audioMode === 'subtitles';
+  }
+  return legacy;
+}
+
+export function normalizeSettings(input = {}) {
+  const legacy = legacyOutputMix(input);
+  const settings = {
+    ...DEFAULT_SETTINGS,
+    ...input,
+    onPageOutput: normalizeOutputMix({...legacy, ...input.onPageOutput}),
+    synchronizedOutput: normalizeOutputMix({...legacy, ...input.synchronizedOutput})
+  };
+  for (const field of OUTPUT_FIELDS) delete settings[field];
   delete settings.audioMode;
   delete settings.subtitleShowSource;
   settings.playbackMode = settings.playbackMode === 'synchronized' ? 'synchronized' : 'low-latency';
@@ -49,13 +91,26 @@ export function normalizeSettings(input = {}) {
   return settings;
 }
 
-export function subtitlesEnabled(settings) {
-  return Boolean(settings.sourceSubtitlesEnabled || settings.translatedSubtitlesEnabled);
+export function outputMix(settings, mode = settings?.playbackMode) {
+  const key = mode === 'synchronized' ? 'synchronizedOutput' : 'onPageOutput';
+  return settings?.[key] || DEFAULT_OUTPUT_MIX;
 }
 
-export function audioChannelVolume(channel, settings) {
-  const enabled = channel === 'original' ? settings.originalAudioEnabled : settings.dubAudioEnabled;
-  return enabled ? Number(channel === 'original' ? settings.originalVolume : settings.dubVolume) : 0;
+export function updateOutputMix(settings, mode, patch) {
+  const normalized = normalizeSettings(settings);
+  const key = mode === 'synchronized' ? 'synchronizedOutput' : 'onPageOutput';
+  return {...normalized, [key]: normalizeOutputMix({...normalized[key], ...patch})};
+}
+
+export function subtitlesEnabled(settings, mode = settings?.playbackMode) {
+  const mix = outputMix(settings, mode);
+  return Boolean(mix.sourceSubtitlesEnabled || mix.translatedSubtitlesEnabled);
+}
+
+export function audioChannelVolume(channel, settings, mode = settings?.playbackMode) {
+  const mix = outputMix(settings, mode);
+  const enabled = channel === 'original' ? mix.originalAudioEnabled : mix.dubAudioEnabled;
+  return enabled ? Number(channel === 'original' ? mix.originalVolume : mix.dubVolume) : 0;
 }
 
 export function liveUrl(key) {

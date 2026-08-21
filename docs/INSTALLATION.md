@@ -50,12 +50,12 @@ The local rolling governor reserves at most 15,000 estimated tokens per minute. 
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
 5. Pin Avorythm and open its popup.
-6. Open **Settings**, enter the Gemini API key for the current browser session, choose any combination of the four output channels, and confirm the one-time processing consent.
+6. Open **Settings**, enter the Gemini API key for the current browser session, configure **On-page playback** and **Synchronized playback & export** independently, and confirm the one-time processing consent.
 7. Return to the popup, choose **On this page** or **Synchronized recorder & player**, then start from a normal media tab.
 
-The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Avorythm recreates the exact original/dub mix selected by the two independent audio switches and volume sliders.
+The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Avorythm recreates the exact original/dub mix for the selected mode. On-page controls never modify synchronized playback or its customized export.
 
-**On this page** is the shortest path for live listening. **Synchronized recorder & player** keeps capture 8–60 seconds ahead (20 seconds by default) and feeds an independent, seekable player. Pausing, seeking, switching tabs, or fullscreening the Avorythm player does not stop the source producer. A temporary underrun pauses only the consumer until its safety lead is rebuilt. The source media ending finalizes a downloadable WebM automatically. Literal zero delay is impossible because translation must receive speech before it can generate output; the recording lead trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
+**On this page** is the shortest path for live listening. **Synchronized recorder & player** keeps capture 8–60 seconds ahead (20 seconds by default) and feeds an independent, seekable player. Pausing, seeking, switching tabs, or fullscreening the Avorythm player does not stop the source producer. A temporary underrun pauses only the consumer until its safety lead is rebuilt. The source media ending finalizes the local capture automatically. The player then renders the selected synchronized audio mix—dubbed-only by default—into a new seekable WebM and downloads enabled captions as SRT files. Literal zero delay is impossible because translation must receive speech before it can generate output; the recording lead trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
 
 The extension's faster synchronized engine uses Gemini 3.5 Live Translate directly. Its precise engine uses Groq Whisper for complete-utterance timestamps, the free Gemini text pool for translation, and Gemini 3.1 Flash Live for the selected voice; audio and both subtitle tracks are fitted to one recorded timeline. Chrome asks for the optional `api.groq.com` permission and keeps the Groq key only for the browser session.
 
@@ -63,7 +63,7 @@ The key lives only in `chrome.storage.session` and must be entered again after t
 
 ### Floating subtitles
 
-Enable **Source subtitles**, **Translated subtitles**, or both in **Settings → Output mix**. Audio remains independently configurable, so captions can accompany original audio, dubbed audio, both, or neither. Avorythm injects the frosted-glass card only into the selected page. Drag its top handle to move it and use the browser resize grip to resize it. Text size, initial position, width, and opacity are configurable on the separate Settings page. Chrome internal pages, the Web Store, and some protected pages do not allow injection.
+Enable **Source subtitles**, **Translated subtitles**, or both in **Settings → On-page playback**. Audio remains independently configurable, so captions can accompany original audio, dubbed audio, both, or neither. Avorythm injects the frosted-glass card only into the selected page. Drag its top handle to move it and use the browser resize grip to resize it. Text size, initial position, width, and opacity are configurable on the separate Settings page. Chrome internal pages, the Web Store, and some protected pages do not allow injection.
 
 ### Proxy
 

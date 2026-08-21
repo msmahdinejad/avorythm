@@ -7,6 +7,8 @@ import {
   liveUrl,
   latestCaption,
   mergeTranscript,
+  normalizeSettings,
+  outputMix,
   setupMessage,
   srt,
   wavHeader
@@ -484,10 +486,11 @@ function playDubbed(pcm) {
     syncLiveTurn.audio.push(pcm.slice());
     return;
   }
+  const mix = outputMix(config, 'low-latency');
   const begins = Math.max(context.currentTime + 0.03, nextDubTime);
   nextDubTime = begins + duration;
   recorder?.dubbed.appendAt(pcm, begins - contextStartedAt);
-  if (!config.dubAudioEnabled) return;
+  if (!mix.dubAudioEnabled) return;
 
   const buffer = context.createBuffer(1, samples.length, 24000);
   const channel = buffer.getChannelData(0);
@@ -497,7 +500,7 @@ function playDubbed(pcm) {
   player.connect(dubGain);
   players.add(player);
   player.onended = () => players.delete(player);
-  if (config.originalAudioEnabled && config.autoDuck) {
+  if (mix.originalAudioEnabled && mix.autoDuck) {
     const base = audioChannelVolume('original', config);
     sourceGain.gain.cancelScheduledValues(begins);
     sourceGain.gain.setTargetAtTime(base * 0.12, begins, 0.025);
@@ -658,7 +661,7 @@ async function reconnectSocket() {
 
 async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   if (stream) throw new Error('capture_already_active');
-  config = nextConfig;
+  config = normalizeSettings(nextConfig);
   apiKey = nextApiKey;
   groqApiKey = nextGroqApiKey || '';
   stopping = false;
@@ -789,7 +792,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
     if (message.type === 'start') await begin(message.streamId, message.config, message.apiKey, message.groqApiKey);
     else if (message.type === 'stop') await end();
-    else if (message.type === 'audio') { config = {...config, ...message.config}; applyVolumes(); }
+    else if (message.type === 'audio') { config = normalizeSettings({...config, ...message.config}); applyVolumes(); }
     sendResponse({ok: true});
   })().catch(async (error) => {
     await end(false).catch(() => {});

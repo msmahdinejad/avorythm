@@ -56,8 +56,9 @@
 
   function render(message) {
     const settings = message.settings || {};
-    const sourceEnabled = Boolean(settings.sourceSubtitlesEnabled);
-    const translatedEnabled = Boolean(settings.translatedSubtitlesEnabled);
+    const output = message.output || settings.onPageOutput || settings;
+    const sourceEnabled = Boolean(output.sourceSubtitlesEnabled);
+    const translatedEnabled = Boolean(output.translatedSubtitlesEnabled);
     host.style.display = message.active && (sourceEnabled || translatedEnabled) ? 'block' : 'none';
     card.classList.toggle('source-only', sourceEnabled && !translatedEnabled);
     card.style.width = `${Math.max(280, Math.min(1200, Number(settings.subtitleWidth) || 680))}px`;

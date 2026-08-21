@@ -101,8 +101,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
 
   let response = await message({type: 'bootstrap'});
   assert.equal(response.data.api_key_set, false);
-  assert.equal(local.settings.dubAudioEnabled, true);
-  assert.equal(local.settings.originalAudioEnabled, false);
+  assert.equal(local.settings.onPageOutput.dubAudioEnabled, true);
+  assert.equal(local.settings.onPageOutput.originalAudioEnabled, false);
+  assert.equal(local.settings.synchronizedOutput.dubAudioEnabled, true);
+  assert.equal(local.settings.synchronizedOutput.originalAudioEnabled, false);
   assert.equal(local.settings.locale, 'en');
 
   response = await message({type: 'set-key', apiKey: 'test-api-key-123'});
@@ -113,9 +115,12 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   const subtitleSettings = {
     ...local.settings,
     consentVersion: 1,
-    dubAudioEnabled: false,
-    originalAudioEnabled: true,
-    translatedSubtitlesEnabled: true
+    onPageOutput: {
+      ...local.settings.onPageOutput,
+      dubAudioEnabled: false,
+      originalAudioEnabled: true,
+      translatedSubtitlesEnabled: true
+    }
   };
   response = await message({type: 'start', config: subtitleSettings});
   assert.equal(response.ok, true);
@@ -124,7 +129,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.state.status, 'connecting');
   assert.equal(response.state.active, true);
   assert.equal(injectedTab, 42);
-  assert.equal(overlayMessages.at(-1).message.settings.translatedSubtitlesEnabled, true);
+  assert.equal(overlayMessages.at(-1).message.output.translatedSubtitlesEnabled, true);
 
   response = await message({type: 'clear-key'});
   assert.equal(response.ok, true);
@@ -151,7 +156,11 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     playbackMode: 'synchronized',
     syncBufferSeconds: 5,
     syncCaptionEngine: 'whisper',
-    dubAudioEnabled: true
+    synchronizedOutput: {
+      ...subtitleSettings.synchronizedOutput,
+      originalAudioEnabled: false,
+      dubAudioEnabled: true
+    }
   };
   session.playerSession = {currentTime: 221.4, recordedDuration: 300, started: true};
   response = await message({type: 'start', config: synchronizedSettings});

@@ -80,7 +80,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 1. Open Avorythm and select **Open settings**.
 2. Save your Gemini API key. The key stays in Chrome session storage and is cleared after the browser fully exits.
 3. In **Consent and privacy**, you must enable **“I allow audio from my selected tab to be sent to Google Gemini.”** Translation cannot start before this explicit consent.
-4. Choose the target language and output channels.
+4. Choose the target language. Configure **On-page playback** and **Synchronized playback & export** separately; changing one never changes the other.
 
 ### Choose a playback mode
 
@@ -100,7 +100,7 @@ The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, s
 2. Wait until the safety lead is ready, then start playback. Capture continues ahead independently.
 3. Use Play/Pause, the seek bar, **Go to latest**, and the player’s fullscreen button. Fullscreen the Avorythm player—not the source video.
 4. If network or generation briefly falls behind, the consumer pauses, rebuilds a safe lead, and resumes without stopping the producer.
-5. When the source media ends, Avorythm finalizes the recording automatically. You can also press **Finish recording**. Then download the captured WebM. If **Save four outputs** was enabled, the two WAV and two SRT files are also saved.
+5. When the source media ends, Avorythm finalizes the recording automatically. You can also press **Finish recording**. The synchronized output defaults to dubbed audio only. Before downloading, independently choose original audio, dubbed audio, either subtitle track, both audio levels, and smart ducking. **Build & download customized video** renders that audio mix into a seekable WebM and downloads each enabled subtitle as an SRT. If **Save four outputs** was enabled, the two WAV and two SRT source files are also saved during capture.
 6. Avorythm keeps only the latest synchronized capture in Chrome's private local storage. Starting another capture replaces it. Files you download remain under `Downloads/Avorythm` until you delete them.
 
 The player cannot capture DRM-protected video or Chrome-internal pages. Use **On this page** when direct video capture is unavailable.

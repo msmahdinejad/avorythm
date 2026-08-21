@@ -13,9 +13,11 @@ import {
   liveUrl,
   mergeTranscript,
   normalizeSettings,
+  outputMix,
   setupMessage,
   srt,
   subtitlesEnabled,
+  updateOutputMix,
   LIVE_ENDPOINT,
   wavHeader
 } from '../extension/core.mjs';
@@ -34,15 +36,52 @@ test('mixes four output channels independently', () => {
   assert.equal(subtitlesEnabled(settings), true);
 });
 
+test('keeps on-page and synchronized-player output settings independent', () => {
+  let settings = normalizeSettings();
+  settings = updateOutputMix(settings, 'low-latency', {
+    originalAudioEnabled: true,
+    dubAudioEnabled: false,
+    originalVolume: 0.4
+  });
+  settings = updateOutputMix(settings, 'synchronized', {
+    originalAudioEnabled: false,
+    dubAudioEnabled: true,
+    dubVolume: 1.2,
+    translatedSubtitlesEnabled: true
+  });
+
+  assert.deepEqual(outputMix(settings, 'low-latency'), {
+    ...outputMix(normalizeSettings(), 'low-latency'),
+    originalAudioEnabled: true,
+    dubAudioEnabled: false,
+    originalVolume: 0.4
+  });
+  assert.equal(audioChannelVolume('original', settings, 'low-latency'), 0.4);
+  assert.equal(audioChannelVolume('original', settings, 'synchronized'), 0);
+  assert.equal(audioChannelVolume('dub', settings, 'synchronized'), 1.2);
+  assert.equal(subtitlesEnabled(settings, 'low-latency'), false);
+  assert.equal(subtitlesEnabled(settings, 'synchronized'), true);
+});
+
 test('migrates legacy subtitle preset without muting its original audio', () => {
   assert.deepEqual(
     normalizeSettings({audioMode: 'subtitles', subtitleShowSource: true, originalVolume: 0}),
     {
       ...normalizeSettings(),
-      originalAudioEnabled: true,
-      dubAudioEnabled: false,
-      sourceSubtitlesEnabled: true,
-      translatedSubtitlesEnabled: true
+      onPageOutput: {
+        ...outputMix(normalizeSettings(), 'low-latency'),
+        originalAudioEnabled: true,
+        dubAudioEnabled: false,
+        sourceSubtitlesEnabled: true,
+        translatedSubtitlesEnabled: true
+      },
+      synchronizedOutput: {
+        ...outputMix(normalizeSettings(), 'synchronized'),
+        originalAudioEnabled: true,
+        dubAudioEnabled: false,
+        sourceSubtitlesEnabled: true,
+        translatedSubtitlesEnabled: true
+      }
     }
   );
 });
@@ -52,7 +91,8 @@ test('app and extension expose the same four output controls', () => {
   const options = readFileSync(new URL('../extension/options.html', import.meta.url), 'utf8');
   for (const id of ['originalAudioEnabled', 'dubAudioEnabled', 'sourceSubtitlesEnabled', 'translatedSubtitlesEnabled']) {
     assert.match(app, new RegExp(`id="${id}"`));
-    assert.match(options, new RegExp(`id="${id}"`));
+    assert.match(options, new RegExp(`id="page${id[0].toUpperCase()}${id.slice(1)}"`));
+    assert.match(options, new RegExp(`id="sync${id[0].toUpperCase()}${id.slice(1)}"`));
   }
   assert.doesNotMatch(app, /id="liveMode"/);
   assert.doesNotMatch(options, /id="audioMode"/);

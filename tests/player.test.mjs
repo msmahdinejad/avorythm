@@ -135,9 +135,13 @@ test('buffers media and keeps player controls independent from the source produc
   assert.equal(element('#seekRange').min, '0', 'the user-facing timeline must still expose the full local recording');
   assert.equal(
     element('#activateButton').disabled,
-    true,
-    'dub-only playback must not start silently before its first dubbed cue is ready'
+    false,
+    'video playback must never be blocked by a delayed or unavailable Gemini dub cue'
   );
+  await element('#activateButton').listeners.click();
+  assert.equal(video.paused, false, 'the buffered video must start even while dubbed audio is still pending');
+  assert.equal(video.muted, true, 'dub-only mode must not leak original audio while the dub is pending');
+  await element('#playButton').listeners.click();
 
   element('#seekRange').value = '0.5';
   await element('#seekRange').listeners.change();
@@ -154,7 +158,7 @@ test('buffers media and keeps player controls independent from the source produc
   assert.equal(video.currentTime, 0.5, 'recorded media must remain seekable to the beginning after refresh');
 
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
-  assert.equal(element('#activateButton').disabled, false, 'the first dubbed cue unlocks dub-only playback');
+  assert.equal(element('#activateButton').disabled, false, 'dub arrival must not change the video readiness gate');
   await element('#activateButton').listeners.click();
   assert.deepEqual(starts, [{when: 2.5, offset: 0}]);
 
@@ -204,7 +208,7 @@ test('buffers media and keeps player controls independent from the source produc
   video.play = async () => { video.paused = false; };
 
   channel.onmessage({data: {type: 'media-final', fileName: 'capture.webm'}});
-  assert.equal(element('#downloadVideoButton').disabled, false);
+  assert.equal(element('#downloadVideoButton').disabled, true, 'custom export waits for finalized dub and timeline artifacts');
 
   video.currentTime = 2.5;
   const scheduledBeforeLateChunk = starts.length;

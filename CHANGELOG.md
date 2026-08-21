@@ -2,6 +2,26 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.4] - 2026-08-21
+
+### Added
+
+- Separate, persistent output mixes for on-page playback and synchronized playback/export, including independent audio, subtitle, volume, and smart-duck controls.
+- A local WebCodecs export pipeline that renders the selected synchronized audio mix into a seekable WebM and downloads enabled subtitle tracks as SRT files.
+- Real-browser media export coverage for dubbed-only and original-plus-dubbed output, including audible audio, video/audio tracks, and seeking.
+
+### Changed
+
+- Start buffered video as soon as the safety lead is ready; a slow Gemini response no longer blocks Play while the first dubbed cue is pending.
+- Default synchronized playback and export to dubbed audio while preserving explicit user customization.
+- Validate and migrate legacy output settings into the two new independent scopes.
+
+### Fixed
+
+- Replace the unreliable captured-`audio` export path that could create a silent or empty WebM with a paced PCM track on the video clock.
+- Stop and clean up recorders, generated tracks, and pending audio writes after interrupted playback instead of leaving a stalled export behind.
+- Keep finalized artifacts attached to the restored player session so customized export remains available after refresh.
+
 ## [1.1.3] - 2026-08-21
 
 ### Changed
@@ -309,7 +329,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...v1.1.1
