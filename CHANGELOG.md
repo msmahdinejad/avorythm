@@ -2,6 +2,20 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.3] - 2026-08-21
+
+### Changed
+
+- Dub-only synchronized playback now waits for its first translated audio cue instead of starting the buffered video silently.
+- The Web Audio scheduling window expands with the configured safety lead so translated speech continues when Chrome throttles a background player tab.
+- The player and bilingual guides state that only the latest synchronized capture is retained in Chrome private storage and downloaded files remain under `Downloads/Avorythm`.
+
+### Fixed
+
+- Publish completed Gemini audio at `generationComplete`; Google may delay `turnComplete` while waiting for assumed real-time playback, which previously made every translated cue arrive too late for the synchronized player.
+- Preserve one timing interval for late transcription messages without publishing the same audio twice.
+- Clear the previous player timeline and publish the new active recording state before opening the player tab, preventing a new session from restoring stale artifacts.
+
 ## [1.1.2] - 2026-08-20
 
 ### Changed
@@ -295,7 +309,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/msmahdinejad/avorythm/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/msmahdinejad/avorythm/compare/v1.0.0...v1.1.0

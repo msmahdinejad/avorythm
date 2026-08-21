@@ -103,7 +103,7 @@ test('buffers media and keeps player controls independent from the source produc
   const mediaControls = [];
   globalThis.chrome = {
     storage: {
-      local: {async get() { return {settings: {locale: 'en', playbackMode: 'synchronized', syncBufferSeconds: 4.5, originalAudioEnabled: true, dubAudioEnabled: true, sourceSubtitlesEnabled: true, translatedSubtitlesEnabled: true, originalVolume: .5, dubVolume: 1}}; }, async set() {}},
+      local: {async get() { return {settings: {locale: 'en', playbackMode: 'synchronized', syncBufferSeconds: 4.5, originalAudioEnabled: false, dubAudioEnabled: true, sourceSubtitlesEnabled: true, translatedSubtitlesEnabled: true, originalVolume: .5, dubVolume: 1}}; }, async set() {}},
       session: {async get() { return {playerSession: {currentTime: 221.4, wantedPlaying: false, started: true}}; }, async set() {}}
     },
     runtime: {
@@ -133,7 +133,11 @@ test('buffers media and keeps player controls independent from the source produc
   assert.ok(sourceBuffer.removed.length > 0, 'a far-forward restore may evict replay bytes while it catches up');
   assert.equal(video.currentTime, 221.4, 'refresh must restore the exact persisted timeline position');
   assert.equal(element('#seekRange').min, '0', 'the user-facing timeline must still expose the full local recording');
-  assert.equal(element('#activateButton').disabled, false);
+  assert.equal(
+    element('#activateButton').disabled,
+    true,
+    'dub-only playback must not start silently before its first dubbed cue is ready'
+  );
 
   element('#seekRange').value = '0.5';
   await element('#seekRange').listeners.change();
@@ -149,8 +153,9 @@ test('buffers media and keeps player controls independent from the source produc
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(video.currentTime, 0.5, 'recorded media must remain seekable to the beginning after refresh');
 
-  await element('#activateButton').listeners.click();
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});
+  assert.equal(element('#activateButton').disabled, false, 'the first dubbed cue unlocks dub-only playback');
+  await element('#activateButton').listeners.click();
   assert.deepEqual(starts, [{when: 2.5, offset: 0}]);
 
   const scheduledBeforeFarFuture = starts.length;

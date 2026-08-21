@@ -58,7 +58,14 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     tabs: {
       onRemoved: {addListener() {}},
       async query() { return [{id: 42, title: 'Test video'}]; },
-      async create(options) { createdTab = 84; assert.equal(options.active, false); return {id: 84}; },
+      async create(options) {
+        createdTab = 84;
+        assert.equal(options.active, false);
+        assert.equal('playerSession' in session, false, 'stale player state must be gone before the new player loads');
+        assert.equal(session.state?.active, true, 'the new recording state must be visible before the player page loads');
+        assert.equal(session.state?.syncArtifacts, null, 'the player must not restore artifacts from the previous recording');
+        return {id: 84};
+      },
       async update(tabId, options) { if (options.active) activatedTab = tabId; return {id: tabId}; },
       async remove(tabId) { removedTabs.push(tabId); },
       async sendMessage(tabId, message) { overlayMessages.push({tabId, message}); }
@@ -146,8 +153,10 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     syncCaptionEngine: 'whisper',
     dubAudioEnabled: true
   };
+  session.playerSession = {currentTime: 221.4, recordedDuration: 300, started: true};
   response = await message({type: 'start', config: synchronizedSettings});
   assert.equal(response.ok, true);
+  assert.equal('playerSession' in session, false, 'a new recording must not inherit the previous player timeline');
   assert.equal(createdTab, 84);
   assert.equal(activatedTab, 84);
   assert.equal(sourceBridgeTab, 42);

@@ -131,8 +131,7 @@ async function start(config) {
     await chrome.scripting.executeScript({target: {tabId: tab.id}, files: ['source-bridge.js']});
     const paused = await controlSourceMedia(tab.id, 'pause');
     sourceMediaFound = Boolean(paused.ok);
-    const player = await chrome.tabs.create({url: chrome.runtime.getURL('player.html'), active: false});
-    playerTabId = player.id || null;
+    await chrome.storage.session.remove('playerSession');
   }
   await setState({
     active: true,
@@ -150,6 +149,16 @@ async function start(config) {
     sourceTitle: tab.title || '',
     config: nextConfig
   });
+  if (nextConfig.playbackMode === 'synchronized') {
+    try {
+      const player = await chrome.tabs.create({url: chrome.runtime.getURL('player.html'), active: false});
+      playerTabId = player.id || null;
+      await setState({playerTabId});
+    } catch (error) {
+      if (sourceMediaFound) await controlSourceMedia(tab.id, 'play').catch(() => {});
+      throw error;
+    }
+  }
   await broadcastOverlay(await getState());
   let response;
   try {

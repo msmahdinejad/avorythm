@@ -101,6 +101,7 @@ The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, s
 3. Use Play/Pause, the seek bar, **Go to latest**, and the player’s fullscreen button. Fullscreen the Avorythm player—not the source video.
 4. If network or generation briefly falls behind, the consumer pauses, rebuilds a safe lead, and resumes without stopping the producer.
 5. When the source media ends, Avorythm finalizes the recording automatically. You can also press **Finish recording**. Then download the captured WebM. If **Save four outputs** was enabled, the two WAV and two SRT files are also saved.
+6. Avorythm keeps only the latest synchronized capture in Chrome's private local storage. Starting another capture replaces it. Files you download remain under `Downloads/Avorythm` until you delete them.
 
 The player cannot capture DRM-protected video or Chrome-internal pages. Use **On this page** when direct video capture is unavailable.
 

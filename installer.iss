@@ -1,6 +1,6 @@
 #define MyAppName "Avorythm"
 #define MyAppProductName "Avorythm Live Translator"
-#define MyAppVersion "1.1.2"
+#define MyAppVersion "1.1.3"
 #define MyAppPublisher "Mohammad Saleh Mahdinejad"
 #define MyAppURL "https://github.com/msmahdinejad/avorythm"
 

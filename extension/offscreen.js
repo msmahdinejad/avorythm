@@ -43,7 +43,16 @@ let syncQueue = [];
 let players = new Set();
 let speech = {active: false, started: 0, silentFor: 0, completed: []};
 let captureTimeline = 0;
-let syncLiveTurn = {audio: [], source: [], translated: []};
+const emptySyncLiveTurn = () => ({
+  audio: [],
+  source: [],
+  translated: [],
+  interval: null,
+  audioPublished: false,
+  sourcePublished: false,
+  translatedPublished: false
+});
+let syncLiveTurn = emptySyncLiveTurn();
 let syncInit = null;
 let syncFinal = null;
 let syncFrontier = null;
@@ -275,13 +284,21 @@ function combineTurnAudio(chunks) {
   return result;
 }
 
-function finalizeSynchronizedTurn() {
+function finalizeSynchronizedTurn(closeTurn = true) {
   const raw = combineTurnAudio(syncLiveTurn.audio);
-  const rawDuration = raw.byteLength / 2 / 24000;
-  const interval = claimSpeechInterval(captureTimeline, rawDuration);
-  const duration = Math.max(0.2, interval.end - interval.start);
-  const exactInterval = {start: interval.start, end: interval.start + duration};
-  if (raw.byteLength) {
+  if (!syncLiveTurn.interval && !raw.byteLength && !syncLiveTurn.source.length && !syncLiveTurn.translated.length) {
+    if (closeTurn) syncLiveTurn = emptySyncLiveTurn();
+    return;
+  }
+  if (!syncLiveTurn.interval) {
+    const rawDuration = raw.byteLength / 2 / 24000;
+    const interval = claimSpeechInterval(captureTimeline, rawDuration);
+    const duration = Math.max(0.2, interval.end - interval.start);
+    syncLiveTurn.interval = {start: interval.start, end: interval.start + duration};
+  }
+  const exactInterval = syncLiveTurn.interval;
+  const duration = exactInterval.end - exactInterval.start;
+  if (raw.byteLength && !syncLiveTurn.audioPublished) {
     const fitted = fitPcm(
       new Int16Array(raw.buffer, raw.byteOffset, Math.floor(raw.byteLength / 2)),
       Math.max(1, Math.round(duration * 24000))
@@ -289,10 +306,17 @@ function finalizeSynchronizedTurn() {
     const data = new Uint8Array(fitted.buffer).slice();
     recorder?.dubbed.appendAt(data, exactInterval.start);
     postSync({type: 'dub-chunk', data: data.buffer, start: exactInterval.start, duration});
+    syncLiveTurn.audioPublished = true;
   }
-  publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), exactInterval);
-  publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), exactInterval);
-  syncLiveTurn = {audio: [], source: [], translated: []};
+  if (!syncLiveTurn.sourcePublished && syncLiveTurn.source.length) {
+    publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), exactInterval);
+    syncLiveTurn.sourcePublished = true;
+  }
+  if (!syncLiveTurn.translatedPublished && syncLiveTurn.translated.length) {
+    publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), exactInterval);
+    syncLiveTurn.translatedPublished = true;
+  }
+  if (closeTurn) syncLiveTurn = emptySyncLiveTurn();
 }
 
 class PcmWriter {
@@ -488,7 +512,7 @@ function clearDubPlayback() {
   }
   players.clear();
   if (context) nextDubTime = context.currentTime;
-  syncLiveTurn = {audio: [], source: [], translated: []};
+  syncLiveTurn = emptySyncLiveTurn();
   if (config?.playbackMode === 'synchronized') postSync({type: 'dub-interrupted'});
 }
 
@@ -547,10 +571,16 @@ async function handleLiveMessage(message) {
     const inline = part.inlineData || part.inline_data;
     if (inline?.data) playDubbed(base64ToBytes(inline.data));
   }
+  if (content.generationComplete && config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
+    // generationComplete is the point at which Google says response generation
+    // has finished. turnComplete can follow later while the server waits for
+    // assumed real-time playback, which is too late for our buffered timeline.
+    finalizeSynchronizedTurn(false);
+  }
   if (content.turnComplete) {
     await flushTranscripts();
     if (config.playbackMode === 'synchronized' && config.syncCaptionEngine !== 'whisper') {
-      finalizeSynchronizedTurn();
+      finalizeSynchronizedTurn(true);
     }
   }
   return '';
@@ -639,7 +669,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   audioBacklog = [];
   speech = {active: false, started: 0, silentFor: 0, completed: []};
   captureTimeline = 0;
-  syncLiveTurn = {audio: [], source: [], translated: []};
+  syncLiveTurn = emptySyncLiveTurn();
   precisePipeline = null;
   syncInit = null;
   syncFinal = null;

@@ -129,6 +129,7 @@ test('ships a dedicated synchronized player and separate settings page', () => {
   assert.match(playerPage, /id="seekRange"/);
   assert.match(playerPage, /id="fullscreenButton"/);
   assert.match(playerPage, /id="downloadVideoButton"/);
+  assert.match(playerPage, /data-i18n="storageNote"/);
   assert.match(
     playerPage,
     /class="sync-dock"[\s\S]*id="stopButton"/,

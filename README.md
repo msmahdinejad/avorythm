@@ -81,6 +81,8 @@ capture around 20 seconds ahead of an independently seekable player and place th
 DRM media can block video capture; Avorythm reports the limitation and on-page mode remains available.
 The synchronized player offers a fast Gemini 3.5 Live path and a precise Whisper → Gemini text pool → Gemini 3.1 Flash Live path. The precise path groups complete utterances and fits speech plus both subtitle tracks to one recorded timeline. Recording can be stopped manually, media transitions such as YouTube autoplay are finalized automatically, and an active/finalized session survives a player-page refresh.
 
+Only the latest synchronized capture is retained temporarily in Chrome's private origin storage. Starting a new synchronized capture removes the previous local capture and its generated artifacts. Files explicitly downloaded by the user are saved under `Downloads/Avorythm` and are not removed automatically.
+
 The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
 
 See the illustrated [complete user guide](docs/HELP.md) and the [installation and audio-routing guide](docs/INSTALLATION.md) for Windows AMM,
