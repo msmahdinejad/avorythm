@@ -84,19 +84,26 @@ test('buffers media and keeps player controls independent from the source produc
   globalThis.URL.createObjectURL = () => 'blob:player';
 
   const starts = [];
+  const renderedDubBuffers = [];
+  const dubGainValues = [];
   let stoppedDubSources = 0;
   let suspended = false;
+  let playerAudioContext;
   class FakeAudioContext {
-    constructor() { this.currentTime = 2; this.destination = {}; }
-    createGain() { return {gain: {setTargetAtTime() {}}, connect() {}}; }
+    constructor() { this.currentTime = 2; this.destination = {}; this.state = 'suspended'; playerAudioContext = this; }
+    createGain() { return {gain: {setTargetAtTime(value) { dubGainValues.push(value); }}, connect() {}}; }
     createBuffer(channels, length, rate) {
-      return {duration: length / rate, getChannelData: () => new Float32Array(length)};
+      const samples = new Float32Array(length);
+      renderedDubBuffers.push(samples);
+      return {duration: length / rate, getChannelData: () => samples};
     }
     createBufferSource() {
-      return {connect() {}, start: (when, offset) => starts.push({when, offset}), stop() { stoppedDubSources += 1; }};
+      return {connect() {}, start: (when, offset) => {
+        if (playerAudioContext.state === 'running') starts.push({when, offset});
+      }, stop() { stoppedDubSources += 1; }};
     }
-    async resume() { suspended = false; }
-    async suspend() { suspended = true; }
+    async resume() { suspended = false; this.state = 'running'; }
+    async suspend() { suspended = true; this.state = 'suspended'; }
   }
   globalThis.AudioContext = FakeAudioContext;
 
@@ -161,6 +168,15 @@ test('buffers media and keeps player controls independent from the source produc
   assert.equal(element('#activateButton').disabled, false, 'dub arrival must not change the video readiness gate');
   await element('#activateButton').listeners.click();
   assert.deepEqual(starts, [{when: 2.5, offset: 0}]);
+
+  playerAudioContext.state = 'suspended';
+  suspended = true;
+  channel.onmessage({data: {type: 'dub-chunk', id: 'late-after-suspend', data: new Int16Array(24000).fill(1200).buffer, start: 1.5}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(suspended, false, 'an arriving dub must resume a silently suspended background audio context');
+  assert.equal(starts.length, 2, 'the dub must become audible after Chrome suspends the initially silent player');
+  assert.equal(renderedDubBuffers.at(-1).some((sample) => sample !== 0), true, 'non-silent Gemini PCM must reach the player buffer');
+  assert.equal(dubGainValues.at(-1), 1, 'the synchronized player must keep its independent dubbed volume audible');
 
   const scheduledBeforeFarFuture = starts.length;
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 30}});

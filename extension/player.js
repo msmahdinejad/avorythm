@@ -125,6 +125,10 @@ function ensureAudio(){if(audioContext)return;audioContext=new AudioContext({lat
 function stopDubPlayers(){for(const player of dubPlayers.values()){try{player.stop();}catch{}}dubPlayers.clear();}
 function scheduleDub(chunk){
   if(!started||!wantedPlaying||video.paused||!audioContext||dubPlayers.has(chunk.id))return;
+  if(audioContext.state!=='running'){
+    void audioContext.resume().then(()=>{if(audioContext.state==='running')scheduleDub(chunk);}).catch(handleActionError);
+    return;
+  }
   const horizon=Math.max(MIN_DUB_SCHEDULE_HORIZON_SECONDS,Math.min(bufferTarget,30));
   const end=chunk.start+chunk.duration;if(end<=video.currentTime+.01||chunk.start>video.currentTime+horizon)return;
   const samples=pcmSamples(chunk.data);const buffer=audioContext.createBuffer(1,samples.length,24000);const output=buffer.getChannelData(0);

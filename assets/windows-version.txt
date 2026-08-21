@@ -16,12 +16,12 @@ VSVersionInfo(
         [
           StringStruct("CompanyName", "Mohammad Saleh Mahdinejad"),
           StringStruct("FileDescription", "Avorythm multilingual live translation"),
-          StringStruct("FileVersion", "1.1.4"),
+          StringStruct("FileVersion", "1.1.5"),
           StringStruct("InternalName", "Avorythm"),
           StringStruct("LegalCopyright", "Copyright (c) 2026 Mohammad Saleh Mahdinejad"),
           StringStruct("OriginalFilename", "Avorythm.exe"),
           StringStruct("ProductName", "Avorythm Live Translator"),
-          StringStruct("ProductVersion", "1.1.4"),
+          StringStruct("ProductVersion", "1.1.5"),
         ],
       )
     ]),

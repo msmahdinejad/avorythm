@@ -2,6 +2,13 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.5] - 2026-08-21
+
+### Fixed
+
+- Resume the synchronized player's Web Audio context when a dubbed cue arrives after Chrome has automatically suspended the initially silent background player.
+- Cover both synchronized engines through their shared playback boundary and verify that non-silent Gemini PCM reaches an audible 100% dubbed-output gain.
+
 ## [1.1.4] - 2026-08-21
 
 ### Added
@@ -329,7 +336,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...HEAD
+[1.1.5]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...v1.1.4
 [1.1.3]: https://github.com/msmahdinejad/avorythm/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/msmahdinejad/avorythm/compare/v1.1.1...v1.1.2
