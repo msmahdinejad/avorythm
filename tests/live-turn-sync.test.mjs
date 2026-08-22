@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {installCaptureWorker} from './fake-capture-worker.mjs';
+import {srt, TRANSLATED_CAPTION_DELAY_SECONDS} from '../extension/core.mjs';
 
 test('Gemini Live publishes translated captions on the exact dubbed-audio interval', async () => {
   let receive;
@@ -166,5 +167,17 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
     channel.messages.filter((message) => message.type === 'caption' && message.text === 'گفتار پیوسته بدون مکث').length,
     1,
     'a bounded partial flush must not repeat a cumulative transcript at final shutdown'
+  );
+  const translatedSrtName = [...files.keys()].find((name) => name.endsWith('-translated.srt'));
+  assert.ok(translatedSrtName, 'finalization must preserve the translated subtitle artifact');
+  const translatedSrt = await new Blob(files.get(translatedSrtName)).text();
+  assert.match(
+    translatedSrt,
+    new RegExp(srt([{
+      ...caption,
+      start: caption.start + TRANSLATED_CAPTION_DELAY_SECONDS,
+      end: caption.end + TRANSLATED_CAPTION_DELAY_SECONDS
+    }]).trim().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')),
+    'the downloadable translated SRT must use the same 2.5-second presentation delay as the player'
   );
 });

@@ -90,7 +90,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 
 ![Synchronized recorder settings](../store-assets/en/03-sync-settings.png)
 
-The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and advances translated captions on the audible dub clock without changing pitch. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only.
+The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and applies a calibrated 2.5-second translated-caption delay behind the audible dub clock. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only. On restricted networks, add `api.groq.com` to your proxy/VPN route (for example through `127.0.0.1:10808`). The extension tests that route before capture, without changing Chrome's global proxy settings.
 
 ### Use the synchronized recorder & player
 
@@ -100,7 +100,7 @@ The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, s
 2. Wait until the safety lead is ready, then start playback. Capture continues ahead independently.
 3. Use Play/Pause, the seek bar, **Go to latest**, and the player’s fullscreen button. Fullscreen the Avorythm player—not the source video.
 4. If network or generation briefly falls behind, the consumer pauses, rebuilds a safe lead, and resumes without stopping the producer.
-5. When the source media ends, Avorythm finalizes the recording automatically. You can also press **Finish recording**. The synchronized output defaults to dubbed audio only. Before downloading, independently choose original audio, dubbed audio, either subtitle track, both audio levels, and smart ducking. **Build & download customized video** renders that audio mix into a seekable WebM and downloads each enabled subtitle as an SRT. If **Save four outputs** was enabled, the two WAV and two SRT source files are also saved during capture.
+5. When the source media ends, Avorythm finalizes the recording automatically. You can also press **Finish recording**. The synchronized output defaults to dubbed audio only. Before downloading, independently choose original audio, dubbed audio, either subtitle track, both audio levels, and smart ducking. **Build & download customized video** renders that audio mix into a seekable WebM and downloads each enabled subtitle as an SRT. This browser-native render replays the local recording once, so it takes roughly the recording duration; progress and ETA remain visible. If **Save four outputs** was enabled, the two WAV and two SRT source files are also saved during capture.
 6. Avorythm keeps only the latest synchronized capture in Chrome's private local storage. Starting another capture replaces it. Files you download remain under `Downloads/Avorythm` until you delete them.
 
 The player cannot capture DRM-protected video or Chrome-internal pages. Use **On this page** when direct video capture is unavailable.
@@ -117,6 +117,7 @@ Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle 
 - **Gemini connection closed:** confirm the key, quota, selected media tab, and that the page is not a Chrome-internal page. Restart the session after reconnecting your proxy/VPN.
 - **Player keeps buffering:** leave the source video playing; wait for the safety lead to rebuild. If the source or network repeatedly stalls, increase Recording lead in Settings.
 - **No download:** grant the optional Downloads permission when prompted. Avorythm never claims files were saved until Chrome confirms the download request.
+- **Precise mode cannot reach Groq:** Avorythm now checks before capture. If the key is valid but the route is blocked, make sure Chrome sends `api.groq.com` through the browser/system proxy; the desktop app's private proxy setting does not configure Chrome.
 - **Precise-engine warning:** verify the Groq key/quota and Gemini availability. Capture remains usable and stoppable; retry the session after the service recovers if you need a complete precise dub.
 - **No captured video:** DRM-protected playback may block tab video capture. Switch to On this page.
 

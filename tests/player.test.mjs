@@ -202,8 +202,43 @@ test('buffers media and keeps player controls independent from the source produc
   await element('#fullscreenButton').listeners.click();
   assert.equal(fullscreen, true);
 
+  sourceBuffer.end = video.currentTime + 4;
   video.paused = false;
-  video.listeners.waiting();
+  await video.listeners.waiting();
+  assert.equal(
+    video.paused,
+    false,
+    'a transient stall with an existing safety buffer must recover without a seek or another media chunk'
+  );
+  const messagesBeforeRepeatedStall = playerMessages.length;
+  await video.listeners.waiting();
+  assert.deepEqual(
+    playerMessages.slice(messagesBeforeRepeatedStall).find((message) => message.replay),
+    {type: 'ready', position: video.currentTime, replay: true},
+    'a repeated no-progress stall must rebuild playback from the local recording automatically'
+  );
+  channel.onmessage({data: {type: 'session-reset', position: video.currentTime, duration: 250}});
+  channel.onmessage({data: {type: 'media-init', mimeType: 'video/webm', bufferSeconds: 4.5}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([1, 2, 3])])}});
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  video.currentTime = 5.02;
+  sourceBuffer.buffered = {
+    length: 2,
+    start: (index) => [0, 5.05][index],
+    end: (index) => [5, 10][index]
+  };
+  video.paused = false;
+  await video.listeners.waiting();
+  assert.ok(video.currentTime >= 5.05 && video.currentTime < 5.1, 'a tiny MSE gap must be crossed automatically');
+  assert.equal(video.paused, false, 'playback must resume on the next buffered range without a manual seek');
+
+  sourceBuffer.buffered = {length: 1, start: () => sourceBuffer.startValue, end: () => sourceBuffer.end};
+
+  sourceBuffer.end = video.currentTime + 0.5;
+  video.paused = false;
+  await video.listeners.waiting();
   assert.equal(video.paused, true, 'a stalled consumer must pause until its safety buffer is rebuilt');
   channel.onmessage({data: {type: 'media-chunk', data: new Blob([Uint8Array.from([4, 5, 6])])}});
   await new Promise((resolve) => setTimeout(resolve, 0));

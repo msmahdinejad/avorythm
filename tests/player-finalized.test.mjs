@@ -62,7 +62,7 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
     source: [{id: 'source-1', text: 'Hello.', start: 5, end: 6}],
     translated: [
       {id: 'translated-1', text: 'سلام.', start: 5, end: 6},
-      {id: 'translated-2', text: 'خوش آمدید.', start: 6, end: 7}
+      {id: 'translated-2', text: 'خوش آمدید.', start: 6, end: 10}
     ]
   })]);
   const files = new Map([
@@ -103,13 +103,22 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
   assert.equal(element('#dubbedTrack').currentTime, 10);
 
   video.paused = false;
-  video.currentTime = 6.1;
-  element('#dubbedTrack').currentTime = 5.9;
+  video.currentTime = 8.1;
+  element('#dubbedTrack').currentTime = 7.9;
   video.listeners.timeupdate();
   assert.equal(
     element('#translatedCaption').textContent,
     'سلام.',
     'translated captions must follow the audible dubbed track instead of advancing with the video clock'
+  );
+
+  video.currentTime = 8.4;
+  element('#dubbedTrack').currentTime = 8.4;
+  video.listeners.timeupdate();
+  assert.equal(
+    element('#translatedCaption').textContent,
+    'سلام.',
+    'translated captions must stay 2.5 seconds behind the dubbed-audio clock'
   );
 
   navigator.storage.getDirectory = async () => { throw new DOMException('missing', 'NotFoundError'); };

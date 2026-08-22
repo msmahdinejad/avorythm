@@ -114,6 +114,22 @@ async function bootstrap() {
   };
 }
 
+async function verifyGroqAccess(apiKey) {
+  let response;
+  try {
+    response = await fetch('https://api.groq.com/openai/v1/models', {
+      headers: {Authorization: `Bearer ${apiKey}`}
+    });
+  } catch (error) {
+    throw new Error('groq_connection_failed', {cause: error});
+  }
+  if (response.ok) return;
+  if (response.status === 401) throw new Error('groq_auth_failed');
+  if (response.status === 403) throw new Error('groq_access_forbidden');
+  if (response.status === 429) throw new Error('groq_quota_exceeded');
+  throw new Error('groq_connection_failed');
+}
+
 async function start(config) {
   const current = await getState();
   if (current.active) return current;
@@ -130,6 +146,9 @@ async function start(config) {
   if (nextConfig.playbackMode === 'synchronized' && nextConfig.syncCaptionEngine === 'whisper' &&
       !await chrome.permissions.contains({origins: ['https://api.groq.com/*']})) {
     throw new Error('groq_permission_missing');
+  }
+  if (nextConfig.playbackMode === 'synchronized' && nextConfig.syncCaptionEngine === 'whisper') {
+    await verifyGroqAccess(groqApiKey);
   }
   await ensureOffscreenDocument();
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});

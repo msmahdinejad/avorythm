@@ -492,18 +492,27 @@ export class PreciseDubbingPipeline {
     form.append('temperature', '0');
     let response = null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      response = await this.fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: {Authorization: `Bearer ${this.groqKey}`},
-        body: form
-      });
+      try {
+        response = await this.fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+          method: 'POST',
+          headers: {Authorization: `Bearer ${this.groqKey}`},
+          body: form
+        });
+      } catch (cause) {
+        if (attempt < 2) {
+          await wait(500 * (attempt + 1));
+          continue;
+        }
+        throw new Error('groq_connection_failed', {cause});
+      }
       if (response.ok || ![429, 500, 502, 503, 504].includes(response.status) || attempt === 2) break;
       await wait(500 * (attempt + 1));
     }
     if (!response?.ok) {
       const status = Number(response?.status || 0);
-      const code = [401, 403].includes(status)
+      const code = status === 401
         ? 'groq_auth_failed'
+        : status === 403 ? 'groq_access_forbidden'
         : status === 429 ? 'groq_quota_exceeded' : 'groq_transcription_failed';
       const error = new Error(code);
       error.status = status;

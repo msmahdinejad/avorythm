@@ -16,7 +16,7 @@ class FakeTarget {
 
 test('exports a dubbed-by-default WebM instead of downloading the raw tab capture', async () => {
   const media = [];
-  const writtenAudio = [];
+  const dubbedStarts = [];
   let exportedStream;
 
   class FakeMedia extends FakeTarget {
@@ -45,18 +45,34 @@ test('exports a dubbed-by-default WebM instead of downloading the raw tab captur
     }
   }
 
-  class FakeTrackGenerator {
-    kind = 'audio';
-    writable = {getWriter: () => ({
-      write(frame) { writtenAudio.push(frame); },
-      close() {},
-      abort() {}
-    })};
-    stop() {}
+  class FakeNode {
+    connect() { return this; }
+    disconnect() {}
   }
-  class FakeAudioData {
-    constructor(init) { Object.assign(this, init); }
-    close() {}
+  class FakeAudioContext {
+    currentTime = 0;
+    async decodeAudioData() {
+      return {duration: 2, sampleRate: 24000, numberOfChannels: 1, length: 48000, getChannelData: () => new Float32Array(48000)};
+    }
+    createMediaElementSource() { return new FakeNode(); }
+    createMediaStreamDestination() {
+      const node = new FakeNode();
+      node.stream = {getAudioTracks: () => [{kind: 'audio'}]};
+      return node;
+    }
+    createGain() {
+      const node = new FakeNode();
+      node.gain = {value: 1, setValueAtTime() {}, linearRampToValueAtTime() {}};
+      return node;
+    }
+    createBufferSource() {
+      const node = new FakeNode();
+      node.start = (...args) => dubbedStarts.push(args);
+      node.stop = () => {};
+      return node;
+    }
+    async resume() {}
+    async close() {}
   }
   class FakeMediaStream {
     constructor(tracks) { this.tracks = tracks; exportedStream = this; }
@@ -76,10 +92,9 @@ test('exports a dubbed-by-default WebM instead of downloading the raw tab captur
 
   const environment = {
     document: {body: {append() {}}, createElement() { const element = new FakeMedia(); media.push(element); return element; }},
+    AudioContext: FakeAudioContext,
     MediaRecorder: FakeMediaRecorder,
     MediaStream: FakeMediaStream,
-    MediaStreamTrackGenerator: FakeTrackGenerator,
-    AudioData: FakeAudioData,
     URL: {createObjectURL: (_, index = media.length) => `blob:${index}`, revokeObjectURL() {}},
     setInterval() { return 1; },
     setTimeout(callback) { callback(); return 1; },
@@ -104,7 +119,7 @@ test('exports a dubbed-by-default WebM instead of downloading the raw tab captur
   assert.equal(result.type, 'video/webm;codecs=vp9,opus');
   assert.equal(await result.text(), 'mixed');
   assert.deepEqual(exportedStream.tracks.map(({kind}) => kind), ['video', 'audio']);
-  assert.ok(writtenAudio.length > 0, 'dubbed PCM must be written to the generated audio track');
+  assert.ok(dubbedStarts.length > 0, 'dubbed audio must start on the same clock as video playback');
   assert.equal(progress.at(-1), 1);
 
   const silent = await buildMixedRecording({

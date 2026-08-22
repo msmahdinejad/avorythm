@@ -1,5 +1,5 @@
-import {wavHeader} from '../../extension/core.mjs';
-import {buildMixedRecording} from '../../extension/recording-export.mjs';
+import {wavHeader} from '../../extension/core.mjs?v=1.1.9';
+import {buildMixedRecording} from '../../extension/recording-export.mjs?v=1.1.9';
 
 const result = document.querySelector('#result');
 result.textContent = 'READY-MODULE';
@@ -23,16 +23,20 @@ async function sourceVideo(duration = 1.5) {
   canvas.width = 480;
   canvas.height = 270;
   const context = canvas.getContext('2d');
+  const canvasStream = canvas.captureStream(0);
+  const videoTrack = canvasStream.getVideoTracks()[0];
   let frame = 0;
-  const timer = setInterval(() => {
+  const drawFrame = () => {
     frame += 1;
     context.fillStyle = `hsl(${frame * 5 % 360} 65% 38%)`;
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = 'white';
     context.font = '42px sans-serif';
     context.fillText(`Avorythm ${frame}`, 38, 78);
-  }, 33);
-  const canvasStream = canvas.captureStream(30);
+    videoTrack.requestFrame?.();
+  };
+  drawFrame();
+  const timer = setInterval(drawFrame, 33);
   const audioContext = new AudioContext();
   const destination = audioContext.createMediaStreamDestination();
   const oscillator = audioContext.createOscillator();
@@ -78,7 +82,35 @@ async function inspectExport(exported) {
   playback.currentTime = 1;
   await seeked;
   if (Math.abs(playback.currentTime - 1) > 0.15) throw new Error(`seek_failed_${playback.currentTime}`);
-  return {size: exported.size, duration: playback.duration, decodedDuration: decoded.duration, rms, seek: playback.currentTime, tracks};
+  if (playback.readyState < 2) await once(playback, 'loadeddata');
+  playback.muted = true;
+  await playback.play();
+  await Promise.race([
+    new Promise((resolve) => {
+      if (typeof playback.requestVideoFrameCallback === 'function') playback.requestVideoFrameCallback(resolve);
+      else requestAnimationFrame(resolve);
+    }),
+    wait(2000).then(() => { throw new Error('video_frame_timeout'); })
+  ]);
+  playback.pause();
+  const canvas = document.createElement('canvas');
+  canvas.width = playback.videoWidth || 480;
+  canvas.height = playback.videoHeight || 270;
+  const context = canvas.getContext('2d', {willReadFrequently: true});
+  context.drawImage(playback, 0, 0, canvas.width, canvas.height);
+  const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+  let lumaTotal = 0;
+  let lumaSquared = 0;
+  const samples = Math.ceil(pixels.length / 64);
+  for (let index = 0; index < pixels.length; index += 64) {
+    const luma = pixels[index] * 0.2126 + pixels[index + 1] * 0.7152 + pixels[index + 2] * 0.0722;
+    lumaTotal += luma;
+    lumaSquared += luma ** 2;
+  }
+  const meanLuma = lumaTotal / samples;
+  const lumaVariance = lumaSquared / samples - meanLuma ** 2;
+  if (meanLuma < 5 || lumaVariance < 20) throw new Error(`blank_video_${meanLuma}_${lumaVariance}`);
+  return {size: exported.size, duration: playback.duration, decodedDuration: decoded.duration, rms, seek: playback.currentTime, tracks, meanLuma, lumaVariance};
 }
 
 document.querySelector('#run').addEventListener('click', async () => {
@@ -117,35 +149,7 @@ document.querySelector('#run').addEventListener('click', async () => {
     });
     stage = `mixed-output size=${mixedExport.size}`;
     const mixed = await inspectExport(mixedExport);
-    const fallbackEnvironment = {
-      document,
-      MediaRecorder,
-      MediaStream,
-      AudioContext,
-      URL,
-      setTimeout: globalThis.setTimeout.bind(globalThis),
-      clearTimeout: globalThis.clearTimeout.bind(globalThis),
-      setInterval: globalThis.setInterval.bind(globalThis),
-      clearInterval: globalThis.clearInterval.bind(globalThis),
-      MediaStreamTrackGenerator: null,
-      AudioData: null
-    };
-    const fallbackExport = await buildMixedRecording({
-      videoBlob,
-      dubbedBlob,
-      durationSeconds: 1.5,
-      mix: {
-        originalAudioEnabled: false,
-        dubAudioEnabled: true,
-        originalVolume: 1,
-        dubVolume: 1,
-        autoDuck: false
-      },
-      environment: fallbackEnvironment
-    });
-    stage = `fallback-output size=${fallbackExport.size}`;
-    const fallback = await inspectExport(fallbackExport);
-    result.textContent = `PASS ${JSON.stringify({type: exported.type, dubbed, mixed, fallback})}`;
+    result.textContent = `PASS ${JSON.stringify({type: exported.type, dubbed, mixed})}`;
   } catch (error) {
     const details = error instanceof Event
       ? `${error.type} target=${error.target?.constructor?.name} mediaError=${error.target?.error?.code || ''}`

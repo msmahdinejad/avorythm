@@ -1,5 +1,6 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
 export const FILE_VOICE_MODEL = 'gemini-3.1-flash-live-preview';
+export const TRANSLATED_CAPTION_DELAY_SECONDS = 2.5;
 export const LIVE_ENDPOINT =
   'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';

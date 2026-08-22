@@ -6,6 +6,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   let receive;
   let offscreen = false;
   let capturedTab = 0;
+  let captureCalls = 0;
   let injectedTab = 0;
   let sourceBridgeTab = 0;
   const sourceControls = [];
@@ -85,11 +86,18 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     },
     tabCapture: {
       async getMediaStreamId({targetTabId}) {
+        captureCalls += 1;
         capturedTab = targetTabId;
         return 'stream-42';
       }
     },
     downloads: {async download() { return 1; }}
+  };
+  let groqStatus = 200;
+  globalThis.fetch = async (url, options) => {
+    assert.equal(url, 'https://api.groq.com/openai/v1/models');
+    assert.equal(options.headers.Authorization, 'Bearer test-groq-key-123');
+    return {ok: groqStatus === 200, status: groqStatus};
   };
 
   await import('../extension/background.js');
@@ -180,6 +188,15 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.state.completionReason, 'media-transition');
   assert.equal(response.state.active, false);
   assert.deepEqual(removedTabs, []);
+
+  groqStatus = 403;
+  const capturesBeforeBlockedGroq = captureCalls;
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, false);
+  assert.equal(response.error, 'groq_access_forbidden');
+  assert.equal(captureCalls, capturesBeforeBlockedGroq, 'a blocked Groq route must fail before tab capture starts');
+  assert.equal(offscreen, false, 'a failed Groq preflight must not create a recording document');
+  groqStatus = 200;
 
   response = await message({type: 'start', config: synchronizedSettings});
   assert.equal(response.ok, true);

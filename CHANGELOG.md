@@ -2,6 +2,21 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.9] - 2026-08-22
+
+### Changed
+
+- Apply a measured 2.5-second presentation delay to translated captions in the synchronized player and exported translated SRT while keeping source captions on the video clock.
+- Verify Groq reachability before precise-mode capture starts and distinguish invalid keys, blocked routes, connection failures, and exhausted quota.
+- Show percentage and estimated remaining time while the customized WebM is rendered locally.
+
+### Fixed
+
+- Cross short MediaSource gaps automatically and rebuild playback from the local recording after a repeated no-progress stall, removing the need for a manual seek.
+- Always use the standards-based Web Audio export path after the generated-track path was proven to produce a nominal VP9 track with zero decodable video frames in Chrome.
+- Bound media loading and recording finalization so a damaged or incomplete local capture cannot leave export waiting forever.
+- Preserve actionable Groq connection errors when the browser route fails during a precise session.
+
 ## [1.1.8] - 2026-08-22
 
 ### Changed
@@ -378,7 +393,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.8...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.9...HEAD
+[1.1.9]: https://github.com/msmahdinejad/avorythm/compare/v1.1.8...v1.1.9
 [1.1.8]: https://github.com/msmahdinejad/avorythm/compare/v1.1.7...v1.1.8
 [1.1.7]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...v1.1.6

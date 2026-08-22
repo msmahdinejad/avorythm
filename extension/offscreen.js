@@ -10,6 +10,7 @@ import {
   outputMix,
   setupMessage,
   srt,
+  TRANSLATED_CAPTION_DELAY_SECONDS,
   wavHeader
 } from './core.mjs';
 import {PreciseDubbingPipeline} from './precise-pipeline.mjs';
@@ -223,8 +224,9 @@ async function persistSyncArtifacts(video) {
   await writer.finish();
   const source=[...syncCaptionHistory.values()].filter((cue)=>!cue.translated).sort((left,right)=>left.start-right.start);
   const translated=[...syncCaptionHistory.values()].filter((cue)=>cue.translated).sort((left,right)=>left.start-right.start);
+  const delayedTranslated=translated.map((cue)=>({...cue,start:cue.start+TRANSLATED_CAPTION_DELAY_SECONDS,end:cue.end+TRANSLATED_CAPTION_DELAY_SECONDS}));
   const sourceName=await writeOpfsFile(root,`${token}-source.srt`,new Blob(['\ufeff',srt(source)],{type:'application/x-subrip'}));
-  const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(translated)],{type:'application/x-subrip'}));
+  const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(delayedTranslated)],{type:'application/x-subrip'}));
   const metadataName=`${token}-timeline.json`;
   const artifacts={videoFileName:video.fileName,dubbedFileName:dubbedName,sourceSubtitleFileName:sourceName,translatedSubtitleFileName:translatedName,metadataFileName:metadataName,mimeType:syncInit?.mimeType||'video/webm',duration:Number(video.duration)||0};
   await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:2,artifacts,duration:artifacts.duration,source,translated})],{type:'application/json'}));
