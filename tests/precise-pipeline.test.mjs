@@ -36,7 +36,13 @@ test('holds an unfinished utterance across Whisper windows instead of dubbing a 
   assert.equal(socketPayloads.find((message)=>message.realtimeInput?.text)?.realtimeInput.text,'سلام دنیا.');
 });
 
-test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timeline', async () => {
+test('runs Whisper, the Gemini text pool, and natural Gemini 3.1 PCM on an audible timeline', async () => {
+  const nativeSetTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (callback, milliseconds, ...args) => nativeSetTimeout(
+    callback,
+    milliseconds >= 30000 ? 2000 : milliseconds >= 12000 ? 1500 : milliseconds,
+    ...args
+  );
   let receive;
   let worklet;
   let channel;
@@ -87,7 +93,7 @@ test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timel
       if (message.setup) queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
       if (message.realtimeInput?.text) {
         const pcm = Buffer.alloc(24000 * 2); pcm.writeInt16LE(1200, 0); pcm.writeInt16LE(1200, pcm.length - 2);
-        queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}, turnComplete: true}})}));
+        queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}}})}));
       } else if (message.clientContent) queueMicrotask(() => this.onmessage({data: JSON.stringify({error: {message: 'clientContent is unsupported for Gemini 3.1 Live'}})}));
     }
     close() { this.readyState = 3; }
@@ -109,11 +115,14 @@ test('runs Whisper, the Gemini text pool, and Gemini 3.1 Live on one exact timel
   assert.equal(socketPayloads[1].realtimeInput.text, 'سلام.');
   assert.equal(socketPayloads.some((message)=>message.setup?.model?.includes('3.5-live-translate')),false);
   const dub=channel.messages.find((message)=>message.type==='dub-chunk');
-  assert.equal(dub.start,0);assert.equal(dub.duration,2);assert.equal(new Int16Array(dub.data).length,48000);
+  assert.ok(dub, 'Gemini 3.1 PCM must be published after output becomes idle even without turnComplete');
+  assert.equal(dub.start,0);assert.equal(dub.duration,1);assert.equal(new Int16Array(dub.data).length,24000);
+  assert.equal(new Int16Array(dub.data).some((sample)=>sample!==0),true,'the precise bridge must publish audible PCM');
   const translated=channel.messages.find((message)=>message.type==='caption'&&message.translated);
-  assert.deepEqual({text:translated.text,start:translated.start,end:translated.end},{text:'سلام.',start:0,end:2});
+  assert.deepEqual({text:translated.text,start:translated.start,end:translated.end},{text:'سلام.',start:0,end:1});
   assert.equal(channel.messages.some((message)=>message.type==='processing-frontier'&&message.seconds===12),true);
 
   mediaRecorder.ondataavailable({data:new Blob([Uint8Array.of(1)])});
   await new Promise((resolve)=>receive({target:'offscreen',type:'stop'},{},resolve));
+  globalThis.setTimeout = nativeSetTimeout;
 });

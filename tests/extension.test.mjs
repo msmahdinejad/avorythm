@@ -8,7 +8,6 @@ import {
   base64ToBytes,
   captionSegments,
   fileVoiceSetupMessage,
-  fitPcm,
   latestCaption,
   liveUrl,
   mergeTranscript,
@@ -145,10 +144,6 @@ test('builds the Gemini 3.1 Live speech renderer used by the precise sync pipeli
   assert.equal(setup.generationConfig.thinkingConfig.thinkingBudget, undefined);
   assert.match(setup.systemInstruction.parts[0].text, /exactly the supplied text/i);
 
-  const fitted = fitPcm(Int16Array.from([0, 1000, 2000, 3000]), 8);
-  assert.equal(fitted.length, 8);
-  assert.equal(fitted[0], 0);
-  assert.equal(fitted.at(-1), 3000);
 });
 
 test('keeps live captions sentence-sized', () => {

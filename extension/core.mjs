@@ -152,24 +152,6 @@ export function fileVoiceSetupMessage(languageCode, voiceName = 'Kore') {
   };
 }
 
-export function fitPcm(input, targetSamples) {
-  const source = input instanceof Int16Array ? input : new Int16Array(input.buffer || input);
-  const length = Math.max(0, Math.round(targetSamples));
-  if (!length || !source.length) return new Int16Array(length);
-  if (length === source.length) return source.slice();
-  if (length === 1) return Int16Array.of(source[0]);
-  const output = new Int16Array(length);
-  const scale = (source.length - 1) / (length - 1);
-  for (let index = 0; index < length; index += 1) {
-    const position = index * scale;
-    const left = Math.floor(position);
-    const right = Math.min(source.length - 1, left + 1);
-    const fraction = position - left;
-    output[index] = Math.round(source[left] * (1 - fraction) + source[right] * fraction);
-  }
-  return output;
-}
-
 export function captionSegments(value, maxCharacters = 84) {
   const normalized = String(value || '').replace(/\s+/gu, ' ').trim();
   if (!normalized) return [];

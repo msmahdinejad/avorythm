@@ -2,6 +2,19 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.7] - 2026-08-22
+
+### Changed
+
+- Preserve Gemini 3.5 Live Translate and Gemini 3.1 Live PCM at its native 24 kHz sample count instead of resampling every response to the source-speech duration, which could vary pitch and speaking speed between cues.
+- Keep source captions on the detected source-speech interval while timing translated captions from the first audible dubbed sample through the natural dub duration.
+- Serialize natural-duration precise narrations without overlapping adjacent Gemini 3.1 speech.
+
+### Fixed
+
+- Release Gemini 3.1 narration on `generationComplete`, WebSocket close with valid PCM, or 600 ms of output inactivity; audio no longer disappears when the server omits `turnComplete`.
+- Bound incomplete Gemini 3.1 narration output to twelve seconds while retaining the existing thirty-second request timeout.
+
 ## [1.1.6] - 2026-08-22
 
 ### Fixed
@@ -347,7 +360,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.7...HEAD
+[1.1.7]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/msmahdinejad/avorythm/compare/v1.1.3...v1.1.4

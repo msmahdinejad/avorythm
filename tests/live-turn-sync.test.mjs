@@ -96,9 +96,10 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   );
   await channel.onmessage({data: {type: 'ready', position: 0}});
 
-  const voiced = new Int16Array(16000).fill(5000);
+  const voiced = new Int16Array(32000).fill(5000);
   worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
-  const dubbed = new Int16Array(24000).fill(800);
+  const dubbed = new Int16Array(26400);
+  dubbed.fill(800, 2400);
   socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
   socket.onmessage({data: JSON.stringify({serverContent: {inputTranscription: {text: 'Hello there'}}})});
   socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'سلام دنیا'}}})});
@@ -108,15 +109,23 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
 
   const dub = channel.messages.find((message) => message.type === 'dub-chunk');
   assert.ok(dub, 'an idle continuous Live stream must release dubbed PCM without waiting for turnComplete');
+  assert.equal(
+    new Int16Array(dub.data).length,
+    dubbed.length,
+    'the player must receive Gemini PCM unchanged instead of pitch-shifting it to the source interval'
+  );
+  assert.deepEqual(
+    [...new Int16Array(dub.data).subarray(0, 2401)],
+    [...dubbed.subarray(0, 2401)],
+    'the synchronized bridge must preserve the original PCM samples'
+  );
+  assert.equal(dub.duration, dubbed.length / 24000);
 
   const caption = channel.messages.find((message) => message.type === 'caption' && message.translated);
   assert.ok(caption, 'idle flushing must include an unfinished transcript fragment with its audio');
   assert.equal(caption.text, 'سلام دنیا');
-  assert.deepEqual(
-    {start: caption.start, end: caption.end},
-    {start: dub.start, end: dub.start + dub.duration},
-    'translated text and translated speech must share one timeline interval'
-  );
+  assert.equal(caption.start, dub.start + 0.1, 'translated captions must begin with the first audible dubbed sample');
+  assert.equal(caption.end, dub.start + dub.duration, 'translated captions must end with their natural dubbed audio');
 
   worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
   socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});

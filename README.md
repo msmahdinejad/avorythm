@@ -79,7 +79,7 @@ For a manual installation from a GitHub release:
 Choose **On this page** for the lowest practical delay, or **Synchronized recorder & player** to keep
 capture around 20 seconds ahead of an independently seekable player and place the generated dub on the same timeline. Protected
 DRM media can block video capture; Avorythm reports the limitation and on-page mode remains available.
-The synchronized player offers a fast Gemini 3.5 Live path and a precise Whisper → Gemini text pool → Gemini 3.1 Flash Live path. The precise path groups complete utterances and fits speech plus both subtitle tracks to one recorded timeline. Recording can be stopped manually, media transitions such as YouTube autoplay are finalized automatically, and an active/finalized session survives a player-page refresh.
+The synchronized player offers a fast Gemini 3.5 Live path and a precise Whisper → Gemini text pool → Gemini 3.1 Flash Live path. The precise path groups complete utterances, preserves Gemini's natural PCM without pitch-changing resampling, and schedules translated captions on the audible dub interval. Recording can be stopped manually, media transitions such as YouTube autoplay are finalized automatically, and an active/finalized session survives a player-page refresh.
 
 On-page playback and synchronized playback/export have separate output controls. The synchronized player defaults to dubbed audio only; before export, users can independently enable original audio, dubbed audio, either subtitle file, set both audio levels, and apply smart ducking. Avorythm renders that selected audio mix into a new seekable WebM and downloads enabled subtitle tracks as SRT files.
 

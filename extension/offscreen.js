@@ -3,7 +3,6 @@ import {
   audioMessage,
   base64ToBytes,
   captionSegments,
-  fitPcm,
   liveUrl,
   latestCaption,
   mergeTranscript,
@@ -50,6 +49,8 @@ const emptySyncLiveTurn = () => ({
   source: [],
   translated: [],
   interval: null,
+  sourceInterval: null,
+  translatedInterval: null,
   audioPublished: false,
   sourcePublished: false,
   translatedPublished: false
@@ -76,6 +77,8 @@ const SYNC_ARTIFACT_PREFIX = 'avorythm-sync-artifact-';
 const RECONNECT_BUFFER_CHUNKS = 1200;
 const SYNC_TURN_IDLE_MS = 500;
 const SYNC_TURN_MAX_MS = 3000;
+const DUB_OUTPUT_RATE = 24000;
+const AUDIBLE_SAMPLE_THRESHOLD = 64;
 
 function report(update) {
   return chrome.runtime.sendMessage({target: 'background', type: 'bridge-state', update});
@@ -301,6 +304,16 @@ function combineTurnAudio(chunks) {
   return result;
 }
 
+function audiblePcmInterval(pcm, start) {
+  const samples = new Int16Array(pcm.buffer, pcm.byteOffset, Math.floor(pcm.byteLength / 2));
+  let first = 0;
+  while (first < samples.length && Math.abs(samples[first]) < AUDIBLE_SAMPLE_THRESHOLD) first += 1;
+  if (first === samples.length) return {start, end: start + samples.length / DUB_OUTPUT_RATE};
+  let last = samples.length - 1;
+  while (last > first && Math.abs(samples[last]) < AUDIBLE_SAMPLE_THRESHOLD) last -= 1;
+  return {start: start + first / DUB_OUTPUT_RATE, end: start + (last + 1) / DUB_OUTPUT_RATE};
+}
+
 function clearSynchronizedTurnTimer() {
   if (syncTurnIdleTimer !== null) clearTimeout(syncTurnIdleTimer);
   if (syncTurnMaxTimer !== null) clearTimeout(syncTurnMaxTimer);
@@ -337,29 +350,31 @@ function finalizeSynchronizedTurn(closeTurn = true) {
     return;
   }
   if (!syncLiveTurn.interval) {
-    const rawDuration = raw.byteLength / 2 / 24000;
-    const interval = claimSpeechInterval(captureTimeline, rawDuration);
-    const duration = Math.max(0.2, interval.end - interval.start);
-    syncLiveTurn.interval = {start: interval.start, end: interval.start + duration};
+    const rawDuration = raw.byteLength / 2 / DUB_OUTPUT_RATE;
+    const speechInterval = claimSpeechInterval(captureTimeline, rawDuration);
+    syncLiveTurn.sourceInterval = speechInterval;
+    syncLiveTurn.interval = raw.byteLength
+      ? {start: speechInterval.start, end: speechInterval.start + rawDuration}
+      : speechInterval;
+    syncLiveTurn.translatedInterval = raw.byteLength
+      ? audiblePcmInterval(raw, syncLiveTurn.interval.start)
+      : syncLiveTurn.interval;
+    syncClaimedUntil = Math.max(syncClaimedUntil, syncLiveTurn.interval.end);
   }
   const exactInterval = syncLiveTurn.interval;
   const duration = exactInterval.end - exactInterval.start;
   if (raw.byteLength && !syncLiveTurn.audioPublished) {
-    const fitted = fitPcm(
-      new Int16Array(raw.buffer, raw.byteOffset, Math.floor(raw.byteLength / 2)),
-      Math.max(1, Math.round(duration * 24000))
-    );
-    const data = new Uint8Array(fitted.buffer).slice();
+    const data = raw.slice();
     recorder?.dubbed.appendAt(data, exactInterval.start);
     postSync({type: 'dub-chunk', data: data.buffer, start: exactInterval.start, duration});
     syncLiveTurn.audioPublished = true;
   }
   if (!syncLiveTurn.sourcePublished && syncLiveTurn.source.length) {
-    publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), exactInterval);
+    publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), syncLiveTurn.sourceInterval || exactInterval);
     syncLiveTurn.sourcePublished = true;
   }
   if (!syncLiveTurn.translatedPublished && syncLiveTurn.translated.length) {
-    publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), exactInterval);
+    publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), syncLiveTurn.translatedInterval || exactInterval);
     syncLiveTurn.translatedPublished = true;
   }
   if (closeTurn) syncLiveTurn = emptySyncLiveTurn();

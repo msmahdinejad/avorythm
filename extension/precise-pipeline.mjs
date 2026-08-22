@@ -2,7 +2,6 @@ import {
   base64ToBytes,
   captionSegments,
   fileVoiceSetupMessage,
-  fitPcm,
   latestCaption,
   liveUrl,
   wavHeader
@@ -12,6 +11,8 @@ const INPUT_RATE = 16000;
 const OUTPUT_RATE = 24000;
 const WINDOW_BYTES = 12 * INPUT_RATE * 2;
 const OVERLAP_BYTES = 1.5 * INPUT_RATE * 2;
+const NARRATION_IDLE_MS = 600;
+const NARRATION_MAX_MS = 12000;
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const TRANSLATION_MODELS = [
   ['gemini-3.6-flash', 5, 20, true],
@@ -90,6 +91,7 @@ export class PreciseDubbingPipeline {
     this.offset = 0;
     this.committedUntil = 0;
     this.pendingSegment = null;
+    this.dubCursor = 0;
     this.failed = false;
     this.busy = Promise.resolve();
     this.usage = new Map();
@@ -203,10 +205,19 @@ export class PreciseDubbingPipeline {
       let ready = false;
       let settled = false;
       let messages = Promise.resolve();
+      let idleTimer = null;
+      let maxTimer = null;
+      const clearOutputTimers = () => {
+        clearTimeout(idleTimer);
+        clearTimeout(maxTimer);
+        idleTimer = null;
+        maxTimer = null;
+      };
       const finish = (error) => {
         if (settled) return;
         settled = true;
         clearTimeout(timeout);
+        clearOutputTimers();
         try { socket.close(); } catch {}
         if (error) {
           reject(error);
@@ -220,6 +231,11 @@ export class PreciseDubbingPipeline {
           offset += chunk.byteLength;
         }
         resolve(trimNarration(audio));
+      };
+      const scheduleOutputFinish = () => {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => finish(), NARRATION_IDLE_MS);
+        maxTimer ||= setTimeout(() => finish(), NARRATION_MAX_MS);
       };
       const timeout = setTimeout(() => finish(new Error('gemini_voice_timeout')), 30000);
       socket.onopen = () => socket.send(JSON.stringify(
@@ -240,13 +256,20 @@ export class PreciseDubbingPipeline {
           const content = message.serverContent;
           for (const part of content?.modelTurn?.parts || []) {
             const inline = part.inlineData || part.inline_data;
-            if (inline?.data) chunks.push(base64ToBytes(inline.data));
+            if (inline?.data) {
+              chunks.push(base64ToBytes(inline.data));
+              scheduleOutputFinish();
+            }
           }
-          if (content?.turnComplete) finish();
+          if (content?.generationComplete || content?.turnComplete) finish();
         }).catch(finish);
       };
       socket.onerror = () => finish(new Error('gemini_voice_failed'));
-      socket.onclose = () => { if (!ready) finish(new Error('gemini_voice_closed')); };
+      socket.onclose = () => {
+        if (chunks.length) finish();
+        else if (!ready) finish(new Error('gemini_voice_closed'));
+        else finish(new Error('gemini_voice_empty'));
+      };
     });
   }
 
@@ -295,7 +318,6 @@ export class PreciseDubbingPipeline {
       const segment = segments[index];
       const translated = translations[index];
       this.#publishCaption(false, segment, segment.text);
-      this.#publishCaption(true, segment, translated);
       let narration = null;
       let narrationError = null;
       for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -309,10 +331,13 @@ export class PreciseDubbingPipeline {
         }
       }
       if (!narration) throw narrationError;
-      const targetSamples = Math.max(1, Math.round((segment.end - segment.start) * OUTPUT_RATE));
-      const fitted = fitPcm(narration, targetSamples);
-      const pcm = new Uint8Array(fitted.buffer);
-      this.onDub({data: pcm.slice().buffer, start: segment.start, duration: fitted.length / OUTPUT_RATE});
+      const start = Math.max(segment.start, this.dubCursor);
+      const duration = narration.length / OUTPUT_RATE;
+      const dubbedSegment = {start, end: start + duration};
+      const pcm = new Uint8Array(narration.buffer, narration.byteOffset, narration.byteLength);
+      this.onDub({data: pcm.slice().buffer, start, duration});
+      this.#publishCaption(true, dubbedSegment, translated);
+      this.dubCursor = dubbedSegment.end;
     }
     this.onFrontier(frontier);
   }
