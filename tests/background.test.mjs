@@ -2,6 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 test('keeps the key session-only and starts tab capture without the desktop app', async () => {
+  const deferred = () => {
+    let resolve;
+    const promise = new Promise((next) => { resolve = next; });
+    return {promise, resolve};
+  };
   let installed;
   let receive;
   let offscreen = false;
@@ -15,13 +20,26 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   const removedTabs = [];
   let lastOffscreenMessage = null;
   let offscreenResponse = {ok: true};
+  const offscreenStartResponses = [];
   let rejectOffscreenStop = false;
+  let groqPermissionGranted = true;
+  let captureGate = null;
+  let delayedStateRead = null;
   const overlayMessages = [];
+  const stalePlayerTabs = new Set();
   const local = {};
   const session = {};
 
   const storageArea = (state) => ({
     async get(key) {
+      if (state === session && key === 'state' && delayedStateRead) {
+        const gate = delayedStateRead;
+        delayedStateRead = null;
+        const snapshot = structuredClone(state[key]);
+        gate.started.resolve();
+        await gate.release.promise;
+        return {[key]: snapshot};
+      }
       if (typeof key === 'string') return {[key]: state[key]};
       return {...state};
     },
@@ -36,8 +54,11 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   globalThis.chrome = {
     storage: {local: storageArea(local), session: storageArea(session)},
     permissions: {
-      async contains() { return true; },
-      async request() { return true; },
+      async contains(request) { return request?.origins ? groqPermissionGranted : true; },
+      async request(request) {
+        if (request?.origins) groqPermissionGranted = true;
+        return true;
+      },
       async remove() { return true; }
     },
     runtime: {
@@ -49,6 +70,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
         assert.equal(message.target, 'offscreen');
         lastOffscreenMessage = message;
         if (rejectOffscreenStop && message.type === 'stop') throw new Error('offscreen_stop_failed');
+        if (message.type === 'start' && offscreenStartResponses.length) return offscreenStartResponses.shift();
         return offscreenResponse;
       }
     },
@@ -58,17 +80,24 @@ test('keeps the key session-only and starts tab capture without the desktop app'
     },
     tabs: {
       onRemoved: {addListener() {}},
-      async query() { return [{id: 42, title: 'Test video'}]; },
+      async query(queryInfo) {
+        if (queryInfo?.url) {
+          return [...stalePlayerTabs].map((id) => ({id, url: 'chrome-extension://test/player.html'}));
+        }
+        return [{id: 42, title: 'Test video'}];
+      },
       async create(options) {
         createdTab = 84;
         assert.equal(options.active, false);
+        assert.equal(stalePlayerTabs.size, 0, 'old extension players must close before the new player is created');
+        assert.equal(removedTabs.includes(84), false, 'stale cleanup must not remove the newly created player');
         assert.equal('playerSession' in session, false, 'stale player state must be gone before the new player loads');
         assert.equal(session.state?.active, true, 'the new recording state must be visible before the player page loads');
         assert.equal(session.state?.syncArtifacts, null, 'the player must not restore artifacts from the previous recording');
         return {id: 84};
       },
       async update(tabId, options) { if (options.active) activatedTab = tabId; return {id: tabId}; },
-      async remove(tabId) { removedTabs.push(tabId); },
+      async remove(tabId) { stalePlayerTabs.delete(tabId); removedTabs.push(tabId); },
       async sendMessage(tabId, message) { overlayMessages.push({tabId, message}); }
     },
     scripting: {
@@ -88,6 +117,12 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       async getMediaStreamId({targetTabId}) {
         captureCalls += 1;
         capturedTab = targetTabId;
+        if (captureGate) {
+          const gate = captureGate;
+          captureGate = null;
+          gate.started.resolve();
+          await gate.release.promise;
+        }
         return 'stream-42';
       }
     },
@@ -109,6 +144,9 @@ test('keeps the key session-only and starts tab capture without the desktop app'
 
   let response = await message({type: 'bootstrap'});
   assert.equal(response.data.api_key_set, false);
+  assert.equal(response.data.groq_permission_granted, true);
+  assert.equal(response.data.groq_audio_consent_granted, false);
+  assert.equal(response.data.groq_ready, false);
   assert.equal(local.settings.onPageOutput.dubAudioEnabled, true);
   assert.equal(local.settings.onPageOutput.originalAudioEnabled, false);
   assert.equal(local.settings.synchronizedOutput.dubAudioEnabled, true);
@@ -130,8 +168,19 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       translatedSubtitlesEnabled: true
     }
   };
-  response = await message({type: 'start', config: subtitleSettings});
+  const duplicateStartGate = {started: deferred(), release: deferred()};
+  captureGate = duplicateStartGate;
+  const capturesBeforeDuplicateStart = captureCalls;
+  const firstStart = message({type: 'start', config: subtitleSettings});
+  await duplicateStartGate.started.promise;
+  const duplicateStart = message({type: 'start', config: subtitleSettings});
+  duplicateStartGate.release.resolve();
+  const [firstStartResponse, duplicateStartResponse] = await Promise.all([firstStart, duplicateStart]);
+  response = firstStartResponse;
   assert.equal(response.ok, true);
+  assert.equal(duplicateStartResponse.ok, true);
+  assert.equal(duplicateStartResponse.state.active, true);
+  assert.equal(captureCalls, capturesBeforeDuplicateStart + 1, 'concurrent Start requests must share one capture');
   assert.equal(capturedTab, 42);
   assert.equal(offscreen, true);
   assert.equal(response.state.status, 'connecting');
@@ -144,21 +193,49 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal('apiKey' in session, false);
   assert.equal(offscreen, false);
 
+  const stateReadGate = {started: deferred(), release: deferred()};
+  delayedStateRead = stateReadGate;
+  const sourcePatch = message({target: 'background', type: 'bridge-state', update: {sourceText: 'concurrent source'}});
+  await stateReadGate.started.promise;
+  const translationPatch = message({target: 'background', type: 'bridge-state', update: {translatedText: 'concurrent translation'}});
+  stateReadGate.release.resolve();
+  await Promise.all([sourcePatch, translationPatch]);
+  response = await message({type: 'state'});
+  assert.equal(response.state.sourceText, 'concurrent source');
+  assert.equal(response.state.translatedText, 'concurrent translation', 'concurrent disjoint state patches must not overwrite each other');
+
   await message({type: 'set-key', apiKey: 'test-api-key-123'});
   await message({type: 'set-groq-key', apiKey: 'test-groq-key-123'});
   response = await message({type: 'bootstrap'});
   assert.equal(response.data.api_key_set, true);
   assert.equal(response.data.groq_api_key_set, true);
-  offscreenResponse = {ok: false, error: 'gemini_closed'};
-  response = await message({type: 'start', config: subtitleSettings});
-  assert.equal(response.ok, false);
-  assert.equal(response.error, 'gemini_closed');
-  assert.equal(overlayMessages.at(-1).message.active, false);
+  offscreenStartResponses.push({ok: false, error: 'gemini_closed'}, {ok: true});
+  const failedStart = message({type: 'start', config: subtitleSettings});
+  const recoveringStart = message({type: 'start', config: subtitleSettings});
+  const [failedStartResponse, recoveringStartResponse] = await Promise.all([failedStart, recoveringStart]);
+  assert.equal(failedStartResponse.ok, false);
+  assert.equal(failedStartResponse.error, 'gemini_closed');
+  assert.equal(recoveringStartResponse.ok, true);
+  assert.equal(recoveringStartResponse.state.active, true, 'failure cleanup must finish before a later Start becomes active');
+  assert.equal(offscreen, true, 'the failed Start must not tear down the successful successor');
+  await message({type: 'stop'});
   response = await message({type: 'state'});
   assert.equal(response.state.captureTabId, null);
   assert.equal(offscreen, false);
 
-  offscreenResponse = {ok: true};
+  const startStopGate = {started: deferred(), release: deferred()};
+  captureGate = startStopGate;
+  const racingStart = message({type: 'start', config: subtitleSettings});
+  await startStopGate.started.promise;
+  const racingStop = message({type: 'stop'});
+  startStopGate.release.resolve();
+  const [racingStartResponse, racingStopResponse] = await Promise.all([racingStart, racingStop]);
+  assert.equal(racingStartResponse.ok, true);
+  assert.equal(racingStopResponse.ok, true);
+  response = await message({type: 'state'});
+  assert.equal(response.state.active, false, 'a Stop queued after Start must win without leaving a half-started capture');
+  assert.equal(offscreen, false);
+
   const synchronizedSettings = {
     ...subtitleSettings,
     playbackMode: 'synchronized',
@@ -170,6 +247,25 @@ test('keeps the key session-only and starts tab capture without the desktop app'
       dubAudioEnabled: true
     }
   };
+  const capturesBeforeMissingConsent = captureCalls;
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, false);
+  assert.equal(response.error, 'groq_consent_required');
+  assert.equal(captureCalls, capturesBeforeMissingConsent, 'Groq consent must be checked before capture');
+
+  synchronizedSettings.groqAudioConsentVersion = 1;
+  groqPermissionGranted = false;
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, false);
+  assert.equal(response.error, 'groq_permission_missing');
+  assert.equal(captureCalls, capturesBeforeMissingConsent, 'Groq host permission must be checked before capture');
+
+  groqPermissionGranted = true;
+  local.settings = synchronizedSettings;
+  response = await message({type: 'bootstrap'});
+  assert.equal(response.data.groq_audio_consent_granted, true);
+  assert.equal(response.data.groq_ready, true);
+  stalePlayerTabs.add(73);
   session.playerSession = {currentTime: 221.4, recordedDuration: 300, started: true};
   response = await message({type: 'start', config: synchronizedSettings});
   assert.equal(response.ok, true);
@@ -178,6 +274,8 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(activatedTab, 84);
   assert.equal(sourceBridgeTab, 42);
   assert.equal(response.state.playerTabId, 84);
+  assert.equal(removedTabs.includes(73), true, 'a stale synchronized player must close before a new session');
+  assert.equal(removedTabs.includes(84), false, 'the newly created synchronized player must remain open');
   assert.equal(lastOffscreenMessage.config.playbackMode, 'synchronized');
   assert.equal(lastOffscreenMessage.config.syncBufferSeconds, 8);
   assert.equal(lastOffscreenMessage.config.syncCaptionEngine, 'whisper');
@@ -187,7 +285,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.ok, true);
   assert.equal(response.state.completionReason, 'media-transition');
   assert.equal(response.state.active, false);
-  assert.deepEqual(removedTabs, []);
+  assert.deepEqual(removedTabs, [73]);
 
   groqStatus = 403;
   const capturesBeforeBlockedGroq = captureCalls;
@@ -210,5 +308,5 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.state.status, 'error');
   assert.equal(response.state.captureTabId, null);
 
-  assert.deepEqual(removedTabs, []);
+  assert.deepEqual(removedTabs, [73]);
 });

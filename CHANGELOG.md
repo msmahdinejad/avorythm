@@ -2,6 +2,25 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.10] - 2026-08-22
+
+### Changed
+
+- Require a separate, versioned disclosure before precise mode sends short selected-tab audio windows directly to Groq Whisper; the popup, settings, privacy copy, README, and bilingual help now describe each provider accurately.
+- Preserve the original synchronized recording and every completed cue when a remote precise-mode stage fails, advance playback out of the blocked frontier, and fall back visibly to original audio instead of leaving a silent player.
+- Build macOS release bundles for both Apple Silicon and Intel with the release version, stable bundle identifier, branded icon, microphone usage description, and fresh ad-hoc signature.
+- Run Python tests, linting, type checks, extension tests, manifest validation, package-contract checks, and version checks before any release artifact can be published.
+
+### Fixed
+
+- Call browser-native `fetch` without rebinding its receiver, fixing the precise extension path that failed before Groq Whisper despite the same keys working in the desktop app.
+- Reuse and safely recycle Gemini 3.1 Live narration sessions, deduplicate Whisper overlap by ownership windows, and bound stalled Groq, Gemini translation, and Gemini narration requests.
+- Serialize extension lifecycle and session-state mutations so concurrent starts, stops, transcripts, and audio updates cannot tear down a healthy session or overwrite one another.
+- Freeze tab capture before remote work is drained, bound MediaRecorder finalization, retain video on partial provider failure, retry recoverable finalized-dub playback, and cross tiny MediaSource gaps automatically.
+- Apply the calibrated translated-caption delay exactly once to Gemini 3.5 Live player, replay, recording, and SRT timelines while leaving timestamped Whisper cues untouched.
+- Reject foreign localhost hosts and origins in the desktop API, add defensive response headers, prevent live capture from racing queued/uploading media work, and keep recording mutations on the event loop.
+- Correct Windows numeric file metadata and extension license packaging, and add explicit Gemini file-narration receive deadlines.
+
 ## [1.1.9] - 2026-08-22
 
 ### Changed
@@ -393,7 +412,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.9...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.10...HEAD
+[1.1.10]: https://github.com/msmahdinejad/avorythm/compare/v1.1.9...v1.1.10
 [1.1.9]: https://github.com/msmahdinejad/avorythm/compare/v1.1.8...v1.1.9
 [1.1.8]: https://github.com/msmahdinejad/avorythm/compare/v1.1.7...v1.1.8
 [1.1.7]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...v1.1.7

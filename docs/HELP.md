@@ -81,6 +81,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 2. Save your Gemini API key. The key stays in Chrome session storage and is cleared after the browser fully exits.
 3. In **Consent and privacy**, you must enable **“I allow audio from my selected tab to be sent to Google Gemini.”** Translation cannot start before this explicit consent.
 4. Choose the target language. Configure **On-page playback** and **Synchronized playback & export** separately; changing one never changes the other.
+5. Only if you choose the precise Whisper engine: save a Groq key, grant Chrome access to `api.groq.com`, and separately enable **“I allow short audio windows from the selected tab to be sent directly to Groq Whisper.”** Those windows are used for transcription and timestamps; the resulting text goes to Gemini for translation and voice generation.
 
 ### Choose a playback mode
 
@@ -90,7 +91,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 
 ![Synchronized recorder settings](../store-assets/en/03-sync-settings.png)
 
-The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and applies a calibrated 2.5-second translated-caption delay behind the audible dub clock. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only. On restricted networks, add `api.groq.com` to your proxy/VPN route (for example through `127.0.0.1:10808`). The extension tests that route before capture, without changing Chrome's global proxy settings.
+The faster engine sends selected-tab audio directly to Gemini 3.5 Live Translate. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: short selected-tab audio windows go directly to Groq Whisper, which timestamps complete utterances; the free Gemini text-model pool translates the resulting transcript with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and anchors precise-mode captions to each generated PCM interval; the approximate Gemini 3.5 transcript path applies one calibrated 2.5-second display offset. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only, and the Groq transfer requires its own versioned consent. On restricted networks, add `api.groq.com` to your proxy/VPN route (for example through `127.0.0.1:10808`). The extension tests that route before capture, without changing Chrome's global proxy settings.
 
 ### Use the synchronized recorder & player
 
@@ -113,7 +114,7 @@ Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle 
 
 ### Extension troubleshooting
 
-- **Start is disabled:** save a Gemini key and complete the mandatory consent in Settings.
+- **Start is disabled:** save a Gemini key and complete the Gemini consent. In precise mode, also save a Groq key, grant the optional `api.groq.com` permission, and confirm the separate Groq-audio consent; the message beside Start names the missing step.
 - **Gemini connection closed:** confirm the key, quota, selected media tab, and that the page is not a Chrome-internal page. Restart the session after reconnecting your proxy/VPN.
 - **Player keeps buffering:** leave the source video playing; wait for the safety lead to rebuild. If the source or network repeatedly stalls, increase Recording lead in Settings.
 - **No download:** grant the optional Downloads permission when prompted. Avorythm never claims files were saved until Chrome confirms the download request.
@@ -123,4 +124,4 @@ Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle 
 
 ## Privacy and responsible use
 
-Processing starts only after an explicit user action. Avorythm has no analytics, advertising, developer telemetry, or developer-operated content server. Read the [bilingual privacy policy](../PRIVACY.md), and process or record only media you are authorized to use.
+Processing starts only after an explicit user action and the consent required by the selected engine. Direct modes send selected-tab audio to Google Gemini. Precise mode sends short audio windows directly to Groq Whisper for transcription and timestamps, then sends transcript text to Google Gemini for translation and voice generation. Avorythm has no analytics, advertising, developer telemetry, or developer-operated content server. Read the [bilingual privacy policy](../PRIVACY.md), and process or record only media you are authorized to use.

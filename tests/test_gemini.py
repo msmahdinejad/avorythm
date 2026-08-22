@@ -11,6 +11,7 @@ from avorythm.gemini import (
     GeminiFileGateway,
     GeminiGateway,
     LiveEvent,
+    NoTranslationError,
     TranslationItem,
     duration_seconds,
     stream_tail_is_silent,
@@ -132,6 +133,58 @@ class MultiTurnSession:
             generation_complete=True,
         )
         yield SimpleNamespace(server_content=content, usage_metadata=None, go_away=None)
+
+
+class HangingNarrationSession:
+    def __init__(self) -> None:
+        self.sent_text = ""
+
+    async def send_realtime_input(self, *, text: str) -> None:
+        self.sent_text = text
+
+    async def receive(self) -> AsyncIterator[object]:
+        await asyncio.Event().wait()
+        yield SimpleNamespace()
+
+
+class SuccessfulNarrationSession(HangingNarrationSession):
+    async def receive(self) -> AsyncIterator[object]:
+        audio = b"\xe8\x03" * 480
+        yield SimpleNamespace(
+            server_content=SimpleNamespace(
+                model_turn=SimpleNamespace(
+                    parts=[SimpleNamespace(inline_data=SimpleNamespace(data=audio))]
+                ),
+                output_transcription=SimpleNamespace(text="سلام "),
+                turn_complete=False,
+            ),
+            usage_metadata=SimpleNamespace(total_token_count=5),
+        )
+        yield SimpleNamespace(
+            server_content=SimpleNamespace(
+                model_turn=None,
+                output_transcription=SimpleNamespace(text="دنیا"),
+                turn_complete=True,
+            ),
+            usage_metadata=SimpleNamespace(total_token_count=7),
+        )
+
+
+class NarrationConnection:
+    def __init__(self, session: HangingNarrationSession) -> None:
+        self.session = session
+        self.exited = False
+
+    async def __aenter__(self) -> HangingNarrationSession:
+        return self.session
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.exited = True
 
 
 def test_live_config_uses_translation_only_contract() -> None:
@@ -297,3 +350,41 @@ async def test_translation_pool_falls_back_in_strength_order() -> None:
     assert models.calls == ["gemini-3.6-flash", "gemini-3.5-flash"]
     assert result.texts == ["سلام"]
     assert result.model == "gemini-3.5-flash"
+
+
+@pytest.mark.asyncio
+async def test_narration_times_out_and_closes_a_silent_live_session() -> None:
+    session = HangingNarrationSession()
+    connection = NarrationConnection(session)
+    gateway = GeminiFileGateway.__new__(GeminiFileGateway)
+    gateway.client = SimpleNamespace(
+        aio=SimpleNamespace(live=SimpleNamespace(connect=lambda **_: connection))
+    )
+    gateway.narration_receive_timeout = 0.01
+
+    with pytest.raises(NoTranslationError, match="narration response timed out"):
+        await asyncio.wait_for(
+            gateway.narrate("سلام دنیا", "fa", "Kore"),
+            timeout=0.25,
+        )
+
+    assert session.sent_text == "سلام دنیا"
+    assert connection.exited is True
+
+
+@pytest.mark.asyncio
+async def test_narration_preserves_audio_transcript_and_usage() -> None:
+    session = SuccessfulNarrationSession()
+    connection = NarrationConnection(session)
+    gateway = GeminiFileGateway.__new__(GeminiFileGateway)
+    gateway.client = SimpleNamespace(
+        aio=SimpleNamespace(live=SimpleNamespace(connect=lambda **_: connection))
+    )
+    gateway.narration_receive_timeout = 0.1
+
+    result = await gateway.narrate("سلام دنیا", "fa", "Kore")
+
+    assert result.audio == b"\xe8\x03" * 480
+    assert result.transcript == "سلام دنیا"
+    assert result.total_tokens == 7
+    assert connection.exited is True

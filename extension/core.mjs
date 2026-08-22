@@ -1,6 +1,7 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
 export const FILE_VOICE_MODEL = 'gemini-3.1-flash-live-preview';
 export const TRANSLATED_CAPTION_DELAY_SECONDS = 2.5;
+export const GROQ_AUDIO_CONSENT_VERSION = 1;
 export const LIVE_ENDPOINT =
   'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent';
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
@@ -34,6 +35,8 @@ export const DEFAULT_OUTPUT_MIX = Object.freeze({
 export const DEFAULT_SETTINGS = Object.freeze({
   locale: 'en',
   targetLanguage: 'fa',
+  consentVersion: 0,
+  groqAudioConsentVersion: 0,
   onPageOutput: DEFAULT_OUTPUT_MIX,
   synchronizedOutput: DEFAULT_OUTPUT_MIX,
   recording: false,
@@ -86,10 +89,26 @@ export function normalizeSettings(input = {}) {
   delete settings.audioMode;
   delete settings.subtitleShowSource;
   settings.playbackMode = settings.playbackMode === 'synchronized' ? 'synchronized' : 'low-latency';
+  settings.consentVersion = settings.consentVersion === 1 ? 1 : 0;
+  settings.groqAudioConsentVersion = settings.groqAudioConsentVersion === GROQ_AUDIO_CONSENT_VERSION
+    ? GROQ_AUDIO_CONSENT_VERSION
+    : 0;
   settings.syncBufferSeconds = Math.max(8, Math.min(60, Number(settings.syncBufferSeconds) || 20));
   settings.syncCaptionEngine = settings.syncCaptionEngine === 'whisper' ? 'whisper' : 'gemini';
   settings.syncVoiceName = VOICE_NAMES.includes(settings.syncVoiceName) ? settings.syncVoiceName : 'Kore';
   return settings;
+}
+
+export function usesGroqAudio(settings) {
+  return settings?.playbackMode === 'synchronized' && settings?.syncCaptionEngine === 'whisper';
+}
+
+export function groqReadinessError(settings, readiness = {}) {
+  if (!usesGroqAudio(settings)) return '';
+  if (!readiness.groq_api_key_set) return 'groq_key_missing';
+  if (settings?.groqAudioConsentVersion !== GROQ_AUDIO_CONSENT_VERSION) return 'groq_consent_required';
+  if (!readiness.groq_permission_granted) return 'groq_permission_missing';
+  return '';
 }
 
 export function outputMix(settings, mode = settings?.playbackMode) {

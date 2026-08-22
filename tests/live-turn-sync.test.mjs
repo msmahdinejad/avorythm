@@ -3,11 +3,19 @@ import test from 'node:test';
 import {installCaptureWorker} from './fake-capture-worker.mjs';
 import {srt, TRANSLATED_CAPTION_DELAY_SECONDS} from '../extension/core.mjs';
 
-test('Gemini Live publishes translated captions on the exact dubbed-audio interval', async () => {
+test('Gemini Live applies its caption calibration once before playback and downloads', async () => {
   let receive;
   let worklet;
   let channel;
   let socket;
+  const downloadBlobs = new Map();
+  const downloads = [];
+  let downloadSequence = 0;
+  globalThis.URL.createObjectURL = (blob) => {
+    const url = `blob:caption-timing-${++downloadSequence}`;
+    downloadBlobs.set(url, blob);
+    return url;
+  };
   const files = new Map([
     ['avorythm-capture-stale.webm', [Uint8Array.of(1)]],
     ['avorythm-sync-artifact-stale-timeline.json', [Uint8Array.of(2)]],
@@ -17,7 +25,12 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   globalThis.chrome = {
     runtime: {
       onMessage: {addListener(listener) { receive = listener; }},
-      async sendMessage() { return {ok: true}; }
+      async sendMessage(message) {
+        if (message.type === 'download') {
+          downloads.push({filename: message.filename, blob: downloadBlobs.get(message.url)});
+        }
+        return {ok: true};
+      }
     }
   };
   class AudioNode { connect() { return this; } disconnect() {} }
@@ -84,7 +97,7 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   await import(`../extension/offscreen.js?turn-sync=${Date.now()}`);
   const started = await new Promise((resolve) => receive({
     target: 'offscreen', type: 'start', streamId: 'stream', apiKey: 'gemini-key', groqApiKey: '',
-    config: {playbackMode: 'synchronized', syncBufferSeconds: 20, syncCaptionEngine: 'gemini', targetLanguage: 'fa', recording: false}
+    config: {playbackMode: 'synchronized', syncBufferSeconds: 20, syncCaptionEngine: 'gemini', targetLanguage: 'fa', recording: true}
   }, {}, resolve));
   assert.deepEqual(started, {ok: true});
   assert.equal(files.has('avorythm-capture-stale.webm'), false);
@@ -126,8 +139,16 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   const caption = channel.messages.find((message) => message.type === 'caption' && message.translated);
   assert.ok(caption, 'idle flushing must include an unfinished transcript fragment with its audio');
   assert.equal(caption.text, 'سلام دنیا');
-  assert.equal(caption.start, dub.start + 0.1, 'translated captions must begin with the first audible dubbed sample');
-  assert.equal(caption.end, dub.start + dub.duration, 'translated captions must end with their natural dubbed audio');
+  assert.equal(
+    caption.start,
+    dub.start + 0.1 + TRANSLATED_CAPTION_DELAY_SECONDS,
+    'approximate Gemini captions must include the calibrated presentation delay before publication'
+  );
+  assert.equal(
+    caption.end,
+    dub.start + dub.duration + TRANSLATED_CAPTION_DELAY_SECONDS,
+    'Gemini caption duration must remain tied to its natural dubbed audio after calibration'
+  );
 
   worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
   socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
@@ -173,11 +194,14 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   const translatedSrt = await new Blob(files.get(translatedSrtName)).text();
   assert.match(
     translatedSrt,
-    new RegExp(srt([{
-      ...caption,
-      start: caption.start + TRANSLATED_CAPTION_DELAY_SECONDS,
-      end: caption.end + TRANSLATED_CAPTION_DELAY_SECONDS
-    }]).trim().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')),
-    'the downloadable translated SRT must use the same 2.5-second presentation delay as the player'
+    new RegExp(srt([caption]).trim().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')),
+    'the downloadable translated SRT must reuse the already-calibrated player timeline without adding delay twice'
+  );
+  const recordedTranslation = downloads.find(({filename}) => filename.endsWith('/translated.srt'));
+  assert.ok(recordedTranslation?.blob, 'four-output recording must include translated subtitles');
+  assert.match(
+    await recordedTranslation.blob.text(),
+    new RegExp(srt([caption]).trim().replace(/[.*+?^${}()|[\]\\]/gu, '\\$&')),
+    'four-output SRT must use the same already-calibrated timeline as the player and synchronized artifact'
   );
 });

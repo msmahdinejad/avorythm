@@ -1,4 +1,12 @@
-import {DEFAULT_SETTINGS, LANGUAGES, normalizeSettings, outputMix, subtitlesEnabled} from './core.mjs';
+import {
+  DEFAULT_SETTINGS,
+  GROQ_AUDIO_CONSENT_VERSION,
+  LANGUAGES,
+  normalizeSettings,
+  outputMix,
+  subtitlesEnabled,
+  usesGroqAudio
+} from './core.mjs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
 const defaultState = {
@@ -17,7 +25,18 @@ const defaultState = {
   completionReason: '',
   config: null
 };
-let stopPromise = null;
+let stateQueue = Promise.resolve();
+let lifecycleQueue = Promise.resolve();
+
+function serialize(queue, operation, updateQueue) {
+  const pending = queue.then(operation, operation);
+  updateQueue(pending.then(() => undefined, () => undefined));
+  return pending;
+}
+
+function runLifecycle(operation) {
+  return serialize(lifecycleQueue, operation, (next) => { lifecycleQueue = next; });
+}
 
 async function injectOverlay(tabId) {
   if (!chrome.scripting?.executeScript) return;
@@ -42,15 +61,22 @@ async function broadcastOverlay(state) {
   } catch {}
 }
 
-async function getState() {
+async function readState() {
   const stored = await chrome.storage.session.get('state');
   return {...defaultState, ...stored.state};
 }
 
-async function setState(update) {
-  const state = {...await getState(), ...update};
-  await chrome.storage.session.set({state});
-  return state;
+async function getState() {
+  await stateQueue;
+  return readState();
+}
+
+function setState(update) {
+  return serialize(stateQueue, async () => {
+    const state = {...await readState(), ...update};
+    await chrome.storage.session.set({state});
+    return state;
+  }, (next) => { stateQueue = next; });
 }
 
 async function hasOffscreenDocument() {
@@ -101,16 +127,37 @@ async function disconnectSourceBridge(tabId) {
   } catch {}
 }
 
+async function closeStalePlayerTabs() {
+  if (!chrome.tabs?.query || !chrome.tabs?.remove) return;
+  const playerUrl = chrome.runtime.getURL('player.html');
+  let tabs;
+  try {
+    tabs = await chrome.tabs.query({url: `${playerUrl}*`});
+  } catch {
+    return;
+  }
+  const staleIds = tabs
+    .filter((tab) => tab.id && String(tab.url || '').startsWith(playerUrl))
+    .map((tab) => tab.id);
+  await Promise.all(staleIds.map((tabId) => chrome.tabs.remove(tabId).catch(() => {})));
+}
+
 async function bootstrap() {
-  const [{settings}, {apiKey, groqApiKey}] = await Promise.all([
+  const [{settings}, {apiKey, groqApiKey}, groqPermissionGranted] = await Promise.all([
     chrome.storage.local.get('settings'),
-    chrome.storage.session.get(['apiKey', 'groqApiKey'])
+    chrome.storage.session.get(['apiKey', 'groqApiKey']),
+    chrome.permissions.contains({origins: ['https://api.groq.com/*']})
   ]);
+  const normalizedSettings = normalizeSettings(settings);
+  const groqAudioConsentGranted = normalizedSettings.groqAudioConsentVersion === GROQ_AUDIO_CONSENT_VERSION;
   return {
     languages: LANGUAGES,
-    settings: normalizeSettings(settings),
+    settings: normalizedSettings,
     api_key_set: Boolean(apiKey),
-    groq_api_key_set: Boolean(groqApiKey)
+    groq_api_key_set: Boolean(groqApiKey),
+    groq_permission_granted: groqPermissionGranted,
+    groq_audio_consent_granted: groqAudioConsentGranted,
+    groq_ready: Boolean(groqApiKey) && groqPermissionGranted && groqAudioConsentGranted
   };
 }
 
@@ -130,7 +177,7 @@ async function verifyGroqAccess(apiKey) {
   throw new Error('groq_connection_failed');
 }
 
-async function start(config) {
+async function performStart(config) {
   const current = await getState();
   if (current.active) return current;
   const nextConfig = normalizeSettings(config);
@@ -140,19 +187,22 @@ async function start(config) {
   }
   const {apiKey, groqApiKey} = await chrome.storage.session.get(['apiKey', 'groqApiKey']);
   if (!apiKey) throw new Error('api_key_missing');
-  if (nextConfig.playbackMode === 'synchronized' && nextConfig.syncCaptionEngine === 'whisper' && !groqApiKey) {
+  if (usesGroqAudio(nextConfig) && !groqApiKey) {
     throw new Error('groq_key_missing');
   }
-  if (nextConfig.playbackMode === 'synchronized' && nextConfig.syncCaptionEngine === 'whisper' &&
-      !await chrome.permissions.contains({origins: ['https://api.groq.com/*']})) {
+  if (usesGroqAudio(nextConfig) && nextConfig.groqAudioConsentVersion !== GROQ_AUDIO_CONSENT_VERSION) {
+    throw new Error('groq_consent_required');
+  }
+  if (usesGroqAudio(nextConfig) && !await chrome.permissions.contains({origins: ['https://api.groq.com/*']})) {
     throw new Error('groq_permission_missing');
   }
-  if (nextConfig.playbackMode === 'synchronized' && nextConfig.syncCaptionEngine === 'whisper') {
+  if (usesGroqAudio(nextConfig)) {
     await verifyGroqAccess(groqApiKey);
   }
   await ensureOffscreenDocument();
   const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
   if (!tab?.id) throw new Error('active_tab_missing');
+  if (nextConfig.playbackMode === 'synchronized') await closeStalePlayerTabs();
   if (subtitlesEnabled(nextConfig) && nextConfig.playbackMode !== 'synchronized') await injectOverlay(tab.id);
   const streamId = await chrome.tabCapture.getMediaStreamId({targetTabId: tab.id});
   let playerTabId = null;
@@ -219,6 +269,37 @@ async function start(config) {
   return getState();
 }
 
+async function cleanupFailedStart(error) {
+  const current = await getState();
+  await disconnectSourceBridge(current.captureTabId);
+  if (await hasOffscreenDocument()) {
+    await chrome.offscreen.closeDocument().catch(() => {});
+  }
+  if (current.playerTabId && chrome.tabs?.remove) {
+    await chrome.tabs.remove(current.playerTabId).catch(() => {});
+  }
+  const failed = await setState({
+    active: false,
+    status: 'error',
+    error: error.message || 'capture_failed',
+    captureTabId: null,
+    playerTabId: null,
+    config: null
+  });
+  await broadcastOverlay({...current, ...failed, active: false});
+}
+
+function start(config) {
+  return runLifecycle(async () => {
+    try {
+      return await performStart(config);
+    } catch (error) {
+      await cleanupFailedStart(error);
+      throw error;
+    }
+  });
+}
+
 async function performStop(requestingTabId = null, keepPlayer = false, completionReason = 'manual') {
   const current = await getState();
   if (!current.active && !await hasOffscreenDocument()) return current;
@@ -247,15 +328,13 @@ async function performStop(requestingTabId = null, keepPlayer = false, completio
   if (!keepPlayer && current.playerTabId && current.playerTabId !== requestingTabId && chrome.tabs?.remove) {
     await chrome.tabs.remove(current.playerTabId).catch(() => {});
   }
-  const stopped = await setState({...state, captureTabId: null, playerTabId: null, config: null});
+  const stopped = await setState({captureTabId: null, playerTabId: null, config: null});
   if (failure) throw failure;
   return stopped;
 }
 
 function stop(requestingTabId = null, keepPlayer = false, completionReason = 'manual') {
-  if (stopPromise) return stopPromise;
-  stopPromise = performStop(requestingTabId, keepPlayer, completionReason).finally(() => { stopPromise = null; });
-  return stopPromise;
+  return runLifecycle(() => performStop(requestingTabId, keepPlayer, completionReason));
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
@@ -326,14 +405,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ok: Boolean(result?.ok), result});
     }
   })().catch(async (error) => {
-    if (message.type === 'start') {
-      const current = await getState();
-      const failed = await setState({active: false, status: 'error', error: error.message});
-      await broadcastOverlay(failed);
-      if (current.active && await hasOffscreenDocument()) await chrome.offscreen.closeDocument();
-      if (current.playerTabId && chrome.tabs?.remove) await chrome.tabs.remove(current.playerTabId).catch(() => {});
-      await setState({captureTabId: null, playerTabId: null, config: null});
-    }
     sendResponse({ok: false, error: error.message});
   });
   return true;

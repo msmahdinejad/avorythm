@@ -1,5 +1,5 @@
-import {wavHeader} from '../../extension/core.mjs?v=1.1.9';
-import {buildMixedRecording} from '../../extension/recording-export.mjs?v=1.1.9';
+import {wavHeader} from '../../extension/core.mjs?v=1.1.10';
+import {buildMixedRecording} from '../../extension/recording-export.mjs?v=1.1.10';
 
 const result = document.querySelector('#result');
 result.textContent = 'READY-MODULE';
@@ -23,7 +23,7 @@ async function sourceVideo(duration = 1.5) {
   canvas.width = 480;
   canvas.height = 270;
   const context = canvas.getContext('2d');
-  const canvasStream = canvas.captureStream(0);
+  const canvasStream = canvas.captureStream(30);
   const videoTrack = canvasStream.getVideoTracks()[0];
   let frame = 0;
   const drawFrame = () => {
@@ -117,7 +117,13 @@ document.querySelector('#run').addEventListener('click', async () => {
   result.textContent = 'RUNNING';
   let stage = 'source-video';
   try {
-    const videoBlob = await sourceVideo();
+    const fixture = new URLSearchParams(location.search).get('fixture');
+    const videoBlob = fixture
+      ? await fetch(fixture).then((response) => {
+        if (!response.ok) throw new Error(`fixture_http_${response.status}`);
+        return response.blob();
+      })
+      : await sourceVideo();
     const dubbedBlob = toneWav(1.5);
     stage = `mixed-export source=${videoBlob.size}`;
     const exported = await buildMixedRecording({
@@ -153,7 +159,7 @@ document.querySelector('#run').addEventListener('click', async () => {
   } catch (error) {
     const details = error instanceof Event
       ? `${error.type} target=${error.target?.constructor?.name} mediaError=${error.target?.error?.code || ''}`
-      : error?.stack || error;
+      : `${error?.stack || error}${error?.cause ? `\nCAUSE ${error.cause?.stack || error.cause}` : ''}`;
     result.textContent = `FAIL stage=${stage} ${details}`;
   }
 });

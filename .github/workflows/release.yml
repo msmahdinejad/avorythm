@@ -12,17 +12,70 @@ on:
 
 permissions:
   actions: read
-  contents: write
+  contents: read
 
 env:
   RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Install Linux audio runtime
+        timeout-minutes: 4
+        run: |
+          if dpkg-query -W -f='${Status}' libportaudio2 2>/dev/null | grep -q 'install ok installed' && command -v ffmpeg >/dev/null; then
+            echo 'Linux audio and media test runtimes are already available'
+          else
+            sudo timeout 120s apt-get -o Acquire::ForceIPv4=true -o Acquire::Retries=3 update
+            sudo env DEBIAN_FRONTEND=noninteractive timeout 120s apt-get -o Acquire::ForceIPv4=true install -y libportaudio2 ffmpeg
+          fi
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev,browser]"
+      - name: Install release browser
+        run: python -m playwright install --with-deps chrome
+      - name: Test Python and release metadata
+        run: python -m pytest -q
+      - name: Lint Python
+        run: python -m ruff check src tests scripts/*.py
+      - name: Type-check Python
+        run: python -m mypy src
+      - name: Validate extension JavaScript
+        shell: pwsh
+        run: Get-ChildItem extension -File | Where-Object Extension -in '.js','.mjs' | ForEach-Object { node --check $_.FullName }
+      - name: Test extension modules
+        run: node --test tests/*.test.mjs
+      - name: Test real browser media pipelines
+        run: xvfb-run -a python scripts/browser_smoke.py
+      - name: Validate manifest
+        shell: pwsh
+        run: Get-Content extension/manifest.json | ConvertFrom-Json | Out-Null
+
   desktop:
+    needs: quality
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            artifact: windows-x64
+          - os: ubuntu-latest
+            artifact: linux-x64
+          - os: macos-latest
+            artifact: macos-arm64
+          - os: macos-15-intel
+            artifact: macos-x64
     runs-on: ${{ matrix.os }}
     timeout-minutes: 150
     steps:
@@ -74,6 +127,25 @@ jobs:
       - shell: pwsh
         if: runner.os == 'Windows'
         run: ./scripts/package-extension.ps1
+      - name: Validate extension package
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $target = Join-Path $env:RUNNER_TEMP "avorythm-extension-package"
+          Expand-Archive -LiteralPath dist/Avorythm-Extension.zip -DestinationPath $target
+          foreach ($required in @("manifest.json", "LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/OFL-Vazirmatn.txt")) {
+            if (-not (Test-Path -LiteralPath (Join-Path $target $required) -PathType Leaf)) {
+              throw "Extension package is missing $required"
+            }
+          }
+          $manifest = Get-Content -Raw -LiteralPath (Join-Path $target "manifest.json") | ConvertFrom-Json
+          $tagVersion = "${{ env.RELEASE_TAG }}" -replace '^v', ''
+          if ($manifest.version -ne $tagVersion) {
+            throw "Extension package version $($manifest.version) does not match tag $tagVersion"
+          }
+          if (Test-Path -LiteralPath (Join-Path $target "icons/Avorythm.ico")) {
+            throw "Windows-only ICO must not be included in the Chrome package"
+          }
       - name: Install Inno Setup
         if: runner.os == 'Windows'
         shell: pwsh
@@ -130,7 +202,7 @@ jobs:
         run: Move-Item -LiteralPath dist/Avorythm-Setup-x64.exe -Destination dist/Avorythm-Setup-x64-unsigned.exe
       - uses: actions/upload-artifact@v7
         with:
-          name: release-${{ runner.os }}
+          name: release-${{ matrix.artifact }}
           path: |
             dist/Avorythm-*.zip
             dist/Avorythm-Setup-x64*.exe
@@ -139,6 +211,9 @@ jobs:
   publish:
     needs: desktop
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
     steps:
       - uses: actions/download-artifact@v8
         with:

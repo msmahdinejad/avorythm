@@ -1,8 +1,63 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import {PreciseDubbingPipeline} from '../extension/precise-pipeline.mjs';
+import {fitNarrationDuration, PreciseDubbingPipeline} from '../extension/precise-pipeline.mjs';
 import {installCaptureWorker} from './fake-capture-worker.mjs';
+
+test('invokes an injected native fetch without binding it to the pipeline', async () => {
+  const fetchReceivers = [];
+  const requests = [];
+  async function nativeFetchLike(url) {
+    fetchReceivers.push(this === undefined ? 'undefined' : this?.constructor?.name || typeof this);
+    requests.push(String(url));
+    if (String(url).includes('api.groq.com')) {
+      return {ok: true, async json() { return {segments: [{start: 0, end: 1, text: 'Hello.'}]}; }};
+    }
+    return {ok: true, async json() {
+      return {candidates: [{content: {parts: [{text: '[{"id":0,"text":"سلام."}]'}]}}]};
+    }};
+  }
+  class VoiceSocket {
+    static OPEN = 1;
+    readyState = 0;
+    constructor() {
+      queueMicrotask(() => { this.readyState = 1; this.onopen(); });
+    }
+    send(payload) {
+      const message = JSON.parse(payload);
+      if (message.setup) {
+        queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
+        return;
+      }
+      if (message.realtimeInput?.text) {
+        const pcm = Buffer.alloc(24000 * 2, 1);
+        queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {
+          modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}, turnComplete: true
+        }})}));
+      }
+    }
+    close() { this.readyState = 3; }
+  }
+  const dubs = [];
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore',
+    fetchImpl: nativeFetchLike, WebSocketImpl: VoiceSocket,
+    onCaption() {}, onDub: (chunk) => dubs.push(chunk), onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => { throw error; }
+  });
+
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  await pipeline.busy;
+
+  assert.match(requests[0], /api\.groq\.com/u);
+  assert.match(requests[1], /generativelanguage\.googleapis\.com/u);
+  assert.equal(dubs.length, 1, 'the successful mock path must reach Gemini 3.1 narration');
+  assert.deepEqual(
+    fetchReceivers,
+    ['undefined', 'undefined'],
+    'browser native fetch throws Illegal invocation when called with the pipeline as this'
+  );
+});
 
 test('holds an unfinished utterance across Whisper windows instead of dubbing a broken sentence', async () => {
   let groqCall = 0;
@@ -36,6 +91,55 @@ test('holds an unfinished utterance across Whisper windows instead of dubbing a 
   assert.equal(socketPayloads.find((message)=>message.realtimeInput?.text)?.realtimeInput.text,'سلام دنیا.');
 });
 
+test('emits an utterance crossing the Whisper overlap exactly once', async () => {
+  let groqCall = 0;
+  const sourceCaptions = [];
+  const dubs = [];
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore',
+    fetchImpl: async (url) => {
+      if (String(url).includes('api.groq.com')) {
+        groqCall += 1;
+        return {ok: true, async json() { return {segments: groqCall === 1
+          ? [{start: 10.4, end: 11.8, text: 'Overlap sentence.'}]
+          : [{start: 0, end: 1.4, text: 'Overlap sentence.'}]
+        }; }};
+      }
+      return {ok: true, async json() { return {candidates: [{content: {parts: [{text:
+        '[{"id":0,"text":"جمله مشترک."}]'
+      }]}}]}; }};
+    },
+    WebSocketImpl: class {
+      static OPEN = 1;
+      readyState = 0;
+      constructor() { queueMicrotask(() => { this.readyState = 1; this.onopen(); }); }
+      send(payload) {
+        const message = JSON.parse(payload);
+        if (message.setup) {
+          queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
+        } else if (message.realtimeInput?.text) {
+          const audio = Buffer.alloc(2400 * 2, 1).toString('base64');
+          queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {
+            modelTurn: {parts: [{inlineData: {data: audio}}]}, turnComplete: true
+          }})}));
+        }
+      }
+      close() { this.readyState = 3; }
+    },
+    onCaption: (translated, cue) => { if (!translated) sourceCaptions.push(cue.text); },
+    onDub: (chunk) => dubs.push(chunk), onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => { throw error; }
+  });
+
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  await pipeline.busy;
+  pipeline.push(new Uint8Array(10.5 * 16000 * 2));
+  await pipeline.busy;
+
+  assert.deepEqual(sourceCaptions, ['Overlap sentence.']);
+  assert.equal(dubs.length, 1, 'the overlap must not spend a second translation/narration turn');
+});
+
 test('reuses one Gemini 3.1 Live session for consecutive translated utterances', async () => {
   let socketCount = 0;
   const sentTexts = [];
@@ -66,7 +170,7 @@ test('reuses one Gemini 3.1 Live session for consecutive translated utterances',
         sentTexts.push(message.realtimeInput.text);
         const pcm = Buffer.alloc(24000 * 2, 1);
         queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {
-          modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}
+          modelTurn: {parts: [{inlineData: {data: pcm.toString('base64')}}]}, turnComplete: true
         }})}));
       }
     }
@@ -83,6 +187,62 @@ test('reuses one Gemini 3.1 Live session for consecutive translated utterances',
   assert.equal(socketCount, 1, 'the precise engine must not spend one Live session/quota request per sentence');
   assert.deepEqual(sentTexts, ['سلام.', 'خوش آمدید.']);
   assert.equal(dubs.length, 2);
+});
+
+test('recycles an idle-completed Gemini session so late PCM cannot contaminate the next turn', async () => {
+  let socketCount = 0;
+  let textTurnCount = 0;
+  const dubs = [];
+  const pcm = (byte) => Buffer.alloc(2400 * 2, byte).toString('base64');
+  const audioMessage = (byte, complete = false) => ({data: JSON.stringify({serverContent: {
+    modelTurn: {parts: [{inlineData: {data: pcm(byte)}}]},
+    ...(complete ? {turnComplete: true} : {})
+  }})});
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore',
+    timeouts: {narrationIdleMs: 5, narrationMaxMs: 50},
+    fetchImpl: async (url) => String(url).includes('api.groq.com')
+      ? {ok: true, async json() { return {segments: [
+        {start: 0, end: 1, text: 'First.'},
+        {start: 1, end: 2, text: 'Second.'}
+      ]}; }}
+      : {ok: true, async json() { return {candidates: [{content: {parts: [{text:
+        '[{"id":0,"text":"اول."},{"id":1,"text":"دوم."}]'
+      }]}}]}; }},
+    WebSocketImpl: class {
+      static OPEN = 1;
+      readyState = 0;
+      constructor() {
+        this.id = ++socketCount;
+        queueMicrotask(() => { this.readyState = 1; this.onopen(); });
+      }
+      send(payload) {
+        const message = JSON.parse(payload);
+        if (message.setup) {
+          queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
+          return;
+        }
+        if (!message.realtimeInput?.text) return;
+        textTurnCount += 1;
+        if (textTurnCount === 1) {
+          queueMicrotask(() => this.onmessage(audioMessage(1)));
+        } else {
+          if (this.id === 1) queueMicrotask(() => this.onmessage(audioMessage(7)));
+          queueMicrotask(() => this.onmessage(audioMessage(2, true)));
+        }
+      }
+      close() { this.readyState = 3; }
+    },
+    onCaption() {}, onDub: (chunk) => dubs.push(chunk), onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => { throw error; }
+  });
+
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  await pipeline.busy;
+
+  assert.equal(socketCount, 2, 'an idle boundary is ambiguous and must start the next turn on a clean session');
+  assert.deepEqual(dubs.map(({duration}) => duration), [0.1, 0.1]);
+  assert.equal(new Uint8Array(dubs[1].data)[0], 2, 'late PCM from turn one must not enter turn two');
 });
 
 test('never advances the playable frontier beyond a failed precise window', async () => {
@@ -118,7 +278,67 @@ test('never advances the playable frontier beyond a failed precise window', asyn
   );
 });
 
-test('times every translated caption piece from its own generated PCM', async () => {
+test('bounds stalled Groq transcription requests with a stable timeout error', async () => {
+  let groqCalls = 0;
+  const warnings = [];
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore',
+    timeouts: {groqRequestMs: 5, retryDelayMs: 0},
+    fetchImpl: async (url, options) => {
+      assert.match(String(url), /api\.groq\.com/u);
+      groqCalls += 1;
+      return new Promise((resolve, reject) => {
+        options.signal?.addEventListener('abort', () => reject(new Error('aborted')), {once: true});
+      });
+    },
+    WebSocketImpl: class {}, onCaption() {}, onDub() {}, onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => warnings.push(error.message)
+  });
+
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  const outcome = await Promise.race([
+    pipeline.busy.then(() => 'settled'),
+    new Promise((resolve) => setTimeout(() => resolve('deadline'), 250))
+  ]);
+
+  assert.equal(outcome, 'settled', 'a stalled provider must never leave finalization waiting forever');
+  assert.equal(groqCalls, 3, 'transient Groq timeouts retain the bounded retry policy');
+  assert.deepEqual(warnings, ['groq_timeout']);
+  await assert.rejects(pipeline.flush(), /groq_timeout/u);
+});
+
+test('bounds a stalled Gemini translation request without exhausting the model pool', async () => {
+  let translationCalls = 0;
+  const warnings = [];
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore',
+    timeouts: {translationRequestMs: 5, retryDelayMs: 0},
+    fetchImpl: async (url, options) => {
+      if (String(url).includes('api.groq.com')) {
+        return {ok: true, async json() { return {segments: [{start: 0, end: 1, text: 'Hello.'}]}; }};
+      }
+      translationCalls += 1;
+      return new Promise((resolve, reject) => {
+        options.signal?.addEventListener('abort', () => reject(new Error('aborted')), {once: true});
+      });
+    },
+    WebSocketImpl: class {}, onCaption() {}, onDub() {}, onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => warnings.push(error.message)
+  });
+
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  const outcome = await Promise.race([
+    pipeline.busy.then(() => 'settled'),
+    new Promise((resolve) => setTimeout(() => resolve('deadline'), 80))
+  ]);
+
+  assert.equal(outcome, 'settled');
+  assert.equal(translationCalls, 1, 'a network timeout is provider-wide and must not burn every model quota');
+  assert.deepEqual(warnings, ['gemini_translation_timeout']);
+  await assert.rejects(pipeline.flush(), /gemini_translation_timeout/u);
+});
+
+test('narrates a translated segment once and keeps every caption inside its PCM interval', async () => {
   const dubs = [];
   const translatedCaptions = [];
   let voiceTurns = 0;
@@ -153,14 +373,29 @@ test('times every translated caption piece from its own generated PCM', async ()
   });
   pipeline.push(new Uint8Array(12 * 16000 * 2));
   await pipeline.busy;
-  assert.deepEqual(dubs.map(({start, duration}) => ({start, duration})), [
-    {start: 0, duration: 1.6},
-    {start: 1.6, duration: 0.4}
-  ]);
+  assert.equal(voiceTurns, 1, 'caption wrapping must not spend an extra Gemini Live turn');
+  assert.deepEqual(dubs.map(({start, duration}) => ({start, duration})), [{start: 0, duration: 1.6}]);
   assert.deepEqual(translatedCaptions.map(({text, start, end}) => ({text, start, end})), [
-    {text: 'اول.', start: 0, end: 1.6},
-    {text: 'دوم.', start: 1.6, end: 2}
+    {text: 'اول.', start: 0, end: 0.8},
+    {text: 'دوم.', start: 0.8, end: 1.6}
   ]);
+});
+
+test('compresses overlong narration to the Whisper interval without doubling pitch', () => {
+  const sampleRate = 24000;
+  const input = new Int16Array(sampleRate * 2);
+  for (let index = 0; index < input.length; index += 1) {
+    input[index] = Math.round(Math.sin(index / sampleRate * 440 * Math.PI * 2) * 12000);
+  }
+
+  const fitted = fitNarrationDuration(input, sampleRate);
+  let positiveCrossings = 0;
+  for (let index = 1; index < fitted.length; index += 1) {
+    if (fitted[index - 1] <= 0 && fitted[index] > 0) positiveCrossings += 1;
+  }
+
+  assert.equal(fitted.length, sampleRate);
+  assert.ok(positiveCrossings >= 400 && positiveCrossings <= 480, `unexpected pitch: ${positiveCrossings} Hz`);
 });
 
 test('runs Whisper, the Gemini text pool, and natural Gemini 3.1 PCM on an audible timeline', async () => {
@@ -247,7 +482,7 @@ test('runs Whisper, the Gemini text pool, and natural Gemini 3.1 PCM on an audib
   assert.equal(new Int16Array(dub.data).some((sample)=>sample!==0),true,'the precise bridge must publish audible PCM');
   const translated=channel.messages.find((message)=>message.type==='caption'&&message.translated);
   assert.deepEqual({text:translated.text,start:translated.start,end:translated.end},{text:'سلام.',start:0,end:1});
-  assert.equal(channel.messages.some((message)=>message.type==='processing-frontier'&&message.seconds===12),true);
+  assert.equal(channel.messages.some((message)=>message.type==='processing-frontier'&&message.seconds===11.25),true);
 
   mediaRecorder.ondataavailable({data:new Blob([Uint8Array.of(1)])});
   await new Promise((resolve)=>receive({target:'offscreen',type:'stop'},{},resolve));

@@ -61,8 +61,8 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
     duration: 125,
     source: [{id: 'source-1', text: 'Hello.', start: 5, end: 6}],
     translated: [
-      {id: 'translated-1', text: 'سلام.', start: 5, end: 6},
-      {id: 'translated-2', text: 'خوش آمدید.', start: 6, end: 10}
+      {id: 'translated-1', text: 'سلام.', start: 7.5, end: 8.5},
+      {id: 'translated-2', text: 'خوش آمدید.', start: 8.5, end: 12.5}
     ]
   })]);
   const files = new Map([
@@ -118,7 +118,7 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
   assert.equal(
     element('#translatedCaption').textContent,
     'سلام.',
-    'translated captions must stay 2.5 seconds behind the dubbed-audio clock'
+    'the player must consume the persisted presentation timeline without applying another delay'
   );
 
   navigator.storage.getDirectory = async () => { throw new DOMException('missing', 'NotFoundError'); };

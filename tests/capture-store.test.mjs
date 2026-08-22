@@ -28,3 +28,17 @@ test('serializes snapshot release and reopen between recording writes', async ()
   assert.equal(result.size, 12);
   assert.deepEqual(observed, ['create', 'append', 'release', 'reopen', 'append', 'finish']);
 });
+
+test('bounds an unresponsive OPFS worker instead of hanging capture finalization', async () => {
+  let terminated = false;
+  class SilentWorker {
+    postMessage() {}
+    terminate() { terminated = true; }
+  }
+
+  await assert.rejects(
+    CaptureStore.create('stalled.webm', {WorkerImpl: SilentWorker, operationTimeoutMs: 100}),
+    /capture_store_create_timeout/u
+  );
+  assert.equal(terminated, true);
+});

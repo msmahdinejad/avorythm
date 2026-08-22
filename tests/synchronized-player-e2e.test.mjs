@@ -222,14 +222,16 @@ test('delivers Gemini Live dubbed PCM and both transcripts through the real play
 
   worklet.port.onmessage({data: new Uint8Array(new Int16Array(16000).fill(5000).buffer)});
   worklet.port.onmessage({data: new Uint8Array(new Int16Array(8000).buffer)});
-  for (let attempt = 0; attempt < 160 && (!startedDubBuffers.length || !element('#translatedCaption').textContent); attempt += 1) {
+  for (let attempt = 0; attempt < 160 && !startedDubBuffers.length; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, 5));
   }
 
   assert.equal(socket.readyState, 1);
   assert.equal(element('#sourceCaption').textContent, 'Hello there');
-  assert.equal(element('#translatedCaption').textContent, 'سلام دنیا');
   assert.equal(element('#sourceCaption').hidden, false);
+  video.currentTime = 3;
+  video.listeners.timeupdate?.();
+  assert.equal(element('#translatedCaption').textContent, 'سلام دنیا');
   assert.equal(element('#translatedCaption').hidden, false);
   assert.equal(startedDubBuffers.length, 1);
   assert.equal(startedDubBuffers[0].some((sample) => sample !== 0), true);

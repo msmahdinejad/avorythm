@@ -7,7 +7,7 @@ addEventListener('error', (event) => { document.querySelector('#result').textCon
 addEventListener('unhandledrejection', (event) => { document.querySelector('#result').textContent = `PROMISE-ERROR ${event.reason?.stack || event.reason}`; });
 </script>
 <script type="module">
-import {CaptureStore} from '../../extension/capture-store.mjs';
+import {CaptureStore} from '../../extension/capture-store.mjs?v=1.1.10';
 
 const output = document.querySelector('#result');
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

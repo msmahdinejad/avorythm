@@ -4,7 +4,7 @@ export class CaptureStore {
     if (typeof WorkerImpl !== 'function') throw new Error('capture_store_worker_unavailable');
     const workerUrl = options.workerUrl || new URL('./capture-store-worker.js', import.meta.url);
     const worker = new WorkerImpl(workerUrl, {type: 'module'});
-    const store = new CaptureStore(fileName, worker);
+    const store = new CaptureStore(fileName, worker, options.operationTimeoutMs);
     try {
       await store.#call('create', {fileName});
       return store;
@@ -14,17 +14,19 @@ export class CaptureStore {
     }
   }
 
-  constructor(fileName, worker) {
+  constructor(fileName, worker, operationTimeoutMs = 15000) {
     this.fileName = fileName;
     this.worker = worker;
     this.sequence = 0;
     this.pending = new Map();
     this.operationQueue = Promise.resolve();
     this.closed = false;
+    this.operationTimeoutMs = Math.max(100, Number(operationTimeoutMs) || 15000);
     worker.onmessage = ({data}) => {
       const operation = this.pending.get(data?.id);
       if (!operation) return;
       this.pending.delete(data.id);
+      clearTimeout(operation.timer);
       if (data.error) operation.reject(new Error(data.error));
       else operation.resolve(data.result || {});
     };
@@ -74,13 +76,20 @@ export class CaptureStore {
   #call(type, payload = {}, transfer = []) {
     const id = ++this.sequence;
     return new Promise((resolve, reject) => {
-      this.pending.set(id, {resolve, reject});
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error(`capture_store_${type}_timeout`));
+      }, this.operationTimeoutMs);
+      this.pending.set(id, {resolve, reject, timer});
       this.worker.postMessage({id, type, ...payload}, transfer);
     });
   }
 
   #rejectAll(error) {
-    for (const operation of this.pending.values()) operation.reject(error);
+    for (const operation of this.pending.values()) {
+      clearTimeout(operation.timer);
+      operation.reject(error);
+    }
     this.pending.clear();
   }
 }

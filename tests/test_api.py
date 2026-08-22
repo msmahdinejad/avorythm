@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from avorythm.api import create_app
 from avorythm.audio import AudioDevice, DeviceCatalog
 from avorythm.config import ConfigStore
+from avorythm.jobs import MediaJob
 from avorythm.models import Settings
 
 
@@ -39,8 +40,67 @@ def client(
             tmp_path / "recordings",
             static,
             shutdown_callback=shutdown_callback,
-        )
+        ),
+        base_url="http://127.0.0.1:8765",
     )
+
+
+def test_rejects_non_loopback_host(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.get("/api/health", headers={"host": "evil.example"})
+
+    assert response.status_code == 400
+
+
+def test_rejects_non_loopback_origin_for_api_requests(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.post(
+            "/api/stop",
+            headers={"origin": "https://evil.example"},
+        )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "headers",
+    [
+        {"host": "127.0.0.1:8765", "origin": "http://127.0.0.1:8765"},
+        {"host": "localhost:8765", "origin": "http://localhost:8765"},
+        {"host": "127.0.0.1:8765"},
+    ],
+    ids=["ipv4-origin", "localhost-origin", "no-origin"],
+)
+def test_accepts_loopback_hosts_and_origins(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    headers: dict[str, str],
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.post("/api/stop", headers=headers)
+
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("path", ["/api/health", "/"])
+def test_adds_security_headers_to_api_and_ui_responses(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    path: str,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        response = app.get(path)
+
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "no-referrer"
 
 
 def test_health_and_bootstrap(
@@ -125,6 +185,25 @@ def test_media_job_paths_reject_traversal(
         response = app.get("/api/media/jobs/not-a-job/video")
 
     assert response.status_code == 404
+
+
+def test_live_capture_cannot_start_while_an_uploaded_job_is_queued(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    with client(monkeypatch, tmp_path) as app:
+        manager = app.app.state.media
+        manager.jobs["a" * 32] = MediaJob(
+            id="a" * 32,
+            filename="lesson.mp4",
+            suffix=".mp4",
+            mode="precise",
+            target_language="fa",
+        )
+        response = app.post("/api/start")
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "wait for uploaded media processing to finish"
 
 
 def test_shutdown_endpoint_stops_the_desktop_server(

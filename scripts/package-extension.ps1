@@ -32,6 +32,12 @@ try {
     ) | Out-Null
     [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
         $archive,
+        (Join-Path $repository "LICENSE"),
+        "LICENSE",
+        [IO.Compression.CompressionLevel]::Optimal
+    ) | Out-Null
+    [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+        $archive,
         (Join-Path $repository "licenses\OFL-Vazirmatn.txt"),
         "licenses/OFL-Vazirmatn.txt",
         [IO.Compression.CompressionLevel]::Optimal

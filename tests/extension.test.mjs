@@ -8,6 +8,7 @@ import {
   base64ToBytes,
   captionSegments,
   fileVoiceSetupMessage,
+  groqReadinessError,
   latestCaption,
   liveUrl,
   mergeTranscript,
@@ -17,6 +18,7 @@ import {
   srt,
   subtitlesEnabled,
   updateOutputMix,
+  GROQ_AUDIO_CONSENT_VERSION,
   LIVE_ENDPOINT,
   wavHeader
 } from '../extension/core.mjs';
@@ -122,6 +124,51 @@ test('extension requires explicit first-capture consent', () => {
   assert.match(background, /nextConfig\.consentVersion !== 1/);
 });
 
+test('precise mode requires a separate versioned Groq audio consent', () => {
+  const settings = normalizeSettings();
+  const options = readFileSync(new URL('../extension/options.html', import.meta.url), 'utf8');
+  const script = readFileSync(new URL('../extension/options.js', import.meta.url), 'utf8');
+  const popup = readFileSync(new URL('../extension/popup.js', import.meta.url), 'utf8');
+
+  assert.equal(settings.groqAudioConsentVersion, 0);
+  assert.equal(GROQ_AUDIO_CONSENT_VERSION, 1);
+  assert.match(options, /id="groqAudioConsent"/);
+  assert.match(options, /short audio windows from the selected tab to be sent directly to Groq Whisper/i);
+  assert.match(script, /بازه‌های کوتاه صدای تب انتخاب‌شده مستقیماً برای Groq Whisper ارسال شوند/u);
+  assert.match(script, /groqAudioConsentVersion/);
+  assert.match(popup, /groq_consent_required/);
+  assert.match(popup, /groq_permission_missing/);
+});
+
+test('Groq readiness gates only the synchronized Whisper engine', () => {
+  const direct = normalizeSettings({
+    playbackMode: 'low-latency',
+    syncCaptionEngine: 'whisper'
+  });
+  assert.equal(groqReadinessError(direct, {}), '');
+
+  const precise = normalizeSettings({
+    playbackMode: 'synchronized',
+    syncCaptionEngine: 'whisper'
+  });
+  assert.equal(groqReadinessError(precise, {}), 'groq_key_missing');
+  assert.equal(groqReadinessError(precise, {groq_api_key_set: true}), 'groq_consent_required');
+  precise.groqAudioConsentVersion = GROQ_AUDIO_CONSENT_VERSION;
+  assert.equal(groqReadinessError(precise, {groq_api_key_set: true}), 'groq_permission_missing');
+  assert.equal(groqReadinessError(precise, {
+    groq_api_key_set: true,
+    groq_permission_granted: true
+  }), '');
+});
+
+test('popup changes its privacy disclosure with the selected engine', () => {
+  const popup = readFileSync(new URL('../extension/popup.js', import.meta.url), 'utf8');
+  assert.match(popup, /privacyGoogle/);
+  assert.match(popup, /privacyPrecise/);
+  assert.match(popup, /Groq Whisper[\s\S]*Google Gemini/);
+  assert.match(popup, /usesGroqAudio\(settings\)/);
+});
+
 test('builds the documented Gemini Live Translate protocol', () => {
   const setup = setupMessage('fa').setup;
   assert.equal(setup.model, 'models/gemini-3.5-live-translate-preview');
@@ -175,13 +222,13 @@ test('ships a dedicated synchronized player and separate settings page', () => {
   assert.match(offscreen, /class CapturedVideo/);
   assert.match(
     offscreen,
-    /stopMediaBridge\(\{publish: !preciseFailure\}\)/,
-    'A failed precise pipeline must not publish a partial synchronized recording'
+    /finalizeMediaBridge\(capturedResult, \{publish: true\}\)/,
+    'A failed provider stage must still preserve and publish the source recording'
   );
   assert.match(
     offscreen,
-    /if \(preciseFailure\) \{[\s\S]*?recorder\.discard\(\)/,
-    'A failed precise pipeline must not download partial four-file artifacts'
+    /postSync\(\{type: 'warning', error: error\.message\}\)/,
+    'A partial precise result must be explicit instead of silently deleting the recording'
   );
   assert.match(sourceBridge, /source-media-state/);
 });

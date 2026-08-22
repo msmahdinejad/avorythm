@@ -3,13 +3,15 @@ from __future__ import annotations
 import asyncio
 import mimetypes
 import platform
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import FileResponse
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import __version__
@@ -28,6 +30,25 @@ ALLOWED_RECORDINGS = {
     "translated.srt",
     "all-outputs.zip",
 }
+
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def _is_loopback_origin(origin: str) -> bool:
+    try:
+        parsed = urlsplit(origin)
+        _ = parsed.port
+    except ValueError:
+        return False
+    return (
+        parsed.scheme in {"http", "https"}
+        and parsed.hostname in LOOPBACK_HOSTS
+        and parsed.username is None
+        and parsed.password is None
+        and parsed.path == ""
+        and parsed.query == ""
+        and parsed.fragment == ""
+    )
 
 
 def create_app(
@@ -59,6 +80,34 @@ def create_app(
     )
     app.state.runtime = runtime
     app.state.media = media
+    operation_lock = asyncio.Lock()
+    upload_in_progress = False
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=["127.0.0.1", "localhost"],
+        www_redirect=False,
+    )
+
+    @app.middleware("http")
+    async def protect_local_api(
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
+    ) -> Response:
+        origin = request.headers.get("origin")
+        is_api = request.url.path == "/api" or request.url.path.startswith("/api/")
+        response: Response
+        if is_api and origin and not _is_loopback_origin(origin):
+            response = JSONResponse(
+                {"detail": "non-loopback origin is not allowed"},
+                status_code=403,
+            )
+        else:
+            response = await call_next(request)
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        return response
 
     def media_snapshot(job: MediaJob) -> dict[str, object]:
         payload = job.to_dict()
@@ -129,12 +178,17 @@ def create_app(
 
     @app.post("/api/start")
     async def start() -> dict[str, bool]:
-        if media.active_job_id:
-            raise HTTPException(409, "wait for uploaded media processing to finish")
-        try:
-            await runtime.start()
-        except ValueError as error:
-            raise HTTPException(400, str(error)) from error
+        async with operation_lock:
+            media_busy = upload_in_progress or any(
+                job.status not in {"ready", "cancelled", "failed"}
+                for job in media.list_jobs()
+            )
+            if media_busy:
+                raise HTTPException(409, "wait for uploaded media processing to finish")
+            try:
+                await runtime.start()
+            except ValueError as error:
+                raise HTTPException(400, str(error)) from error
         return {"ok": True}
 
     @app.post("/api/stop")
@@ -152,14 +206,14 @@ def create_app(
         return {"ok": True}
 
     @app.post("/api/record/start")
-    def record_start() -> dict[str, bool]:
+    async def record_start() -> dict[str, bool]:
         if not runtime.state.running:
             raise HTTPException(409, "start desktop dubbing before recording")
         runtime.start_recording()
         return {"ok": True}
 
     @app.post("/api/record/stop")
-    def record_stop() -> dict[str, str | bool]:
+    async def record_stop() -> dict[str, str | bool]:
         return {"ok": True, "folder": runtime.stop_recording()}
 
     @app.post("/api/audio/open-mixer")
@@ -191,10 +245,16 @@ def create_app(
         mode: Literal["precise", "fast"] = Query(default="precise"),
         voice_name: str = Query(default="Kore"),
     ) -> dict[str, object]:
-        if runtime.state.running:
-            raise HTTPException(409, "stop live desktop dubbing before processing a video")
-        content_length = request.headers.get("content-length")
+        nonlocal upload_in_progress
+        async with operation_lock:
+            live_busy = runtime.state.running or (
+                runtime.task is not None and not runtime.task.done()
+            )
+            if live_busy:
+                raise HTTPException(409, "stop live desktop dubbing before processing a video")
+            upload_in_progress = True
         try:
+            content_length = request.headers.get("content-length")
             length = int(content_length) if content_length else None
             job = await media.create_upload(
                 filename,
@@ -206,6 +266,9 @@ def create_app(
             )
         except ValueError as error:
             raise HTTPException(400, str(error)) from error
+        finally:
+            async with operation_lock:
+                upload_in_progress = False
         return media_snapshot(job)
 
     @app.get("/api/media/jobs/{job_id}")

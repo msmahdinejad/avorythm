@@ -1,4 +1,4 @@
-import {normalizeSettings, outputMix} from './core.mjs';
+import {groqReadinessError, normalizeSettings, outputMix, usesGroqAudio} from './core.mjs';
 
 const $ = (selector) => document.querySelector(selector);
 const CONSENT_VERSION = 1;
@@ -15,9 +15,9 @@ const copy = {
     yourOutput: 'خروجی انتخاب‌شده', edit: 'ویرایش', selectedCount: (count) => `${count} مورد فعال`, noOutput: 'هیچ خروجی‌ای فعال نیست',
     originalAudio: 'صدای اصلی', dubbedAudio: 'صدای دوبله', sourceSubtitles: 'زیرنویس اصلی', translatedSubtitles: 'زیرنویس ترجمه',
     source: 'گفتار اصلی', translated: 'ترجمهٔ زنده', waiting: 'منتظر صدا…', waitingTranslation: 'ترجمه اینجا نمایش داده می‌شود…',
-    downloadReady: 'چهار فایل در Downloads ذخیره شدند.', privacy: 'صدا فقط پس از شروع به Google Gemini فرستاده می‌شود.', help:'راهنما ↗', project: 'پروژه ↗',
+    downloadReady: 'چهار فایل در Downloads ذخیره شدند.', privacyGoogle: 'پس از زدن «شروع»، صدای تب انتخاب‌شده فقط به Google Gemini فرستاده می‌شود.', privacyPrecise: 'در حالت دقیق، بازه‌های کوتاه صدای تب مستقیماً به Groq Whisper می‌روند؛ سپس متن برای ترجمه و ساخت صدا به Google Gemini فرستاده می‌شود.', help:'راهنما ↗', project: 'پروژه ↗',
     api_key_missing: 'کلید Gemini را در تنظیمات وارد کن.', api_key_invalid: 'کلید Gemini معتبر نیست.', consent_required: 'اجازهٔ پردازش صدا را در تنظیمات تأیید کن.',
-    gemini_socket_failed: 'اتصال مستقیم به Gemini برقرار نشد؛ پروکسی مرورگر را بررسی کن.', gemini_socket_closed: 'اتصال Gemini بسته شد.', gemini_socket_timeout: 'پاسخی از Gemini دریافت نشد.', gemini_token_failed: 'Google توکن کوتاه‌عمر صادر نکرد؛ کلید و اتصال را بررسی کن.', gemini_quota_exceeded: 'سهمیهٔ Gemini تمام شده است؛ کمی بعد دوباره امتحان کن.', groq_key_missing:'برای زمان‌بندی Whisper، کلید Groq را در تنظیمات وارد کن.', groq_auth_failed:'کلید Groq معتبر نیست.', groq_access_forbidden:'Chrome به Groq دسترسی ندارد؛ api.groq.com را از پروکسی سیستم یا مرورگر عبور بده.', groq_connection_failed:'اتصال Chrome به Groq برقرار نشد؛ پروکسی را بررسی کن.', groq_quota_exceeded:'سهمیهٔ Groq فعلاً تمام شده است.', capture_store_write_failed:'ذخیرهٔ محلی ضبط متوقف شد؛ فضای دیسک و دسترسی ذخیره‌سازی را بررسی کن.',
+    gemini_socket_failed: 'اتصال مستقیم به Gemini برقرار نشد؛ پروکسی مرورگر را بررسی کن.', gemini_socket_closed: 'اتصال Gemini بسته شد.', gemini_socket_timeout: 'پاسخی از Gemini دریافت نشد.', gemini_token_failed: 'Google توکن کوتاه‌عمر صادر نکرد؛ کلید و اتصال را بررسی کن.', gemini_quota_exceeded: 'سهمیهٔ Gemini تمام شده است؛ کمی بعد دوباره امتحان کن.', groq_key_missing:'برای زمان‌بندی Whisper، کلید Groq را در تنظیمات وارد کن.', groq_consent_required:'برای حالت دقیق، اجازهٔ ارسال بازه‌های کوتاه صدا به Groq Whisper را در تنظیمات تأیید کن.', groq_permission_missing:'برای حالت دقیق، در تنظیمات دسترسی Chrome به Groq را فعال کن.', groq_auth_failed:'کلید Groq معتبر نیست.', groq_access_forbidden:'Chrome به Groq دسترسی ندارد؛ api.groq.com را از پروکسی سیستم یا مرورگر عبور بده.', groq_connection_failed:'اتصال Chrome به Groq برقرار نشد؛ پروکسی را بررسی کن.', groq_quota_exceeded:'سهمیهٔ Groq فعلاً تمام شده است.', capture_store_write_failed:'ذخیرهٔ محلی ضبط متوقف شد؛ فضای دیسک و دسترسی ذخیره‌سازی را بررسی کن.',
     active_tab_missing: 'تب فعالی پیدا نشد.', capture_failed: 'دریافت صدا از این تب ممکن نشد.', source_resume_failed:'ویدیوی تب منبع خودکار پخش نشد؛ پخش را یک‌بار دستی شروع کن و دوباره امتحان کن.', synchronized_player_unavailable: 'این تب امکان ساخت پلیر هماهنگ را نمی‌دهد؛ حالت داخل صفحه را انتخاب کن.', synchronized_player_failed: 'بافر ویدئو ساخته نشد؛ حالت داخل صفحه را امتحان کن.', downloads_permission_missing: 'برای ذخیرهٔ چهار خروجی، دسترسی Downloads لازم است.'
   },
   en: {
@@ -28,9 +28,9 @@ const copy = {
     yourOutput: 'Selected output', edit: 'Edit', selectedCount: (count) => `${count} enabled`, noOutput: 'No output is enabled',
     originalAudio: 'Original audio', dubbedAudio: 'Dubbed audio', sourceSubtitles: 'Source subtitles', translatedSubtitles: 'Translated subtitles',
     source: 'Source speech', translated: 'Live translation', waiting: 'Waiting for audio…', waitingTranslation: 'Translation appears here…',
-    downloadReady: 'Four files were saved to Downloads.', privacy: 'Audio goes to Google Gemini only after you start.', help:'Guide ↗', project: 'Project ↗',
+    downloadReady: 'Four files were saved to Downloads.', privacyGoogle: 'After you press Start, selected-tab audio goes only to Google Gemini.', privacyPrecise: 'In precise mode, short selected-tab audio windows go directly to Groq Whisper; transcript text then goes to Google Gemini for translation and voice generation.', help:'Guide ↗', project: 'Project ↗',
     api_key_missing: 'Add your Gemini key in Settings.', api_key_invalid: 'The Gemini key is invalid.', consent_required: 'Confirm audio processing in Settings.',
-    gemini_socket_failed: 'Could not connect to Gemini; check the browser proxy.', gemini_socket_closed: 'The Gemini connection closed.', gemini_socket_timeout: 'Gemini did not respond in time.', gemini_token_failed: 'Google could not issue a short-lived token; check the key and connection.', gemini_quota_exceeded: 'The Gemini quota is exhausted; try again shortly.', groq_key_missing:'Add a Groq key in Settings to use Whisper timing.', groq_auth_failed:'The Groq key is invalid.', groq_access_forbidden:'Chrome cannot reach Groq; route api.groq.com through the browser or system proxy.', groq_connection_failed:'Chrome could not connect to Groq; check the proxy.', groq_quota_exceeded:'The Groq quota is temporarily exhausted.', capture_store_write_failed:'Local capture storage stopped; check available disk space and storage access.',
+    gemini_socket_failed: 'Could not connect to Gemini; check the browser proxy.', gemini_socket_closed: 'The Gemini connection closed.', gemini_socket_timeout: 'Gemini did not respond in time.', gemini_token_failed: 'Google could not issue a short-lived token; check the key and connection.', gemini_quota_exceeded: 'The Gemini quota is exhausted; try again shortly.', groq_key_missing:'Add a Groq key in Settings to use Whisper timing.', groq_consent_required:'Confirm permission for short audio windows to go to Groq Whisper in Settings.', groq_permission_missing:'Allow Chrome access to Groq in Settings to use precise mode.', groq_auth_failed:'The Groq key is invalid.', groq_access_forbidden:'Chrome cannot reach Groq; route api.groq.com through the browser or system proxy.', groq_connection_failed:'Chrome could not connect to Groq; check the proxy.', groq_quota_exceeded:'The Groq quota is temporarily exhausted.', capture_store_write_failed:'Local capture storage stopped; check available disk space and storage access.',
     active_tab_missing: 'No active tab was found.', capture_failed: 'Could not capture audio from this tab.', source_resume_failed:'The source video could not resume automatically. Play it once, then try again.', synchronized_player_unavailable: 'This tab cannot provide synchronized video; use on-page mode.', synchronized_player_failed: 'The video buffer could not start; try on-page mode.', downloads_permission_missing: 'Downloads access is required to save four outputs.'
   }
 };
@@ -83,6 +83,12 @@ function outputItems() {
   ].filter(([key]) => mix[key]);
 }
 
+function setupError() {
+  if (!bootstrap?.api_key_set) return 'api_key_missing';
+  if (settings.consentVersion !== CONSENT_VERSION) return 'consent_required';
+  return groqReadinessError(settings, bootstrap);
+}
+
 function renderSettings() {
   translate();
   fillLanguages();
@@ -96,9 +102,11 @@ function renderSettings() {
     chip.textContent = t(key);
     return chip;
   }) : [Object.assign(document.createElement('span'), {className: 'output-chip', textContent: t('noOutput')})]));
-  const configured = Boolean(bootstrap?.api_key_set) && settings.consentVersion === CONSENT_VERSION;
-  $('#setupNotice').hidden = configured;
-  $('#toggleButton').disabled = !configured;
+  const readinessError = setupError();
+  $('#setupNotice').hidden = !readinessError;
+  $('#setupMessage').textContent = readinessError ? t(readinessError) : t('setupMessage');
+  $('#toggleButton').disabled = Boolean(readinessError);
+  $('#privacyText').textContent = t(usesGroqAudio(settings) ? 'privacyPrecise' : 'privacyGoogle');
   $('#languageBadge').textContent = `AUTO → ${settings.targetLanguage.toUpperCase()}`;
 }
 
@@ -122,7 +130,7 @@ function renderState(state) {
   $('#toggleButton .action-icon').textContent = active ? '■' : '▶';
   $('#toggleButton b').textContent = t(active ? 'stop' : 'start');
   $('#actionHint').textContent = t(active ? 'stopHint' : settings.playbackMode === 'synchronized' ? 'syncHint' : 'startHint');
-  $('#toggleButton').disabled = !active && (!bootstrap?.api_key_set || settings.consentVersion !== CONSENT_VERSION);
+  $('#toggleButton').disabled = !active && Boolean(setupError());
   $('#targetLanguage').disabled = active;
   document.querySelectorAll('input[name="playbackMode"]').forEach((input) => { input.disabled = active; });
   $('#languageBadge').textContent = `${(state.sourceLanguage || 'AUTO').toUpperCase()} → ${settings.targetLanguage.toUpperCase()}`;

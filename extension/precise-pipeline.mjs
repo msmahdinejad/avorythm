@@ -11,8 +11,11 @@ const INPUT_RATE = 16000;
 const OUTPUT_RATE = 24000;
 const WINDOW_BYTES = 12 * INPUT_RATE * 2;
 const OVERLAP_BYTES = 1.5 * INPUT_RATE * 2;
+const OVERLAP_SECONDS = OVERLAP_BYTES / (INPUT_RATE * 2);
 const NARRATION_IDLE_MS = 600;
 const NARRATION_MAX_MS = 12000;
+const GROQ_REQUEST_MS = 30000;
+const TRANSLATION_REQUEST_MS = 30000;
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const TRANSLATION_MODELS = [
   ['gemini-3.6-flash', 5, 20, true],
@@ -57,6 +60,68 @@ function trimNarration(input) {
   return samples.slice(Math.max(0, first - lead), Math.min(samples.length, last + tail + 1));
 }
 
+export function fitNarrationDuration(input, maximumSamples) {
+  const samples = input instanceof Int16Array
+    ? input
+    : new Int16Array(input.buffer, input.byteOffset || 0, Math.floor(input.byteLength / 2));
+  const targetLength = Math.max(1, Math.floor(maximumSamples));
+  if (samples.length <= targetLength) return samples.slice();
+  const window = Math.min(960, Math.max(64, Math.floor(targetLength / 2) * 2));
+  const overlap = Math.floor(window / 2);
+  const hop = window - overlap;
+  if (targetLength <= window || overlap < 32) {
+    const output = new Int16Array(targetLength);
+    for (let index = 0; index < targetLength; index += 1) {
+      output[index] = samples[Math.min(samples.length - 1, Math.floor(index * samples.length / targetLength))];
+    }
+    return output;
+  }
+  const output = new Int16Array(targetLength);
+  output.set(samples.subarray(0, Math.min(window, targetLength)));
+  const inputSpan = samples.length - window;
+  const outputSpan = targetLength - window;
+  const searchRadius = Math.min(240, Math.floor(overlap / 2));
+  let previousInput = 0;
+  for (let outputPosition = hop; outputPosition < targetLength; outputPosition += hop) {
+    const expected = Math.round(outputPosition / Math.max(1, outputSpan) * inputSpan);
+    const minimum = Math.max(previousInput + hop, expected - searchRadius);
+    const maximum = Math.min(samples.length - window, expected + searchRadius);
+    let best = Math.max(0, Math.min(samples.length - window, expected));
+    let bestScore = -Infinity;
+    for (let candidate = minimum; candidate <= maximum; candidate += 4) {
+      let correlation = 0;
+      let referenceEnergy = 1;
+      let candidateEnergy = 1;
+      for (let index = 0; index < overlap; index += 1) {
+        const reference = samples[previousInput + hop + index];
+        const value = samples[candidate + index];
+        correlation += reference * value;
+        referenceEnergy += reference * reference;
+        candidateEnergy += value * value;
+      }
+      const score = correlation / Math.sqrt(referenceEnergy * candidateEnergy);
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    }
+    const crossfade = Math.min(overlap, targetLength - outputPosition);
+    for (let index = 0; index < crossfade; index += 1) {
+      const mix = index / Math.max(1, crossfade - 1);
+      output[outputPosition + index] = Math.round(
+        output[outputPosition + index] * (1 - mix) + samples[best + index] * mix
+      );
+    }
+    const copyStart = outputPosition + crossfade;
+    const copyEnd = Math.min(targetLength, outputPosition + window);
+    if (copyEnd > copyStart) {
+      output.set(samples.subarray(best + crossfade, best + crossfade + copyEnd - copyStart), copyStart);
+    }
+    previousInput = best;
+  }
+  return output;
+}
+
 function sentenceReady(text) {
   return /[.!?\u061f\u3002\uff01\uff1f\u2026]["'\u00bb\u201d\s]*$/u.test(text);
 }
@@ -73,7 +138,8 @@ export class PreciseDubbingPipeline {
     onSourceText,
     onWarning,
     fetchImpl = fetch,
-    WebSocketImpl = WebSocket
+    WebSocketImpl = WebSocket,
+    timeouts = {}
   }) {
     this.geminiKey = geminiKey;
     this.groqKey = groqKey;
@@ -84,8 +150,23 @@ export class PreciseDubbingPipeline {
     this.onFrontier = onFrontier;
     this.onSourceText = onSourceText;
     this.onWarning = onWarning;
-    this.fetch = fetchImpl;
+    this.fetch = (...args) => fetchImpl(...args);
     this.WebSocket = WebSocketImpl;
+    this.narrationIdleMs = Number.isFinite(timeouts.narrationIdleMs)
+      ? Math.max(1, timeouts.narrationIdleMs)
+      : NARRATION_IDLE_MS;
+    this.narrationMaxMs = Number.isFinite(timeouts.narrationMaxMs)
+      ? Math.max(this.narrationIdleMs, timeouts.narrationMaxMs)
+      : NARRATION_MAX_MS;
+    this.groqRequestMs = Number.isFinite(timeouts.groqRequestMs)
+      ? Math.max(1, timeouts.groqRequestMs)
+      : GROQ_REQUEST_MS;
+    this.translationRequestMs = Number.isFinite(timeouts.translationRequestMs)
+      ? Math.max(1, timeouts.translationRequestMs)
+      : TRANSLATION_REQUEST_MS;
+    this.retryDelayMs = Number.isFinite(timeouts.retryDelayMs)
+      ? Math.max(0, timeouts.retryDelayMs)
+      : 500;
     this.chunks = [];
     this.bytes = 0;
     this.offset = 0;
@@ -167,18 +248,22 @@ export class PreciseDubbingPipeline {
   }
 
   async #translate(segments) {
-    const instruction = 'Translate every segment faithfully, idiomatically, and naturally for native viewers. Use the full batch as context, keep a one-to-one output mapping, and preserve names, numbers, technical terms, tone, intent, and sentence boundaries. Do not summarize, explain, merge, or add information. Return only a JSON array with the keys id and text.';
+    const instruction = 'Translate every segment faithfully, idiomatically, and naturally for native viewers. Use the full batch as context, keep a one-to-one output mapping, and preserve names, numbers, technical terms, tone, intent, and sentence boundaries. Prefer concise natural wording that can be spoken within duration_seconds without dropping meaning. Do not explain, merge, or add information. Return only a JSON array with the keys id and text.';
     const prompt = JSON.stringify({
       source_language: 'auto',
       target_language: this.targetLanguage,
-      segments: segments.map((item, id) => ({id, text: item.text})),
+      segments: segments.map((item, id) => ({
+        id,
+        text: item.text,
+        duration_seconds: Math.max(0.25, item.end - item.start).toFixed(2)
+      })),
       output_format: [{id: 0, text: 'translated text'}]
     });
     let lastError = new Error('translation_pool_exhausted');
     for (const [model, rpm, rpd, structured] of TRANSLATION_MODELS) {
       if (!this.#claimModel(model, rpm, rpd)) continue;
       try {
-        const response = await this.fetch(
+        const {response, result} = await this.#fetchJson(
           `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(this.geminiKey)}`,
           {
             method: 'POST',
@@ -191,17 +276,20 @@ export class PreciseDubbingPipeline {
                 temperature: 0.15
               }
             })
-          }
+          },
+          this.translationRequestMs,
+          'gemini_translation_timeout'
         );
         if (!response.ok) {
           const error = new Error(`gemini_translation_${response.status}`);
           error.status = response.status;
           throw error;
         }
-        return parseTranslationResponse(await response.json(), segments.length);
+        return parseTranslationResponse(result, segments.length);
       } catch (error) {
         lastError = error;
         if (error.status === 404) this.unavailableModels.add(model);
+        if (error.message === 'gemini_translation_timeout') throw error;
         if ([401, 403].includes(error.status)) throw error;
       }
     }
@@ -217,6 +305,37 @@ export class PreciseDubbingPipeline {
     const error = new Error(code);
     if (status) error.status = status;
     return error;
+  }
+
+  async #fetchJson(url, options, timeoutMs, timeoutCode) {
+    const controller = new AbortController();
+    let timer = null;
+    const timeoutError = () => {
+      const error = new Error(timeoutCode);
+      error.code = timeoutCode;
+      return error;
+    };
+    const request = (async () => {
+      const response = await this.fetch(url, {...options, signal: controller.signal});
+      const result = response.ok ? await response.json() : null;
+      return {response, result};
+    })();
+    const timeout = new Promise((resolve, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        reject(timeoutError());
+      }, timeoutMs);
+    });
+    try {
+      return await Promise.race([request, timeout]);
+    } catch (error) {
+      if (controller.signal.aborted && error?.message !== timeoutCode) {
+        throw timeoutError();
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   #protocolError(value) {
@@ -278,12 +397,12 @@ export class PreciseDubbingPipeline {
   #scheduleNarratorIdle(turn) {
     clearTimeout(turn.idleTimer);
     turn.idleTimer = setTimeout(
-      () => this.#finishNarratorTurn(turn),
-      NARRATION_IDLE_MS
+      () => this.#finishNarratorTurn(turn, null, true),
+      this.narrationIdleMs
     );
     turn.maxTimer ||= setTimeout(
-      () => this.#finishNarratorTurn(turn),
-      NARRATION_MAX_MS
+      () => this.#finishNarratorTurn(turn, null, true),
+      this.narrationMaxMs
     );
   }
 
@@ -419,12 +538,17 @@ export class PreciseDubbingPipeline {
 
   #publishCaption(translated, segment, text) {
     const pieces = captionSegments(text);
-    const slice = Math.max(0.01, segment.end - segment.start) / Math.max(1, pieces.length);
+    const weights = pieces.map((piece) => Math.max(1, [...piece].length));
+    const totalWeight = Math.max(1, weights.reduce((total, weight) => total + weight, 0));
+    const duration = Math.max(0.01, segment.end - segment.start);
+    let cursor = segment.start;
     pieces.forEach((piece, index) => this.onCaption(translated, {
       id: `${translated ? 'translated' : 'whisper'}-${segment.start.toFixed(2)}-${index}`,
       text: piece,
-      start: segment.start + slice * index,
-      end: index === pieces.length - 1 ? segment.end : segment.start + slice * (index + 1)
+      start: cursor,
+      end: index === pieces.length - 1
+        ? segment.end
+        : (cursor += duration * weights[index] / totalWeight)
     }));
   }
 
@@ -462,23 +586,16 @@ export class PreciseDubbingPipeline {
       const segment = segments[index];
       const translated = translations[index];
       this.#publishCaption(false, segment, segment.text);
-      const pieces = captionSegments(translated);
-      for (let pieceIndex = 0; pieceIndex < pieces.length; pieceIndex += 1) {
-        const piece = pieces[pieceIndex];
-        const narration = await this.#narrate(piece);
-        const start = Math.max(segment.start, this.dubCursor);
-        const duration = narration.length / OUTPUT_RATE;
-        const end = start + duration;
-        const pcm = new Uint8Array(narration.buffer, narration.byteOffset, narration.byteLength);
-        this.onDub({data: pcm.slice().buffer, start, duration});
-        this.onCaption(true, {
-          id: `translated-${segment.start.toFixed(2)}-${pieceIndex}`,
-          text: piece,
-          start,
-          end
-        });
-        this.dubCursor = end;
-      }
+      const narration = await this.#narrate(translated);
+      const start = Math.max(segment.start, this.dubCursor);
+      const availableDuration = Math.max(0.25, segment.end - start);
+      const fitted = fitNarrationDuration(narration, Math.round(availableDuration * OUTPUT_RATE));
+      const duration = fitted.length / OUTPUT_RATE;
+      const end = start + duration;
+      const pcm = new Uint8Array(fitted.buffer, fitted.byteOffset, fitted.byteLength);
+      this.onDub({data: pcm.slice().buffer, start, duration});
+      this.#publishCaption(true, {start, end}, translated);
+      this.dubCursor = end;
     }
     this.onFrontier(frontier);
   }
@@ -491,22 +608,29 @@ export class PreciseDubbingPipeline {
     form.append('timestamp_granularities[]', 'segment');
     form.append('temperature', '0');
     let response = null;
+    let result = null;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        response = await this.fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-          method: 'POST',
-          headers: {Authorization: `Bearer ${this.groqKey}`},
-          body: form
-        });
+        ({response, result} = await this.#fetchJson(
+          'https://api.groq.com/openai/v1/audio/transcriptions',
+          {
+            method: 'POST',
+            headers: {Authorization: `Bearer ${this.groqKey}`},
+            body: form
+          },
+          this.groqRequestMs,
+          'groq_timeout'
+        ));
       } catch (cause) {
         if (attempt < 2) {
-          await wait(500 * (attempt + 1));
+          await wait(this.retryDelayMs * (attempt + 1));
           continue;
         }
+        if (cause?.message === 'groq_timeout') throw cause;
         throw new Error('groq_connection_failed', {cause});
       }
       if (response.ok || ![429, 500, 502, 503, 504].includes(response.status) || attempt === 2) break;
-      await wait(500 * (attempt + 1));
+      await wait(this.retryDelayMs * (attempt + 1));
     }
     if (!response?.ok) {
       const status = Number(response?.status || 0);
@@ -518,19 +642,23 @@ export class PreciseDubbingPipeline {
       error.status = status;
       throw error;
     }
-    const result = await response.json();
+    const windowEnd = offset + pcm.byteLength / (INPUT_RATE * 2);
+    const ownershipStart = offset === 0 ? offset : offset + OVERLAP_SECONDS / 2;
+    const ownershipEnd = flush ? windowEnd : windowEnd - OVERLAP_SECONDS / 2;
     const fresh = [];
     for (const segment of result.segments || []) {
       const start = offset + Number(segment.start || 0);
       const end = offset + Number(segment.end || segment.start || 0.6);
       const text = String(segment.text || '').trim();
+      const midpoint = start + Math.max(0, end - start) / 2;
+      if (midpoint < ownershipStart || midpoint >= ownershipEnd) continue;
       if (end <= this.committedUntil + 0.05 || !text) continue;
       fresh.push({text, start, end});
       this.committedUntil = Math.max(this.committedUntil, end);
       await this.onSourceText(latestCaption(text));
     }
     const grouped = this.#groupSegments(fresh, flush);
-    const frontier = this.pendingSegment?.start ?? offset + pcm.byteLength / (INPUT_RATE * 2);
+    const frontier = this.pendingSegment?.start ?? ownershipEnd;
     await this.#process(grouped, frontier);
   }
 }

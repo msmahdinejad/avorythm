@@ -78,6 +78,7 @@ const SYNC_ARTIFACT_PREFIX = 'avorythm-sync-artifact-';
 const RECONNECT_BUFFER_CHUNKS = 1200;
 const SYNC_TURN_IDLE_MS = 500;
 const SYNC_TURN_MAX_MS = 3000;
+const MEDIA_RECORDER_STOP_MS = 10000;
 const DUB_OUTPUT_RATE = 24000;
 const AUDIBLE_SAMPLE_THRESHOLD = 64;
 
@@ -113,6 +114,17 @@ function postSync(message) {
     syncQueue.push(message);
     if (syncQueue.length > 240) syncQueue.shift();
   }
+}
+
+function publishSynchronizedCaption(translated, cue) {
+  const delay = translated && config?.syncCaptionEngine !== 'whisper'
+    ? TRANSLATED_CAPTION_DELAY_SECONDS
+    : 0;
+  const presented = delay
+    ? {...cue, start: cue.start + delay, end: cue.end + delay}
+    : cue;
+  postSync({type: 'caption', translated, ...presented});
+  recorder?.addSubtitle(translated, presented);
 }
 
 async function replaySyncSession(position = 0) {
@@ -188,19 +200,31 @@ async function startMediaBridge() {
     postSync({type: 'media-chunk', data});
     postSync({type: 'media-progress', duration: captureTimeline});
   };
-  mediaRecorder.onerror = () => report({status: 'error', error: 'synchronized_player_failed'});
-  mediaStopPromise = new Promise((resolve) => { mediaRecorder.onstop = resolve; });
+  mediaStopPromise = new Promise((resolve, reject) => {
+    mediaRecorder.onstop = resolve;
+    mediaRecorder.onerror = () => {
+      report({status: 'error', error: 'synchronized_player_failed'}).catch(() => {});
+      reject(new Error('synchronized_recorder_failed'));
+    };
+  });
   mediaRecorder.start(250);
 }
 
-async function stopMediaBridge({publish = true} = {}) {
+async function stopMediaCapture() {
   if (!mediaRecorder || !capturedVideo) return;
   if (mediaRecorder.state !== 'inactive') {
     try { mediaRecorder.requestData(); } catch {}
     mediaRecorder.stop();
   }
-  await mediaStopPromise;
-  const result = await capturedVideo.finish();
+  await Promise.race([
+    mediaStopPromise,
+    wait(MEDIA_RECORDER_STOP_MS).then(() => { throw new Error('synchronized_recorder_stop_timeout'); })
+  ]);
+  return capturedVideo.finish();
+}
+
+async function finalizeMediaBridge(result, {publish = true} = {}) {
+  if (!result) return;
   if (!publish) {
     const root = await navigator.storage.getDirectory();
     await root.removeEntry(result.fileName).catch(() => {});
@@ -224,9 +248,8 @@ async function persistSyncArtifacts(video) {
   await writer.finish();
   const source=[...syncCaptionHistory.values()].filter((cue)=>!cue.translated).sort((left,right)=>left.start-right.start);
   const translated=[...syncCaptionHistory.values()].filter((cue)=>cue.translated).sort((left,right)=>left.start-right.start);
-  const delayedTranslated=translated.map((cue)=>({...cue,start:cue.start+TRANSLATED_CAPTION_DELAY_SECONDS,end:cue.end+TRANSLATED_CAPTION_DELAY_SECONDS}));
   const sourceName=await writeOpfsFile(root,`${token}-source.srt`,new Blob(['\ufeff',srt(source)],{type:'application/x-subrip'}));
-  const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(delayedTranslated)],{type:'application/x-subrip'}));
+  const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(translated)],{type:'application/x-subrip'}));
   const metadataName=`${token}-timeline.json`;
   const artifacts={videoFileName:video.fileName,dubbedFileName:dubbedName,sourceSubtitleFileName:sourceName,translatedSubtitleFileName:translatedName,metadataFileName:metadataName,mimeType:syncInit?.mimeType||'video/webm',duration:Number(video.duration)||0};
   await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:2,artifacts,duration:artifacts.duration,source,translated})],{type:'application/json'}));
@@ -252,7 +275,11 @@ function trackSpeech(pcm, at) {
     speech.silentFor += samples.length / 16000;
     if (speech.silentFor >= 0.45) {
       speech.completed.push({start: speech.started, end: Math.max(speech.started + 0.2, at - speech.silentFor)});
-      if (speech.completed.length > 8) speech.completed.shift();
+      // Keep every unclaimed utterance across the configured lead. A fixed
+      // eight-item cap reassigned delayed Gemini turns to later speech during
+      // fast dialogue. The time bound prevents stale history from growing
+      // forever if the provider never responds.
+      speech.completed = speech.completed.filter((item) => item.end >= at - 120);
       speech.active = false;
       speech.silentFor = 0;
     }
@@ -295,8 +322,7 @@ function publishTurnCaption(translated, text, interval) {
       start: cursor,
       end: index === pieces.length - 1 ? interval.end : Math.min(interval.end, cursor + duration)
     };
-    postSync({type: 'caption', translated, ...cue});
-    recorder?.addSubtitle(translated, cue);
+    publishSynchronizedCaption(translated, cue);
     cursor = cue.end;
   });
 }
@@ -349,7 +375,7 @@ function scheduleSynchronizedTurnFlush() {
   }
 }
 
-function finalizeSynchronizedTurn(closeTurn = true) {
+function finalizeSynchronizedTurn(closeTurn = true, publishCaptions = true) {
   const raw = combineTurnAudio(syncLiveTurn.audio);
   if (!syncLiveTurn.interval && !raw.byteLength && !syncLiveTurn.source.length && !syncLiveTurn.translated.length) {
     if (closeTurn) syncLiveTurn = emptySyncLiveTurn();
@@ -375,11 +401,11 @@ function finalizeSynchronizedTurn(closeTurn = true) {
     postSync({type: 'dub-chunk', data: data.buffer, start: exactInterval.start, duration});
     syncLiveTurn.audioPublished = true;
   }
-  if (!syncLiveTurn.sourcePublished && syncLiveTurn.source.length) {
+  if (publishCaptions && !syncLiveTurn.sourcePublished && syncLiveTurn.source.length) {
     publishTurnCaption(false, syncLiveTurn.source.join(' ').trim(), syncLiveTurn.sourceInterval || exactInterval);
     syncLiveTurn.sourcePublished = true;
   }
-  if (!syncLiveTurn.translatedPublished && syncLiveTurn.translated.length) {
+  if (publishCaptions && !syncLiveTurn.translatedPublished && syncLiveTurn.translated.length) {
     publishTurnCaption(true, syncLiveTurn.translated.join(' ').trim(), syncLiveTurn.translatedInterval || exactInterval);
     syncLiveTurn.translatedPublished = true;
   }
@@ -501,7 +527,10 @@ class SessionRecorder {
   addSubtitle(translated, entry) {
     if (!entry?.text.trim()) return;
     const segments = captionSegments(entry.text);
-    const duration = Math.max(0.6 * segments.length, entry.end - entry.start);
+    // The player, synchronized artifacts, and four-output SRT must share the
+    // exact same cue interval. Artificially extending short cues here made the
+    // downloaded subtitle drift away from the audible dub.
+    const duration = Math.max(0.01, entry.end - entry.start);
     const slice = duration / segments.length;
     const target = translated ? this.translatedEntries : this.sourceEntries;
     segments.forEach((text, index) => target.push({
@@ -659,7 +688,10 @@ async function handleLiveMessage(message) {
     // generationComplete is the point at which Google says response generation
     // has finished. turnComplete can follow later while the server waits for
     // assumed real-time playback, which is too late for our buffered timeline.
-    finalizeSynchronizedTurn(false);
+    // Release finished PCM immediately, but keep the caption open until
+    // turnComplete/idle because outputTranscription can legally arrive after
+    // generationComplete. Publishing it here would drop the late text.
+    finalizeSynchronizedTurn(false, false);
   }
   if (content.turnComplete) {
     clearSynchronizedTurnTimer();
@@ -777,11 +809,14 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
       groqKey:groqApiKey,
       targetLanguage:config.targetLanguage,
       voiceName:config.syncVoiceName,
-      onCaption:(translated,cue)=>{postSync({type:'caption',translated,...cue});recorder?.addSubtitle(translated,cue);},
+      onCaption:(translated,cue)=>publishSynchronizedCaption(translated,cue),
       onDub:(chunk)=>{recorder?.dubbed.appendAt(new Uint8Array(chunk.data),chunk.start);postSync({type:'dub-chunk',...chunk});},
       onFrontier:(seconds)=>postSync({type:'processing-frontier',seconds}),
       onSourceText:(text)=>report({sourceText:text}),
-      onWarning:(error)=>postSync({type:'warning',error:error.message})
+      onWarning:(error)=>{
+        postSync({type:'warning',error:error.message});
+        postSync({type:'processing-frontier',seconds:Number.MAX_SAFE_INTEGER});
+      }
     });
     await report({status:'connected',active:true,error:''});
   }
@@ -806,6 +841,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   nextDubTime = context.currentTime;
   applyVolumes();
   captureNode.port.onmessage = ({data}) => {
+    if (stopping) return;
     recorder?.original.append(data);
     const pcm = data instanceof Uint8Array ? data : new Uint8Array(data);
     captureTimeline += pcm.byteLength / 2 / 16000;
@@ -830,6 +866,13 @@ async function end(sendAudioEnd = true) {
     try { await action(); }
     catch (error) { failure ||= error; }
   };
+  // Freeze the producer before draining remote work. Without this boundary,
+  // PCM and video chunks can continue arriving while final artifacts are built.
+  if (captureNode?.port) captureNode.port.onmessage = null;
+  await attempt(async () => context?.suspend?.());
+  let capturedResult = null;
+  await attempt(async () => { capturedResult = await stopMediaCapture(); });
+  for (const track of stream?.getTracks() || []) await attempt(async () => track.stop());
   if (sendAudioEnd && socket?.readyState === WebSocket.OPEN) {
     await attempt(async () => {
       socket.send(JSON.stringify({realtimeInput: {audioStreamEnd: true}}));
@@ -839,23 +882,17 @@ async function end(sendAudioEnd = true) {
   clearSynchronizedTurnTimer();
   await attempt(flushTranscripts);
   await attempt(async () => finalizeSynchronizedTurn(true));
-  let preciseFailure = null;
   try { await precisePipeline?.flush(); }
   catch (error) {
-    preciseFailure = error;
-    failure ||= error;
+    postSync({type: 'warning', error: error.message});
   }
-  await attempt(async () => stopMediaBridge({publish: !preciseFailure}));
+  // A partial dub must never destroy the user's source recording. Publish the
+  // frozen video and every completed cue even when one provider stage failed.
+  await attempt(async () => finalizeMediaBridge(capturedResult, {publish: true}));
   await attempt(async () => socket?.close());
-  for (const track of stream?.getTracks() || []) await attempt(async () => track.stop());
   for (const node of [captureNode, source, sourceGain, dubGain]) await attempt(async () => node?.disconnect());
   await attempt(async () => context?.close());
   if (recorder) await attempt(async () => {
-    if (preciseFailure) {
-      await recorder.discard();
-      await report({recordingReady: false});
-      return;
-    }
     await recorder.finish();
     await report({recordingReady: true});
   });

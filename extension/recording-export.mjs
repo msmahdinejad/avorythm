@@ -1,6 +1,6 @@
 const RECORDER_TYPES = [
-  'video/webm;codecs=vp9,opus',
   'video/webm;codecs=vp8,opus',
+  'video/webm;codecs=vp9,opus',
   'video/webm'
 ];
 
@@ -122,17 +122,22 @@ async function recordPlayback({video, tracks, durationSeconds = 0, beforePlay, a
   const recorder = new environment.MediaRecorder(output, mimeType ? {mimeType} : undefined);
   const chunks = [];
   recorder.addEventListener('dataavailable', ({data}) => { if (data?.size) chunks.push(data); });
+  let recorderError = null;
+  recorder.addEventListener('error', () => { recorderError = new Error('mixed_export_recorder_failed'); });
   const duration = finiteDuration(durationSeconds) || finiteDuration(video.duration);
   const reportProgress = () => {
     onProgress(duration ? Math.min(1, video.currentTime / duration) : 0);
   };
   video.addEventListener('timeupdate', reportProgress);
-  const stopped = once(recorder, 'stop');
+  const stopped = new Promise((resolve) => recorder.addEventListener('stop', resolve, {once: true}));
   const completion = playbackCompletion(video, duration, environment);
   let failure = null;
   let started = false;
   try {
-    recorder.start(200);
+    // A single finalized WebM blob lets Chromium write complete cluster timing.
+    // Timesliced MediaRecorder chunks frequently produce an infinite/incorrect
+    // duration when concatenated, which breaks seeking in downloaded files.
+    recorder.start();
     started = true;
     await beforePlay?.();
     await video.play();
@@ -153,6 +158,7 @@ async function recordPlayback({video, tracks, durationSeconds = 0, beforePlay, a
     }
     output.getTracks?.().forEach((track) => track.stop?.());
   }
+  if (recorderError) failure ||= recorderError;
   if (failure) throw new Error('mixed_export_playback_failed', {cause: failure});
   if (!chunks.length) throw new Error('mixed_export_empty');
   onProgress(1);
@@ -197,8 +203,6 @@ async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals
   let originalGain;
   try {
     await load(video);
-    const videoTrack = video.captureStream?.()?.getVideoTracks?.()[0];
-    if (!videoTrack) throw new Error('mixed_export_video_track_missing');
     const destination = context.createMediaStreamDestination?.();
     const audioTrack = destination?.stream?.getAudioTracks?.()[0];
     if (!destination || !audioTrack) throw new Error('mixed_export_audio_track_missing');
@@ -236,6 +240,12 @@ async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals
       dubbedSource.connect(dubbedGain);
       dubbedGain.connect(destination);
     }
+
+    // Capture the video track only after audio decoding and graph setup. Some
+    // Chromium builds timestamp a captureStream track from creation; creating
+    // it before decode can add a long blank preroll to the exported WebM.
+    const videoTrack = video.captureStream?.()?.getVideoTracks?.()[0];
+    if (!videoTrack) throw new Error('mixed_export_video_track_missing');
 
     return await recordPlayback({
       video,
@@ -289,6 +299,26 @@ async function buildSilentRecording({videoBlob, durationSeconds, onProgress, env
   }
 }
 
+async function measuredDuration(blob, environment) {
+  const {video, url} = createExportVideo(blob, environment);
+  try {
+    await load(video);
+    return finiteDuration(video.duration);
+  } finally {
+    video.pause?.();
+    video.remove?.();
+    environment.URL.revokeObjectURL(url);
+  }
+}
+
+async function hasExpectedDuration(blob, expectedDuration, environment) {
+  const expected = finiteDuration(expectedDuration);
+  if (!expected) return true;
+  const actual = await measuredDuration(blob, environment);
+  const tolerance = Math.max(0.5, expected * 0.03);
+  return {valid: actual > 0 && Math.abs(actual - expected) <= tolerance, actual};
+}
+
 /**
  * Replays the finalized local recording once and records a seekable WebM with
  * the synchronized-player mix. It never reads the on-page playback settings.
@@ -310,13 +340,34 @@ export async function buildMixedRecording({
   if (originalVolume === 0 && dubbedVolume === 0) {
     return buildSilentRecording({videoBlob, durationSeconds, onProgress, environment});
   }
-  return buildWebAudioRecording({
-    videoBlob,
-    dubbedBlob,
-    mix: {...mix, originalVolume, dubbedVolume},
-    duckIntervals,
-    durationSeconds,
-    onProgress,
-    environment
-  });
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const rendered = await buildWebAudioRecording({
+        videoBlob,
+        dubbedBlob,
+        mix: {...mix, originalVolume, dubbedVolume},
+        duckIntervals,
+        durationSeconds,
+        onProgress,
+        environment
+      });
+      const durationCheck = await hasExpectedDuration(rendered, durationSeconds, environment);
+      if (durationCheck === true || durationCheck.valid) return rendered;
+      if (attempt) {
+        throw new Error('mixed_export_duration_mismatch', {
+          cause: new Error(`expected_${durationSeconds}_actual_${durationCheck.actual}`)
+        });
+      }
+      onProgress(0);
+    } catch (error) {
+      lastError = error;
+      const chain = [error, error?.cause, error?.cause?.cause]
+        .map((item) => String(item?.message || ''))
+        .join(' ');
+      if (attempt || !chain.includes('mixed_export_recorder_failed')) throw error;
+      onProgress(0);
+    }
+  }
+  throw lastError;
 }

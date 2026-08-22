@@ -376,11 +376,14 @@ class GeminiGateway:
 class GeminiFileGateway:
     """Text translation and timestamp-sized speech generation for uploaded media."""
 
-    def __init__(self, api_key: str) -> None:
+    def __init__(self, api_key: str, *, narration_receive_timeout: float = 20.0) -> None:
+        if narration_receive_timeout <= 0:
+            raise ValueError("narration receive timeout must be positive")
         self.client = genai.Client(
             api_key=api_key,
             http_options=types.HttpOptions(async_client_args={"ping_interval": None}),
         )
+        self.narration_receive_timeout = narration_receive_timeout
         self._minute_usage: dict[str, deque[float]] = {}
         self._daily_usage: dict[str, tuple[date, int]] = {}
         self._unavailable_models: set[str] = set()
@@ -539,7 +542,19 @@ class GeminiFileGateway:
         )
         async with self.client.aio.live.connect(model=FILE_VOICE_MODEL, config=config) as session:
             await session.send_realtime_input(text=text)
-            async for response in session.receive():
+            responses = aiter(session.receive())
+            while True:
+                try:
+                    response = await asyncio.wait_for(
+                        anext(responses),
+                        timeout=self.narration_receive_timeout,
+                    )
+                except StopAsyncIteration:
+                    break
+                except TimeoutError as error:
+                    raise NoTranslationError(
+                        "Gemini Live narration response timed out"
+                    ) from error
                 content = getattr(response, "server_content", None)
                 model_turn = getattr(content, "model_turn", None) if content else None
                 for part in getattr(model_turn, "parts", None) or []:
