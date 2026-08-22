@@ -192,7 +192,7 @@ async function startMediaBridge() {
   mediaRecorder.start(250);
 }
 
-async function stopMediaBridge() {
+async function stopMediaBridge({publish = true} = {}) {
   if (!mediaRecorder || !capturedVideo) return;
   if (mediaRecorder.state !== 'inactive') {
     try { mediaRecorder.requestData(); } catch {}
@@ -200,6 +200,12 @@ async function stopMediaBridge() {
   }
   await mediaStopPromise;
   const result = await capturedVideo.finish();
+  if (!publish) {
+    const root = await navigator.storage.getDirectory();
+    await root.removeEntry(result.fileName).catch(() => {});
+    await report({videoRecordingReady: false, syncArtifacts: null});
+    return;
+  }
   const artifacts = await persistSyncArtifacts(result);
   postSync({type: 'media-final', ...result, artifacts});
   await report({videoRecordingReady: true, syncArtifacts: artifacts});
@@ -309,9 +315,7 @@ function audiblePcmInterval(pcm, start) {
   let first = 0;
   while (first < samples.length && Math.abs(samples[first]) < AUDIBLE_SAMPLE_THRESHOLD) first += 1;
   if (first === samples.length) return {start, end: start + samples.length / DUB_OUTPUT_RATE};
-  let last = samples.length - 1;
-  while (last > first && Math.abs(samples[last]) < AUDIBLE_SAMPLE_THRESHOLD) last -= 1;
-  return {start: start + first / DUB_OUTPUT_RATE, end: start + (last + 1) / DUB_OUTPUT_RATE};
+  return {start: start + first / DUB_OUTPUT_RATE, end: start + samples.length / DUB_OUTPUT_RATE};
 }
 
 function clearSynchronizedTurnTimer() {
@@ -528,6 +532,17 @@ class SessionRecorder {
         this.download(translatedSubtitles, 'translated.srt')
       ]);
       await wait(1000);
+    } finally {
+      await Promise.allSettled([
+        this.root.removeEntry(this.originalName),
+        this.root.removeEntry(this.dubbedName)
+      ]);
+    }
+  }
+
+  async discard() {
+    try {
+      await Promise.allSettled([this.original.finish(), this.dubbed.finish()]);
     } finally {
       await Promise.allSettled([
         this.root.removeEntry(this.originalName),
@@ -822,13 +837,23 @@ async function end(sendAudioEnd = true) {
   clearSynchronizedTurnTimer();
   await attempt(flushTranscripts);
   await attempt(async () => finalizeSynchronizedTurn(true));
-  await attempt(async () => precisePipeline?.flush());
-  await attempt(stopMediaBridge);
+  let preciseFailure = null;
+  try { await precisePipeline?.flush(); }
+  catch (error) {
+    preciseFailure = error;
+    failure ||= error;
+  }
+  await attempt(async () => stopMediaBridge({publish: !preciseFailure}));
   await attempt(async () => socket?.close());
   for (const track of stream?.getTracks() || []) await attempt(async () => track.stop());
   for (const node of [captureNode, source, sourceGain, dubGain]) await attempt(async () => node?.disconnect());
   await attempt(async () => context?.close());
   if (recorder) await attempt(async () => {
+    if (preciseFailure) {
+      await recorder.discard();
+      await report({recordingReady: false});
+      return;
+    }
     await recorder.finish();
     await report({recordingReady: true});
   });

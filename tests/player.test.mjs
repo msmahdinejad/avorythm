@@ -226,6 +226,15 @@ test('buffers media and keeps player controls independent from the source produc
   channel.onmessage({data: {type: 'media-final', fileName: 'capture.webm'}});
   assert.equal(element('#downloadVideoButton').disabled, true, 'custom export waits for finalized dub and timeline artifacts');
 
+  Object.defineProperty(sourceBuffer, 'buffered', {
+    configurable: true,
+    get() { throw new DOMException('SourceBuffer has been removed from the parent media source.', 'InvalidStateError'); }
+  });
+  assert.doesNotThrow(
+    () => channel.onmessage({data: {type: 'media-progress', duration: 251}}),
+    'a detached SourceBuffer must not crash progress, finalization, or export readiness'
+  );
+
   video.currentTime = 2.5;
   const scheduledBeforeLateChunk = starts.length;
   channel.onmessage({data: {type: 'dub-chunk', data: new Int16Array(24000).buffer, start: 1}});

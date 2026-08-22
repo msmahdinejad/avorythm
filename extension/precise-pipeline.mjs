@@ -93,9 +93,12 @@ export class PreciseDubbingPipeline {
     this.pendingSegment = null;
     this.dubCursor = 0;
     this.failed = false;
+    this.failure = null;
     this.busy = Promise.resolve();
     this.usage = new Map();
     this.unavailableModels = new Set();
+    this.narratorSession = null;
+    this.narratorTurn = null;
   }
 
   push(pcm) {
@@ -104,7 +107,12 @@ export class PreciseDubbingPipeline {
 
   async flush() {
     this.#queue(null, true);
-    await this.busy;
+    try {
+      await this.busy;
+      if (this.failure) throw this.failure;
+    } finally {
+      this.#closeNarrator();
+    }
   }
 
   #queue(pcm, flush) {
@@ -130,10 +138,12 @@ export class PreciseDubbingPipeline {
     this.bytes = remainder.byteLength;
     this.busy = this.busy
       .then(() => this.#transcribe(window, offset, flush))
-      .catch(async (error) => {
+      .catch((error) => {
+        // Never let a later window move the contiguous processing frontier
+        // past media whose transcript/translation/dub could not be completed.
         this.failed = true;
+        this.failure = error;
         this.onWarning(error);
-        this.onFrontier(Number.MAX_SAFE_INTEGER);
       });
   }
 
@@ -198,79 +208,213 @@ export class PreciseDubbingPipeline {
     throw lastError;
   }
 
-  async #narrate(text) {
-    return new Promise((resolve, reject) => {
-      const socket = new this.WebSocket(liveUrl(this.geminiKey));
-      const chunks = [];
-      let ready = false;
-      let settled = false;
-      let messages = Promise.resolve();
-      let idleTimer = null;
-      let maxTimer = null;
-      const clearOutputTimers = () => {
-        clearTimeout(idleTimer);
-        clearTimeout(maxTimer);
-        idleTimer = null;
-        maxTimer = null;
-      };
-      const finish = (error) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timeout);
-        clearOutputTimers();
-        try { socket.close(); } catch {}
-        if (error) {
-          reject(error);
-          return;
-        }
-        const size = chunks.reduce((total, item) => total + item.byteLength, 0);
-        const audio = new Uint8Array(size);
-        let offset = 0;
-        for (const chunk of chunks) {
-          audio.set(chunk, offset);
-          offset += chunk.byteLength;
-        }
-        resolve(trimNarration(audio));
-      };
-      const scheduleOutputFinish = () => {
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => finish(), NARRATION_IDLE_MS);
-        maxTimer ||= setTimeout(() => finish(), NARRATION_MAX_MS);
-      };
-      const timeout = setTimeout(() => finish(new Error('gemini_voice_timeout')), 30000);
-      socket.onopen = () => socket.send(JSON.stringify(
-        fileVoiceSetupMessage(this.targetLanguage, this.voiceName)
-      ));
-      socket.onmessage = (event) => {
-        messages = messages.then(async () => {
-          const payload = event.data instanceof Blob ? await event.data.text() : event.data;
-          const message = JSON.parse(payload);
-          if (message.error) throw new Error(message.error.message || 'gemini_voice_error');
-          if (message.setupComplete && !ready) {
-            ready = true;
-            socket.send(JSON.stringify({
-              realtimeInput: {text}
-            }));
-            return;
-          }
-          const content = message.serverContent;
-          for (const part of content?.modelTurn?.parts || []) {
-            const inline = part.inlineData || part.inline_data;
-            if (inline?.data) {
-              chunks.push(base64ToBytes(inline.data));
-              scheduleOutputFinish();
-            }
-          }
-          if (content?.generationComplete || content?.turnComplete) finish();
-        }).catch(finish);
-      };
-      socket.onerror = () => finish(new Error('gemini_voice_failed'));
-      socket.onclose = () => {
-        if (chunks.length) finish();
-        else if (!ready) finish(new Error('gemini_voice_closed'));
-        else finish(new Error('gemini_voice_empty'));
-      };
+  #isFatalPipelineError(error) {
+    return [401, 403, 429].includes(Number(error?.status)) ||
+      /(?:auth|quota|permission|api[_ -]?key)/iu.test(String(error?.message || ''));
+  }
+
+  #narratorError(code, status = 0) {
+    const error = new Error(code);
+    if (status) error.status = status;
+    return error;
+  }
+
+  #protocolError(value) {
+    const status = Number(value?.code || value?.status || 0);
+    const detail = String(value?.message || value?.status || '').toLowerCase();
+    if ([401, 403].includes(status) || /(?:api key|unauth|permission|forbidden)/u.test(detail)) {
+      return this.#narratorError('gemini_voice_auth_failed', status || 401);
+    }
+    if (status === 429 || /(?:quota|rate limit|resource exhausted)/u.test(detail)) {
+      return this.#narratorError('gemini_voice_quota_exceeded', 429);
+    }
+    return this.#narratorError('gemini_voice_failed', status);
+  }
+
+  #closeNarrator(session = this.narratorSession) {
+    if (!session || session.closed) return;
+    session.closed = true;
+    session.intentional = true;
+    clearTimeout(session.setupTimer);
+    if (this.narratorSession === session) this.narratorSession = null;
+    try { session.socket.close(); } catch {}
+  }
+
+  #finishNarratorTurn(turn, error = null, recycle = false) {
+    if (!turn || turn.settled || this.narratorTurn !== turn) return;
+    turn.settled = true;
+    clearTimeout(turn.timeout);
+    clearTimeout(turn.idleTimer);
+    clearTimeout(turn.maxTimer);
+    this.narratorTurn = null;
+    if (recycle) this.#closeNarrator(turn.session);
+    if (error) {
+      turn.reject(error);
+      return;
+    }
+    const size = turn.chunks.reduce((total, item) => total + item.byteLength, 0);
+    const audio = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of turn.chunks) {
+      audio.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    turn.resolve(trimNarration(audio));
+  }
+
+  #disconnectNarrator(session, error) {
+    if (!session || session.closed) return;
+    session.closed = true;
+    session.intentional = true;
+    clearTimeout(session.setupTimer);
+    if (this.narratorSession === session) this.narratorSession = null;
+    if (!session.ready) session.rejectReady(error);
+    if (this.narratorTurn?.session === session) {
+      this.#finishNarratorTurn(this.narratorTurn, error);
+    }
+    try { session.socket.close(); } catch {}
+  }
+
+  #scheduleNarratorIdle(turn) {
+    clearTimeout(turn.idleTimer);
+    turn.idleTimer = setTimeout(
+      () => this.#finishNarratorTurn(turn),
+      NARRATION_IDLE_MS
+    );
+    turn.maxTimer ||= setTimeout(
+      () => this.#finishNarratorTurn(turn),
+      NARRATION_MAX_MS
+    );
+  }
+
+  #openNarrator() {
+    if (this.narratorSession && !this.narratorSession.closed) {
+      return this.narratorSession.readyPromise;
+    }
+    const socket = new this.WebSocket(liveUrl(this.geminiKey));
+    const session = {
+      socket,
+      ready: false,
+      closed: false,
+      intentional: false,
+      messages: Promise.resolve(),
+      setupTimer: null,
+      resolveReady: null,
+      rejectReady: null,
+      readyPromise: null
+    };
+    session.readyPromise = new Promise((resolve, reject) => {
+      session.resolveReady = resolve;
+      session.rejectReady = reject;
     });
+    session.setupTimer = setTimeout(() => this.#disconnectNarrator(
+      session,
+      this.#narratorError('gemini_voice_timeout')
+    ), 30000);
+    this.narratorSession = session;
+    socket.onopen = () => {
+      try {
+        socket.send(JSON.stringify(fileVoiceSetupMessage(this.targetLanguage, this.voiceName)));
+      } catch {
+        this.#disconnectNarrator(session, this.#narratorError('gemini_voice_closed'));
+      }
+    };
+    socket.onmessage = (event) => {
+      session.messages = session.messages.then(async () => {
+        if (session.closed) return;
+        const payload = typeof Blob !== 'undefined' && event.data instanceof Blob
+          ? await event.data.text()
+          : event.data;
+        const message = JSON.parse(payload);
+        if (message.error) throw this.#protocolError(message.error);
+        if (message.setupComplete && !session.ready) {
+          session.ready = true;
+          clearTimeout(session.setupTimer);
+          session.resolveReady(session);
+        }
+        if (message.goAway) {
+          throw this.#narratorError('gemini_voice_go_away');
+        }
+        const content = message.serverContent;
+        const turn = this.narratorTurn?.session === session ? this.narratorTurn : null;
+        for (const part of content?.modelTurn?.parts || []) {
+          const inline = part.inlineData || part.inline_data;
+          if (turn && inline?.data) {
+            turn.chunks.push(base64ToBytes(inline.data));
+            turn.hasAudio = true;
+            this.#scheduleNarratorIdle(turn);
+          }
+        }
+        if (turn?.hasAudio && content?.turnComplete) {
+          this.#finishNarratorTurn(turn);
+        } else if (turn?.hasAudio && content?.generationComplete) {
+          this.#finishNarratorTurn(turn);
+        }
+      }).catch((error) => this.#disconnectNarrator(
+        session,
+        error instanceof Error ? error : this.#narratorError('gemini_voice_failed')
+      ));
+    };
+    socket.onerror = () => this.#disconnectNarrator(
+      session,
+      this.#narratorError('gemini_voice_failed')
+    );
+    socket.onclose = () => {
+      if (!session.intentional) this.#disconnectNarrator(
+        session,
+        this.#narratorError(session.ready ? 'gemini_voice_closed' : 'gemini_voice_setup_closed')
+      );
+    };
+    return session.readyPromise;
+  }
+
+  async #narrateOnce(text) {
+    const session = await this.#openNarrator();
+    if (session.closed || this.narratorSession !== session) {
+      throw this.#narratorError('gemini_voice_closed');
+    }
+    if (this.narratorTurn) throw this.#narratorError('gemini_voice_busy');
+    return new Promise((resolve, reject) => {
+      const turn = {
+        session,
+        chunks: [],
+        resolve,
+        reject,
+        settled: false,
+        hasAudio: false,
+        idleTimer: null,
+        maxTimer: null,
+        timeout: null
+      };
+      turn.timeout = setTimeout(() => this.#finishNarratorTurn(
+        turn,
+        this.#narratorError('gemini_voice_timeout'),
+        true
+      ), 30000);
+      this.narratorTurn = turn;
+      try {
+        session.socket.send(JSON.stringify({realtimeInput: {text}}));
+      } catch {
+        this.#finishNarratorTurn(turn, this.#narratorError('gemini_voice_closed'), true);
+      }
+    });
+  }
+
+  async #narrate(text) {
+    let lastError = this.#narratorError('gemini_voice_failed');
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const narration = await this.#narrateOnce(text);
+        if (!narration.length) throw this.#narratorError('gemini_voice_empty');
+        return narration;
+      } catch (error) {
+        lastError = error;
+        this.#closeNarrator();
+        if (this.#isFatalPipelineError(error) || attempt === 1) break;
+        await wait(400);
+      }
+    }
+    throw lastError;
   }
 
   #publishCaption(translated, segment, text) {
@@ -318,26 +462,23 @@ export class PreciseDubbingPipeline {
       const segment = segments[index];
       const translated = translations[index];
       this.#publishCaption(false, segment, segment.text);
-      let narration = null;
-      let narrationError = null;
-      for (let attempt = 0; attempt < 3; attempt += 1) {
-        try {
-          narration = await this.#narrate(translated);
-          if (!narration.length) throw new Error('gemini_voice_empty');
-          break;
-        } catch (error) {
-          narrationError = error;
-          if (attempt < 2) await wait(400 * (attempt + 1));
-        }
+      const pieces = captionSegments(translated);
+      for (let pieceIndex = 0; pieceIndex < pieces.length; pieceIndex += 1) {
+        const piece = pieces[pieceIndex];
+        const narration = await this.#narrate(piece);
+        const start = Math.max(segment.start, this.dubCursor);
+        const duration = narration.length / OUTPUT_RATE;
+        const end = start + duration;
+        const pcm = new Uint8Array(narration.buffer, narration.byteOffset, narration.byteLength);
+        this.onDub({data: pcm.slice().buffer, start, duration});
+        this.onCaption(true, {
+          id: `translated-${segment.start.toFixed(2)}-${pieceIndex}`,
+          text: piece,
+          start,
+          end
+        });
+        this.dubCursor = end;
       }
-      if (!narration) throw narrationError;
-      const start = Math.max(segment.start, this.dubCursor);
-      const duration = narration.length / OUTPUT_RATE;
-      const dubbedSegment = {start, end: start + duration};
-      const pcm = new Uint8Array(narration.buffer, narration.byteOffset, narration.byteLength);
-      this.onDub({data: pcm.slice().buffer, start, duration});
-      this.#publishCaption(true, dubbedSegment, translated);
-      this.dubCursor = dubbedSegment.end;
     }
     this.onFrontier(frontier);
   }
@@ -359,7 +500,15 @@ export class PreciseDubbingPipeline {
       if (response.ok || ![429, 500, 502, 503, 504].includes(response.status) || attempt === 2) break;
       await wait(500 * (attempt + 1));
     }
-    if (!response?.ok) throw new Error(response?.status === 429 ? 'groq_quota_exceeded' : 'groq_transcription_failed');
+    if (!response?.ok) {
+      const status = Number(response?.status || 0);
+      const code = [401, 403].includes(status)
+        ? 'groq_auth_failed'
+        : status === 429 ? 'groq_quota_exceeded' : 'groq_transcription_failed';
+      const error = new Error(code);
+      error.status = status;
+      throw error;
+    }
     const result = await response.json();
     const fresh = [];
     for (const segment of result.segments || []) {

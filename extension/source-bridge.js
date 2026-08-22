@@ -1,11 +1,27 @@
 (() => {
-  if (window.__avorythmSourceBridge) return;
+  try {
+    window.__avorythmSourceBridge?.disconnect?.();
+  } catch {}
 
   let media = null;
   let cleanup = () => {};
   let previous = null;
   let completionSent = false;
   let interval = null;
+  let observer = null;
+  let bridge = null;
+  let disposed = false;
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    cleanup();
+    cleanup = () => {};
+    observer?.disconnect();
+    if (interval !== null) clearInterval(interval);
+    interval = null;
+    media = null;
+    if (window.__avorythmSourceBridge === bridge) delete window.__avorythmSourceBridge;
+  };
   const pick = () => [...document.querySelectorAll('video,audio')]
     .filter((element) => Number.isFinite(element.duration) || !element.paused)
     .sort((left, right) => (right.clientWidth * right.clientHeight) - (left.clientWidth * left.clientHeight))[0] || null;
@@ -19,17 +35,22 @@
     title: String(document.title || '')
   });
   const report = (event = 'state', override = {}) => {
-    if (!media) return;
+    if (disposed || !media) return;
     const state = {...snapshot(), ...override};
-    chrome.runtime.sendMessage({
-      type: 'source-media-state',
-      event,
-      state
-    }).catch(() => {});
+    try {
+      Promise.resolve(chrome.runtime.sendMessage({
+        type: 'source-media-state',
+        event,
+        state
+      })).catch(dispose);
+    } catch {
+      dispose();
+      return;
+    }
     previous = state;
   };
   const poll = () => {
-    if (!media || completionSent) return;
+    if (disposed || !media || completionSent) return;
     const next = snapshot();
     const duration = previous?.duration;
     const nearEnd = Number.isFinite(duration) && previous.currentTime >= duration - Math.max(0.75, duration * 0.0025);
@@ -47,6 +68,7 @@
     previous = next;
   };
   const bind = () => {
+    if (disposed) return;
     const next = pick();
     if (!next || next === media) return;
     const previousDuration = previous?.duration;
@@ -71,8 +93,10 @@
   };
 
   bind();
-  const observer = new MutationObserver(bind);
+  if (disposed) return;
+  observer = new MutationObserver(bind);
   observer.observe(document.documentElement, {childList: true, subtree: true});
   interval = setInterval(poll, 400);
-  window.__avorythmSourceBridge = {report, disconnect() { cleanup(); observer.disconnect(); clearInterval(interval); }};
+  bridge = {report, disconnect: dispose};
+  window.__avorythmSourceBridge = bridge;
 })();

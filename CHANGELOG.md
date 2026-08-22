@@ -2,6 +2,24 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.8] - 2026-08-22
+
+### Changed
+
+- Reuse one serialized Gemini 3.1 Flash Live session across precise-mode utterances instead of opening a quota-consuming connection for every sentence.
+- Show synchronized capture progress immediately and allow precise playback after its first safe processed window instead of waiting for a second full buffer.
+- Follow the audible dub clock for translated captions while source captions remain on the video clock.
+- Report actionable Groq, Gemini voice, local-artifact, export, and download failures in the synchronized player.
+
+### Fixed
+
+- Guard every buffered-range read and retire stale MediaSource objects before finalized playback, preventing a detached `SourceBuffer` from breaking finalization, seeking, and output readiness.
+- Build mixed WebM output through a standards-based Web Audio fallback when WebCodecs track generation is unavailable, and finish exports from the authoritative recorded duration when WebM omits `ended` or exposes an infinite duration.
+- Keep translated cues visible through the complete natural PCM response, including quiet final phonemes, instead of advancing at an amplitude threshold.
+- Dispose and replace the selected-tab media bridge across stop, reload, extension update, and reinjection so an invalidated extension context cannot leak an uncaught page error.
+- Recover the precise pipeline from transient narrator failures without marking unfinished work as successfully processed.
+- Discard incomplete synchronized video and four-file artifacts when the precise Whisper pipeline fails instead of presenting partial output as ready.
+
 ## [1.1.7] - 2026-08-22
 
 ### Changed
@@ -360,7 +378,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.7...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.8...HEAD
+[1.1.8]: https://github.com/msmahdinejad/avorythm/compare/v1.1.7...v1.1.8
 [1.1.7]: https://github.com/msmahdinejad/avorythm/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/msmahdinejad/avorythm/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/msmahdinejad/avorythm/compare/v1.1.4...v1.1.5

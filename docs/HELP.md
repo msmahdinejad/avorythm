@@ -90,7 +90,7 @@ Install the published extension from Chrome Web Store, or extract `Avorythm-Exte
 
 ![Synchronized recorder settings](../store-assets/en/03-sync-settings.png)
 
-The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and Gemini 3.1 Flash Live renders the selected voice. Avorythm preserves the model's natural PCM and schedules translated captions on the audible dubbed interval without changing pitch. Chrome asks for access to `api.groq.com`; both API keys remain session-only.
+The faster engine uses Gemini 3.5 Live Translate directly. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: Groq timestamps complete utterances, the free Gemini text-model pool translates them with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and advances translated captions on the audible dub clock without changing pitch. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only.
 
 ### Use the synchronized recorder & player
 

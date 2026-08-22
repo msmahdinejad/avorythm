@@ -60,7 +60,10 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
     version: 2,
     duration: 125,
     source: [{id: 'source-1', text: 'Hello.', start: 5, end: 6}],
-    translated: [{id: 'translated-1', text: 'سلام.', start: 5, end: 6}]
+    translated: [
+      {id: 'translated-1', text: 'سلام.', start: 5, end: 6},
+      {id: 'translated-2', text: 'خوش آمدید.', start: 6, end: 7}
+    ]
   })]);
   const files = new Map([
     ['capture.webm', new Blob([Uint8Array.of(1)], {type: 'video/webm'})],
@@ -71,6 +74,7 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
     storage: {async getDirectory() { return {async getFileHandle(name) { return {async getFile() { return files.get(name); }}; }}; }}
   }});
   globalThis.chrome = {
+    permissions: {async request() { return true; }},
     storage: {
       local: {async get() { return {settings: {playbackMode: 'synchronized'}}; }, async set() {}},
       session: {async get() { return {playerSession: {currentTime: 60, recordedDuration: 125, wantedPlaying: false, started: true}}; }, async set() {}}
@@ -97,4 +101,22 @@ test('restores an Infinity-duration WebM on the persisted timeline with dubbed a
   await element('#seekRange').listeners.change();
   assert.equal(video.currentTime, 10);
   assert.equal(element('#dubbedTrack').currentTime, 10);
+
+  video.paused = false;
+  video.currentTime = 6.1;
+  element('#dubbedTrack').currentTime = 5.9;
+  video.listeners.timeupdate();
+  assert.equal(
+    element('#translatedCaption').textContent,
+    'سلام.',
+    'translated captions must follow the audible dubbed track instead of advancing with the video clock'
+  );
+
+  navigator.storage.getDirectory = async () => { throw new DOMException('missing', 'NotFoundError'); };
+  await element('#downloadVideoButton').listeners.click();
+  assert.equal(element('#downloadVideoButton').disabled, false, 'a missing OPFS artifact must leave export retryable');
+  assert.equal(
+    element('#warningText').textContent,
+    'The temporary recording is no longer available; start a new synchronized recording.'
+  );
 });

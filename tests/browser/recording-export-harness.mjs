@@ -2,6 +2,7 @@ import {wavHeader} from '../../extension/core.mjs';
 import {buildMixedRecording} from '../../extension/recording-export.mjs';
 
 const result = document.querySelector('#result');
+result.textContent = 'READY-MODULE';
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const once = (target, type) => new Promise((resolve, reject) => {
   target.addEventListener(type, resolve, {once: true});
@@ -116,7 +117,35 @@ document.querySelector('#run').addEventListener('click', async () => {
     });
     stage = `mixed-output size=${mixedExport.size}`;
     const mixed = await inspectExport(mixedExport);
-    result.textContent = `PASS ${JSON.stringify({type: exported.type, dubbed, mixed})}`;
+    const fallbackEnvironment = {
+      document,
+      MediaRecorder,
+      MediaStream,
+      AudioContext,
+      URL,
+      setTimeout: globalThis.setTimeout.bind(globalThis),
+      clearTimeout: globalThis.clearTimeout.bind(globalThis),
+      setInterval: globalThis.setInterval.bind(globalThis),
+      clearInterval: globalThis.clearInterval.bind(globalThis),
+      MediaStreamTrackGenerator: null,
+      AudioData: null
+    };
+    const fallbackExport = await buildMixedRecording({
+      videoBlob,
+      dubbedBlob,
+      durationSeconds: 1.5,
+      mix: {
+        originalAudioEnabled: false,
+        dubAudioEnabled: true,
+        originalVolume: 1,
+        dubVolume: 1,
+        autoDuck: false
+      },
+      environment: fallbackEnvironment
+    });
+    stage = `fallback-output size=${fallbackExport.size}`;
+    const fallback = await inspectExport(fallbackExport);
+    result.textContent = `PASS ${JSON.stringify({type: exported.type, dubbed, mixed, fallback})}`;
   } catch (error) {
     const details = error instanceof Event
       ? `${error.type} target=${error.target?.constructor?.name} mediaError=${error.target?.error?.code || ''}`

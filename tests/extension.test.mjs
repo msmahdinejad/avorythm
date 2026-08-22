@@ -173,6 +173,16 @@ test('ships a dedicated synchronized player and separate settings page', () => {
     'Finish recording belongs with recorder state and exports, not in the global header'
   );
   assert.match(offscreen, /class CapturedVideo/);
+  assert.match(
+    offscreen,
+    /stopMediaBridge\(\{publish: !preciseFailure\}\)/,
+    'A failed precise pipeline must not publish a partial synchronized recording'
+  );
+  assert.match(
+    offscreen,
+    /if \(preciseFailure\) \{[\s\S]*?recorder\.discard\(\)/,
+    'A failed precise pipeline must not download partial four-file artifacts'
+  );
   assert.match(sourceBridge, /source-media-state/);
 });
 

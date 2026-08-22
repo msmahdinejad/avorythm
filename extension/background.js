@@ -91,6 +91,16 @@ async function controlSourceMedia(tabId, action) {
   return result || {ok: false};
 }
 
+async function disconnectSourceBridge(tabId) {
+  if (!tabId || !chrome.scripting?.executeScript) return;
+  try {
+    await chrome.scripting.executeScript({
+      target: {tabId},
+      func: () => window.__avorythmSourceBridge?.disconnect?.()
+    });
+  } catch {}
+}
+
 async function bootstrap() {
   const [{settings}, {apiKey, groqApiKey}] = await Promise.all([
     chrome.storage.local.get('settings'),
@@ -194,6 +204,7 @@ async function performStop(requestingTabId = null, keepPlayer = false, completio
   const current = await getState();
   if (!current.active && !await hasOffscreenDocument()) return current;
   await setState({status: 'finalizing', completionReason});
+  await disconnectSourceBridge(current.captureTabId);
   let failure = null;
   if (await hasOffscreenDocument()) {
     try {

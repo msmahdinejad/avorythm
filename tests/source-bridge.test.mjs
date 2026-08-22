@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
+import vm from 'node:vm';
 
 test('detects a same-element autoplay transition at the end of a video', async () => {
   const listeners = new Map();
@@ -38,4 +40,15 @@ test('detects a same-element autoplay transition at the end of a video', async (
 
   assert.equal(messages.at(-1)?.state?.completed, true);
   assert.equal(messages.at(-1)?.state?.completionReason, 'media-transition');
+
+  let staleDisconnected = false;
+  window.__avorythmSourceBridge = {disconnect() { staleDisconnected = true; }};
+  vm.runInThisContext(readFileSync(new URL('../extension/source-bridge.js', import.meta.url), 'utf8'));
+  assert.equal(staleDisconnected, true, 'reinjection must dispose the bridge from the previous extension session');
+
+  chrome.runtime.sendMessage = () => { throw new Error('Extension context invalidated.'); };
+  assert.doesNotThrow(
+    () => window.__avorythmSourceBridge.report(),
+    'an invalidated extension context must stop the bridge instead of leaking an uncaught page error'
+  );
 });

@@ -99,7 +99,8 @@ test('Gemini Live publishes translated captions on the exact dubbed-audio interv
   const voiced = new Int16Array(32000).fill(5000);
   worklet.port.onmessage({data: new Uint8Array(voiced.buffer)});
   const dubbed = new Int16Array(26400);
-  dubbed.fill(800, 2400);
+  dubbed.fill(800, 2400, 24000);
+  dubbed.fill(48, 24000); // quiet final phoneme: still part of Gemini's natural PCM
   socket.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: Buffer.from(dubbed.buffer).toString('base64')}}]}}})});
   socket.onmessage({data: JSON.stringify({serverContent: {inputTranscription: {text: 'Hello there'}}})});
   socket.onmessage({data: JSON.stringify({serverContent: {outputTranscription: {text: 'سلام دنیا'}}})});
