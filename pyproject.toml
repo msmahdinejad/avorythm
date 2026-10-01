@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
   "fastapi==0.141.1",
-  "google-genai==2.20.0",
+  "google-genai==2.25.0",
   "httpx==0.28.1",
   "keyring==25.7.0",
   "numpy==2.4.6",
@@ -29,7 +29,7 @@ dependencies = [
   "pywebview==6.2.1; platform_system != 'Linux'",
   "pywebview[qt]==6.2.1; platform_system == 'Linux'",
   "python-dotenv==1.2.3",
-  "uvicorn==0.52.4",
+  "uvicorn==0.54.0",
 ]
 
 [project.optional-dependencies]
@@ -37,10 +37,10 @@ dev = [
   "mypy==2.3.1",
   "pytest==9.1.1",
   "pytest-asyncio==1.4.0",
-  "ruff==0.16.5",
+  "ruff==0.16.9",
 ]
-build = ["pyinstaller==6.22.2"]
-browser = ["playwright==1.62.0"]
+build = ["pyinstaller==6.22.3"]
+browser = ["playwright==1.63.0"]
 
 [project.urls]
 Homepage = "https://github.com/msmahdinejad/avorythm"
