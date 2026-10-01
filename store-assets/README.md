@@ -2,6 +2,25 @@
 
 These are **listing assets**, not extension-package files. In each localized listing, upload the matching language set. The default/global promos are English. If the Web Store editor exposes only one global promo slot, keep the English image there and localize the screenshots and text. Chinese copy is in [LISTING.zh-CN.md](LISTING.zh-CN.md).
 
+## Ready-to-paste listing text
+
+Each file contains a localized name, short description, full description, and release notes for version 1.1.15. Copy only the text under the relevant heading into the Web Store form; do not paste the file heading or upload instructions as part of the description. Listing languages do not imply additional interface languages: the current extension UI is English, Persian, and Simplified Chinese.
+
+| Listing language | Copy | Screenshots |
+| --- | --- | --- |
+| English | [LISTING.en.md](LISTING.en.md) | `en/` |
+| فارسی | [LISTING.fa.md](LISTING.fa.md) | `fa/` |
+| 简体中文 | [LISTING.zh-CN.md](LISTING.zh-CN.md) | `zh-CN/` |
+| العربية | [LISTING.ar.md](LISTING.ar.md) | `ar/` |
+| Deutsch | [LISTING.de.md](LISTING.de.md) | `de/` |
+| Français | [LISTING.fr.md](LISTING.fr.md) | `fr/` |
+| Italiano | [LISTING.it.md](LISTING.it.md) | `it/` |
+| Русский | [LISTING.ru.md](LISTING.ru.md) | `ru/` |
+
+The short descriptions stay within 132 characters. All localized descriptions retain the same consent, provider-processing, key-storage, recording, and service-limit disclosures.
+
+## Upload images
+
 | Field | English | فارسی | 简体中文 |
 | --- | --- | --- | --- |
 | Small promo tile · 440×280 | `promo-small.png` | `promo-small-fa.png` | `promo-small-zh-CN.png` |

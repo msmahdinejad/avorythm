@@ -21,11 +21,13 @@ Choose how you watch:
 
 Original audio, dubbed audio, source subtitles, and translated subtitles are four independent channels. Mix the audio, move and resize the subtitle overlay, or export a customized recorded WebM with separate SRT captions. Optional regular recording also exports the original audio, dub, and both subtitle tracks.
 
-The extension is standalone. It does not require the desktop app, Python, FFmpeg, localhost, or a virtual audio device.
+The extension is standalone. It does not require the desktop app, Python, FFmpeg, localhost, or a virtual audio device. The current interface is available in English, Persian, and Simplified Chinese; the translation language is selected independently.
 
 Getting started: add your Google AI Studio Gemini API key in Settings, explicitly consent to sending selected-tab audio to Gemini, choose a language, and press Start. The optional precise synchronized route uses Groq Whisper transcription, Gemini text translation, and Gemini 3.1 Flash Live speech. It requires its own Groq key, optional host permission, and separate consent.
 
-Privacy: capture starts only after you choose a tab and press Start. Content goes directly to the selected AI providers, never to the Avorythm maintainer. There are no ads, analytics, or developer-operated relay servers. Keys are session-only by default. You can independently remember each provider key on this device; those copies are not synced or encrypted by the extension. Recording is off by default. The synchronized player keeps only the latest capture in Chrome’s private local storage; downloaded files go to Downloads/Avorythm.
+Privacy: capture starts only after your consent and Start. Selected-tab audio and transcripts go directly to the AI providers needed for the requested processing, never to the Avorythm maintainer. There are no ads, analytics, or developer-operated relay servers. Keys are session-only by default. You can independently remember each provider key on this device; those copies are not synced or encrypted by the extension. Disabling this option deletes the device copy; clearing a key deletes both device and session copies.
+
+Ordinary four-output recording is off by default. Synchronized mode records locally for playback and export, keeping only the latest capture in Chrome’s private local storage. Downloaded files go to Downloads/Avorythm.
 
 The extension is free and open source. AI provider quotas and supported models can change; real-time processing has network delay and cannot guarantee perfect translations or zero latency. DRM-protected media and internal browser pages may not be capturable.
 
