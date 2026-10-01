@@ -1,10 +1,14 @@
 # Chrome Web Store visuals / تصاویر فروشگاه کروم / Chrome 网上应用店图片
 
-These are **listing assets**, not extension-package files. In each localized listing, upload the matching language set. The default/global promos are English. If the Web Store editor exposes only one global promo slot, keep the English image there and localize the screenshots and text. Chinese copy is in [LISTING.zh-CN.md](LISTING.zh-CN.md).
+These are **listing assets**, not extension-package files. In each localized listing, upload the matching language set. The default/global promos are English. If the Web Store editor exposes only one global promo slot, keep the English image there and localize the screenshots and text.
 
 ## Ready-to-paste listing text
 
-Each file contains a localized name, short description, full description, and release notes for version 1.1.15. Copy only the text under the relevant heading into the Web Store form; do not paste the file heading or upload instructions as part of the description. Listing languages do not imply additional interface languages: the current extension UI is English, Persian, and Simplified Chinese.
+**[All 79 languages — complete index / متن تمام ۷۹ زبان](ALL-LANGUAGES.md)**
+
+Every destination-language entry has a localized name, short description, full description, and release notes for version 1.1.15. The complete index maps language codes to files and to officially supported Chrome Web Store locales. Some translation targets have no independent store locale; their copy is provided for reuse but cannot be published under a nonexistent language option.
+
+Copy only the text under the relevant heading into the Web Store form; do not paste the file heading or upload instructions as part of the description. Listing languages do not imply additional interface languages: the current extension UI is English, Persian, and Simplified Chinese. The following eight languages have matching artwork; other listings can use the verified English product captures without claiming a localized UI.
 
 | Listing language | Copy | Screenshots |
 | --- | --- | --- |

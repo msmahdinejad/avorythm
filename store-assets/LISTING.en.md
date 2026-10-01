@@ -12,14 +12,14 @@ Translate tab audio with AI: live dubbing, bilingual captions, independent audio
 
 Watch courses, videos, films, and podcasts in your language. Avorythm translates audio from the browser tab you explicitly select using AI. Hear live dubbed speech, see source and translated captions, or keep the original audio while reading the translation.
 
-Popular destinations include English, Persian, Arabic, Simplified and Traditional Chinese, German, French, Italian, Spanish, Russian, Japanese, Korean, Turkish, Portuguese, Hindi, Urdu, and many more.
+The extension offers 79 destination-language entries, including English, Persian, Arabic, Simplified and Traditional Chinese, German, French, Italian, Spanish, Russian, Japanese, Korean, Turkish, Portuguese, Hindi, Urdu, and many more.
 
 Choose how you watch:
 
-- On this page: the lowest-latency route for live audio and captions.
+- On this page: a low-latency route for live audio and captions.
 - Synchronized recorder & player: capture ahead, then pause, seek, or fullscreen the independent buffered player. Recording continues separately and can be finished manually.
 
-Original audio, dubbed audio, source subtitles, and translated subtitles are four independent channels. Mix the audio, move and resize the subtitle overlay, or export a customized recorded WebM with separate SRT captions. Optional regular recording also exports the original audio, dub, and both subtitle tracks.
+Original audio, dubbed audio, source subtitles, and translated subtitles are four independent channels. Mix the audio, move and resize the subtitle overlay, or export a customized recorded WebM with separate SRT captions. Optional regular recording also exports both audio tracks as WAV and both subtitle tracks as SRT.
 
 The extension is standalone. It does not require the desktop app, Python, FFmpeg, localhost, or a virtual audio device. The current interface is available in English, Persian, and Simplified Chinese; the translation language is selected independently.
 

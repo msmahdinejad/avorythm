@@ -48,6 +48,8 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Validate i18n consistency
         run: node scripts/check_i18n.mjs
+      - name: Validate complete Web Store language coverage
+        run: node scripts/check_store_listings.mjs
       - name: Validate manifest
         shell: pwsh
         run: Get-Content extension/manifest.json | ConvertFrom-Json | Out-Null
