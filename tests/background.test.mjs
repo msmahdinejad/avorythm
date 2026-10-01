@@ -32,6 +32,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   const session = {};
 
   const storageArea = (state) => ({
+    async setAccessLevel({accessLevel}) { assert.equal(accessLevel, 'TRUSTED_CONTEXTS'); },
     async get(key) {
       if (state === session && key === 'state' && delayedStateRead) {
         const gate = delayedStateRead;
@@ -139,7 +140,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   await import('../extension/background.js');
   await installed();
 
-  const message = (payload, sender = {}) => new Promise((resolve) => {
+  const message = (payload, sender = {url: 'chrome-extension://test/options.html'}) => new Promise((resolve) => {
     assert.equal(receive(payload, sender, resolve), true);
   });
 
@@ -310,4 +311,15 @@ test('keeps the key session-only and starts tab capture without the desktop app'
   assert.equal(response.state.captureTabId, null);
 
   assert.deepEqual(removedTabs, [73]);
+
+  rejectOffscreenStop = false;
+  await message({type: 'set-key', apiKey: 'test-api-key-123', remember: true});
+  await message({type: 'set-groq-key', apiKey: 'test-groq-key-123', remember: true});
+  delete session.apiKey;
+  delete session.groqApiKey;
+  response = await message({type: 'start', config: synchronizedSettings});
+  assert.equal(response.ok, true, 'capture must use remembered keys even with an empty session-key cache');
+  assert.equal(lastOffscreenMessage.apiKey, 'test-api-key-123');
+  assert.equal(lastOffscreenMessage.groqApiKey, 'test-groq-key-123');
+  await message({type: 'stop'}, {tab: {id: 84}});
 });

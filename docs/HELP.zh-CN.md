@@ -36,7 +36,7 @@ macOS 可以选择 BlackHole 一类的回环设备；Linux 可选择对应的 Pi
 ![简体中文扩展弹出页](images/extension/popup-zh-CN.png)
 
 1. 从 [Chrome 网上应用店](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje) 安装并固定扩展图标。若使用 GitHub 发布包，请解压 `Avorythm-Extension.zip`，在 `chrome://extensions` 开启开发者模式，然后选择“加载已解压的扩展程序”。
-2. 打开扩展，进入“设置”，填入自己的 Google AI Studio Gemini API 密钥。密钥只保存在当前浏览器会话中，完全退出浏览器后会清除。
+2. 打开扩展，进入“设置”，填入自己的 Google AI Studio Gemini API 密钥。密钥默认仅保留当前浏览器会话，完全退出后会清除。Gemini 和 Groq 可分别开启“在此设备上记住密钥”；该副本仅保存在此浏览器配置文件中，不会同步，也不由扩展加密。共用设备请勿开启。关闭选项会删除设备副本并保留当前会话；清除密钥会删除两份副本。恢复默认设置也会删除设备副本。
 3. 在“授权与隐私”中勾选“我允许将所选标签页的音频发送到 Google Gemini”。这是开始翻译前必须完成的步骤；音频只在你点击“开始翻译”后发送。
 4. 选择目标语言以及播放方式。Google AI Studio 的免费额度和模型可用性可能变化；免费使用不等于无限量使用。
 

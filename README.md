@@ -94,7 +94,7 @@ On-page playback and synchronized playback/export have separate output controls.
 
 Only the latest synchronized capture is retained temporarily in Chrome's private origin storage. Starting a new synchronized capture removes the previous local capture and its generated artifacts. Files explicitly downloaded by the user are saved under `Downloads/Avorythm` and are not removed automatically.
 
-The extension key is kept only in `chrome.storage.session` and is cleared when the browser fully exits.
+Extension keys stay in `chrome.storage.session` by default and are cleared when the browser fully exits. In Settings, **Remember key on this device** can be enabled separately for Gemini and Groq. Remembered keys remain in this browser profile, are never synced, and are not encrypted by the extension. Turning the option off removes the disk copy while keeping the current session key; Clear key removes both copies.
 
 See the illustrated [complete user guide](docs/HELP.md) and the [installation and audio-routing guide](docs/INSTALLATION.md) for Windows AMM,
 macOS loopback, Linux monitor sources, proxy setup, and troubleshooting.

@@ -8,7 +8,7 @@ Avorythm contains two independent products: a cross-platform desktop application
 |---|---|---|---|---|
 | Desktop live | selected loopback/monitor input | Gemini 3.5 Live Translate | Gemini key in the OS keyring | playback, floating captions, WAV/SRT/ZIP |
 | Media Studio | local audio/video + FFmpeg | Groq Whisper → Gemini text pool → Gemini Live speech | Groq + Gemini keys in the OS keyring | synchronized player, four files, ZIP |
-| Browser extension | explicit `chrome.tabCapture` session | Gemini 3.5 Live Translate, or Groq Whisper → Gemini text pool → Gemini 3.1 Flash Live | session-only Gemini/Groq keys | low-latency playback or buffered A/V player, page overlay, optional four Downloads |
+| Browser extension | explicit `chrome.tabCapture` session | Gemini 3.5 Live Translate, or Groq Whisper → Gemini text pool → Gemini 3.1 Flash Live | session-only by default; independently opt-in local Gemini/Groq keys | low-latency playback or buffered A/V player, page overlay, optional four Downloads |
 
 The desktop UI is served only on `127.0.0.1:8765`. pywebview hosts that same UI natively on Windows (WebView2), macOS (WKWebView), and Linux (Qt WebEngine). The browser fallback remains available with `avorythm --browser`.
 

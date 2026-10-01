@@ -10,7 +10,7 @@ Avorythm is developed in public. Priorities are shaped by real-world use, access
 - Uploaded audio and video processing with a synchronized player and four export files
 - English and Persian interfaces
 - Standalone desktop and browser-extension experiences
-- Secure operating-system key storage in the desktop app and session-only keys in the extension
+- Secure operating-system key storage in the desktop app and session-only extension keys with explicit, per-provider opt-in device storage
 
 ## Next priorities
 

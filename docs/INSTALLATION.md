@@ -50,16 +50,16 @@ The local rolling governor reserves at most 15,000 estimated tokens per minute. 
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the folder that directly contains `manifest.json`.
 5. Pin Avorythm and open its popup.
-6. Open **Settings**, enter the Gemini API key for the current browser session, configure **On-page playback** and **Synchronized playback & export** independently, and confirm the one-time processing consent.
+6. Open **Settings**, enter your Gemini API key, configure **On-page playback** and **Synchronized playback & export** independently, and confirm the one-time processing consent.
 7. Return to the popup, choose **On this page** or **Synchronized recorder & player**, then start from a normal media tab.
 
 The extension needs no Windows app, localhost, Python, FFmpeg, or virtual cable. `chrome.tabCapture` suppresses direct tab playback; Avorythm recreates the exact original/dub mix for the selected mode. On-page controls never modify synchronized playback or its customized export.
 
 **On this page** is the shortest path for live listening. **Synchronized recorder & player** keeps capture 8–60 seconds ahead (20 seconds by default) and feeds an independent, seekable player. Pausing, seeking, switching tabs, or fullscreening the Avorythm player does not stop the source producer. A temporary underrun pauses only the consumer until its safety lead is rebuilt. The source media ending finalizes the local capture automatically. The player then renders the selected synchronized audio mix—dubbed-only by default—into a new seekable WebM and downloads enabled captions as SRT files. Literal zero delay is impossible because translation must receive speech before it can generate output; the recording lead trades a later start for much tighter relative sync. Protected DRM streams can reject video capture, so use on-page mode for those sites.
 
-The extension's faster synchronized engine uses Gemini 3.5 Live Translate directly. Its precise engine uses Groq Whisper for complete-utterance timestamps, the free Gemini text pool for translation, and one serialized Gemini 3.1 Flash Live voice session. Both paths preserve natural generated PCM and advance translated captions on the audible dub clock; capture progress remains visible while the precise engine processes its first window. Chrome asks for the optional `api.groq.com` permission and keeps the Groq key only for the browser session.
+The extension's faster synchronized engine uses Gemini 3.5 Live Translate directly. Its precise engine uses Groq Whisper for complete-utterance timestamps, the free Gemini text pool for translation, and one serialized Gemini 3.1 Flash Live voice session. Both paths preserve natural generated PCM and advance translated captions on the audible dub clock; capture progress remains visible while the precise engine processes its first window. Chrome asks for the optional `api.groq.com` permission and keeps the Groq key only for the browser session by default. The separate **Remember key on this device** option stores it locally across restarts.
 
-The key lives only in `chrome.storage.session` and must be entered again after the browser fully exits. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
+Keys live in `chrome.storage.session` by default and must be entered again after the browser fully exits. **Remember key on this device** optionally saves each key in this browser profile without encryption or Chrome Sync. Turning the option off removes its disk copy and retains only the current session key; Clear key removes both. Record mode creates `original.wav`, `source.srt`, `dubbed.wav`, and `translated.srt` under Downloads. Long Live connections are renewed automatically with bounded backoff.
 
 ### Floating subtitles
 
@@ -95,7 +95,7 @@ Do not route Avorythm output to AMM Virtual. That feeds dubbed speech back into 
 
 - **Extension shows a Blob/JSON error:** remove the older unpacked build, load the current `Avorythm-Extension.zip` contents, and reload the target tab.
 - **Extension cannot connect:** verify model access/quota and confirm Chrome/Edge itself uses the required proxy.
-- **Extension asks for the key again:** expected after a full browser exit because the key is session-only.
+- **Extension asks for the key again:** expected after a full browser exit with the default session-only mode. Enable **Remember key on this device** separately for Gemini and Groq to retain them. Remembered copies stay in this browser profile, never sync, and are not encrypted by the extension. Turning the option off removes the disk copy; Clear key removes it and the current session key.
 - **No tab audio:** use Chrome/Edge 116+, keep the target tab active when Start is clicked, and note that protected DRM pages may block capture.
 - **Synchronized player does not open or shows an unsupported-media message:** the page did not expose a capturable video track or uses protected media. Stop the session and choose **On this page**.
 - **Synchronized player waits on Buffering:** keep the source media playing and let the safety lead rebuild. Increase Recording lead when the source or network stalls often.

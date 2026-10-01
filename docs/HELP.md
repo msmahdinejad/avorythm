@@ -75,10 +75,10 @@ Install [Avorythm from the Chrome Web Store](https://chromewebstore.google.com/d
 
 ### First-time setup — required
 
-![Avorythm extension connection and consent settings](images/extension/settings-en.png)
+![Avorythm extension API key and device-storage settings](images/extension/settings-en.png)
 
 1. Open Avorythm and select **Open settings**.
-2. Save your Gemini API key. The key stays in Chrome session storage and is cleared after the browser fully exits.
+2. Save your Gemini API key. Keys stay in Chrome session storage by default and are cleared after the browser fully exits. **Remember key on this device** is optional and separate for Gemini and Groq. It stores an unencrypted copy in this browser profile, never syncs it, and is best left off on shared devices. Turning it off removes the disk copy but keeps the current session; Clear key removes both. Restoring default settings also removes remembered copies.
 3. In **Consent and privacy**, you must enable **“I allow audio from my selected tab to be sent to Google Gemini.”** Translation cannot start before this explicit consent.
 4. Choose the target language. Configure **On-page playback** and **Synchronized playback & export** separately; changing one never changes the other.
 5. Only if you choose the precise Whisper engine: save a Groq key, grant Chrome access to `api.groq.com`, and separately enable **“I allow short audio windows from the selected tab to be sent directly to Groq Whisper.”** Those windows are used for transcription and timestamps; the resulting text goes to Gemini for translation and voice generation.
@@ -91,7 +91,7 @@ Install [Avorythm from the Chrome Web Store](https://chromewebstore.google.com/d
 
 ![Synchronized recorder settings](images/extension/sync-settings-en.png)
 
-The faster engine sends selected-tab audio directly to Gemini 3.5 Live Translate. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: short selected-tab audio windows go directly to Groq Whisper, which timestamps complete utterances; the free Gemini text-model pool translates the resulting transcript with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and anchors precise-mode captions to each generated PCM interval; the approximate Gemini 3.5 transcript path applies one calibrated 2.5-second display offset. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys remain session-only, and the Groq transfer requires its own versioned consent. On restricted networks, add `api.groq.com` to your proxy/VPN route (for example through `127.0.0.1:10808`). The extension tests that route before capture, without changing Chrome's global proxy settings.
+The faster engine sends selected-tab audio directly to Gemini 3.5 Live Translate. For tighter timing, select **Whisper + LLM + Gemini 3.1 Live**: short selected-tab audio windows go directly to Groq Whisper, which timestamps complete utterances; the free Gemini text-model pool translates the resulting transcript with batch context, and one serialized Gemini 3.1 Flash Live session renders the selected voice. Avorythm preserves the model's natural PCM and anchors precise-mode captions to each generated PCM interval; the approximate Gemini 3.5 transcript path applies one calibrated 2.5-second display offset. Capture progress appears independently while AI processing catches up. Chrome asks for access to `api.groq.com`; both API keys are session-only unless you explicitly choose to remember them on this device, and the Groq transfer requires its own versioned consent. On restricted networks, add `api.groq.com` to your proxy/VPN route (for example through `127.0.0.1:10808`). The extension tests that route before capture, without changing Chrome's global proxy settings.
 
 ### Use the synchronized recorder & player
 

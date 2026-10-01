@@ -27,6 +27,14 @@ const defaultState = {
 };
 let stateQueue = Promise.resolve();
 let lifecycleQueue = Promise.resolve();
+let credentialQueue = Promise.resolve();
+const credentialFields = {gemini: 'apiKey', groq: 'groqApiKey'};
+const credentialAccessReady = Promise.all([
+  chrome.storage.local.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'}),
+  chrome.storage.session.setAccessLevel({accessLevel: 'TRUSTED_CONTEXTS'})
+]);
+// Handle initialization rejection even before the first message; key access still fails closed.
+credentialAccessReady.catch(() => {});
 
 function serialize(queue, operation, updateQueue) {
   const pending = queue.then(operation, operation);
@@ -36,6 +44,66 @@ function serialize(queue, operation, updateQueue) {
 
 function runLifecycle(operation) {
   return serialize(lifecycleQueue, operation, (next) => { lifecycleQueue = next; });
+}
+
+function runCredentials(operation) {
+  return serialize(credentialQueue, async () => {
+    await credentialAccessReady;
+    return operation();
+  }, (next) => { credentialQueue = next; });
+}
+
+async function readCredentials() {
+  const [{credentials = {}}, session] = await Promise.all([
+    chrome.storage.local.get('credentials'),
+    chrome.storage.session.get(['apiKey', 'groqApiKey'])
+  ]);
+  const keys = {};
+  const records = {};
+  for (const [provider, field] of Object.entries(credentialFields)) {
+    const record = credentials?.[provider];
+    const remember = record?.remember === true;
+    const key = remember && typeof record.key === 'string' ? record.key : session[field];
+    keys[field] = typeof key === 'string' ? key : '';
+    records[provider] = remember ? {remember, key: keys[field]} : {remember};
+  }
+  return {keys, records};
+}
+
+function credentialStatus({keys, records}) {
+  return {
+    api_key_set: Boolean(keys.apiKey),
+    groq_api_key_set: Boolean(keys.groqApiKey),
+    remember_gemini_key: records.gemini.remember,
+    remember_groq_key: records.groq.remember
+  };
+}
+
+function changeCredential(provider, {key, remember, clear = false} = {}) {
+  return runCredentials(async () => {
+    const field = credentialFields[provider];
+    if (!Object.hasOwn(credentialFields, provider)) throw new Error('credential_provider_invalid');
+    if (remember !== undefined && typeof remember !== 'boolean') throw new Error('credential_preference_invalid');
+    if (key !== undefined && (typeof key !== 'string' || key.trim().length < 10 || /[\r\n]/u.test(key))) {
+      throw new Error('api_key_invalid');
+    }
+    const snapshot = await readCredentials();
+    const nextKey = clear ? '' : key?.trim() ?? snapshot.keys[field];
+    const nextRemember = !clear && (remember ?? snapshot.records[provider].remember);
+    if (nextKey) await chrome.storage.session.set({[field]: nextKey});
+    else await chrome.storage.session.remove(field);
+    snapshot.records[provider] = nextRemember ? {remember: true, key: nextKey} : {remember: false};
+    await chrome.storage.local.set({credentials: snapshot.records});
+    snapshot.keys[field] = nextKey;
+    return credentialStatus(snapshot);
+  });
+}
+
+function clearCredential(provider) {
+  return runLifecycle(async () => {
+    if ((await getState()).active) await performStop();
+    return changeCredential(provider, {clear: true});
+  });
 }
 
 async function injectOverlay(tabId) {
@@ -143,9 +211,9 @@ async function closeStalePlayerTabs() {
 }
 
 async function bootstrap() {
-  const [{settings}, {apiKey, groqApiKey}, groqPermissionGranted] = await Promise.all([
+  const [{settings}, credentials, groqPermissionGranted] = await Promise.all([
     chrome.storage.local.get('settings'),
-    chrome.storage.session.get(['apiKey', 'groqApiKey']),
+    runCredentials(readCredentials),
     chrome.permissions.contains({origins: ['https://api.groq.com/*']})
   ]);
   const normalizedSettings = normalizeSettings(settings);
@@ -153,11 +221,10 @@ async function bootstrap() {
   return {
     languages: LANGUAGES,
     settings: normalizedSettings,
-    api_key_set: Boolean(apiKey),
-    groq_api_key_set: Boolean(groqApiKey),
+    ...credentialStatus(credentials),
     groq_permission_granted: groqPermissionGranted,
     groq_audio_consent_granted: groqAudioConsentGranted,
-    groq_ready: Boolean(groqApiKey) && groqPermissionGranted && groqAudioConsentGranted
+    groq_ready: Boolean(credentials.keys.groqApiKey) && groqPermissionGranted && groqAudioConsentGranted
   };
 }
 
@@ -185,7 +252,7 @@ async function performStart(config) {
   if (nextConfig.recording && !await chrome.permissions.contains({permissions: ['downloads']})) {
     throw new Error('downloads_permission_missing');
   }
-  const {apiKey, groqApiKey} = await chrome.storage.session.get(['apiKey', 'groqApiKey']);
+  const {keys: {apiKey, groqApiKey}} = await runCredentials(readCredentials);
   if (!apiKey) throw new Error('api_key_missing');
   if (usesGroqAudio(nextConfig) && !groqApiKey) {
     throw new Error('groq_key_missing');
@@ -338,6 +405,7 @@ function stop(requestingTabId = null, keepPlayer = false, completionReason = 'ma
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
+  await credentialAccessReady;
   await chrome.storage.session.set({state: defaultState});
   const {settings} = await chrome.storage.local.get('settings');
   if (!settings) await chrome.storage.local.set({settings: normalizeSettings(DEFAULT_SETTINGS)});
@@ -347,6 +415,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target === 'offscreen') return false;
   (async () => {
+    if (['set-key', 'set-groq-key', 'clear-key', 'clear-groq-key', 'set-key-persistence'].includes(message.type) &&
+        !sender.url?.startsWith(chrome.runtime.getURL(''))) {
+      throw new Error('credential_access_denied');
+    }
     if (message.target === 'background') {
       if (message.type === 'bridge-state') {
         const state = await setState(message.update);
@@ -363,23 +435,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'state') sendResponse({ok: true, state: await getState()});
     else if (message.type === 'bootstrap') sendResponse({ok: true, data: await bootstrap()});
     else if (message.type === 'set-key') {
-      const apiKey = String(message.apiKey || '').trim();
-      if (apiKey.length < 10) throw new Error('api_key_invalid');
-      await chrome.storage.session.set({apiKey});
-      sendResponse({ok: true});
+      const data = await changeCredential('gemini', {key: message.apiKey ?? '', remember: message.remember});
+      sendResponse({ok: true, data});
     } else if (message.type === 'clear-key') {
-      if ((await getState()).active) await stop();
-      await chrome.storage.session.remove('apiKey');
-      sendResponse({ok: true});
+      sendResponse({ok: true, data: await clearCredential('gemini')});
     } else if (message.type === 'set-groq-key') {
-      const apiKey = String(message.apiKey || '').trim();
-      if (apiKey.length < 10) throw new Error('api_key_invalid');
-      await chrome.storage.session.set({groqApiKey: apiKey});
-      sendResponse({ok: true});
+      const data = await changeCredential('groq', {key: message.apiKey ?? '', remember: message.remember});
+      sendResponse({ok: true, data});
     } else if (message.type === 'clear-groq-key') {
-      if ((await getState()).active) await stop();
-      await chrome.storage.session.remove('groqApiKey');
-      sendResponse({ok: true});
+      sendResponse({ok: true, data: await clearCredential('groq')});
+    } else if (message.type === 'set-key-persistence') {
+      if (typeof message.remember !== 'boolean') throw new Error('credential_preference_invalid');
+      sendResponse({ok: true, data: await changeCredential(message.provider, {remember: message.remember})});
     } else if (message.type === 'start') sendResponse({ok: true, state: await start(message.config)});
     else if (message.type === 'stop') sendResponse({ok: true, state: await stop(sender.tab?.id || null, Boolean(message.keepPlayer))});
     else if (message.type === 'source-media-state') {

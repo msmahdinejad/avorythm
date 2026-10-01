@@ -2,6 +2,21 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
+## [1.1.14] - 2026-10-01
+
+### Added
+
+- Add independent, default-off **Remember key on this device** options for Gemini and Groq, with English, Persian, and Simplified Chinese controls and disclosures. Thanks to @Liu8Can for proposing this in [#11](https://github.com/msmahdinejad/avorythm/issues/11).
+- Restore opted-in keys after browser restarts and extension updates. Turning remembering off deletes the disk copy but retains the session key; clearing a key removes both copies, and resetting settings removes remembered copies.
+
+### Security
+
+- Restrict local and session storage to trusted extension contexts, accept credential mutations only from extension pages, and serialize credential changes. Keys never use Chrome Sync; local persistence is explicitly disclosed as unencrypted.
+
+### Tests
+
+- Cover session-only defaults, independent provider persistence, restarts, migration, replacement, deletion, concurrent saves, access restrictions, and storage errors.
+
 ## [1.1.13] - 2026-09-23
 
 ### Fixed
@@ -440,7 +455,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.13...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...HEAD
+[1.1.14]: https://github.com/msmahdinejad/avorythm/compare/v1.1.13...v1.1.14
 [1.1.13]: https://github.com/msmahdinejad/avorythm/compare/v1.1.12...v1.1.13
 [1.1.12]: https://github.com/msmahdinejad/avorythm/compare/v1.1.11...v1.1.12
 [1.1.11]: https://github.com/msmahdinejad/avorythm/compare/v1.1.10...v1.1.11
