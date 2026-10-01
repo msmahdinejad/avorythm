@@ -26,6 +26,11 @@
 <p align="center">
   <a href="README.fa.md">فارسی</a> ·
   <a href="README.zh-CN.md">简体中文</a> ·
+  <a href="README.ar.md">العربية</a> ·
+  <a href="README.de.md">Deutsch</a> ·
+  <a href="README.fr.md">Français</a> ·
+  <a href="README.it.md">Italiano</a> ·
+  <a href="README.ru.md">Русский</a> ·
   <a href="https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje">Install the Chrome extension</a> ·
   <a href="docs/HELP.md">User guide</a> ·
   <a href="docs/INSTALLATION.md">Installation</a> ·
@@ -56,8 +61,12 @@ Python, FFmpeg, localhost, or a virtual audio cable.
 - Optional recording of `original.wav`, `dubbed.wav`, `source.srt`, and `translated.srt`.
 - Audio/video upload with timestamped transcription, translation, generated speech, and synchronized playback.
 - A ZIP download containing all generated outputs.
-- Persian and English interfaces with automatic RTL/LTR text direction.
+- Persian and English desktop interfaces, plus a Simplified Chinese extension interface, with automatic RTL/LTR text direction.
 - Native desktop windows for Windows, macOS, and Linux.
+
+### Target languages
+
+The desktop app and extension share the same target-language catalog. Popular destinations are **English, Persian, Arabic, Chinese (Simplified and Traditional), German, French, Italian, Spanish, Russian, Japanese, Korean, Turkish, Portuguese (Brazil and Portugal), Dutch, Polish, Ukrainian, Hindi, Urdu, Hebrew, Indonesian, Malay, Vietnamese, and Thai**. The selector also includes additional supported languages such as Bengali, Bulgarian, Czech, Danish, Finnish, Greek, Hungarian, Romanian, Swedish, and more.
 
 ![Avorythm standalone browser extension](store-assets/en/01-popup.png)
 

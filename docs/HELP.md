@@ -4,6 +4,8 @@
 
 Avorythm has two independent products. The desktop app handles other desktop programs and uploaded files. The browser extension handles one selected Chrome or Edge tab and does not require the app, FFmpeg, localhost, or a virtual audio device.
 
+Both products share the same target-language catalog: English, Persian, Arabic, Simplified and Traditional Chinese, German, French, Italian, Spanish, Russian, Japanese, Korean, Turkish, Brazilian and European Portuguese, Dutch, Polish, Ukrainian, Hindi, Urdu, Hebrew, Indonesian, Malay, Vietnamese, Thai, plus additional languages including Bengali, Bulgarian, Czech, Danish, Finnish, Greek, Hungarian, Romanian, and Swedish. The selector keeps the most common destinations at the top.
+
 | I want to… | Use | Extra audio setup |
 |---|---|---|
 | Translate a browser video with the lowest practical delay | Extension · On this page | None |

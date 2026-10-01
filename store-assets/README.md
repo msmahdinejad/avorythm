@@ -14,6 +14,8 @@ These are **listing assets**, not extension-package files. In each localized lis
 
 The promo tiles explain AI dubbing, live subtitles, and synchronized playback at a glance. Screenshots contain the actual extension UI with locally generated demo content—no real media or user data. The guides use separate, uncomposited captures in `docs/images/extension/`. Re-capture both sets when the UI changes materially. Do not add these listing images to `extension/` or the uploaded ZIP.
 
+Additional localized artwork is available in `ar/`, `de/`, `fr/`, `it/`, and `ru/` with matching `promo-small-<locale>.png` files. Their marketing captions are localized while the embedded product capture remains the verified English UI; use them only when publishing a matching localized listing.
+
 برای فهرست فارسی، تصاویر ستون فارسی را بارگذاری کن؛ تصاویر این پوشه داخل فایل نصب اکستنشن قرار نمی‌گیرند. اگر فروشگاه برای پرومو فقط یک تصویر سراسری می‌پذیرد، نسخهٔ انگلیسی را نگه دار و متن و اسکرین‌شات‌های فارسی را جداگانه ثبت کن.
 
 简体中文列表请使用中文列的图片；若宣传图只能全局上传一套，就保留英文宣传图，并单独上传中文文案与截图。

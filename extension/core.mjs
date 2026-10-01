@@ -7,9 +7,14 @@ export const LIVE_ENDPOINT =
 const SENTENCE_ENDINGS = '.!?\u061f\u3002\uff01\uff1f\u2026';
 const SENTENCE_PATTERN = /[^.!?\u061f\u3002\uff01\uff1f\u2026]+[.!?\u061f\u3002\uff01\uff1f\u2026]+|[^.!?\u061f\u3002\uff01\uff1f\u2026]+$/gu;
 
-export const LANGUAGES = [
-  'af','ak','sq','am','ar','hy','az','eu','be','bn','bg','my','ca','zh-Hans','zh-Hant','hr','cs','da','nl','en','et','fil','fi','fr','gl','ka','de','el','gu','ha','he','hi','hu','is','id','it','ja','jv','kn','kk','km','rw','ko','lo','lv','lt','mk','ms','ml','mr','mn','ne','no','nb','fa','pl','pt-BR','pt-PT','pa','ro','ru','sr','sd','si','sk','sl','es','su','sw','sv','ta','te','th','tr','uk','ur','uz','vi','zu'
+export const POPULAR_LANGUAGES = [
+  'en','fa','ar','zh-Hans','zh-Hant','de','fr','it','es','ru','ja','ko','tr','pt-BR','pt-PT','nl','pl','uk','hi','ur','he','id','ms','vi','th'
 ];
+const ADDITIONAL_LANGUAGES = [
+  'af','ak','sq','am','hy','az','eu','be','bn','bg','my','ca','hr','cs','da','et','fil','fi','gl','ka','el','gu','ha','hu','is','jv','kn','kk','km','rw','lo','lv','lt','mk','ml','mr','mn','ne','no','nb','pa','ro','sr','sd','si','sk','sl','su','sw','sv','ta','te','uz','zu'
+];
+// Keep common destinations at the top while retaining the complete Gemini language set.
+export const LANGUAGES = [...POPULAR_LANGUAGES, ...ADDITIONAL_LANGUAGES];
 export const VOICE_NAMES = ['Aoede','Charon','Fenrir','Kore','Leda','Orus','Puck','Zephyr'];
 
 const OUTPUT_FIELDS = [

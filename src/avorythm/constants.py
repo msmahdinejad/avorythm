@@ -92,6 +92,37 @@ SUPPORTED_LANGUAGES = {
     "zu",
 }
 
+POPULAR_LANGUAGES = (
+    "en",
+    "fa",
+    "ar",
+    "zh-Hans",
+    "zh-Hant",
+    "de",
+    "fr",
+    "it",
+    "es",
+    "ru",
+    "ja",
+    "ko",
+    "tr",
+    "pt-BR",
+    "pt-PT",
+    "nl",
+    "pl",
+    "uk",
+    "hi",
+    "ur",
+    "he",
+    "id",
+    "ms",
+    "vi",
+    "th",
+)
+LANGUAGE_ORDER = POPULAR_LANGUAGES + tuple(
+    sorted(SUPPORTED_LANGUAGES.difference(POPULAR_LANGUAGES))
+)
+
 RTL_LANGUAGES = {"ar", "fa", "he", "ur", "sd"}
 
 VOICE_NAMES = {

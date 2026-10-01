@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__
 from .audio import DeviceCatalog
 from .config import ConfigStore
-from .constants import RTL_LANGUAGES, SUPPORTED_LANGUAGES, VOICE_NAMES
+from .constants import LANGUAGE_ORDER, RTL_LANGUAGES, VOICE_NAMES
 from .jobs import OUTPUT_NAMES, MediaJob, MediaJobManager
 from .models import ApiKeyInput, Settings
 from .routing import open_windows_volume_mixer
@@ -136,7 +136,7 @@ def create_app(
         return {
             "platform": platform.system().lower(),
             "devices": DeviceCatalog.scan().to_dict(),
-            "languages": sorted(SUPPORTED_LANGUAGES),
+            "languages": list(LANGUAGE_ORDER),
             "voices": sorted(VOICE_NAMES),
             "settings": runtime.settings.model_dump(),
             "api_key_set": bool(config.get_api_key()),

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.15] - 2026-10-01
+
+- Expanded the destination-language catalog with popular European, Asian and RTL languages across the extension and desktop app.
+- Added validated German, French, Italian, Russian and Arabic localization resources and user guides.
+- Rebuilt Web Store and GitHub artwork from real product captures in a single-scene, readable layout.
+
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic versioning.
 
 ## [1.1.14] - 2026-10-01
@@ -455,7 +461,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...HEAD
+[1.1.15]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...v1.1.15
 [1.1.14]: https://github.com/msmahdinejad/avorythm/compare/v1.1.13...v1.1.14
 [1.1.13]: https://github.com/msmahdinejad/avorythm/compare/v1.1.12...v1.1.13
 [1.1.12]: https://github.com/msmahdinejad/avorythm/compare/v1.1.11...v1.1.12

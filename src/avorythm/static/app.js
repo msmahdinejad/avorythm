@@ -211,9 +211,9 @@ messages.en.projectHomepage = 'Project homepage and more features ↗';
 messages['zh-Hans'].projectHomepage = '项目主页与更多功能 ↗';
 
 const languageNames = {
-  fa: {fa: 'فارسی', en: 'انگلیسی', ar: 'عربی', de: 'آلمانی', fr: 'فرانسوی', es: 'اسپانیایی', it: 'ایتالیایی', ja: 'ژاپنی', ko: 'کره‌ای', ru: 'روسی', tr: 'ترکی', zh: 'چینی'},
-  en: {fa: 'Persian', en: 'English', ar: 'Arabic', de: 'German', fr: 'French', es: 'Spanish', it: 'Italian', ja: 'Japanese', ko: 'Korean', ru: 'Russian', tr: 'Turkish', zh: 'Chinese'},
-  'zh-Hans': {fa: '波斯语', en: '英语', ar: '阿拉伯语', de: '德语', fr: '法语', es: '西班牙语', it: '意大利语', ja: '日语', ko: '韩语', ru: '俄语', tr: '土耳其语', zh: '中文'}
+  fa: {fa: 'فارسی', en: 'انگلیسی', ar: 'عربی', 'zh-Hans': 'چینی (ساده‌شده)', 'zh-Hant': 'چینی (سنتی)', de: 'آلمانی', fr: 'فرانسوی', it: 'ایتالیایی', es: 'اسپانیایی', ru: 'روسی', ja: 'ژاپنی', ko: 'کره‌ای', tr: 'ترکی', 'pt-BR': 'پرتغالی (برزیل)', 'pt-PT': 'پرتغالی (پرتغال)', nl: 'هلندی', pl: 'لهستانی', uk: 'اوکراینی', hi: 'هندی', ur: 'اردو', he: 'عبری', id: 'اندونزیایی', ms: 'مالایی', vi: 'ویتنامی', th: 'تایلندی'},
+  en: {fa: 'Persian', en: 'English', ar: 'Arabic', 'zh-Hans': 'Chinese (Simplified)', 'zh-Hant': 'Chinese (Traditional)', de: 'German', fr: 'French', it: 'Italian', es: 'Spanish', ru: 'Russian', ja: 'Japanese', ko: 'Korean', tr: 'Turkish', 'pt-BR': 'Portuguese (Brazil)', 'pt-PT': 'Portuguese (Portugal)', nl: 'Dutch', pl: 'Polish', uk: 'Ukrainian', hi: 'Hindi', ur: 'Urdu', he: 'Hebrew', id: 'Indonesian', ms: 'Malay', vi: 'Vietnamese', th: 'Thai'},
+  'zh-Hans': {fa: '波斯语', en: '英语', ar: '阿拉伯语', 'zh-Hans': '简体中文', 'zh-Hant': '繁体中文', de: '德语', fr: '法语', it: '意大利语', es: '西班牙语', ru: '俄语', ja: '日语', ko: '韩语', tr: '土耳其语', 'pt-BR': '巴西葡萄牙语', 'pt-PT': '葡萄牙语（葡萄牙）', nl: '荷兰语', pl: '波兰语', uk: '乌克兰语', hi: '印地语', ur: '乌尔都语', he: '希伯来语', id: '印度尼西亚语', ms: '马来语', vi: '越南语', th: '泰语'}
 };
 
 function t(key) { return messages[locale]?.[key] || key; }
@@ -343,7 +343,7 @@ function fillLanguages(element, languages, selected) {
   const display = new Intl.DisplayNames([locale === 'fa' ? 'fa' : (locale === 'zh-Hans' ? 'zh-Hans' : 'en')], {type: 'language'});
   fillSelect(element, languages, selected, (code) => {
     const base = code.split('-')[0];
-    try { return `${languageNames[locale][base] || display.of(base) || code} · ${code}`; } catch { return code; }
+    try { return `${languageNames[locale][code] || languageNames[locale][base] || display.of(base) || code} · ${code}`; } catch { return code; }
   });
 }
 
