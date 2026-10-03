@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-en.png" alt="Desktop-App und Browser-Erweiterung von Avorythm" width="100%">
+  <img src="assets/branding/readme-cover-de.png" alt="Desktop-App und Browser-Erweiterung von Avorythm" width="100%">
 </p>
 
 [Chrome-Erweiterung installieren](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje) ·
