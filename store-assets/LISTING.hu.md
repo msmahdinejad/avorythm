@@ -34,7 +34,7 @@ Felhasználói útmutató (angolul): https://github.com/msmahdinejad/avorythm/bl
 
 Adatvédelmi szabályzat: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Újdonságok az 1.1.16-ös verzióban
+## Újdonságok az 1.1.17-ös verzióban
 
 - Egyszerűbb nyelvválasztás: a népszerű nyelvek kerültek előre, a kínai és a portugál változatok egyértelmű megjelölésével.
 - Új német, francia, olasz, orosz és arab nyelvű projektdokumentáció és segédanyagok.

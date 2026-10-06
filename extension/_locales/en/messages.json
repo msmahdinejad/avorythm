@@ -1,5 +1,11 @@
 {
-  "appName": {"message": "Avorythm — Live Translation"},
-  "appDescription": {"message": "Translate, dub, and caption a selected tab live with Gemini AI, plus an optional synchronized player."},
-  "actionTitle": {"message": "Open Avorythm live translation"}
+  "appName": {
+    "message": "Avorythm — AI Live Dubbing & Subtitles"
+  },
+  "appDescription": {
+    "message": "Translate tab audio with AI: live dubbing, bilingual captions, independent audio mixing, and synchronized playback."
+  },
+  "actionTitle": {
+    "message": "Avorythm — AI Live Dubbing & Subtitles"
+  }
 }

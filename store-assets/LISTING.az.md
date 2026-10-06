@@ -34,7 +34,7 @@ Mənbə kodu: https://github.com/msmahdinejad/avorythm
 
 Məxfilik siyasəti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.16 versiyasında yeniliklər
+## 1.1.17 versiyasında yeniliklər
 
 - Dil seçimi asanlaşdırılıb: populyar dillər əvvəldə göstərilir, Çin və Portuqal dili variantları isə aydın şəkildə fərqləndirilir.
 - Alman, fransız, italyan, rus və ərəb dillərində yeni layihə sənədləri və resurslar əlavə edilib.

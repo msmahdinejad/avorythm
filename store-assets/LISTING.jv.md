@@ -34,7 +34,7 @@ Pandhuan pangguna (basa Inggris): https://github.com/msmahdinejad/avorythm/blob/
 
 Kabijakan privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Apa sing anyar ing 1.1.16
+## Apa sing anyar ing 1.1.17
 
 - Milih basa saiki luwih gampang: basa sing populer ditampilake luwih dhisik, kanthi varian basa Tionghoa lan Portugis sing dibedakake kanthi cetha.
 - Dokumentasi lan sumber daya proyek anyar nganggo basa Jerman, Prancis, Italia, Rusia, lan Arab.

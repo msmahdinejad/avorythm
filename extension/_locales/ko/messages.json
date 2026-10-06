@@ -1,0 +1,11 @@
+{
+  "appName": {
+    "message": "Avorythm — AI 실시간 더빙 및 자막"
+  },
+  "appDescription": {
+    "message": "AI로 선택한 탭의 오디오를 번역하세요. 실시간 더빙, 이중 언어 자막, 동기화된 플레이어를 제공합니다."
+  },
+  "actionTitle": {
+    "message": "Avorythm — AI 실시간 더빙 및 자막"
+  }
+}

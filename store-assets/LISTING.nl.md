@@ -34,7 +34,7 @@ Gebruikershandleiding (Engels): https://github.com/msmahdinejad/avorythm/blob/ma
 
 Privacybeleid: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nieuw in 1.1.16
+## Nieuw in 1.1.17
 
 - Eenvoudiger een taal kiezen: populaire talen staan vooraan, met duidelijk onderscheiden varianten van het Chinees en Portugees.
 - Nieuwe projectdocumentatie en informatiebronnen in het Duits, Frans, Italiaans, Russisch en Arabisch.

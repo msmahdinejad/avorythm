@@ -34,7 +34,7 @@ Pituduh pamaké (basa Inggris): https://github.com/msmahdinejad/avorythm/blob/ma
 
 Kawijakan privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nu anyar dina 1.1.16
+## Nu anyar dina 1.1.17
 
 - Milih basa leuwih gampang: basa nu populér ditempatkeun di hareup, kalayan pilihan ragam basa Cina jeung Portugis nu écés.
 - Dokuméntasi jeung sumber daya proyék anyar dina basa Jerman, Perancis, Italia, Rusia, jeung Arab.

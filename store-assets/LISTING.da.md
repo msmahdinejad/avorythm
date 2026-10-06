@@ -34,7 +34,7 @@ Brugervejledning (engelsk): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Privatlivspolitik: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nyheder i 1.1.16
+## Nyheder i 1.1.17
 
 - Nemmere sprogvalg: populære sprog vises først, og kinesiske og portugisiske varianter er tydeligt angivet.
 - Ny projektdokumentation og nye ressourcer på tysk, fransk, italiensk, russisk og arabisk.

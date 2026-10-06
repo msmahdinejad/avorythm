@@ -1,5 +1,11 @@
 {
-  "appName": {"message": "Avorythm — 实时翻译"},
-  "appDescription": {"message": "用 AI 为所选标签页提供实时配音与双语字幕，并可在同步播放器中观看和导出。"},
-  "actionTitle": {"message": "打开 Avorythm 实时翻译"}
+  "appName": {
+    "message": "Avorythm — AI 实时配音与字幕"
+  },
+  "appDescription": {
+    "message": "用 AI 为网页视频和音频添加实时配音与双语字幕；也可在同步播放器中暂停、跳转和导出视频。"
+  },
+  "actionTitle": {
+    "message": "Avorythm — AI 实时配音与字幕"
+  }
 }

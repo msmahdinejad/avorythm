@@ -34,7 +34,7 @@ Uporabniški priročnik (v angleščini): https://github.com/msmahdinejad/avoryt
 
 Pravilnik o zasebnosti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Novosti v različici 1.1.16
+## Novosti v različici 1.1.17
 
 - Lažja izbira jezika: priljubljeni jeziki so na vrhu, različice kitajščine in portugalščine pa so jasno označene.
 - Nova projektna dokumentacija in viri v nemščini, francoščini, italijanščini, ruščini in arabščini.

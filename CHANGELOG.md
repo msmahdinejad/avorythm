@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.17] - 2026-10-06
+
+### Fixed
+
+- Package all 51 supported Chrome Web Store locales covered by the translated listing copy, instead of exposing only three listing languages.
+- Synchronize localized extension names and short descriptions with the reviewed AI dubbing and subtitles copy. Long descriptions and images are uploaded separately in the Web Store dashboard.
+- Reject stale or missing packaged listing metadata in CI and before creating an extension ZIP.
+
 ## [1.1.16] - 2026-10-06
 
 ### Changed
@@ -470,7 +478,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.16...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.17...HEAD
+[1.1.17]: https://github.com/msmahdinejad/avorythm/compare/v1.1.16...v1.1.17
 [1.1.16]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...v1.1.16
 [1.1.15]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...v1.1.15
 [1.1.14]: https://github.com/msmahdinejad/avorythm/compare/v1.1.13...v1.1.14

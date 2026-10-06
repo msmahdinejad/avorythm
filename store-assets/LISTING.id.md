@@ -34,7 +34,7 @@ Panduan pengguna (English): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Kebijakan privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yang baru di 1.1.16
+## Yang baru di 1.1.17
 
 - Pemilihan bahasa yang lebih mudah: bahasa populer ditampilkan lebih dulu, dengan varian bahasa Tionghoa dan Portugis yang jelas.
 - Dokumentasi dan sumber daya proyek baru dalam bahasa Jerman, Prancis, Italia, Rusia, dan Arab.

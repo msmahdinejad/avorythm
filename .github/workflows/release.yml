@@ -56,6 +56,8 @@ jobs:
         run: Get-ChildItem extension -File | Where-Object Extension -in '.js','.mjs' | ForEach-Object { node --check $_.FullName }
       - name: Test extension modules
         run: node --test tests/*.test.mjs
+      - name: Validate packaged store metadata and listing copy
+        run: node scripts/check_store_listings.mjs
       - name: Test real browser media pipelines
         run: xvfb-run -a python scripts/browser_smoke.py
       - name: Validate manifest
@@ -93,6 +95,10 @@ jobs:
           $packageVersion = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])"
           if ($tagVersion -notmatch '^\d+\.\d+\.\d+$') { throw "Release tag must be vMAJOR.MINOR.PATCH" }
           if ($tagVersion -ne $packageVersion) { throw "Tag $tagVersion does not match package $packageVersion" }
+      - uses: actions/setup-node@v7
+        if: runner.os == 'Windows'
+        with:
+          node-version: "22"
       - name: Install Linux audio runtime
         if: runner.os == 'Linux'
         timeout-minutes: 4

@@ -34,7 +34,7 @@ Hướng dẫn sử dụng (tiếng Anh): https://github.com/msmahdinejad/avoryt
 
 Chính sách quyền riêng tư: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Có gì mới trong 1.1.16
+## Có gì mới trong 1.1.17
 
 - Chọn ngôn ngữ dễ hơn: các ngôn ngữ phổ biến được đưa lên đầu, với các biến thể tiếng Trung và tiếng Bồ Đào Nha được ghi rõ.
 - Bổ sung tài liệu và tài nguyên dự án bằng tiếng Đức, tiếng Pháp, tiếng Ý, tiếng Nga và tiếng Ả Rập.

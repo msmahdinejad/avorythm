@@ -1,12 +1,22 @@
 # Chrome Web Store visuals / تصاویر فروشگاه کروم / Chrome 网上应用店图片
 
-These are **listing assets**, not extension-package files. In each localized listing, upload the matching language set. The current campaign is the dark, product-led set generated on 2026-10-05; it uses a deep graphite canvas, restrained violet/cyan accents, and the real Avorythm UI as the visual anchor. The default/global promos are English. If the Web Store editor exposes only one global promo slot, keep the English image there and localize the screenshots and text.
+These are **listing assets**, not extension-package files. In each localized listing, upload the matching language set. The current campaign is the dark, product-led set generated on 2026-10-05; it uses a deep graphite canvas, restrained violet/cyan accents, and the real Avorythm UI as the visual anchor. Small and marquee promotional tiles are global in Chrome Web Store: upload the English versions there. Localized promo variants are available for use outside those global slots.
+
+## Update the package and listing
+
+Upload `Avorythm-Extension-v1.1.17.zip` under **Package → Upload new package**. It includes 51 supported store locales and the current localized **Title from package** and **Summary from package**. These fields come from `_locales/*/messages.json` and match the Name and Short description fields in the listing files.
+
+The **Detailed description** and screenshots are separate dashboard fields: uploading the extension ZIP does not update them. Select each listing language, paste the Detailed description from its linked `LISTING.<language>.md`, add matching screenshots, and save. The 79 translation targets, 51 packaged store locales, and three interface languages are separate counts. Chrome does not offer a separate store locale for every translation target.
+
+فایل `Avorythm-Extension-v1.1.17.zip` را در **Package → Upload new package** بارگذاری کن. این بسته ۵۱ زبان پشتیبانی‌شدهٔ فروشگاه دارد و نام و توضیح کوتاه هر زبان را از متن‌های جدید میخواند. برای توضیح بلند باید زبان موردنظر را در **Store listing** انتخاب کنی و بخش «توضیح کامل» فایل همان زبان را در فرم قرار بدهی؛ عکس‌ها هم جدا بارگذاری میشوند. تعداد زبان‌های ترجمه ۷۹، زبان‌های صفحهٔ فروشگاه ۵۱ و زبان‌های رابط برنامه ۳ است.
+
+Sources: [localized listing fields](https://developer.chrome.com/docs/webstore/cws-dashboard-listing#localize-your-listing) and [supported locales](https://developer.chrome.com/docs/extensions/reference/api/i18n#locales).
 
 ## Ready-to-paste listing text
 
 **[All 79 languages — complete index / متن تمام ۷۹ زبان](ALL-LANGUAGES.md)**
 
-Every destination-language entry has a localized name, short description, full description, and release notes for version 1.1.16. The complete index maps language codes to files and to officially supported Chrome Web Store locales. Some translation targets have no independent store locale; their copy is provided for reuse but cannot be published under a nonexistent language option.
+Every destination-language entry has a localized name, short description, full description, and release notes for version 1.1.17. The complete index maps language codes to files and to officially supported Chrome Web Store locales. Some translation targets have no independent store locale; their copy is provided for reuse but cannot be published under a nonexistent language option.
 
 Copy only the text under the relevant heading into the Web Store form; do not paste the file heading or upload instructions as part of the description. Listing languages do not imply additional interface languages: the current extension UI is English, Persian, and Simplified Chinese. The following eight languages have matching artwork; other listings can use the verified English product captures without claiming a localized UI.
 
@@ -43,10 +53,10 @@ For artwork maintenance, install the optional tools with `python -m pip install 
 
 Additional localized artwork is available in `ar/`, `de/`, `fr/`, `it/`, and `ru/` with matching `promo-small-<locale>.png` and `promo-marquee-<locale>.png` files. Their external marketing captions are localized while the illustrated product interface remains English; use them only when publishing a matching localized listing. Do not present these as proof of additional interface languages.
 
-برای فهرست فارسی، تصاویر ستون فارسی را بارگذاری کن؛ تصاویر این پوشه داخل فایل نصب اکستنشن قرار نمی‌گیرند. اگر فروشگاه برای پرومو فقط یک تصویر سراسری می‌پذیرد، نسخهٔ انگلیسی را نگه دار و متن و اسکرین‌شات‌های فارسی را جداگانه ثبت کن.
+برای فهرست فارسی، اسکرین‌شات‌های ستون فارسی را بارگذاری کن؛ تصاویر این پوشه داخل فایل نصب اکستنشن قرار نمی‌گیرند. پروموی کوچک و مارکویی در وب استور سراسری هستند؛ نسخهٔ انگلیسی را برای آنها استفاده کن و متن و اسکرین‌شات‌های فارسی را جداگانه ثبت کن.
 
 تصاویر این مجموعه طرح‌های تبلیغاتی ساخته‌شده با هوش مصنوعی هستن که از ظاهر واقعی محصول مرجع گرفتن؛ اسکرین‌شات خام نیستن. عکس‌های واقعی و بدون ویرایش رابط کاربری در `docs/images/extension/` قرار دارن. بعد از تولید با هوش مصنوعی، فقط اندازهٔ تصویر برای جایگاه موردنظر تنظیم شده و متن یا چیدمان با کد به تصویر اضافه نشده.
 
-简体中文列表请使用中文列的图片；若宣传图只能全局上传一套，就保留英文宣传图，并单独上传中文文案与截图。
+简体中文列表请使用中文截图。小宣传图和 Marquee 宣传图是全局素材，请使用英文版本，并单独上传中文文案与截图。
 
 这些图片是以实际产品界面为参考的 AI 宣传设计，并非原始截图。未经编辑的真实界面截图位于 `docs/images/extension/`。生成后仅调整了整张图片的尺寸与 PNG 编码，未使用代码添加文字或排版。

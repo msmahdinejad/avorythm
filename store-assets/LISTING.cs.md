@@ -34,7 +34,7 @@ Uživatelská příručka (anglicky): https://github.com/msmahdinejad/avorythm/b
 
 Zásady ochrany soukromí: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Co je nového ve verzi 1.1.16
+## Co je nového ve verzi 1.1.17
 
 - Snazší výběr jazyka: oblíbené jazyky jsou na začátku a varianty čínštiny a portugalštiny jsou jasně rozlišené.
 - Nová projektová dokumentace a materiály v němčině, francouzštině, italštině, ruštině a arabštině.

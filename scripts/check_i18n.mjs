@@ -205,18 +205,24 @@ function checkExtensionLocales() {
   const localesDir = join(root, 'extension', '_locales');
 
   for (const [locale, dirName] of Object.entries(localeDirMap)) {
+    if (!existsSync(join(localesDir, dirName, 'messages.json'))) {
+      fail(`${locale}: missing _locales/${dirName}/messages.json`);
+    }
+  }
+  for (const dirName of readdirSync(localesDir, {withFileTypes: true})
+    .filter((entry) => entry.isDirectory()).map((entry) => entry.name)) {
     const msgPath = join(localesDir, dirName, 'messages.json');
     if (!existsSync(msgPath)) {
-      fail(`${locale}: missing _locales/${dirName}/messages.json`);
+      fail(`Missing _locales/${dirName}/messages.json`);
       continue;
     }
     const messages = JSON.parse(readFileSync(msgPath, 'utf8'));
     const fileKeys = new Set(Object.keys(messages));
     const missing = [...msgKeys].filter((k) => !fileKeys.has(k));
     if (missing.length) {
-      fail(`${locale} (_locales/${dirName}): missing ${missing.length} key(s): ${missing.join(', ')}`);
+      fail(`_locales/${dirName}: missing ${missing.length} key(s): ${missing.join(', ')}`);
     } else {
-      ok(`${locale} (_locales/${dirName}): all ${msgKeys.size} manifest key(s) present`);
+      ok(`_locales/${dirName}: all ${msgKeys.size} manifest key(s) present`);
     }
   }
 }

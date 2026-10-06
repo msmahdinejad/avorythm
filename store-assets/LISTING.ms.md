@@ -34,7 +34,7 @@ Panduan pengguna (bahasa Inggeris): https://github.com/msmahdinejad/avorythm/blo
 
 Dasar privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Perkara baharu dalam 1.1.16
+## Perkara baharu dalam 1.1.17
 
 - Pemilihan bahasa lebih mudah: bahasa popular disenaraikan dahulu, dengan varian bahasa Cina dan Portugis yang jelas.
 - Dokumentasi dan sumber projek baharu dalam bahasa Jerman, Perancis, Itali, Rusia dan Arab.

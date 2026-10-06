@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {LANGUAGES} from '../extension/core.mjs';
+import {syncStoreMetadata} from './sync_store_metadata.mjs';
 
 const root = new URL('../', import.meta.url);
 const guidePaths = {
@@ -58,4 +59,5 @@ for (const targetLanguage of LANGUAGES) {
   console.log(`${locale}: name ${name.length}/75; short ${short.length}/132; description ${description.length}/16000`);
 }
 
+await syncStoreMetadata();
 console.log(`All ${LANGUAGES.length} target-language listings passed.`);

@@ -34,7 +34,7 @@ Naudotojo vadovas (anglų kalba): https://github.com/msmahdinejad/avorythm/blob/
 
 Privatumo politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Kas naujo 1.1.16 versijoje
+## Kas naujo 1.1.17 versijoje
 
 - Paprastesnis kalbos pasirinkimas: populiarios kalbos rodomos pirmiausia, aiškiai atskirti kinų ir portugalų kalbų variantai.
 - Nauja projekto dokumentacija ir ištekliai vokiečių, prancūzų, italų, rusų ir arabų kalbomis.

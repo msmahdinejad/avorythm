@@ -34,7 +34,7 @@ Guía de uso (en inglés): https://github.com/msmahdinejad/avorythm/blob/main/do
 
 Política de privacidade: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Novidades da versión 1.1.16
+## Novidades da versión 1.1.17
 
 - Selección de lingua máis sinxela: as linguas máis populares aparecen primeiro, con variantes de chinés e portugués claramente identificadas.
 - Nova documentación e novos recursos do proxecto en alemán, francés, italiano, ruso e árabe.

@@ -34,7 +34,7 @@ Mwongozo wa mtumiaji (Kiingereza): https://github.com/msmahdinejad/avorythm/blob
 
 Sera ya faragha: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yaliyomo mapya katika 1.1.16
+## Yaliyomo mapya katika 1.1.17
 
 - Uchaguzi wa lugha umerahisishwa: lugha zinazotumiwa zaidi huonekana kwanza, na aina za Kichina na Kireno zimebainishwa wazi.
 - Nyaraka na nyenzo mpya za mradi kwa Kijerumani, Kifaransa, Kiitaliano, Kirusi na Kiarabu.

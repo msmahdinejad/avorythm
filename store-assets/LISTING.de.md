@@ -37,7 +37,7 @@ Vollständige Anleitung auf Englisch: https://github.com/msmahdinejad/avorythm/b
 
 Datenschutzerklärung: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Neu in 1.1.16
+## Neu in 1.1.17
 
 - Einfachere Sprachauswahl: häufige Sprachen zuerst, mit eindeutigen chinesischen und portugiesischen Varianten.
 - Projektdokumentation und Ressourcen auf Deutsch, Französisch, Italienisch, Russisch und Arabisch.

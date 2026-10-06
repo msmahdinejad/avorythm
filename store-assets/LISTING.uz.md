@@ -34,7 +34,7 @@ Foydalanuvchi qo‘llanmasi (ingliz tilida): https://github.com/msmahdinejad/avo
 
 Maxfiylik siyosati: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.16 versiyasidagi yangiliklar
+## 1.1.17 versiyasidagi yangiliklar
 
 - Til tanlash osonlashdi: ommabop tillar birinchi ko‘rsatiladi, xitoy va portugal tillarining variantlari esa aniq ajratilgan.
 - Nemis, fransuz, italyan, rus va arab tillaridagi loyiha hujjatlari va resurslari qo‘shildi.

@@ -3,6 +3,10 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $repository = Split-Path -Parent $PSScriptRoot
+& node (Join-Path $PSScriptRoot "sync_store_metadata.mjs") --check
+if ($LASTEXITCODE -ne 0) {
+    throw "Packaged store metadata is stale. Run node scripts/sync_store_metadata.mjs --write and review the changes."
+}
 $source = Join-Path $repository "extension"
 $sourcePrefix = $source.TrimEnd("\") + "\"
 $destination = Join-Path $repository "dist\Avorythm-Extension.zip"

@@ -34,7 +34,7 @@ Udhëzuesi i përdoruesit (anglisht): https://github.com/msmahdinejad/avorythm/b
 
 Politika e privatësisë: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Çfarë ka të re në versionin 1.1.16
+## Çfarë ka të re në versionin 1.1.17
 
 - Përzgjedhje më e lehtë e gjuhës: gjuhët e njohura shfaqen të parat, me variante të qarta për kinezishten dhe portugalishten.
 - Dokumentacion dhe burime të reja të projektit në gjermanisht, frëngjisht, italisht, rusisht dhe arabisht.

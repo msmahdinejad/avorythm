@@ -34,7 +34,7 @@ Dwumadie ho akwankyerɛ (English): https://github.com/msmahdinejad/avorythm/blob
 
 Kokoamsɛm ho nhyehyɛe: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Dɛn na ɛyɛ foforo wɔ version 1.1.16 mu
+## Dɛn na ɛyɛ foforo wɔ version 1.1.17 mu
 
 - Kasa paw no ayɛ mmerɛw: kasa a nkurɔfo paw taa no di kan, na Chinese ne Portuguese ahorow no da adi pefee.
 - German, French, Italian, Russian ne Arabic project nkrataa ne nneɛma foforo wɔ hɔ.

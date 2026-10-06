@@ -1,0 +1,11 @@
+{
+  "appName": {
+    "message": "Avorythm — AIによるリアルタイム吹き替えと字幕"
+  },
+  "appDescription": {
+    "message": "選択したタブの音声をAIで翻訳。リアルタイム吹き替え、二言語字幕、同期プレーヤーを利用できます。"
+  },
+  "actionTitle": {
+    "message": "Avorythm — AIによるリアルタイム吹き替えと字幕"
+  }
+}

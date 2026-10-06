@@ -1,5 +1,11 @@
 {
-  "appName": {"message": "Avorythm — ترجمهٔ زنده"},
-  "appDescription": {"message": "تب انتخاب‌شده را با هوش مصنوعی Gemini زنده ترجمه، دوبله و زیرنویس کن؛ همراه با پلیر هماهنگ اختیاری."},
-  "actionTitle": {"message": "بازکردن ترجمهٔ زندهٔ Avorythm"}
+  "appName": {
+    "message": "Avorythm — دوبلهٔ زنده و زیرنویس با AI"
+  },
+  "appDescription": {
+    "message": "ترجمهٔ صدای تب با هوش مصنوعی؛ دوبلهٔ زنده، زیرنویس دوزبانه، میکس مستقل صدا و پلیر هماهنگ."
+  },
+  "actionTitle": {
+    "message": "Avorythm — دوبلهٔ زنده و زیرنویس با AI"
+  }
 }

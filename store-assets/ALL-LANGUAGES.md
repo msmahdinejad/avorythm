@@ -2,6 +2,8 @@
 
 Every one of the 79 destination-language entries in the app/extension catalog has a localized listing file. Each includes a name, short description, full description and release notes. The current interface remains English, Persian and Simplified Chinese; these are translations of the store description, not a claim of new interface locales.
 
+The extension package includes the 51 supported store locales represented below. Packaged names and summaries are synchronized with these files. Full descriptions and screenshots must still be entered separately in the Web Store dashboard. Run `node scripts/sync_store_metadata.mjs --write` after editing a listing name or short description, then review the generated metadata; package creation rejects missing or stale metadata.
+
 برای تمام ۷۹ گزینهٔ زبان مقصد، متن نام، توضیح کوتاه، توضیح کامل و تغییرات نسخه آماده شده است. روی فایل زبان موردنظر کلیک کن و فقط متن زیر عنوان همان فیلد را کپی کن؛ عنوان‌ها و راهنمای این صفحه نباید داخل توضیحات فروشگاه کپی شوند.
 
 ## Which can be published in Chrome Web Store?

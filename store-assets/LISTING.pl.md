@@ -34,7 +34,7 @@ Podręcznik użytkownika (po angielsku): https://github.com/msmahdinejad/avoryth
 
 Polityka prywatności: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Co nowego w wersji 1.1.16
+## Co nowego w wersji 1.1.17
 
 - Łatwiejszy wybór języka: popularne języki na początku listy oraz wyraźnie oznaczone odmiany chińskiego i portugalskiego.
 - Nowa dokumentacja projektu i materiały w językach niemieckim, francuskim, włoskim, rosyjskim i arabskim.

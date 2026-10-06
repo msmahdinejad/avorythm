@@ -34,7 +34,7 @@ Kasutusjuhend (inglise keeles): https://github.com/msmahdinejad/avorythm/blob/ma
 
 Privaatsuspoliitika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Mis on uut versioonis 1.1.16
+## Mis on uut versioonis 1.1.17
 
 - Lihtsam keelevalik: levinumad keeled on eespool ning hiina ja portugali keelevariandid on selgelt eristatud.
 - Uus saksakeelne, prantsuskeelne, itaaliakeelne, venekeelne ja araabiakeelne projekti dokumentatsioon ning materjalid.
