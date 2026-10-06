@@ -34,7 +34,7 @@ Notendaleiðbeiningar (enska): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Persónuverndarstefna: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Hvað er nýtt í 1.1.15
+## Hvað er nýtt í 1.1.16
 
 - Einfaldara tungumálaval: vinsæl tungumál eru efst og kínverskar og portúgalskar útgáfur eru skýrt aðgreindar.
 - Ný skjöl og úrræði fyrir verkefnið á þýsku, frönsku, ítölsku, rússnesku og arabísku.

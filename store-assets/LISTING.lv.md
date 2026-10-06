@@ -34,7 +34,7 @@ Lietotāja rokasgrāmata (angļu valodā): https://github.com/msmahdinejad/avory
 
 Privātuma politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Kas jauns versijā 1.1.15
+## Kas jauns versijā 1.1.16
 
 - Vienkāršāka valodas izvēle: populārākās valodas ir norādītas vispirms, kā arī skaidri nošķirti ķīniešu un portugāļu valodas varianti.
 - Jauna vācu, franču, itāļu, krievu un arābu valodā pieejama projekta dokumentācija un resursi.

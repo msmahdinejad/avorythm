@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-en.png" alt="Avorythm desktop app and browser extension" width="100%">
+  <img src="assets/branding/readme-cover-en.png" alt="Avorythm AI live dubbing, dual captions and synchronized playback" width="100%">
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
-![Avorythm desktop app](docs/images/app-en.png)
+![Avorythm desktop app](assets/marketing/desktop-cover-en.png)
 
 ## Choose how you use Avorythm
 

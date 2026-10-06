@@ -9,7 +9,7 @@
 <p align="center">Перевод и озвучка звука в реальном времени, синхронизированные субтитры и обработка аудио- и видеофайлов.</p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-ru.png" alt="Приложение Avorythm и расширение браузера" width="100%">
+  <img src="assets/branding/readme-cover-ru.png" alt="Avorythm: живая ИИ-озвучка, двуязычные субтитры и синхронный просмотр" width="100%">
 </p>
 
 <p align="center">

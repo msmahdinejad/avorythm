@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.16] - 2026-10-06
+
+### Changed
+
+- Publish the final dark artwork for all eight localized Web Store and GitHub campaigns, and align in-app guide captures with the current interface.
+- Track localized generation briefs and approved asset hashes, and remove retired artwork and code-composited renderers.
+- Upgrade google-genai to 2.25.0, uvicorn to 0.54.0, Ruff to 0.16.9, PyInstaller to 6.22.3, and Playwright to 1.63.0 after reviewing and merging dependency PR #13.
+- Upgrade the optional SignPath submission action to v3 after reviewing PR #12.
+
 ## [1.1.15] - 2026-10-01
 
 - Expanded the destination-language catalog with popular European, Asian and RTL languages across the extension and desktop app.
@@ -461,7 +470,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.16...HEAD
+[1.1.16]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...v1.1.16
 [1.1.15]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...v1.1.15
 [1.1.14]: https://github.com/msmahdinejad/avorythm/compare/v1.1.13...v1.1.14
 [1.1.13]: https://github.com/msmahdinejad/avorythm/compare/v1.1.12...v1.1.13

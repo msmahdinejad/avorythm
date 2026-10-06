@@ -1,0 +1,138 @@
+{
+  "en": {
+    "hero": "Your videos, translated.",
+    "tagline": "AI dubbing and subtitles, right in your browser.",
+    "footer": "Live dubbing · Dual subtitles · Synced playback",
+    "tile": "Live AI dubbing",
+    "tileSub": "For the videos you watch",
+    "desktop": "Hear more. Understand more.",
+    "desktopSub": "AI audio translation for your desktop",
+    "desktopFooter": "Live audio · Audio and video files",
+    "features": [
+      ["Your videos. Your language.", "Choose a tab and start translating with AI."],
+      ["Make it sound like you want.", "Control original audio, dubbing and both subtitle tracks."],
+      ["Two ways to watch.", "Translate on the page, or use the synchronized player."],
+      ["Watch with synchronized dubbing.", "Pause, seek through the recording, and go fullscreen."],
+      ["Subtitles that fit your screen.", "Move the overlay and adjust the text size."]
+    ]
+  },
+  "fa": {
+    "hero": "ویدیوها رو به زبان خودت ببین",
+    "tagline": "دوبله و زیرنویس زنده با هوش مصنوعی، در مرورگر خودت",
+    "footer": "دوبلهٔ زنده · دو زیرنویس · پخش هماهنگ",
+    "tile": "دوبلهٔ زنده با هوش مصنوعی",
+    "tileSub": "ویدیوها رو به زبان خودت ببین",
+    "desktop": "بشنو و راحت‌تر بفهم",
+    "desktopSub": "ترجمهٔ صدا با هوش مصنوعی روی دسکتاپ",
+    "desktopFooter": "صدای زنده · فایل‌های صوتی و ویدیویی",
+    "features": [
+      ["زبان ویدیو رو خودت انتخاب کن", "یک تب انتخاب کن و ترجمه با هوش مصنوعی رو شروع کن."],
+      ["کنترل صدا و زیرنویس دست توست", "صدای اصلی، دوبله و هر دو زیرنویس رو جدا تنظیم کن."],
+      ["دو روش برای تماشا", "پخش زنده در همان تب یا تماشا در پلیر هماهنگ."],
+      ["با دوبلهٔ هماهنگ تماشا کن", "در بخش ضبط‌شده عقب‌وجلو برو، مکث کن یا تمام‌صفحه ببین."],
+      ["زیرنویس، هر جا که راحت‌تری", "جای کادر و اندازهٔ متن رو به دلخواه تغییر بده."]
+    ]
+  },
+  "zh-CN": {
+    "hero": "用你的语言，看喜欢的视频。",
+    "tagline": "浏览器里的 AI 实时配音与字幕",
+    "footer": "实时配音 · 双语字幕 · 同步播放",
+    "tile": "AI 实时配音",
+    "tileSub": "用你的语言看视频",
+    "desktop": "听得懂，看得更投入。",
+    "desktopSub": "桌面端 AI 音频翻译",
+    "desktopFooter": "实时音频 · 音频与视频文件",
+    "features": [
+      ["用你的语言，看喜欢的视频。", "选择一个标签页，开始 AI 翻译。"],
+      ["声音和字幕，由你掌控。", "分别控制原声、配音和两条字幕。"],
+      ["两种观看方式。", "在原页面实时翻译，或使用同步播放器。"],
+      ["配音与画面，同步播放。", "暂停、跳转已录制片段，或切换全屏。"],
+      ["字幕放哪里，你来决定。", "移动字幕框，自由调整文字大小。"]
+    ]
+  },
+  "ar": {
+    "hero": "فيديوهاتك، بلغتك.",
+    "tagline": "دبلجة وترجمة مباشرة بالذكاء الاصطناعي في متصفحك",
+    "footer": "دبلجة مباشرة · ترجمة ثنائية · تشغيل متزامن",
+    "tile": "دبلجة مباشرة بالذكاء الاصطناعي",
+    "tileSub": "شاهد فيديوهاتك بلغتك",
+    "desktop": "اسمع أكثر، وافهم أكثر.",
+    "desktopSub": "ترجمة صوتية بالذكاء الاصطناعي على سطح المكتب",
+    "desktopFooter": "صوت مباشر · ملفات صوت وفيديو",
+    "features": [
+      ["فيديوهاتك، بلغتك.", "اختر علامة تبويب وابدأ الترجمة بالذكاء الاصطناعي."],
+      ["الصوت والترجمة كما تحب.", "تحكّم بالصوت الأصلي والدبلجة ومساري الترجمة كلٍّ على حدة."],
+      ["طريقتان للمشاهدة.", "ترجم في الصفحة نفسها أو استخدم المشغّل المتزامن."],
+      ["دبلجة متزامنة مع الفيديو.", "أوقف مؤقتًا، وتنقّل داخل التسجيل، وشاهد بملء الشاشة."],
+      ["الترجمة في المكان المناسب لك.", "حرّك نافذة الترجمة واضبط حجم النص."]
+    ]
+  },
+  "de": {
+    "hero": "Deine Videos. Deine Sprache.",
+    "tagline": "Live-KI-Dubbing und Untertitel direkt im Browser.",
+    "footer": "Live-Dubbing · Zweisprachige Untertitel · Synchrone Wiedergabe",
+    "tile": "Live-KI-Dubbing",
+    "tileSub": "Videos in deiner Sprache",
+    "desktop": "Mehr hören. Mehr verstehen.",
+    "desktopSub": "KI-Audioübersetzung für deinen Desktop",
+    "desktopFooter": "Live-Audio · Audio- und Videodateien",
+    "features": [
+      ["Deine Videos. Deine Sprache.", "Wähle einen Tab und starte die KI-Übersetzung."],
+      ["Dein Sound. Deine Einstellungen.", "Originalton, Dubbing und beide Untertitel separat steuern."],
+      ["Zwei Wege zum Video.", "Direkt auf der Seite übersetzen oder den synchronen Player nutzen."],
+      ["Dubbing im Takt mit dem Video.", "Pausieren, in der Aufnahme springen und im Vollbild schauen."],
+      ["Untertitel, wo du sie brauchst.", "Position und Textgröße nach Wunsch anpassen."]
+    ]
+  },
+  "fr": {
+    "hero": "Vos vidéos. Votre langue.",
+    "tagline": "Doublage IA et sous-titres en direct dans votre navigateur.",
+    "footer": "Doublage en direct · Sous-titres bilingues · Lecture synchronisée",
+    "tile": "Doublage IA en direct",
+    "tileSub": "Vos vidéos dans votre langue",
+    "desktop": "Écoutez. Comprenez davantage.",
+    "desktopSub": "La traduction audio par IA sur votre ordinateur",
+    "desktopFooter": "Audio en direct · Fichiers audio et vidéo",
+    "features": [
+      ["Vos vidéos. Votre langue.", "Choisissez un onglet et lancez la traduction par IA."],
+      ["Le son, comme vous l'aimez.", "Réglez séparément l'audio original, le doublage et les deux sous-titres."],
+      ["Deux façons de regarder.", "Traduisez sur la page ou utilisez le lecteur synchronisé."],
+      ["Un doublage calé sur l'image.", "Mettez en pause, parcourez l'enregistrement et passez en plein écran."],
+      ["Les sous-titres, où vous voulez.", "Déplacez le cadre et ajustez la taille du texte."]
+    ]
+  },
+  "it": {
+    "hero": "I tuoi video. La tua lingua.",
+    "tagline": "Doppiaggio IA e sottotitoli in tempo reale nel browser.",
+    "footer": "Doppiaggio live · Sottotitoli bilingui · Riproduzione sincronizzata",
+    "tile": "Doppiaggio IA live",
+    "tileSub": "I tuoi video nella tua lingua",
+    "desktop": "Ascolta di più. Capisci di più.",
+    "desktopSub": "Traduzione audio con IA sul tuo desktop",
+    "desktopFooter": "Audio live · File audio e video",
+    "features": [
+      ["I tuoi video. La tua lingua.", "Scegli una scheda e avvia la traduzione con IA."],
+      ["L'audio, come piace a te.", "Regola separatamente audio originale, doppiaggio e i due sottotitoli."],
+      ["Due modi per guardare.", "Traduci nella pagina o usa il lettore sincronizzato."],
+      ["Doppiaggio a tempo con il video.", "Metti in pausa, scorri la registrazione e passa a schermo intero."],
+      ["Sottotitoli dove vuoi tu.", "Sposta il riquadro e regola la dimensione del testo."]
+    ]
+  },
+  "ru": {
+    "hero": "Ваши видео. Ваш язык.",
+    "tagline": "ИИ-озвучка и субтитры в реальном времени прямо в браузере.",
+    "footer": "Живая озвучка · Двуязычные субтитры · Синхронное воспроизведение",
+    "tile": "ИИ-озвучка в реальном времени",
+    "tileSub": "Видео на вашем языке",
+    "desktop": "Слушайте. Понимайте больше.",
+    "desktopSub": "Перевод аудио с ИИ на компьютере",
+    "desktopFooter": "Живой звук · Аудио- и видеофайлы",
+    "features": [
+      ["Ваши видео. Ваш язык.", "Выберите вкладку и начните перевод с ИИ."],
+      ["Звук и субтитры под вас.", "Настраивайте оригинал, озвучку и обе дорожки субтитров отдельно."],
+      ["Два способа просмотра.", "Переводите прямо на странице или в синхронном плеере."],
+      ["Озвучка в такт с видео.", "Ставьте на паузу, перематывайте запись и смотрите на весь экран."],
+      ["Субтитры там, где удобно.", "Перемещайте окно и меняйте размер текста."]
+    ]
+  }
+}

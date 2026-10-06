@@ -19,7 +19,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 URL = "http://127.0.0.1:2455/v1/responses"
 SOURCE = {
-    "headings": ["Name", "Short description", "Detailed description", "What's new in 1.1.15"],
+    "headings": ["Name", "Short description", "Detailed description", "What's new in 1.1.16"],
     "name": "Avorythm — AI Live Dubbing & Subtitles",
     "short": "AI translation for your selected tab: live dubbing, bilingual captions "
     "and a synchronized player.",
@@ -78,7 +78,7 @@ def translate(code: str, name: str) -> dict[str, str]:
         "Write naturally and professionally in that language's customary script. Do not "
         "abbreviate away any feature, disclosure, negative or condition. Preserve names "
         "Avorythm, Google, Gemini, Groq, Whisper, Gemini 3.1 Flash Live, Chrome, WebM, WAV, "
-        "SRT, DRM, Python, FFmpeg, localhost, Downloads/Avorythm and version 1.1.15 exactly. "
+        "SRT, DRM, Python, FFmpeg, localhost, Downloads/Avorythm and version 1.1.16 exactly. "
         "Do not claim a localized INTERFACE; it only supports English, Persian and Simplified "
         "Chinese regardless of the translated description. Use natural translation of the "
         "short line mentioning AI; keep it <=132 UTF-16 characters; title <=75. Remove the "

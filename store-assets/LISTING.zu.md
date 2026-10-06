@@ -34,7 +34,7 @@ Umhlahlandlela womsebenzisi (ngesiNgisi): https://github.com/msmahdinejad/avoryt
 
 Inqubomgomo yobumfihlo: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yini entsha ku-1.1.15
+## Yini entsha ku-1.1.16
 
 - Ukukhetha ulimi sekulula: izilimi ezisetshenziswa kakhulu zivela kuqala, nezinhlobo zesiShayina nesiPutukezi ezihlukaniswe ngokucacile.
 - Imibhalo namanye amasu okusetshenziswa kwephrojekthi amasha ngesiJalimane, isiFulentshi, isiNtaliyane, isiRashiya nesi-Arabhu.

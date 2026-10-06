@@ -28,36 +28,6 @@ BRIEFS = {
         "No people, cars, buildings, text, logos, watermark, UI, panels, collage, "
         "fantasy islands or oversaturated colors. One uninterrupted photograph."
     ),
-    "assets/branding/signal-sculpture-v3.png": (
-        "Use case: ads-marketing. Asset: bespoke brand art for Avorythm, an AI live "
-        "dubbing and subtitle extension. Create an art-directed premium studio render "
-        "of ONE sculptural flowing acoustic ribbon: five smooth parallel strands "
-        "curve together through a single elegant open loop, suggesting spoken audio "
-        "being translated. Deep amethyst purple at one end transitions naturally "
-        "to luminous turquoise at the other. Satin glass, soft internal refraction, "
-        "not liquid chrome, no razor edges. Warm porcelain/off-white studio background "
-        "with beautifully soft contact shadows and almost no texture. Landscape "
-        "16:9, sculpture isolated in the RIGHT half, LEFT half intentionally calm "
-        "negative space for marketing typography to be added later. Large elegant "
-        "silhouette, editorial industrial-design photography, precise gentle curves, "
-        "restrained color and spectacular material detail. No text, logo, letters, "
-        "watermark, UI, product screens, stars, neon clouds, gradients covering the "
-        "whole background, globe, headphones, microphone or additional props."
-    ),
-    "assets/branding/signal-sculpture-v4.png": (
-        "Use case: ads-marketing. Asset: premium campaign background for Avorythm, an "
-        "AI live dubbing and subtitle browser extension. Create ONE elegant sculptural "
-        "flowing acoustic ribbon made from five parallel satin-glass strands, one open "
-        "loop that suggests speech being translated. The ribbon lives entirely in the "
-        "RIGHT half of the frame; it transitions from rich amethyst violet to luminous "
-        "cyan and teal with restrained internal refraction. Use a deep midnight-navy "
-        "studio backdrop with a very subtle blue-violet halo, clean editorial product "
-        "photography, soft contact shadow, premium software campaign art, calm and "
-        "confident. Landscape 16:9. Keep the LEFT 45 percent almost empty and dark for "
-        "white typography. No grid, no split-screen, no collage, no text, no logo, no "
-        "letters, no watermark, no UI, no headphones, no microphone, no people, no stars, "
-        "no bright white background, no objects besides the single ribbon sculpture."
-    ),
 }
 
 

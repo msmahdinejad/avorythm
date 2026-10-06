@@ -39,7 +39,7 @@ Avorythm 免费且开源。受 DRM 保护的视频或 Chrome 内部页面可能�
 
 隐私政策：https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.15 更新内容
+## 1.1.16 更新内容
 
 - 更方便的语言选择：常用语言优先，清晰区分中文和葡萄牙语变体。
 - 新增德语、法语、意大利语、俄语和阿拉伯语项目文档与资源。

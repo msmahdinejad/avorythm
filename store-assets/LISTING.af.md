@@ -34,7 +34,7 @@ Gebruikersgids (Engels): https://github.com/msmahdinejad/avorythm/blob/main/docs
 
 Privaatheidsbeleid: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Wat is nuut in 1.1.15
+## Wat is nuut in 1.1.16
 
 - Makliker taalkeuse: gewilde tale eerste, met duidelike Chinese en Portugese variante.
 - Nuwe projekdokumentasie en hulpbronne in Duits, Frans, Italiaans, Russies en Arabies.

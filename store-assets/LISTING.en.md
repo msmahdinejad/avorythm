@@ -37,7 +37,7 @@ Guide: https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.md
 
 Privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## What’s new in 1.1.15
+## What’s new in 1.1.16
 
 - Easier language selection, with popular languages first and clear Simplified/Traditional Chinese and Portuguese variants.
 - New German, French, Italian, Russian, and Arabic project resources and user guides.

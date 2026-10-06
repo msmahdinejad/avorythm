@@ -18,6 +18,7 @@ dist/
 recordings/
 .tmp-font/
 .store-preview/
+output/imagegen/
 *.spec
 
 # Editors and OS

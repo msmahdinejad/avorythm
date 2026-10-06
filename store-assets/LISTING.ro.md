@@ -34,7 +34,7 @@ Ghid de utilizare (în engleză): https://github.com/msmahdinejad/avorythm/blob/
 
 Politica de confidențialitate: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Noutăți în 1.1.15
+## Noutăți în 1.1.16
 
 - Selectarea limbii este mai ușoară: limbile populare apar primele, iar variantele de chineză și portugheză sunt indicate clar.
 - Documentație și resurse noi pentru proiect în germană, franceză, italiană, rusă și arabă.

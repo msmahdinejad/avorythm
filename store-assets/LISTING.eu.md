@@ -34,7 +34,7 @@ Erabiltzaile-gida (ingelesez): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Pribatutasun-politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Zer berri: version 1.1.15
+## Zer berri: version 1.1.16
 
 - Hizkuntza errazago hautatzeko aukera: hizkuntza erabilienak lehenik, txineraren eta portugesaren aldaera argiekin.
 - Alemanierazko, frantsesezko, italierazko, errusierazko eta arabierazko proiektu-dokumentazio eta baliabide berriak.

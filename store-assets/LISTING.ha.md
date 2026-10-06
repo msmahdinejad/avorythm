@@ -34,7 +34,7 @@ Jagorar mai amfani (Turanci): https://github.com/msmahdinejad/avorythm/blob/main
 
 Manufar sirri: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Sabbin abubuwa a 1.1.15
+## Sabbin abubuwa a 1.1.16
 
 - An sauƙaƙa zaɓin harshe: an sa harsunan da aka fi amfani da su a gaba, tare da bayyana bambance-bambancen Sinanci da Fotigal a sarari.
 - An ƙara takardun bayani da albarkatun aikin a Jamusanci, Faransanci, Italiyanci, Rashanci da Larabci.

@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-fr.png" alt="Application de bureau et extension de navigateur Avorythm" width="100%">
+  <img src="assets/branding/readme-cover-fr.png" alt="Avorythm : doublage IA en direct, sous-titres bilingues et lecture synchronisée" width="100%">
 </p>
 
 <p align="center">

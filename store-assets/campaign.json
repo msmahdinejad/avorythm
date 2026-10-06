@@ -1,0 +1,1367 @@
+[
+  {
+    "path": "store-assets/en/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "5f4be770ae5a81bbbcdc2f62e95ac8b9bb6e29e6b8b81d5ba95388c0c1f2405c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "c02d7f87e4de9fbedddf2b5cf77d5938b074378ea97d48f76119fe8ab9b70be0",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/en/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "703f5e7826dea4ba5be3d05b8295d788469f149ce478faf63e194f07ef909cc2",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "f81213362bce75562ebd41d2bdb511bd47633e8a2d8b20052d21e71a30865685",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/en/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "09b46c8668a241a0d905cee6c661bc5d5dc1d47766705f3a231c33cfe70dd2a3",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "39a041a2e50f819f4ec008f44909600345fa38842b2975705153ae29b648490a",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/en/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "bdf1ed990d252a336e2b12d5d83f0501f43dbf275a6ed049addaaa36bc57e915",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "8e06c4ff54da2d09f9eeb69523e82f177d5bb9c0f5984e5160bebdfe346bbf11",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/en/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "e5fffd97ea9c4518ac15b38b02050e9f64317616cd1da1bcc6fdbedb4e8f8133",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "2c0553cdc55a439f49ba7d1af9f189b76c33efccf8c1d537e2481292f14eb6db",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-en.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "6bf289da1c4770b69b5a3eacf647a92445c30069d96a9779af9d1e3119e49ee0",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "be58b5c993797e130bb120632ea49ab6c116676055309be47e2f2e9fa9af9d72",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "9b4e39e107705d7f017e05ebdb0914704bc1981294795a790eed10e27ff302fb",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "4ce82a640c6f1726d20858f8e77d81a97d5eabe24c0024932c46f2779401b22f",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "06e4d018285c40bc520f238395a745fde7a6c7c958efda1bd0e63523a2569cb2",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "636d0ae112e43ac4e8e9bbf3523d9c7d0a6cb7ae0b80df761027cad2524c3bf7",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "5b6a2e2bd268146a2da4300939cac60eddd972daaaa8c83e912476d7c5483c1c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "a566f99ec56c2d261fbd0a1821e3323072b173d39ed6d71a9cba042888929014",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "b3ad0c58ebe309e170facb86cf4543b603df216baa08eac4ab867344c76517ad",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "991f62672f8dda9011a2882e3a5061003c1ce8bf955a0a837fcb40d612b32f41",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "4eb374a70c8a740e5db3b18ac3cd8ffa58628e64929038a57c29b88967f91ac5",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "4e80b42279c2db8c580cff751f6b24dd0056ec3db54b4cdf421b478fef4127ff",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fa/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "364efebcd7ae770251a60af3192b6534ba6dd08933eeba908d1d319e919d1cc5",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "c76380fbeb0c8c79fa9da4e476b7a975b82f5badc944a7f9a3d5b1461ed24732",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fa/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "179bf5ef6e808222fb7e425ccdd4dcdefee2cfb6041293b3506141cdda09cca5",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "995ede3faf005ec94f1b427b2d42204a73c4bae7a6cc4b70a159c8334745cdca",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fa/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "9522435cd3fdebe1996726ce486230cb650d42315bc7c3c371cda9c817a820d9",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "fa366d7945761be09d98902a707fe1ef7bb742d6b0c69e506dc51821a8a6818d",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fa/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "a90feb309aff24e0967a09c9322d7d21947e18f2cb4e4e41e1bb8abc5b981451",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "1d1f95e813d92b60d6d933e4f1b6992bcd931ec8cc880aeb94369b336671e7b0",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fa/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "c131b7a25bc46c6b365c3c082e8629a764323ab4d746dd6aa0585f3104bb9fba",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "949f609c19e2e450bb4c981d05b75876939fc44e756d6bb87263ceb1c1f74cdb",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-fa.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "73e32f3e38d9e3dda435e6b25b5bfcdf709641bce607b6037d89b2b8e212e431",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "65515a2bdc02d6fb20d456b4dff18f2699d5f54fe9390037a5e8f87a1865231d",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-fa.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "783cbff7be02dbb35f3df0326dd2fba9718fe1b65562a4bbfacea87f46237eda",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "eaab2d93967821e4bcea214141789b8036a8d14f688956dc43f8e56d4fa488db",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-fa.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "e5a7b5a724e195ff5316acc3b485f36cb0af5ba412dccd23cbe7dc4b5ba8c26e",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "ee33beb5b613277c28b90b3668a1b9bb5a7091e24b94909d77dba262c6c47745",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-fa.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "34f06c1c7e306a5ba2552d82d2b02be714eac878465cb8f61b7bab5af95087b7",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "4c6eebb6f8ccdeb7944d8f291abe95e8052abf0589d745b40d6f5f88c57cdc0a",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-fa.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "aac570be9ff7bde2edec5b76bfc7245b7fb87442d6a0042199437677710ea51c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "574dc94cc05627a42d2eef0a52de94f41fc074d1e5b88764e0400cd981865b0c",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-fa.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "9b2c0ffe81189a62ba73c0492153ba72c6387ea0a58d59a0f5134eff347684a1",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "5f263d7f58f81e7f6524b6dce18adb90642be81501c7ca7345359d94d38af1e9",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/zh-CN/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "8878817750ccea49d716a7f558cc684f2d5fd7763455104e1285afde52dc73c3",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "0c629bc53219f2788ecd1d390c97a6ed505d1ac7e6970ce2214b0df580d15ef3",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/zh-CN/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "90baab4a78da65c769aab793e269ab2ed6a4826fa2fac713c2fd9fb5e3d90b72",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "1313d1f5d136cf23f6478f26cb30f07a4fc4a8a68c1dcc72f38bffa5fd550884",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/zh-CN/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "703df536b8a9df97acaf2f00cb03c57fdb3468925c0156e496ef0316ffb7bfde",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "9be15037fc559b52185bdb0ab0bf9d8bddc78fefa91179dcafb0022bde22339d",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/zh-CN/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "78c504f9b175e6001313afea84d7fb403d69f53b1575bec5f0965e3ab557678d",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "68bd74bc201892e716031308c03cae47ed0af4c310002829c21ba1b9badcc8a1",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/zh-CN/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "97aa1789dd847b7f46cfbc00251218a648c45092102e938aef906e911848a954",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "339c815302b2951a1ccf9937a5f4a4d73737b1e1f9cd9b275878a588ba82ebc1",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-zh-CN.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "6b90e912c554d02d3faa7d9fcceb11cb920e38c070cc6d46364e204cac7bef9a",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "55b512cc2fe4e97d3c7c9d50b1b9f5c5c3abc9e985543aa1640cb33e4145d3e5",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-zh-CN.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "c43e0a5ab3668f23b8a9b9173c79ad109ec9c1ee50cd587c678afe543337bf5c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "dd5ef7a9dea7c23cc0c0d6b26f5a0d51234485ae0ab8668fb8e74b7dd27b4cdf",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-zh-CN.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "cd30a651d70bbac65eddee46216914e666a01254ea0e0a645081949105b4d5f9",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "496b61ebd9751b7ed4d02020b4bcb9c2e9e970989e8e9b7bc235682b94e8f3e4",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-zh-CN.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "448301c0d324aa6ecfef6350cd3612b906db4255522235963da8e51088ac939c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "dbb8f0bd53826711ac3f9beab6e378c46c2ab517d5aa83eb34fe051c00b99aa7",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-zh-CN.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "1c371b25bc6bc2aa9d4217816624cf56c21b118e4a9fe904c514eb68bdcaed84",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "61b28eebf1498d969ee292c0c86ebed035705ff78b3c47858898060188b0a441",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-zh-CN.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "248e8479d808436b550efab0283d478931aafe81cc7724b3d64801dd8caff782",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "2c6ecaa10586b0c77d06676c69f97bba96869adb6a2969d15632fdecdf552367",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ar/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "27d408baad8ac578ca494df7b3e381702092cc5a6d7d673c7e11c3965860d9c1",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "563f57db5b35be1d8df0d27cce8a5090f68a23fcf85f286b6e42f7552bd06191",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ar/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "0a92d8f0a351b61713c39ee9576caad5c36a69dff3e329bbda7ee5462d561f6f",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "755914573675c6e70048e24df0631a7b433497ef972b9f62a3f9c6a94bff5437",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ar/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "c0cc65ef725550864ab2764f3eeed8e5209b9ef41af1aee8f6519c9b436f8bb5",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "8df7d524e9cf9cad3fc9afd5d376b6d13109d54ab57466d829f34df962cfcadd",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ar/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "6e6a927a46f23d866e667a5223265d51b6b7346254c508c87e442e0fe671321a",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "df9027a13ad8b3c57e72e922589e6b042782778fb588f633250bed01217567a3",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ar/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "6ed61ca2210322e48bb1e03e4af255782a0b6f832a3eda41af57989ad93f0d1e",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "876aecdf50cd30bc4dc390a3aa8ff5f70a5425064b6f79ebca02f0c035295d8b",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-ar.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "94acffe9f680787ad976eaf55d4bc64563578cf8e397545f33330a5745695415",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "3bca05ae7177057413b2ab47e9d57e181f70e5be6bc297be527182c1b6cfad0a",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-ar.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "bc7785eb49e640991bc8ef5ecb821e41a7063ad389113b2536ea83dde26c49a7",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "a40568a3e75dba0023babd90cfa9f29e7a0286630f51fd582c9730d44a085f8e",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-ar.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "3317060dcd5183f84f55fa29c606eb35bbe3c5919e2b92ce3e51835cd4ee99e6",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "58d2cf337b1b6cc65fb89333e078f84fbb7320f0f2c34ed290ddfebfcb71154f",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-ar.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "5fb2927b316ad8ff835d85f9518e509bbade16c9d82e44e136ddef4054a7c277",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "576b4e2837d7a729b2b66a6e92d913598505b4d57bc1ff86c62d1bb57c786824",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-ar.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "8128dda27531b1496b20efdb5b1b27d4ffbecfba523ebe4e0b35fa6d235e2052",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "4e4d978cf6fd58023e9d0ed073be46b9dcc879236c307cded8a60599230175bd",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-ar.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "6053f08fa5bc0dd9f707f8d3f751c04d484fb2de7b7142002d6cc11eaede0208",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "3edd62610f7a53655b30ac571e53fc9d65444ce560a1da02f9df84d3d35bcb14",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/de/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "373fc0c3183f05af6edc0d24ccb59b6bd287ec3f55720f7423e8f63596230d1d",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "e43419e07f138435b39e93926d67b2d1e6940b131cada87e00d17acd4c05c9c7",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/de/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "b68aa9d5b2524ad7bf291cc9fbecb52f1c1ec4ae1bfdbcd3ef38ab7738939dbb",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "92eb807f21aa3c673c7c810f00826ab6e63230d54510665489bba3eac91e5018",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/de/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "50f2befde58cab4e6a4a56dc6a664bc85cbcf4404d5923f035e33f74e36b5cb1",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "687a1bcb2554ab914ffd20930a833ac4b6061ba71e31de9c2d63ffdbdae34114",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/de/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "4406933d3a26af9ced01d6bdd2dd1e861fc6b2fed049e2d5d8f7921e2498248a",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "280982f928d74cc95757d18403841edacb2937022ba039caf8d0abfc83e13d3e",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/de/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "c53539f6f5f6571dd1877542715d0fa9608b8b05b573cb58fada57ea36870376",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "08845ee031e9a1d455a5a336f2961a6ce32db94a41d086aa37d7acaf06e0b5ea",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-de.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "a1ba733d120c32c11d50bf63426c1340b7caf6331a31cc6e3f51ef0d9c4fde90",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "22c672f91906ef01d790a44c76b8bb42d964ee4d69b2a2c6a1be3377e05df345",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-de.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "91807f559cf6226d4d39901fec5084daf739989d055a642d6b9c4cbcf61ce76f",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "42e3f72cee82ac8e9f78b769bc40fba55a2330f61d64145445c618a7d425b924",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-de.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "b9c69684d6733148acf81287f880447a8c0c5e429f382adf403b2a815a05b42c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "5411ee0689432c79a97ab6a5e915d1b7b45ee15350fd8ad942496cc52c50f1b1",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-de.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "7064f0e74b2293de6c8e5d6862a34db689fb69e0668f020096291ef9e7aa2548",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "a43bb25f5308a145c748b15b3a5a4014fd844e156898d31ab0ddb67798025b9c",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-de.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "7f7db4dbdf12e99cdf938c6c29084d60e3a4255573a974d1d937b00702289616",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "00810485720af5b52e699c123421a688005c9fd01bb29aa7fb1d2707761de946",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-de.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "c84cd258aa3f33c6cee046bbfb36d2fa0610b5b5fd54d32eae045dd649ab7cf1",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "36a05fcf27cbb0a20402743d80abc95a38317152672fee8de14ec9b93ce51824",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fr/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "a234149994f1c1738ea2be15c424b1f72bc27935901fa8abd1877599018a77a4",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "271c1b0f8dadef78822f8850221d1060745d409deb0fbc1e4ffc37f64763a34e",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fr/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "ca0ac4ef41e750800f0f8883e1a2ee198cb343af768a017623de04674b71ac14",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "7fb0e7d06c634313c5e211eb99ea7d8d3fb09d8687aae14c564559b320ab8b85",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fr/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "2a5d048d199418a03d1c0fbdc4c47d5bab6fe220ff66bdad167f5ead2a47e45d",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "de57c1576ee848351d3fe4c918637974fa963ac24decfebbc6450b11acc33c78",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fr/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "96510906426f31f2b3cc7226942227845ef33cca39758611c4ff3ad80be3567e",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "106347841e28da02affdd52c1894975c9e7f28a86db0e6fb6cc04e5d5bb3e1e0",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/fr/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "8a5915997d15c397e7b62110e268ce2592a2b6fb0072f31c34187efc34f633a5",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "abc241e90628a8bd5dd988df7ac5ab17c492a0ad51280e99baef7d5d6a632a85",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-fr.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "725bc81c33c8b330e8758c5e588ddb82d37e592cae56a766c733cafbd7cb67ff",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "27b62563b8dfd30885f3dec34a8d1ef1036a0aa192bfb9c9f40c658aef879432",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-fr.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "f972b03e6fbefa4d0059709cb3e8ec06f5cbca9d10f9e46bdd5c87bfbc5cfdbe",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "8f84a831a3ac508a7385928dffa402ce3a098de4cbb397864ddfeb2eb79e8fb6",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-fr.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "283af585ada929182c01abc4a1915f9941f86a590b4bc021b7c41c274cdf2cae",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "5028e818c233047e14e9fe7a8c0e84f0b314c62580c489354eebffe65ca10e56",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-fr.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "9841813cfbeee4072ec4305ee63e0944f4db69de1fb5375ffa2833b0f6fe6fff",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "979ea16135a3b135ab18f6c29e56fd8f04e4c9c04c8c63c812201fac4c49de5f",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-fr.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "1386f0c8f378c3d358ee3efaa4a21afab0dfa16716bea221b1057fc21e2e69e7",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "05c641c7095c44755b0e582e5c5346cf13937ebdc81c14e557fcf80c524ced67",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-fr.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "6b4bf0879bc6fa1756f41d3ed8e2e344c40cc47ac387d750e805023f462be016",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "4176a0e898f63f9ebbac754cec2dc71773a4a60bb9b844d3fd4cbe46647fc0be",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/it/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "97b39e51930ccaea7c7080e3983270b238fe4adcb95c90419812ee54b2952759",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "38e0d7df25c75c4203ccd87be3635cc2f69ee4c4562c77eb91e834a527cc5451",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/it/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "41d40ac086d118646c5d230dc60abf48f9726e770b5ec0a5ba677023152f1d56",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "c8cbd586f67cd3ef21bccb4a0b857664317936db09d7f6805fe465444c6462e8",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/it/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "dcfb2e73f1522432d3bbe2cf3a0412852d3f251c6cada7fac4ac36ac907a9d85",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "87b270e98f1857fef5d8dfc4204d7dce0ea142845d04b5112d1da91b9a2df032",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/it/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "181a14a53af114bf37d32aaf6c867e6e802ddc22486578ccf3b08f8a7ba33e59",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "ca55836c4b6c108ad5c62587f8a4c74a00584b066ff0beb4e367317637b9f01d",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/it/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "25536ef9141e0102a182af4a6d1f62f778197b4b21dc701161239a67cc2228ca",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "2df1348d506997caf35b92c6b2bc76a7ef299cb31ca35de527af3f89484a6264",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-it.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "9e255c5f38a5b89c0b99758ef798b39473f26285a0db4bbde924272b53893638",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "371c563d889a3621ce89f7fe710fa9c11ce6055a7a9d8376fd7cb2a92752bf5b",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-it.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "edd002cdaadeff4923ebe64022681b8a2bb709c4ea4759f3d12997a6a3f53208",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "1fc99e651e66d68662dbf26ce263c3b1bbf830e9416adec310df1ec5a119debe",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-it.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "0f6374b6f44e7ba2835a2f2ca71c3ea511ff86d6eeaa66d695c033e2cdf124dc",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "1193e0947bf1d0d1e52d84dc96f3af7fe24d90501cea3a2eaadba74dea05780c",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-it.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "df5ec599c4943e0713acb05ddb82f73f9a925e9d97fbd3ec3d689a4517f03e7d",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "ba02ec05c657db056050647206ad814f2b6818d88b933f9618224cb32f710750",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-it.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "8e643cca6e18cc1a8373c62e253c094a08cbb310bc7912223b19dcfbce6f2d29",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "767680ea0f2acdfa4aeb9872cead80b7cf9a435bb4ebd2206851f63002f81534",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-it.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "1369d65d31988f59f92b8c66726199a46974c07cac0826a073c4e9951baa89ec",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "f8c2bfec0ae21d2f2f2e11a98955117504add94a7297a8227403d8011d1c71e2",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ru/01-popup.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "f13c642945cc14b3ae35722507e27c05e058f916694604293052cfcd0c381b35",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "ef0f3216fd01047b122ef1024ae9f7c87c021d3096642289e3115e5005fb9456",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ru/02-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "933418eec271b1df4d491aeceac81a848211ae8329ace3ef47c48a1787a9ab57",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "d4eb0e044e9f978d24565d47707da9404ae7b21f764b84c85764ff143bae6ef4",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ru/03-sync-settings.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "e4e1eaac1325da0952633a6dc2330f8c6f8bace8abdba6b2f23c122d96acf93b",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "febb2e245f7968f81dc95c50ba005ce8aa222b0ca656a2e42884beedcc5176d2",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ru/04-player.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "a0bbccecdc868498ac1deac0d381f01696bbab0289d4dd2970a89bba89d728b4",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "574a6a43330053848509f4f81c912cc06ce1e0a2420ed37bc7dd3052f7e6205a",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/ru/05-subtitles.png",
+    "dimensions": [
+      1280,
+      800
+    ],
+    "sha256": "c3ed0440a01e08f64ae0448d865996d07c2263bec35b63d873cec68d69e96918",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "7aa22643b31a59fb572783880b7a91cf5147989b898e64f70e212ea09b29a43e",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover-ru.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "99f67be67a31d913f22f821cbc89fb1b285975da8e94c59addccf839c6b99474",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "a9bd116db710b610fcbac96dc21736eebb313bcbe22ef9d7c24a48d252ce8135",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/github-social-ru.png",
+    "dimensions": [
+      1280,
+      640
+    ],
+    "sha256": "a011a8aa2e86e2984bb9df0ba9eaf71803cf703bbf99c284ad48a5ce23d501fc",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1774,
+      887
+    ],
+    "original_sha256": "bf9ba622a9f6ce559d19ad006e8b1eb8f7b8ee6b21b871b6e718d3e35986ef1f",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-ru.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "00d0c24bb9822631b57ce5766a0377b3ffe8c67e14c647b8739b1a1d3cd02368",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "7bba505f697e6d6ade42a50f7ca33d514b7dad29ad2c6e9ab1d082dc10f92f31",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-ru.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "d7f83e12fa356afeea0624048658c80ed3a0ab5cf9bc757bebc26cab66044cd2",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "5d7c752123eac17653b7f841d8a3eb22ba1e585d024ff959057dd630198c5561",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-small-ru.png",
+    "dimensions": [
+      440,
+      280
+    ],
+    "sha256": "587c5ddfb47f8d77878d46575820c76fe6a53154e97a5b91d51407af87a6db8a",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1572,
+      1001
+    ],
+    "original_sha256": "d6b26de225b4031ada84d782422096fc0f1e12b79b8c7808c335f7f9f807d84d",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "store-assets/promo-marquee-ru.png",
+    "dimensions": [
+      1400,
+      560
+    ],
+    "sha256": "a180363aa3f44fad4b54e60ccd3c243b002462ac54b257b2ada180e0b0104c6b",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1983,
+      793
+    ],
+    "original_sha256": "c55304713ff9a97c77c64d1ba7340d614e124b792e95cac9320d3d49904fcc20",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/branding/readme-cover.png",
+    "dimensions": [
+      1600,
+      900
+    ],
+    "sha256": "6bf289da1c4770b69b5a3eacf647a92445c30069d96a9779af9d1e3119e49ee0",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1672,
+      941
+    ],
+    "original_sha256": "be58b5c993797e130bb120632ea49ab6c116676055309be47e2f2e9fa9af9d72",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/launch-poster-en.png",
+    "dimensions": [
+      1080,
+      1350
+    ],
+    "sha256": "06e4d018285c40bc520f238395a745fde7a6c7c958efda1bd0e63523a2569cb2",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "original_sha256": "636d0ae112e43ac4e8e9bbf3523d9c7d0a6cb7ae0b80df761027cad2524c3bf7",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  },
+  {
+    "path": "assets/marketing/desktop-cover-en.png",
+    "dimensions": [
+      1600,
+      1000
+    ],
+    "sha256": "5b6a2e2bd268146a2da4300939cac60eddd972daaaa8c83e912476d7c5483c1c",
+    "generator": "codex-lb / gpt-image-2.5-sunburst",
+    "original_dimensions": [
+      1586,
+      992
+    ],
+    "original_sha256": "a566f99ec56c2d261fbd0a1821e3323072b173d39ed6d71a9cba042888929014",
+    "postprocessing": "whole-image resize and PNG encoding only"
+  }
+]

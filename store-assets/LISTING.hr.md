@@ -34,7 +34,7 @@ Korisnički vodič (engleski): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Pravila o privatnosti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Što je novo u verziji 1.1.15
+## Što je novo u verziji 1.1.16
 
 - Jednostavniji odabir jezika: popularni jezici prikazani su prvi, uz jasno označene inačice kineskog i portugalskog.
 - Nova projektna dokumentacija i resursi na njemačkom, francuskom, talijanskom, ruskom i arapskom.

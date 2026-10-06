@@ -34,7 +34,7 @@ Käyttöopas (englanniksi): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Tietosuojakäytäntö: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Uutta versiossa 1.1.15
+## Uutta versiossa 1.1.16
 
 - Kielen valinta on helpompaa: suositut kielet ovat ensin, ja kiinan sekä portugalin kielimuodot on eroteltu selkeästi.
 - Uutta saksan-, ranskan-, italian-, venäjän- ja arabiankielistä projektidokumentaatiota ja aineistoa.

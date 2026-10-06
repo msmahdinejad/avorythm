@@ -34,7 +34,7 @@ Brukerveiledning (engelsk): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Personvernerklæring: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Hva er nytt i 1.1.15
+## Hva er nytt i 1.1.16
 
 - Enklere språkvalg: populære språk vises først, med tydelige varianter av kinesisk og portugisisk.
 - Ny prosjektdokumentasjon og nye ressurser på tysk, fransk, italiensk, russisk og arabisk.

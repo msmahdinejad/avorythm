@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-fa.png" alt="اپ دسکتاپ و اکستنشن مرورگر Avorythm" width="100%">
+  <img src="assets/branding/readme-cover-fa.png" alt="دوبلهٔ زنده با هوش مصنوعی، دو زیرنویس و پخش هماهنگ در Avorythm" width="100%">
 </p>
 
 <p align="center">
@@ -40,7 +40,7 @@
   <a href="CONTRIBUTING.md">مشارکت</a>
 </p>
 
-![محیط اپ دسکتاپ Avorythm](docs/images/app-fa.png)
+![محیط اپ دسکتاپ Avorythm](assets/marketing/desktop-cover-fa.png)
 
 ## کدام نسخه برای من مناسب است؟
 

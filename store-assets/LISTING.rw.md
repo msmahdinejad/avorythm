@@ -34,7 +34,7 @@ Igitabo cy'umukoresha (mu Cyongereza): https://github.com/msmahdinejad/avorythm/
 
 Politiki y'ibanga: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Ibishya muri 1.1.15
+## Ibishya muri 1.1.16
 
 - Guhitamo ururimi byarorohejwe: indimi zikoreshwa cyane ziza mbere, kandi ubwoko bw'Igishinwa n'Igiporutugali bugaragazwa neza.
 - Hiyongereyeho inyandiko n'ibindi bikoresho by'umushinga mu Kidage, Igifaransa, Igitaliyani, Ikirusiya n'Icyarabu.

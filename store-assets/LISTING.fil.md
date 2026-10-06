@@ -34,7 +34,7 @@ Gabay sa paggamit (English): https://github.com/msmahdinejad/avorythm/blob/main/
 
 Patakaran sa privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Ano ang bago sa 1.1.15
+## Ano ang bago sa 1.1.16
 
 - Mas madaling pumili ng wika: nauuna ang mga sikat na wika, at malinaw ang mga variant ng Chinese at Portuguese.
 - Bagong dokumentasyon at mga resource ng proyekto sa German, French, Italian, Russian at Arabic.

@@ -37,7 +37,7 @@ Guida: https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.it.md
 
 Informativa sulla privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Novità della versione 1.1.15
+## Novità della versione 1.1.16
 
 - Selezione della lingua più semplice, con le lingue comuni in cima e varianti cinesi e portoghesi ben distinte.
 - Documentazione e risorse del progetto in tedesco, francese, italiano, russo e arabo.

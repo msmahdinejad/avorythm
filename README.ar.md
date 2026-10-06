@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-ar.png" alt="تطبيق Avorythm وإضافة المتصفح" width="100%">
+  <img src="assets/branding/readme-cover-ar.png" alt="Avorythm: دبلجة مباشرة بالذكاء الاصطناعي وترجمة ثنائية وتشغيل متزامن" width="100%">
 </p>
 
 <p align="center">

@@ -34,7 +34,7 @@ Kullanım kılavuzu (İngilizce): https://github.com/msmahdinejad/avorythm/blob/
 
 Gizlilik politikası: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.15 sürümündeki yenilikler
+## 1.1.16 sürümündeki yenilikler
 
 - Daha kolay dil seçimi: popüler diller önce gösterilir, Çince ve Portekizce varyantları açıkça belirtilir.
 - Almanca, Fransızca, İtalyanca, Rusça ve Arapça proje belgeleri ile kaynakları eklendi.

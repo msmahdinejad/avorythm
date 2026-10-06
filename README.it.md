@@ -9,7 +9,7 @@
 <p align="center">Traduzione e doppiaggio in tempo reale per browser e desktop, con elaborazione sincronizzata dei file audio e video.</p>
 
 <p align="center">
-  <img src="assets/branding/readme-cover-it.png" alt="App desktop ed estensione del browser Avorythm in italiano" width="100%">
+  <img src="assets/branding/readme-cover-it.png" alt="Avorythm: doppiaggio IA live, sottotitoli bilingui e riproduzione sincronizzata" width="100%">
 </p>
 
 <p align="center">
