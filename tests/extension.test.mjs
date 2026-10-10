@@ -278,8 +278,9 @@ test('Chinese README and guide point to existing local images', () => {
       ...[...markdown.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)].map((match) => match[1]),
       ...[...markdown.matchAll(/<img\s+[^>]*src="([^"]+)"/g)].map((match) => match[1])
     ];
-    assert.ok(images.length > 0);
-    for (const path of images) assert.ok(readFileSync(new URL(path, source)).length > 0, path);
+    const local = images.filter((path) => !/^https?:\/\//.test(path)); // badges and other remote images are not files in the repository
+    assert.ok(local.length > 0);
+    for (const path of local) assert.ok(readFileSync(new URL(path, source)).length > 0, path);
   }
 });
 
