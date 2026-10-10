@@ -1,0 +1,60 @@
+{
+  "lang": "tr",
+  "dir": "ltr",
+  "title": "Avorythm — Şimdi anlıyor musun beni?",
+  "say": {
+    "hero1": "Bunca zamandır seninle konuşuyordum…",
+    "hero2": "Şimdi anlıyor musun beni?",
+    "dub_pod": "Herkese merhaba, tekrar hoş geldiniz!",
+    "dub_doc": "Okyanusun derinliklerinde hiç ışık yok.",
+    "dub_lec": "Bugün sinir ağlarının nasıl öğrendiğini göreceğiz.",
+    "tagline": "Her sesi kendi dilinizde duyun."
+  },
+  "screen": {
+    "a": "Bunca ses.",
+    "b": "Ve hiçbirini {anlamıyorsunuz}.",
+    "drop1": "Artık bütün dünya",
+    "drop2": "{sizin dilinizi} konuşuyor.",
+    "browserH": "Canlı seslendirme. İki dilli altyazı.",
+    "browserS": "Chrome ve Edge’deki her video için.",
+    "desktopH": "Masaüstünde de.",
+    "desktopS": "Her uygulama. Her ses ve video dosyası.",
+    "langsN": "79",
+    "langsW": "dil",
+    "free1": "Ücretsiz.",
+    "free2": "Açık kaynak.",
+    "freeS": "Reklam yok, takip yok — anahtarlarınız sizde kalır.",
+    "tagline": "Her sesi kendi dilinizde duyun.",
+    "cta": "Chrome’a ekle — ücretsiz",
+    "gh": "GitHub’da açık kaynak",
+    "desktopCta": "Masaüstü uygulaması · Windows · macOS · Linux",
+    "dubbed": "Türkçe seslendirme",
+    "appOriginal": "Orijinal ses",
+    "appTranslation": "Çeviri"
+  },
+  "kinds": {
+    "film": "Film",
+    "lecture": "Ders",
+    "podcast": "Podcast",
+    "news": "Haberler",
+    "tutorial": "Eğitim",
+    "documentary": "Belgesel",
+    "stream": "Canlı yayın",
+    "talkshow": "Talk show",
+    "cooking": "Yemek",
+    "football": "Futbol",
+    "talk": "Konuşma"
+  },
+  "cards": {
+    "lecture": "Bugün sinir ağlarının nasıl öğrendiğini göreceğiz.",
+    "podcast": "Herkese merhaba, tekrar hoş geldiniz!",
+    "news": "İyi akşamlar. İşte bu saatin önemli haberleri.",
+    "tutorial": "Bugün size öğreteceğim — sadece beş dakikada.",
+    "documentary": "Okyanusun derinliklerinde hiç ışık yok.",
+    "stream": "Arkadaşlar, bu eli kesin alıyoruz!",
+    "talkshow": "Programımızın yeni bölümüne hoş geldiniz.",
+    "cooking": "Şimdi içine bir tutam tuz ekliyoruz.",
+    "football": "Gol! Ne gol ama, arkadaşlar!",
+    "talk": "Bu akşam size bir hikâye anlatmak istiyorum."
+  }
+}

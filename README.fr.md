@@ -12,6 +12,10 @@
 </p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/fr/"><img alt="Site, vidéos et démo en direct" src="https://img.shields.io/badge/%F0%9F%8C%90_Site%2C_vid%C3%A9os_et_d%C3%A9mo_en_direct-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-fr.png" alt="Avorythm : doublage IA en direct, sous-titres bilingues et lecture synchronisée" width="100%">
 </p>
 

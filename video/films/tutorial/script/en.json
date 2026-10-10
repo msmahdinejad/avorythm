@@ -1,0 +1,87 @@
+{
+ "lang": "en",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "en",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; a natural conversational pace of about 160 words per minute, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis",
+  "pace": 0.068
+ },
+ "lines": {
+  "l0": "Here’s how to set up Avorythm, in eight quick steps.",
+  "l1": "Step one. On the Chrome Web Store, click {add|Add to Chrome}, then {pin^pin it} to your toolbar. Edge works too.",
+  "l2": "Step two. In Google AI Studio, {create^create a free API key}, and {copy^copy it}.",
+  "l3a": "Step three. Open Avorythm’s {opens^settings}.",
+  "l3b": "{paste^Paste the key} under {connect|Connect to Gemini}, and press {save|Save}. It stays in your browser.",
+  "l3c": "Then {tick^tick the consent box} for Google Gemini.",
+  "l4a": "Step four. On any video, {icon^click the Avorythm icon} and {pick^pick your language}. There are {n79^seventy-nine}.",
+  "l4b": "{onpage|On this page} is the fastest. The {sync|Synchronized recorder & player} adds pause, seek and export.",
+  "l5": "Step five. Press {start|Start translating}, and the video {speaks^speaks your language}.",
+  "l6a": "Step six. Switch each output on or off: {o1^original audio}, {o2^dubbed audio}, and {o3^both subtitles}.",
+  "l6b": "{card^Subtitles sit} on a frosted-glass card. {drag^Drag it anywhere}, and {resize^resize it}.",
+  "l6c": "{balance^Balance the original} against the dub, and {duck^smart ducking} lowers it while the dub speaks.",
+  "l7a": "Step seven. The synchronized player lets you {pause^pause}, {seek^seek}, and {full^go fullscreen}.",
+  "l7b": "Then {export^export} a WebM video with SRT subtitles.",
+  "l8a": "Step eight. The desktop app translates {any^any program}, on {os^Windows}, macOS and Linux.",
+  "l8b": "In {studio|File studio}, {drop^drop in a file}, and get all four outputs in {zip^one ZIP}.",
+  "l9": "Avorythm is {free^free and open source}. If it helps you, {star^give it a star} on GitHub."
+ },
+ "text": {
+  "eyebrow": "Tutorial",
+  "introTitle": "Set up Avorythm in 8 steps",
+  "introSub": "From install to your first dubbed video",
+  "step": "Step {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Install the extension",
+   "Get a free Gemini key",
+   "Connect & consent",
+   "Pick language & mode",
+   "Start translating",
+   "Make it yours",
+   "Synchronized player",
+   "Desktop app"
+  ],
+  "takeaways": [
+   "Pinned, one click away · Edge too",
+   "Free · Google AI Studio",
+   "Your key stays in your browser",
+   "79 languages · 2 modes",
+   "Live dub, right on the page",
+   "4 outputs · mixer · smart ducking",
+   "Export WebM + SRT",
+   "Any program · any file · one ZIP"
+  ],
+  "languages": "languages",
+  "fastest": "Fastest",
+  "pauseSeekExport": "Pause · seek · export",
+  "drag": "Drag",
+  "resize": "Resize",
+  "ducking": "Smart ducking",
+  "pause": "Pause",
+  "seek": "Seek",
+  "fullscreen": "Fullscreen",
+  "anyProgram": "Any program, live",
+  "anyFile": "Audio & video files",
+  "outroTitle": "Free & open source",
+  "outroStar": "Star on GitHub",
+  "outroMit": "MIT license",
+  "copied": "Copied",
+  "fileVideo": "Customized video"
+ },
+ "demo": {
+  "sourceLang": "ja",
+  "source": [
+   "新しい道は、新しい物語の始まり。",
+   "耳を澄ませて。山が語りかけている。"
+  ],
+  "translated": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ]
+ },
+ "say": {
+  "l4b": "On this page is the fastest. The Synchronized recorder and player adds pause, seek and export."
+ }
+}

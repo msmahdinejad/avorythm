@@ -26,3 +26,12 @@ output/imagegen/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Website and video tooling (generated output)
+site/_site/
+video/node_modules/
+video/build/
+video/out/
+
+# Site videos live in the "site-media" release asset (see .github/workflows/pages.yml)
+site/public/video/

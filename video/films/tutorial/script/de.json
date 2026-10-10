@@ -1,0 +1,83 @@
+{
+ "lang": "de",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "de",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "So richten Sie Avorythm ein – in acht kurzen Schritten.",
+  "l1": "Schritt eins. Klicken Sie im Chrome Web Store auf {add|Add to Chrome} und {pin^heften Sie es} an die Symbolleiste. Edge geht auch.",
+  "l2": "Schritt zwei. {create^Erstellen Sie} in Google AI Studio einen kostenlosen API-Schlüssel und {copy^kopieren Sie ihn}.",
+  "l3a": "Schritt drei. Öffnen Sie die {opens^Einstellungen} von Avorythm.",
+  "l3b": "{paste^Fügen Sie den Schlüssel} unter {connect|Connect to Gemini} ein und klicken Sie auf {save|Save}. Er bleibt in Ihrem Browser.",
+  "l3c": "Setzen Sie dann {tick^den Haken bei der Einwilligung} für Google Gemini.",
+  "l4a": "Schritt vier. Klicken Sie bei einem Video {icon^auf das Avorythm-Symbol} und {pick^wählen Sie Ihre Sprache}. Es gibt {n79^neunundsiebzig}.",
+  "l4b": "{onpage|On this page} ist am schnellsten. Der {sync|Synchronized recorder & player} kann zusätzlich pausieren, springen und exportieren.",
+  "l5": "Schritt fünf. Klicken Sie auf {start|Start translating} – und {speaks^das Video spricht Ihre Sprache}.",
+  "l6a": "Schritt sechs. Schalten Sie jede Ausgabe einzeln ein oder aus: {o1^Originalton}, {o2^Vertonung} und {o3^beide Untertitel}.",
+  "l6b": "{card^Die Untertitel} erscheinen auf einer Milchglas-Karte. {drag^Verschieben Sie sie} beliebig und {resize^ändern Sie die Größe}.",
+  "l6c": "{balance^Stimmen Sie Original und Vertonung ab}: Die {duck^intelligente Absenkung} macht das Original leiser, solange die Vertonung spricht.",
+  "l7a": "Schritt sieben. Im synchronisierten Player können Sie {pause^pausieren}, {seek^springen} und {full^im Vollbild schauen}.",
+  "l7b": "Dann {export^exportieren} Sie ein WebM-Video mit SRT-Untertiteln.",
+  "l8a": "Schritt acht. Die Desktop-App übersetzt {any^jedes Programm} – unter {os^Windows}, macOS und Linux.",
+  "l8b": "Im {studio|File studio} {drop^ziehen Sie eine Datei hinein} und erhalten alle vier Ausgaben {zip^als ein ZIP}.",
+  "l9": "Avorythm ist {free^kostenlos und Open Source}. Wenn es Ihnen hilft, {star^geben Sie ihm einen Stern} auf GitHub."
+ },
+ "text": {
+  "eyebrow": "Tutorial",
+  "introTitle": "Avorythm in 8 Schritten einrichten",
+  "introSub": "Von der Installation zum ersten vertonten Video",
+  "step": "Schritt {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Erweiterung installieren",
+   "Kostenloser Gemini-Schlüssel",
+   "Verbinden & einwilligen",
+   "Sprache & Modus",
+   "Übersetzung starten",
+   "Nach Ihren Wünschen",
+   "Synchronisierter Player",
+   "Desktop-App"
+  ],
+  "takeaways": [
+   "Angeheftet, ein Klick entfernt · auch Edge",
+   "Kostenlos · Google AI Studio",
+   "Ihr Schlüssel bleibt im Browser",
+   "79 Sprachen · 2 Modi",
+   "Live-Vertonung direkt auf der Seite",
+   "4 Ausgaben · Mixer · Absenkung",
+   "Export als WebM + SRT",
+   "Jedes Programm · jede Datei · ein ZIP"
+  ],
+  "languages": "Sprachen",
+  "fastest": "Am schnellsten",
+  "pauseSeekExport": "Pause · Springen · Export",
+  "drag": "Verschieben",
+  "resize": "Größe ändern",
+  "ducking": "Intelligente Absenkung",
+  "anyProgram": "Jedes Programm, live",
+  "outroTitle": "Kostenlos & Open Source",
+  "outroStar": "Stern auf GitHub",
+  "outroMit": "MIT-Lizenz",
+  "fileVideo": "Eigenes Video",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "Jeder neue Weg beginnt eine neue Geschichte.",
+   "Hör genau hin. Die Berge sprechen."
+  ]
+ },
+ "say": {
+  "l4b": "On this page ist am schnellsten. Der Synchronized recorder and player kann zusätzlich pausieren, springen und exportieren."
+ }
+}

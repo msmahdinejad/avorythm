@@ -1,0 +1,477 @@
+{
+  "meta": {
+    "title": "Avorythm — 任何视频的 AI 实时配音与字幕",
+    "description": "用你的语言听懂每一种声音。Avorythm 在 Chrome 和桌面端为视频实时翻译并配音，附双语字幕与独立混音器，支持 79 种语言，免费开源。",
+    "ogTitle": "用你的语言，听懂每一种声音 — Avorythm",
+    "ogDescription": "为任何视频提供 AI 实时配音与双语字幕。免费、开源，为隐私而设计。",
+    "imageAlt": "Avorythm：在浏览器中为视频实时 AI 配音，并同屏显示双语字幕"
+  },
+  "a11y": {
+    "skip": "跳到正文",
+    "home": "Avorythm — 首页",
+    "menu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "language": "语言",
+    "theme": "切换浅色与深色主题",
+    "primaryNav": "主导航",
+    "up": "回到顶部",
+    "newTab": "（在新标签页中打开）"
+  },
+  "nav": {
+    "features": "功能",
+    "how": "使用流程",
+    "videos": "视频",
+    "guide": "指南",
+    "download": "下载",
+    "faq": "常见问题"
+  },
+  "header": {
+    "star": "Star",
+    "starAria": "在 GitHub 上为 Avorythm 点 Star",
+    "get": "开始使用"
+  },
+  "hero": {
+    "badge": "免费开源",
+    "title": "用你的语言，<br>听懂<em>每一种声音</em>。",
+    "lead": "为任何视频提供 AI 实时配音与双语字幕——在浏览器中、在桌面上，或直接处理文件。课程、电影、播客、直播，统统用你最熟悉的语言听懂。",
+    "ctaChrome": "免费添加到 Chrome",
+    "ctaDesktop": "下载桌面应用",
+    "ctaFilm": "观看短片",
+    "trustNoTracking": "无广告，无用户行为分析",
+    "trustKeys": "密钥由你自己保管",
+    "trustLangs": "79 种目标语言",
+    "trustPlatforms": "Chrome · Edge · Windows · macOS · Linux"
+  },
+  "demo": {
+    "label": "互动演示",
+    "url": "lecture.example.com/neural-networks",
+    "original": "原声",
+    "dubbed": "配音",
+    "chips": "翻译成",
+    "hint": "点选一种语言，声音即刻切换。",
+    "soundOn": "声音开",
+    "soundOff": "声音关",
+    "replay": "重新播放",
+    "waiting": "等待音频…",
+    "spokenIn": "正在说{language}"
+  },
+  "uses": {
+    "label": "适用于",
+    "items": [
+      "在线课程",
+      "电影与剧集",
+      "播客",
+      "讲座",
+      "直播",
+      "纪录片",
+      "音视频文件"
+    ]
+  },
+  "features": {
+    "eyebrow": "功能",
+    "title": "听懂任何视频，你需要的一应俱全",
+    "lead": "配音、字幕、混音、导出——每个功能都能独立使用。",
+    "dubbing": {
+      "title": "实时配音",
+      "text": "视频一边播放，一边用你的语言“开口说话”。自然的 AI 语音紧跟说话人的节奏。"
+    },
+    "captions": {
+      "title": "双语字幕",
+      "text": "原文与译文字幕同屏对照，显示在一张毛玻璃卡片上——可以拖动、缩放，还能调节透明度。"
+    },
+    "outputs": {
+      "title": "四路独立输出",
+      "text": "原始音频、配音、原文字幕、译文字幕——每一路都能单独开关。",
+      "labels": [
+        "原始音频",
+        "配音",
+        "原文字幕",
+        "译文字幕"
+      ]
+    },
+    "mixer": {
+      "title": "由你掌控的混音器",
+      "text": "自由调节原声与配音的比例；智能压低原声，配音开口时原声自动让路。",
+      "original": "原声",
+      "dub": "配音"
+    },
+    "sync": {
+      "title": "同步播放器",
+      "text": "录制走在前面，独立播放器可随时暂停、跳转、全屏。支持导出 WebM 和 SRT。",
+      "ahead": "提前 20 秒"
+    },
+    "desktop": {
+      "title": "桌面应用与文件",
+      "text": "实时翻译任何程序的声音，或拖入音频、视频文件，获得同步播放器、字幕和 ZIP 压缩包。"
+    },
+    "languages": {
+      "title": "79 种语言",
+      "text": "从完整的 Gemini 语言列表中选择目标语言，常用语言排在最前面。"
+    },
+    "private": {
+      "title": "为隐私而设计",
+      "text": "没有用户行为分析，没有广告，没有中转服务器。音频直接发送给你选择的 AI 服务提供商。"
+    },
+    "open": {
+      "title": "免费且开源",
+      "text": "采用 MIT 许可证。使用你自己的免费 API 密钥，每一行代码都能阅读，也能改成你想要的样子。"
+    }
+  },
+  "how": {
+    "eyebrow": "使用流程",
+    "title": "从安装到配音，只需三步",
+    "steps": [
+      {
+        "title": "安装并填入密钥",
+        "text": "将 Avorythm 添加到 Chrome 或 Edge，粘贴从 Google AI Studio 获取的免费 Gemini API 密钥，并勾选授权。"
+      },
+      {
+        "title": "选择语言与播放方式",
+        "text": "选好目标语言，再决定怎么看：直接在本页观看，延迟最低；或用同步播放器观看，同步更稳定。"
+      },
+      {
+        "title": "点击“开始翻译”",
+        "text": "实时收听配音，同时阅读原文与译文字幕。想调混音、挪字幕、暂停或导出，随时都行。"
+      }
+    ]
+  },
+  "videos": {
+    "eyebrow": "观看",
+    "title": "看看实际效果",
+    "lead": "一部短片、一段产品演示和一套分步教程——用你的语言观看。",
+    "film": "介绍短片",
+    "demo": "产品演示",
+    "tutorial": "使用教程",
+    "filmText": "简介 · {duration}",
+    "demoText": "功能一览 · {duration}",
+    "tutorialText": "分步演示 · {duration}",
+    "watchIn": "观看语言",
+    "transcript": "查看文字稿",
+    "download": "下载视频",
+    "share": "分享",
+    "play": "播放视频",
+    "soon": "该视频即将上线。",
+    "english": "当前显示的是英文版视频。"
+  },
+  "products": {
+    "eyebrow": "两种使用方式",
+    "title": "在浏览器里，或在桌面上",
+    "lead": "扩展和桌面应用相互独立——任选其一，或两者都用。",
+    "extension": {
+      "tag": "浏览器扩展",
+      "title": "翻译任意标签页",
+      "text": "添加到 Chrome 或 Edge，就能为正在看的视频配音。它完全独立运行——无需桌面应用、Python、FFmpeg，也不需要虚拟声卡。",
+      "bullets": [
+        "“在本页”：延迟最低的方案",
+        "同步播放器：跳转、全屏、导出 WebM + SRT",
+        "可移动的毛玻璃字幕"
+      ],
+      "cta": "添加到 Chrome"
+    },
+    "desktop": {
+      "tag": "桌面应用",
+      "title": "听到什么，翻译什么",
+      "text": "为桌面上任何程序的声音配音；或拖入音频、视频文件，获得同步播放器、字幕，以及包含全部输出的 ZIP 压缩包。",
+      "bullets": [
+        "实时翻译任何程序的声音",
+        "File Studio：处理最大 8 GB 的音频和视频",
+        "支持 Windows、macOS 和 Linux"
+      ],
+      "cta": "下载"
+    }
+  },
+  "guide": {
+    "eyebrow": "教程",
+    "title": "几分钟即可上手",
+    "lead": "跟着下面的步骤操作，或观看上方的教程视频。",
+    "tabs": {
+      "extension": "浏览器扩展",
+      "desktop": "桌面应用",
+      "files": "音视频文件"
+    },
+    "extension": [
+      {
+        "title": "安装扩展",
+        "text": "从 Chrome Web Store 添加 Avorythm，并将它固定到工具栏。Edge 用户使用同一个商店页面即可，也可以从发布页面获取 ZIP 手动加载。"
+      },
+      {
+        "title": "填入免费的 Gemini 密钥",
+        "text": "在 Google AI Studio 创建密钥，然后打开 Avorythm → “设置” → “连接到 Gemini”，粘贴密钥并点击“保存”。最后勾选“我允许将所选标签页的音频发送到 Google Gemini”这一授权选项。在你点击“开始翻译”之前，不会捕获任何内容。"
+      },
+      {
+        "title": "选择语言和播放方式",
+        "text": "打开扩展弹出窗口，选择目标语言，再选择“在本页”（延迟最低）或“同步录制器与播放器”（同步稳定，支持跳转和导出）。"
+      },
+      {
+        "title": "在任意视频上点击“开始翻译”",
+        "text": "打开一个普通的视频标签页，点击“开始翻译”。听配音、读双语字幕，毛玻璃字幕卡片想放在哪里就拖到哪里。"
+      },
+      {
+        "title": "调成你喜欢的样子",
+        "text": "单独开关四路输出，调节原声与配音的音量比例，并在“设置”中设定字幕的文字大小和背景不透明度。"
+      }
+    ],
+    "desktop": [
+      {
+        "title": "下载安装包",
+        "text": "从 Releases 下载适合你系统的版本。Windows 安装包已包含 FFmpeg。"
+      },
+      {
+        "title": "填入密钥",
+        "text": "打开“Advanced settings”（高级设置），保存 Gemini 密钥（处理文件时还需要 Groq 密钥）。密钥保存在操作系统的凭据库中。"
+      },
+      {
+        "title": "设置音频路由",
+        "text": "要实时翻译其他程序，请把它的声音输出到回环设备——Windows 用 AMM Virtual Audio，macOS 用 BlackHole，Linux 用 monitor 输入源——然后在应用中把它选为音频输入。"
+      },
+      {
+        "title": "点击“Start translation”（开始翻译）",
+        "text": "选好语言和输出组合，然后点击“Start translation”。监听输出请保持设为你真实的耳机。"
+      }
+    ],
+    "files": [
+      {
+        "title": "打开“File Studio”",
+        "text": "在桌面应用中打开“File Studio”（文件处理），拖入音频或视频文件（最大 8 GB）。"
+      },
+      {
+        "title": "选择语言、声音和模式",
+        "text": "选择目标语言和配音声音。“Precise”（精准）同步更紧密，“Fast”（快速）完成得更快。"
+      },
+      {
+        "title": "开始处理",
+        "text": "处理期间请保持 Avorythm 运行，它会依次完成转录、翻译、配音和对齐。"
+      },
+      {
+        "title": "播放或下载",
+        "text": "在同步播放器中观看，或分别下载 original.wav、dubbed.wav、source.srt 和 translated.srt——也可以一次打包下载为 ZIP。"
+      }
+    ],
+    "copy": "复制",
+    "copied": "已复制",
+    "fullGuide": "完整使用指南",
+    "installGuide": "安装与音频设置（英文）",
+    "step": "第 {n} 步"
+  },
+  "languages": {
+    "eyebrow": "语言",
+    "title": "79 种语言，一键切换",
+    "lead": "从完整的 Gemini 语言列表中选择目标语言——常用语言优先，从阿拉伯语、中文到斯瓦希里语、祖鲁语。",
+    "more": "……另有 54 种",
+    "ui": "界面提供英语、波斯语和简体中文；配音与字幕支持全部 79 种语言。"
+  },
+  "privacy": {
+    "eyebrow": "隐私",
+    "title": "为隐私而设计",
+    "lead": "Avorythm 的设计初衷：在你和你的音视频之间，不让任何人插手——包括我们自己。",
+    "items": [
+      {
+        "title": "没有用户行为分析、广告和遥测",
+        "text": "应用、扩展和本网站都不含任何追踪代码。"
+      },
+      {
+        "title": "密钥属于你，留在你的设备上",
+        "text": "API 密钥默认只保留在浏览器会话中；在桌面应用里则保存在操作系统的凭据库中。"
+      },
+      {
+        "title": "直达 AI 服务提供商",
+        "text": "音频从你的设备直接发送到 Google Gemini；在精准模式下，短音频片段则直接发送到 Groq Whisper。绝不经过我们的服务器。"
+      },
+      {
+        "title": "先授权，后捕获",
+        "text": "只有在你授权并点击“开始翻译”之后才会开始捕获，随时都可以停止。"
+      },
+      {
+        "title": "开源（MIT）",
+        "text": "每一行代码都是公开的。可以阅读、审计，也可以改进。"
+      }
+    ],
+    "diagram": {
+      "you": "你的设备",
+      "provider": "AI 服务商",
+      "ours": "Avorythm 服务器",
+      "none": "无",
+      "audio": "音频"
+    },
+    "note": "Avorythm 依赖处于预览阶段的 AI 服务。准确度、声音、延迟和配额都可能变化——重要内容请自行核对。",
+    "policy": "阅读隐私政策"
+  },
+  "download": {
+    "eyebrow": "下载",
+    "title": "获取 Avorythm",
+    "lead": "免费且开源。选择你的平台——你只需要自己的免费 Gemini API 密钥。",
+    "recommended": "为你的设备推荐",
+    "version": "版本 {version}",
+    "chrome": {
+      "title": "Chrome 与 Edge",
+      "text": "从 Chrome Web Store 安装。Edge 用户可在同一个商店页面添加。",
+      "cta": "添加到 Chrome"
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "64 位安装包，已包含 FFmpeg。",
+      "cta": "下载安装包",
+      "ctaZip": "便携版 ZIP"
+    },
+    "mac": {
+      "title": "macOS",
+      "text": "提供适用于 Apple Silicon 和 Intel 的原生版本。",
+      "ctaArm": "Apple Silicon",
+      "ctaIntel": "Intel"
+    },
+    "linux": {
+      "title": "Linux",
+      "text": "x64 版本。请在应用中选择你的 PipeWire 或 PulseAudio monitor 输入源。",
+      "cta": "下载 ZIP"
+    },
+    "zip": {
+      "title": "扩展 ZIP 包",
+      "text": "通过开发者模式在 Chrome 或 Edge 中手动安装。",
+      "cta": "下载 ZIP"
+    },
+    "unsigned": "代码签名的审批尚在进行中，因此目前的 Windows 安装包未经签名，Windows 可能提示“未知发布者”。请对照同一发布版本中的 SHA256SUMS.txt 校验你下载的文件。",
+    "checksums": "SHA256SUMS",
+    "all": "所有发布版本",
+    "changelog": "更新日志"
+  },
+  "faq": {
+    "eyebrow": "常见问题",
+    "title": "你问，我们答",
+    "items": [
+      {
+        "q": "Avorythm 真的免费吗？",
+        "a": "是的。扩展和桌面应用都免费且开源（MIT）。它们使用你自己的 API 密钥：Google AI Studio 提供免费的 Gemini 额度，处理文件用的 Whisper 则由 Groq 的免费额度支持。服务提供商的限制和配额同样适用，并且可能发生变化。"
+      },
+      {
+        "q": "使用扩展需要安装桌面应用吗？",
+        "a": "不需要。扩展完全独立运行——无需桌面应用、Python、FFmpeg、localhost，也不需要虚拟声卡。桌面应用用于翻译其他程序的声音和处理文件。"
+      },
+      {
+        "q": "支持哪些网站？",
+        "a": "在 Chrome 或 Edge 116 及以上版本中，任何会播放音频或视频的普通网页都可以使用。受 DRM 保护的流媒体和浏览器内部页面（如 chrome://）可能无法捕获；无法捕获视频画面时，请使用“在本页”模式。"
+      },
+      {
+        "q": "会有多少延迟？",
+        "a": "实时翻译必须先听到一句话才能说出译文，所以少量延迟无法避免。“在本页”是延迟最低的方案。同步播放器会提前录制（默认提前 20 秒），让音频、视频和字幕保持在同一条时间线上。"
+      },
+      {
+        "q": "我的音频隐私有保障吗？",
+        "a": "只有在你授权并点击“开始翻译”之后才会开始捕获。音频直接从你的浏览器发送到 Google Gemini；在精准模式下，短音频片段则发送到 Groq Whisper，绝不会发送到我们的服务器。这里没有广告、用户行为分析或遥测；除非你选择记住密钥，否则密钥只保留在浏览器会话中。"
+      },
+      {
+        "q": "支持哪些语言？",
+        "a": "79 种目标语言，从英语、波斯语、阿拉伯语、中文到斯瓦希里语和祖鲁语。界面本身目前提供英语、波斯语和简体中文，更多语言正在规划中。"
+      },
+      {
+        "q": "准确度如何？",
+        "a": "Avorythm 使用处于预览阶段的 AI 服务。准确度、声音、延迟和配额都可能变化，也没有任何 AI 翻译是完美的——重要内容请自行核对。"
+      },
+      {
+        "q": "支持 Firefox 或 Safari 吗？",
+        "a": "暂不支持。Avorythm 目前支持 Chrome 和 Edge（Chromium 116 或更新版本）。Edge 用户可以从 Chrome Web Store 页面安装；专门的 Microsoft Edge Add-ons 页面已列入路线图。"
+      },
+      {
+        "q": "为什么 Windows 安装包“未签名”？",
+        "a": "我们向 SignPath Foundation 提交的代码签名申请仍在审批中。在获批之前，Windows SmartScreen 可能会显示“未知发布者”警告。请对照同一发布版本中的 SHA256SUMS.txt 校验你下载的文件。"
+      },
+      {
+        "q": "我可以怎样帮忙？",
+        "a": "给仓库点个 Star，分享视频，反馈 bug，提出功能建议，或提交 Pull Request——一切都在 GitHub 上公开进行。"
+      }
+    ]
+  },
+  "share": {
+    "eyebrow": "分享与支持",
+    "title": "让更多人听懂世界",
+    "lead": "点一个 Star、转发一次，是支持开源项目最好的方式——别人也是这样发现它的。",
+    "star": {
+      "title": "在 GitHub 上为 Avorythm 点 Star",
+      "text": "免费，只需两秒，却能让更多人发现这个项目。",
+      "cta": "在 GitHub 上 Star",
+      "stars": "Star",
+      "forks": "Fork",
+      "modalTitle": "两步为 Avorythm 点 Star",
+      "modalStep1": "GitHub 已在新标签页中打开。",
+      "modalStep2": "点击页面右上角的 <strong>★ Star</strong>。",
+      "modalThanks": "谢谢你——这真的很有帮助。",
+      "modalOpen": "重新打开 GitHub",
+      "modalClose": "完成"
+    },
+    "post": {
+      "title": "连同视频一起分享",
+      "text": "选一个视频，改改文案，发到你的朋友所在的地方。",
+      "video": "视频",
+      "message": "你的文案",
+      "native": "分享…",
+      "nativeFile": "连视频一起分享",
+      "networks": "或发布到",
+      "download": "下载视频",
+      "copyText": "复制文案",
+      "copyLink": "复制链接",
+      "copied": "已复制！",
+      "tip": "社交平台不接受网页直接上传视频文件，请先下载视频，再作为附件添加到你的帖子中——链接预览会显示视频封面。",
+      "qr": "扫码在手机上打开",
+      "preparing": "正在准备视频…",
+      "failed": "此处无法直接分享——请下载视频后手动发布。"
+    },
+    "text": "用你的语言，听懂每一种声音 🎧 Avorythm 能为任何视频实时配音、生成字幕，免费又开源！",
+    "hashtags": "#Avorythm #AI #实时翻译 #开源"
+  },
+  "client": {
+    "langSwitch": "本页面也提供 {language} 版本。",
+    "switch": "切换",
+    "dismiss": "关闭",
+    "copied": "已复制",
+    "copyFailed": "复制失败——请选中文本后手动复制。",
+    "starsLabel": "GitHub 上的 Star 数",
+    "latest": "最新版本"
+  },
+  "footer": {
+    "tagline": "用你的语言，听懂每一种声音。",
+    "product": "产品",
+    "resources": "资源",
+    "project": "项目",
+    "links": {
+      "github": "GitHub",
+      "releases": "发布版本",
+      "guide": "使用指南",
+      "install": "安装指南（英文）",
+      "privacy": "隐私政策",
+      "security": "安全",
+      "contributing": "参与贡献",
+      "changelog": "更新日志",
+      "license": "MIT 许可证",
+      "issues": "反馈问题",
+      "support": "获取支持",
+      "roadmap": "路线图"
+    },
+    "legal": "Avorythm 是采用 MIT 许可证的独立开源项目，与 Google、Groq 或 Chrome 均无关联。Gemini、Chrome 和 Google AI Studio 是 Google LLC 的商标。",
+    "made": "由 {author} 和贡献者共同打造。",
+    "noTracking": "本网站不使用 Cookie，也不使用任何用户行为分析。"
+  },
+  "notFound": {
+    "title": "这个页面失声了",
+    "text": "你要找的页面不存在——但其他的声音都还在。",
+    "home": "返回首页"
+  },
+  "ui": {
+    "tagline": "实时翻译当前标签页",
+    "ready": "准备就绪",
+    "connected": "实时翻译已开启",
+    "language": "目标语言",
+    "playbackMode": "播放方式",
+    "lowLatency": "在本页",
+    "lowLatencyHelp": "最快的实时音频与字幕方案",
+    "synchronized": "同步录制器与播放器",
+    "connection": "连接到 Gemini",
+    "saveKey": "保存",
+    "consentTitle": "我允许将所选标签页的音频发送到 Google Gemini",
+    "start": "开始翻译",
+    "stop": "停止翻译",
+    "yourOutput": "已选输出",
+    "originalAudio": "原始音频",
+    "dubbedAudio": "配音",
+    "sourceSubtitles": "原文字幕",
+    "translatedSubtitles": "译文字幕"
+  }
+}

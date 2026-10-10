@@ -12,6 +12,10 @@
 </p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/de/"><img alt="Website, Videos und Live-Demo" src="https://img.shields.io/badge/%F0%9F%8C%90_Website%2C_Videos_und_Live--Demo-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-de.png" alt="Avorythm: KI-Live-Dubbing, zweisprachige Untertitel und synchrone Wiedergabe" width="100%">
 </p>
 

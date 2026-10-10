@@ -1,0 +1,83 @@
+{
+ "lang": "fr",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "fr",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "Voici comment installer Avorythm, en huit étapes rapides.",
+  "l1": "Étape un. Sur le Chrome Web Store, cliquez sur {add|Add to Chrome}, puis {pin^épinglez-le} à la barre d’outils. Ça marche aussi sur Edge.",
+  "l2": "Étape deux. Dans Google AI Studio, {create^créez une clé API gratuite}, puis {copy^copiez-la}.",
+  "l3a": "Étape trois. Ouvrez les {opens^paramètres} d’Avorythm.",
+  "l3b": "{paste^Collez la clé} sous {connect|Connect to Gemini}, puis cliquez sur {save|Save}. Elle reste dans votre navigateur.",
+  "l3c": "Cochez ensuite {tick^la case de consentement} pour Google Gemini.",
+  "l4a": "Étape quatre. Sur n’importe quelle vidéo, {icon^cliquez sur l’icône Avorythm} et {pick^choisissez votre langue}. Il y en a {n79^soixante-dix-neuf}.",
+  "l4b": "{onpage|On this page} est le mode le plus rapide. Le {sync|Synchronized recorder & player} ajoute pause, recherche et export.",
+  "l5": "Étape cinq. Cliquez sur {start|Start translating}, et {speaks^la vidéo parle votre langue}.",
+  "l6a": "Étape six. Activez ou coupez chaque sortie : {o1^l’audio d’origine}, {o2^le doublage} et {o3^les deux sous-titres}.",
+  "l6b": "{card^Les sous-titres} s’affichent sur une carte en verre dépoli. {drag^Déplacez-la} où vous voulez, et {resize^redimensionnez-la}.",
+  "l6c": "{balance^Dosez l’original et le doublage} : {duck^l’atténuation intelligente} baisse l’original quand le doublage parle.",
+  "l7a": "Étape sept. Le lecteur synchronisé permet de {pause^mettre en pause}, de {seek^naviguer} et de {full^passer en plein écran}.",
+  "l7b": "Puis {export^exportez} une vidéo WebM avec des sous-titres SRT.",
+  "l8a": "Étape huit. L’application de bureau traduit {any^n’importe quel programme}, sous {os^Windows}, macOS et Linux.",
+  "l8b": "Dans {studio|File studio}, {drop^déposez un fichier}, et récupérez les quatre sorties dans {zip^un seul ZIP}.",
+  "l9": "Avorythm est {free^gratuit et open source}. S’il vous aide, {star^donnez-lui une étoile} sur GitHub."
+ },
+ "text": {
+  "eyebrow": "Tutoriel",
+  "introTitle": "Installer Avorythm en 8 étapes",
+  "introSub": "De l’installation à votre première vidéo doublée",
+  "step": "Étape {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Installer l’extension",
+   "Une clé Gemini gratuite",
+   "Connexion & consentement",
+   "Langue & mode",
+   "Lancer la traduction",
+   "À votre façon",
+   "Lecteur synchronisé",
+   "Application de bureau"
+  ],
+  "takeaways": [
+   "Épinglé, à un clic · Edge aussi",
+   "Gratuit · Google AI Studio",
+   "Votre clé reste dans le navigateur",
+   "79 langues · 2 modes",
+   "Doublage en direct, sur la page",
+   "4 sorties · mixeur · atténuation",
+   "Export WebM + SRT",
+   "Tout programme · tout fichier · un ZIP"
+  ],
+  "languages": "langues",
+  "fastest": "Le plus rapide",
+  "pauseSeekExport": "Pause · recherche · export",
+  "drag": "Déplacer",
+  "resize": "Redimensionner",
+  "ducking": "Atténuation intelligente",
+  "anyProgram": "Tout programme, en direct",
+  "outroTitle": "Gratuit et open source",
+  "outroStar": "Étoile sur GitHub",
+  "outroMit": "Licence MIT",
+  "fileVideo": "Vidéo personnalisée",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "Chaque nouveau chemin commence une nouvelle histoire.",
+   "Écoute bien. Les montagnes parlent."
+  ]
+ },
+ "say": {
+  "l4b": "On this page est le mode le plus rapide. Le Synchronized recorder and player ajoute pause, recherche et export."
+ }
+}

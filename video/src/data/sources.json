@@ -1,0 +1,147 @@
+{
+  "comment": "The 'voices of the world' used in the promo: each is spoken once in its own language (shared by every film language) and is dubbed into the viewer's language (see promo.<lang>.json -> dubs). `order` is the priority list: the crowd takes the first 10 entries that are not the viewer's own language, the dubs the first 6 of `dubOrder`.",
+  "hero": "ja",
+  "order": [
+    "ko",
+    "de",
+    "es",
+    "ru",
+    "fr",
+    "zh",
+    "it",
+    "pt",
+    "tr",
+    "hi",
+    "ar",
+    "pl",
+    "nl"
+  ],
+  "dubOrder": [
+    "ko",
+    "de",
+    "es",
+    "ru",
+    "fr",
+    "zh",
+    "it",
+    "pt"
+  ],
+  "sources": {
+    "ja": {
+      "name": "日本語",
+      "voice": "Puck",
+      "scene": "moon",
+      "style": "soft, intimate, curious and slightly hesitant, like someone speaking quietly into a microphone at night",
+      "text": "ねえ、聞こえる？ 私の言ってること、わかる？",
+      "en": "Hey, can you hear me? Do you understand what I’m saying?"
+    },
+    "ko": {
+      "name": "한국어",
+      "voice": "Aoede",
+      "scene": "drama",
+      "style": "emotional and warm, a little breathless, like a drama scene",
+      "text": "정말 보고 싶었어. 왜 이렇게 늦게 왔어?",
+      "en": "I missed you so much. Why did you take so long?"
+    },
+    "de": {
+      "name": "Deutsch",
+      "voice": "Charon",
+      "scene": "board",
+      "style": "calm university lecturer, clear and measured",
+      "text": "Heute schauen wir uns an, wie neuronale Netze eigentlich lernen.",
+      "en": "Today we’ll look at how neural networks actually learn."
+    },
+    "es": {
+      "name": "Español",
+      "voice": "Fenrir",
+      "scene": "podcast",
+      "style": "cheerful, energetic podcast host opening a new episode",
+      "text": "¡Hola a todos, y bienvenidos a un nuevo episodio!",
+      "en": "Hello everyone, and welcome to a new episode!"
+    },
+    "ru": {
+      "name": "Русский",
+      "voice": "Orus",
+      "scene": "news",
+      "style": "serious, steady television news anchor",
+      "text": "Добрый вечер. Главные новости к этому часу.",
+      "en": "Good evening. Here are the top stories of the hour."
+    },
+    "fr": {
+      "name": "Français",
+      "voice": "Leda",
+      "scene": "ocean",
+      "style": "hushed documentary narrator full of wonder",
+      "text": "Dans les profondeurs de l’océan, la lumière ne pénètre jamais.",
+      "en": "In the depths of the ocean, light never reaches."
+    },
+    "zh": {
+      "name": "中文",
+      "voice": "Zephyr",
+      "scene": "game",
+      "style": "excited gamer shouting with team spirit",
+      "text": "兄弟们，这把我们一定能赢！",
+      "en": "Guys, we’re definitely winning this one!"
+    },
+    "it": {
+      "name": "Italiano",
+      "voice": "Achird",
+      "scene": "city",
+      "style": "friendly travel vlogger",
+      "text": "Oggi vi porto nel posto più bello di Roma.",
+      "en": "Today I’m taking you to the most beautiful place in Rome."
+    },
+    "pt": {
+      "name": "Português",
+      "voice": "Sadachbia",
+      "scene": "soccer",
+      "style": "ecstatic football commentator shouting a goal",
+      "text": "E é gol! Que golaço, minha gente!",
+      "en": "And it’s a goal! What a goal, everyone!"
+    },
+    "tr": {
+      "name": "Türkçe",
+      "voice": "Callirrhoe",
+      "scene": "kitchen",
+      "style": "relaxed cooking show host",
+      "text": "Şimdi içine bir tutam tuz ekliyoruz.",
+      "en": "Now we add a pinch of salt."
+    },
+    "hi": {
+      "name": "हिन्दी",
+      "voice": "Gacrux",
+      "scene": "code",
+      "style": "enthusiastic tutorial teacher",
+      "text": "आज हम सीखेंगे कि इसे सिर्फ़ पाँच मिनट में कैसे बनाएँ।",
+      "en": "Today we’ll learn how to make this in just five minutes."
+    },
+    "ar": {
+      "name": "العربية",
+      "voice": "Rasalgethi",
+      "scene": "concert",
+      "style": "formal, warm television presenter",
+      "text": "مرحباً بكم في حلقة جديدة من برنامجنا.",
+      "en": "Welcome to a new episode of our show."
+    },
+    "pl": {
+      "name": "Polski",
+      "voice": "Schedar",
+      "scene": "forest",
+      "style": "professor opening a lecture",
+      "text": "Dzień dobry, zaczynamy dzisiejszy wykład.",
+      "en": "Good morning, let’s begin today’s lecture."
+    },
+    "nl": {
+      "name": "Nederlands",
+      "voice": "Vindemiatrix",
+      "scene": "desert",
+      "style": "gentle nature documentary narrator",
+      "text": "Kijk eens naar de zonsondergang boven de zee.",
+      "en": "Look at the sunset over the sea."
+    }
+  },
+  "narrator": {
+    "voice": "Kore",
+    "style": "confident, warm and clear; brisk and energetic like a modern product launch film, about 170 words per minute, with only short natural pauses between sentences and no long silences"
+  }
+}

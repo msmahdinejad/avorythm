@@ -1,0 +1,56 @@
+{
+ "lang": "de",
+ "dir": "ltr",
+ "title": "Avorythm — Produktdemo",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "Jedes Video. *In Ihrer Sprache.*",
+  "sub": "KI-Live-Vertonung und zweisprachige Untertitel – direkt im Browser."
+ },
+ "h2": {
+  "title": "Sprache wählen. *Start klicken.*",
+  "sub": "Ein Klick in Chrome oder Edge."
+ },
+ "h3": {
+  "title": "Vertonung hören. *Beide Sprachen lesen.*",
+  "sub": "Auf einer Milchglas-Karte, die Sie verschieben, skalieren und ausblenden können."
+ },
+ "h4": {
+  "num": "79",
+  "title": "Sprachen"
+ },
+ "h5": {
+  "title": "Pause. Springen. *Immer synchron.*",
+  "sub": "Der synchronisierte Player nimmt voraus auf und exportiert WebM + SRT."
+ },
+ "h6": {
+  "title": "Vier Ausgaben. *Ihr Mix.*",
+  "sub": "Originalton, Vertonung und beide Untertitel – einzeln schaltbar, mit intelligenter Absenkung."
+ },
+ "h7": {
+  "title": "Jede App. *Jede Datei.*",
+  "sub": "Die Desktop-App für Windows, macOS und Linux."
+ },
+ "h8": {
+  "words": [
+   "Kostenlos.",
+   "Open Source.",
+   "Privat."
+  ],
+  "sub": "Ihr eigener kostenloser Gemini-Schlüssel. Keine Werbung, kein Tracking, keine Server."
+ },
+ "end": {
+  "tagline": "*Jede Stimme* in Ihrer Sprache.",
+  "cta": "Gratis zu Chrome hinzufügen",
+  "github": "GitHub",
+  "desktop": "Desktop-App",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "Original",
+  "yours": "Ihre Sprache",
+  "languageName": "Deutsch",
+  "dubbedLive": "live vertont"
+ }
+}

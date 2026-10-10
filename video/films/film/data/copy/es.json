@@ -1,0 +1,60 @@
+{
+  "lang": "es",
+  "dir": "ltr",
+  "title": "Avorythm — ¿Ahora me entiendes?",
+  "say": {
+    "hero1": "Llevo todo este tiempo hablándote…",
+    "hero2": "¿Ahora me entiendes?",
+    "dub_pod": "¡Hola a todos, bienvenidos de nuevo!",
+    "dub_doc": "En las profundidades del océano no hay luz.",
+    "dub_lec": "Hoy veremos cómo aprenden las redes neuronales.",
+    "tagline": "Escucha cada voz en tu idioma."
+  },
+  "screen": {
+    "a": "Tantas voces.",
+    "b": "Y no {entiendes} ninguna.",
+    "drop1": "Ahora el mundo entero",
+    "drop2": "habla {tu idioma}.",
+    "browserH": "Doblaje en vivo. Subtítulos bilingües.",
+    "browserS": "Para cualquier video en Chrome y Edge.",
+    "desktopH": "También en el escritorio.",
+    "desktopS": "Cualquier app. Cualquier archivo de audio o video.",
+    "langsN": "79",
+    "langsW": "idiomas",
+    "free1": "Gratis.",
+    "free2": "Código abierto.",
+    "freeS": "Sin anuncios ni rastreo: tus claves se quedan contigo.",
+    "tagline": "Escucha cada voz en tu idioma.",
+    "cta": "Instalar en Chrome — es gratis",
+    "gh": "Código abierto en GitHub",
+    "desktopCta": "App de escritorio · Windows · macOS · Linux",
+    "dubbed": "Doblaje · español",
+    "appOriginal": "Audio original",
+    "appTranslation": "Traducción"
+  },
+  "kinds": {
+    "film": "Película",
+    "lecture": "Clase",
+    "podcast": "Pódcast",
+    "news": "Noticias",
+    "tutorial": "Tutorial",
+    "documentary": "Documental",
+    "stream": "Directo",
+    "talkshow": "Talk show",
+    "cooking": "Cocina",
+    "football": "Fútbol",
+    "talk": "Charla"
+  },
+  "cards": {
+    "lecture": "Hoy veremos cómo aprenden las redes neuronales.",
+    "podcast": "¡Hola a todos, bienvenidos de nuevo!",
+    "news": "Buenas noches. Estas son las noticias de la hora.",
+    "tutorial": "Hoy te enseño cómo — en solo cinco minutos.",
+    "documentary": "En las profundidades del océano no hay luz.",
+    "stream": "¡Chicos, esta la ganamos seguro!",
+    "talkshow": "Bienvenidos a un nuevo episodio de nuestro programa.",
+    "cooking": "Ahora añadimos una pizca de sal.",
+    "football": "¡Gol! ¡Qué golazo, amigos!",
+    "talk": "Esta noche quiero contarles una historia."
+  }
+}

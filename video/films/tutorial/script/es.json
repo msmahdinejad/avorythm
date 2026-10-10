@@ -1,0 +1,83 @@
+{
+ "lang": "es",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "es",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "Así se configura Avorythm, en ocho pasos rápidos.",
+  "l1": "Paso uno. En Chrome Web Store, haz clic en {add|Add to Chrome} y luego {pin^fíjalo} en la barra de herramientas. También funciona en Edge.",
+  "l2": "Paso dos. En Google AI Studio, {create^crea una clave de API gratuita} y {copy^cópiala}.",
+  "l3a": "Paso tres. Abre los {opens^ajustes} de Avorythm.",
+  "l3b": "{paste^Pega la clave} en {connect|Connect to Gemini} y pulsa {save|Save}. Se queda en tu navegador.",
+  "l3c": "Después, {tick^marca la casilla de consentimiento} para Google Gemini.",
+  "l4a": "Paso cuatro. En cualquier video, {icon^haz clic en el icono de Avorythm} y {pick^elige tu idioma}. Hay {n79^setenta y nueve}.",
+  "l4b": "{onpage|On this page} es el modo más rápido. El {sync|Synchronized recorder & player} añade pausa, avance y exportación.",
+  "l5": "Paso cinco. Pulsa {start|Start translating}, y {speaks^el video habla tu idioma}.",
+  "l6a": "Paso seis. Activa o desactiva cada salida: {o1^audio original}, {o2^audio doblado} y {o3^los dos subtítulos}.",
+  "l6b": "{card^Los subtítulos} aparecen en una tarjeta de cristal esmerilado. {drag^Arrástrala} adonde quieras y {resize^cambia su tamaño}.",
+  "l6c": "{balance^Equilibra el original y el doblaje}: la {duck^atenuación inteligente} baja el original mientras habla el doblaje.",
+  "l7a": "Paso siete. El reproductor sincronizado te deja {pause^pausar}, {seek^avanzar o retroceder} y {full^ver a pantalla completa}.",
+  "l7b": "Luego, {export^exporta} un video WebM con subtítulos SRT.",
+  "l8a": "Paso ocho. La app de escritorio traduce {any^cualquier programa}, en {os^Windows}, macOS y Linux.",
+  "l8b": "En {studio|File studio}, {drop^suelta un archivo} y llévate las cuatro salidas en {zip^un solo ZIP}.",
+  "l9": "Avorythm es {free^gratis y de código abierto}. Si te ayuda, {star^dale una estrella} en GitHub."
+ },
+ "text": {
+  "eyebrow": "Tutorial",
+  "introTitle": "Configura Avorythm en 8 pasos",
+  "introSub": "De la instalación a tu primer video doblado",
+  "step": "Paso {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Instala la extensión",
+   "Clave gratis de Gemini",
+   "Conecta y autoriza",
+   "Idioma y modo",
+   "Empieza a traducir",
+   "A tu manera",
+   "Reproductor sincronizado",
+   "App de escritorio"
+  ],
+  "takeaways": [
+   "Fijado, a un clic · también Edge",
+   "Gratis · Google AI Studio",
+   "Tu clave se queda en tu navegador",
+   "79 idiomas · 2 modos",
+   "Doblaje en vivo, en la misma página",
+   "4 salidas · mezclador · atenuación",
+   "Exporta WebM + SRT",
+   "Cualquier programa · cualquier archivo · un ZIP"
+  ],
+  "languages": "idiomas",
+  "fastest": "El más rápido",
+  "pauseSeekExport": "Pausa · avance · exportación",
+  "drag": "Arrastrar",
+  "resize": "Cambiar tamaño",
+  "ducking": "Atenuación inteligente",
+  "anyProgram": "Cualquier programa, en vivo",
+  "outroTitle": "Gratis y de código abierto",
+  "outroStar": "Estrella en GitHub",
+  "outroMit": "Licencia MIT",
+  "fileVideo": "Video personalizado",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "Cada nuevo camino empieza una nueva historia.",
+   "Escucha con atención. Las montañas están hablando."
+  ]
+ },
+ "say": {
+  "l4b": "On this page es el modo más rápido. El Synchronized recorder and player añade pausa, avance y exportación."
+ }
+}

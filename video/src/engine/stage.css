@@ -1,0 +1,33 @@
+@import url('/node_modules/@fontsource-variable/inter/index.css');
+@import url('/node_modules/@fontsource-variable/vazirmatn/index.css');
+@import url('/node_modules/@fontsource-variable/jetbrains-mono/index.css');
+@import url('/node_modules/@fontsource-variable/noto-sans-devanagari/index.css');
+@import url('/node_modules/@fontsource-variable/noto-sans-sc/index.css');
+@import url('/node_modules/@fontsource-variable/noto-sans-jp/index.css');
+
+:root{
+  --ink:#04061a;--navy:#07105a;--indigo:#0d1240;
+  --violet:#8f7cff;--violet-deep:#652afb;--cyan:#54dfda;--cyan-hot:#3ff9f9;
+  --text:#f6f8ff;--muted:#9aa4c0;--grey-violet:#8a86b4;
+  --font:"Inter Variable",Inter,system-ui,sans-serif;
+  --mono:"JetBrains Mono Variable",ui-monospace,monospace;
+  --tracking:-.035em;--lh:1.04;
+}
+html:lang(fa),html:lang(ar){--font:"Inter Variable","Vazirmatn Variable",Vazirmatn,sans-serif;--tracking:0;--lh:1.32}
+html:lang(hi){--font:"Inter Variable","Noto Sans Devanagari Variable",sans-serif;--tracking:0;--lh:1.28}
+html:lang(zh-Hans){--font:"Inter Variable","Noto Sans SC Variable",sans-serif;--tracking:-.01em;--lh:1.2}
+html:lang(ja){--font:"Inter Variable","Noto Sans JP Variable",sans-serif;--tracking:-.01em;--lh:1.24}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;overflow:hidden;width:100%;height:100%}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:var(--ink);font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage>canvas{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.layer{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+.render *{animation:none!important;transition:none!important}
+.scrub{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#111;color:#fff;font:14px sans-serif;z-index:10}
+.scrub input{flex:1}
+.scrub button{width:40px;height:32px}
+
+/* generic bits */
+.glass{background:linear-gradient(180deg,rgba(26,32,66,.62),rgba(10,14,36,.7));border:1px solid rgba(255,255,255,.14);border-radius:26px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08)}
+.grad-text{background:linear-gradient(100deg,#b4a8ff 0%,#7aeee8 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mono{font-family:var(--mono)}

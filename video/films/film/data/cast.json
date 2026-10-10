@@ -1,0 +1,129 @@
+{
+  "comment": "Voices of the brand film. Every role keeps one Gemini voice in every language (the dub keeps the speaker's voice, like the product). `originals` are spoken once in their own language and shared by all film versions. Roles whose language is the viewer's language are swapped (`alt`) or dropped from that version's crowd.",
+  "model": "gemini-3.8-live-extended-thinking",
+  "roles": {
+    "film": {
+      "voice": "Achernar",
+      "kind": "film",
+      "lang": "ja",
+      "alt": {
+        "zh": "ar",
+        "ja": "ar"
+      },
+      "style": "soft and intimate, almost whispered, very close to the microphone; tender, a little lonely and hopeful; unhurried, with a small breath before the last question",
+      "srcStyle": "soft and intimate, close to the microphone, tender and a little hopeful; natural conversational pace (not slow), only a short breath between the two sentences"
+    },
+    "lecture": {
+      "voice": "Sadaltager",
+      "kind": "lecture",
+      "lang": "de",
+      "alt": {
+        "de": "ru"
+      },
+      "style": "calm, warm university lecturer opening a class, clear and measured"
+    },
+    "podcast": {
+      "voice": "Laomedeia",
+      "kind": "podcast",
+      "lang": "es",
+      "alt": {
+        "es": "pt"
+      },
+      "style": "bright, upbeat podcast host greeting the listeners, smiling, quick"
+    },
+    "news": {
+      "voice": "Alnilam",
+      "kind": "news",
+      "lang": "ru",
+      "style": "serious, steady television news anchor"
+    },
+    "tutorial": {
+      "voice": "Achird",
+      "kind": "tutorial",
+      "lang": "hi",
+      "style": "friendly, enthusiastic tutorial teacher, quick"
+    },
+    "documentary": {
+      "voice": "Vindemiatrix",
+      "kind": "documentary",
+      "lang": "fr",
+      "alt": {
+        "fr": "ru"
+      },
+      "style": "hushed documentary narrator full of wonder, slow and gentle"
+    },
+    "stream": {
+      "voice": "Fenrir",
+      "kind": "stream",
+      "lang": "zh",
+      "style": "excited gamer shouting to his team during a livestream"
+    },
+    "talkshow": {
+      "voice": "Despina",
+      "kind": "talkshow",
+      "lang": "ar",
+      "style": "smooth, warm television presenter opening a show"
+    },
+    "cooking": {
+      "voice": "Callirrhoe",
+      "kind": "cooking",
+      "lang": "tr",
+      "style": "relaxed, cheerful cooking show host"
+    },
+    "football": {
+      "voice": "Sadachbia",
+      "kind": "football",
+      "lang": "pt",
+      "style": "ecstatic football commentator shouting a goal"
+    },
+    "talk": {
+      "voice": "Kore",
+      "kind": "talk",
+      "lang": "en",
+      "style": "confident speaker on a stage, warm, opening a talk"
+    }
+  },
+  "crowdOrder": [
+    "lecture",
+    "podcast",
+    "news",
+    "tutorial",
+    "documentary",
+    "stream",
+    "talkshow",
+    "cooking",
+    "football",
+    "talk"
+  ],
+  "originals": {
+    "film.ja": "ずっと、あなたに話しかけてたの。|……ねえ、わかる？",
+    "film.ar": "كنتُ أُحدّثُكَ طوالَ هذا الوقت…|هل تفهمني؟",
+    "lecture.de": "Heute sehen wir, wie neuronale Netze lernen.",
+    "lecture.ru": "Сегодня мы увидим, как учатся нейросети.",
+    "podcast.es": "¡Hola a todos, bienvenidos de nuevo!",
+    "podcast.pt": "Oi, gente, bem-vindos de volta!",
+    "news.ru": "Добрый вечер. Главные новости этого часа.",
+    "tutorial.hi": "आज मैं आपको सिखाऊँगा — सिर्फ़ पाँच मिनट में।",
+    "documentary.fr": "Au fond de l’océan, il n’y a aucune lumière.",
+    "documentary.ru": "В глубинах океана совсем нет света.",
+    "stream.zh": "兄弟们，这把我们一定能赢！",
+    "talkshow.ar": "أهلاً بكم في حلقة جديدة من برنامجنا.",
+    "cooking.tr": "Şimdi içine bir tutam tuz ekliyoruz.",
+    "football.pt": "É gol! Que golaço, minha gente!",
+    "talk.en": "Tonight, I want to tell you a story."
+  },
+  "nativeNames": {
+    "ja": "日本語",
+    "ar": "العربية",
+    "de": "Deutsch",
+    "ru": "Русский",
+    "es": "Español",
+    "pt": "Português",
+    "hi": "हिन्दी",
+    "fr": "Français",
+    "zh": "中文",
+    "tr": "Türkçe",
+    "en": "English",
+    "fa": "فارسی"
+  }
+}

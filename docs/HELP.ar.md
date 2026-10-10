@@ -19,7 +19,7 @@ Avorythm منتجان مستقلان: تطبيق سطح مكتب للبرامج 
 
 ## إضافة المتصفح
 
-ثبّت الإضافة من [Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmmoidamdaodjbhjje)، أو فعّل Developer mode في `chrome://extensions` واختر Load unpacked بعد فك الحزمة.
+ثبّت الإضافة من [Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje)، أو فعّل Developer mode في `chrome://extensions` واختر Load unpacked بعد فك الحزمة.
 
 في أول تشغيل افتح Settings وأدخل مفتاح Gemini ووافق صراحةً على إرسال صوت علامة التبويب المحددة إلى Google Gemini. اختر اللغة ثم أحد الوضعين:
 

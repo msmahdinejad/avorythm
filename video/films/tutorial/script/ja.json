@@ -1,0 +1,85 @@
+{
+ "lang": "ja",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "ja",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "Avorythm のセットアップを、八つのかんたんなステップでご紹介します。",
+  "l1": "ステップ一。Chrome Web Store で {add|Add to Chrome} をクリックし、ツールバーに{pin^ピン留めします}。Edge でも使えます。",
+  "l2": "ステップ二。Google AI Studio で{create^無料の API キーを作成し}、{copy^コピーします}。",
+  "l3a": "ステップ三。Avorythm の{opens^設定を開きます}。",
+  "l3b": "{paste^キーを} {connect|Connect to Gemini} に貼り付けて、{save|Save} を押します。キーはブラウザの中だけに保存されます。",
+  "l3c": "続いて、Google Gemini への{tick^同意にチェックを入れます}。",
+  "l4a": "ステップ四。好きな動画で {icon^Avorythm のアイコンをクリックし}、{pick^言語を選びます}。対応言語は{n79^七十九}です。",
+  "l4b": "{onpage|On this page} がいちばん速いモード。{sync|Synchronized recorder & player} なら、一時停止、シーク、書き出しもできます。",
+  "l5": "ステップ五。{start|Start translating} を押すと、{speaks^動画があなたの言語で話し始めます}。",
+  "l6a": "ステップ六。出力はひとつずつオン・オフできます。{o1^元の音声}、{o2^吹き替え}、そして{o3^二つの字幕}。",
+  "l6b": "{card^字幕は}すりガラス風のカードに表示されます。{drag^好きな場所へドラッグして}、{resize^サイズも変えられます}。",
+  "l6c": "{balance^元の音声と吹き替えのバランスを調整}。{duck^スマートダッキング}が、吹き替えの間は元の音声を下げてくれます。",
+  "l7a": "ステップ七。同期プレーヤーでは、{pause^一時停止}、{seek^シーク}、{full^全画面表示}ができます。",
+  "l7b": "そして、SRT 字幕付きの {export^WebM} 動画を書き出せます。",
+  "l8a": "ステップ八。デスクトップアプリは、{any^あらゆるプログラム}の音声を翻訳します。{os^Windows}、macOS、Linux に対応。",
+  "l8b": "{studio|File studio} に{drop^ファイルをドロップすれば}、四つの出力を{zip^一つの ZIP} で受け取れます。",
+  "l9": "Avorythm は{free^無料のオープンソース}です。役に立ったら、GitHub で{star^スターをお願いします}。"
+ },
+ "text": {
+  "eyebrow": "チュートリアル",
+  "introTitle": "8ステップで Avorythm をセットアップ",
+  "introSub": "インストールから、はじめての吹き替え動画まで",
+  "step": "ステップ {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "拡張機能をインストール",
+   "無料の Gemini キー",
+   "接続と同意",
+   "言語とモード",
+   "翻訳を開始",
+   "自分好みに",
+   "同期プレーヤー",
+   "デスクトップアプリ"
+  ],
+  "takeaways": [
+   "ピン留め完了、ワンクリックで · Edge でも",
+   "無料 · Google AI Studio",
+   "キーはブラウザの中だけに",
+   "79言語 · 2つのモード",
+   "ページ上でライブ吹き替え",
+   "4つの出力 · ミキサー · ダッキング",
+   "WebM + SRT を書き出し",
+   "どのプログラムも · どのファイルも · ZIP ひとつ"
+  ],
+  "languages": "言語",
+  "fastest": "最速",
+  "pauseSeekExport": "一時停止 · シーク · 書き出し",
+  "drag": "ドラッグ",
+  "resize": "サイズ変更",
+  "ducking": "スマートダッキング",
+  "anyProgram": "あらゆるプログラムをライブで",
+  "outroTitle": "無料のオープンソース",
+  "outroStar": "GitHub でスターを",
+  "outroMit": "MIT ライセンス",
+  "fileVideo": "カスタム動画",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "新しい道は、新しい物語の始まり。",
+   "耳を澄ませて。山が語りかけている。"
+  ]
+ },
+ "say": {
+  "l4b": "On this page がいちばん速いモード。Synchronized recorder and player なら、一時停止、シーク、書き出しもできます。",
+  "l6a": "ステップ六。しゅつりょくはひとつずつオン・オフできます。元の音声、吹き替え、そして二つの字幕。",
+  "l6c": "元の音声と吹き替えのバランスを調整。スマートダッキングが、吹き替えのあいだは、もとの音声を下げてくれます。"
+ }
+}

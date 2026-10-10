@@ -1,0 +1,83 @@
+{
+ "lang": "hi",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "hi",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "आइए, आठ आसान चरणों में Avorythm सेट अप करें।",
+  "l1": "पहला चरण। Chrome Web Store पर {add|Add to Chrome} पर क्लिक करें, फिर इसे टूलबार में {pin^पिन करें}। यह Edge में भी चलता है।",
+  "l2": "दूसरा चरण। Google AI Studio में {create^एक मुफ़्त API कुंजी बनाएँ} और {copy^उसे कॉपी करें}।",
+  "l3a": "तीसरा चरण। Avorythm की {opens^सेटिंग्स खोलें}।",
+  "l3b": "{paste^कुंजी को} {connect|Connect to Gemini} में चिपकाएँ और {save|Save} दबाएँ। यह आपके ब्राउज़र में ही रहती है।",
+  "l3c": "फिर Google Gemini के लिए {tick^सहमति वाले बॉक्स पर टिक करें}।",
+  "l4a": "चौथा चरण। किसी भी वीडियो पर {icon^Avorythm आइकन पर क्लिक करें} और {pick^अपनी भाषा चुनें}। कुल {n79^उन्यासी} भाषाएँ हैं।",
+  "l4b": "{onpage|On this page} सबसे तेज़ मोड है। {sync|Synchronized recorder & player} में रोकना, आगे-पीछे जाना और एक्सपोर्ट भी मिलता है।",
+  "l5": "पाँचवाँ चरण। {start|Start translating} दबाएँ, और {speaks^वीडियो आपकी भाषा में बोलने लगेगा}।",
+  "l6a": "छठा चरण। हर आउटपुट को अलग से चालू या बंद करें: {o1^मूल ऑडियो}, {o2^डब ऑडियो} और {o3^दोनों सबटाइटल}।",
+  "l6b": "{card^सबटाइटल} धुंधले काँच जैसे कार्ड पर दिखते हैं। {drag^इसे कहीं भी खिसकाएँ} और {resize^आकार बदलें}।",
+  "l6c": "{balance^मूल ऑडियो और डब का संतुलन बनाएँ}; {duck^स्मार्ट डकिंग} डब के बोलते समय मूल आवाज़ धीमी कर देती है।",
+  "l7a": "सातवाँ चरण। सिंक्रनाइज़ किए गए प्लेयर में आप {pause^रोक सकते हैं}, {seek^आगे-पीछे जा सकते हैं} और {full^फ़ुलस्क्रीन देख सकते हैं}।",
+  "l7b": "फिर SRT सबटाइटल के साथ {export^WebM} वीडियो एक्सपोर्ट करें।",
+  "l8a": "आठवाँ चरण। डेस्कटॉप ऐप {any^किसी भी प्रोग्राम} की आवाज़ का अनुवाद करता है, {os^Windows}, macOS और Linux पर।",
+  "l8b": "{studio|File studio} में {drop^कोई फ़ाइल डालें}, और चारों आउटपुट {zip^एक ZIP में} पाएँ।",
+  "l9": "Avorythm {free^मुफ़्त और ओपन सोर्स} है। अगर यह काम आए, तो GitHub पर {star^इसे एक स्टार दें}।"
+ },
+ "text": {
+  "eyebrow": "ट्यूटोरियल",
+  "introTitle": "8 चरणों में Avorythm सेट अप करें",
+  "introSub": "इंस्टॉल से लेकर पहले डब वीडियो तक",
+  "step": "चरण {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "एक्सटेंशन इंस्टॉल करें",
+   "मुफ़्त Gemini कुंजी",
+   "कनेक्ट करें, सहमति दें",
+   "भाषा और मोड",
+   "अनुवाद शुरू करें",
+   "अपने हिसाब से",
+   "सिंक्रनाइज़ प्लेयर",
+   "डेस्कटॉप ऐप"
+  ],
+  "takeaways": [
+   "पिन हो गया, बस एक क्लिक दूर · Edge में भी",
+   "मुफ़्त · Google AI Studio",
+   "कुंजी आपके ब्राउज़र में ही रहती है",
+   "79 भाषाएँ · 2 मोड",
+   "लाइव डब, उसी पेज पर",
+   "4 आउटपुट · मिक्सर · स्मार्ट डकिंग",
+   "WebM + SRT एक्सपोर्ट",
+   "कोई भी प्रोग्राम · कोई भी फ़ाइल · एक ZIP"
+  ],
+  "languages": "भाषाएँ",
+  "fastest": "सबसे तेज़",
+  "pauseSeekExport": "रोकें · आगे-पीछे · एक्सपोर्ट",
+  "drag": "खिसकाएँ",
+  "resize": "आकार बदलें",
+  "ducking": "स्मार्ट डकिंग",
+  "anyProgram": "कोई भी प्रोग्राम, लाइव",
+  "outroTitle": "मुफ़्त और ओपन सोर्स",
+  "outroStar": "GitHub पर स्टार दें",
+  "outroMit": "MIT लाइसेंस",
+  "fileVideo": "कस्टम वीडियो",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "हर नया रास्ता एक नई कहानी शुरू करता है।",
+   "ध्यान से सुनो। पहाड़ बोल रहे हैं।"
+  ]
+ },
+ "say": {
+  "l4b": "On this page सबसे तेज़ मोड है। Synchronized recorder and player में रोकना, आगे-पीछे जाना और एक्सपोर्ट भी मिलता है।"
+ }
+}

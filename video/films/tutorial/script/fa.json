@@ -1,0 +1,84 @@
+{
+ "lang": "fa",
+ "dir": "rtl",
+ "ui": "fa",
+ "target": "fa",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm Persian-speaking expert showing a friend; natural modern Tehran pronunciation, conversational but polished; a natural brisk pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis",
+  "pace": 0.072
+ },
+ "lines": {
+  "l0": "بیا Avorythm را در هشت قدمِ کوتاه راه بیندازیم.",
+  "l1": "قدم اول: در Chrome Web Store روی {add|افزودن به Chrome} بزن و آن را در نوار ابزار {pin^پین کن}. روی Edge هم کار می‌کند.",
+  "l2": "قدم دوم: در Google AI Studio {create^یک کلید API رایگان بساز} و {copy^کپی‌اش کن}.",
+  "l3a": "قدم سوم: تنظیمات Avorythm را {opens^باز کن}.",
+  "l3b": "{paste^کلید را} در {connect|اتصال به Gemini} بچسبان و {save|ذخیره} را بزن؛ فقط در مرورگرت می‌ماند.",
+  "l3c": "بعد {tick^تیک اجازهٔ ارسال به Google Gemini} را بزن.",
+  "l4a": "قدم چهارم: روی هر ویدیو {icon^آیکون Avorythm را بزن} و {pick^زبانت را انتخاب کن}؛ {n79^هفتاد و نه} زبان هست.",
+  "l4b": "{onpage|داخل همین صفحه} سریع‌ترین است؛ {sync|ضبط و پلیر هماهنگ} مکث، جابه‌جایی و خروجی هم دارد.",
+  "l5": "قدم پنجم: {start|شروع ترجمه} را بزن؛ حالا {speaks^ویدیو به زبان تو حرف می‌زند}.",
+  "l6a": "قدم ششم: هر خروجی را جدا روشن یا خاموش کن: {o1^صدای اصلی}، {o2^صدای دوبله} و {o3^هر دو زیرنویس}.",
+  "l6b": "{card^زیرنویس‌ها} روی یک کارت شیشه‌مات می‌آیند؛ {drag^جابه‌جایش کن} و {resize^اندازه‌اش را تغییر بده}.",
+  "l6c": "{balance^صدای اصلی و دوبله را میزان کن}؛ {duck^کاهش هوشمند} هنگام دوبله، صدای اصلی را کم می‌کند.",
+  "l7a": "قدم هفتم: پلیر هماهنگ امکان {pause^مکث}، {seek^جابه‌جایی} و {full^تمام‌صفحه} می‌دهد.",
+  "l7b": "بعد ویدیو را با فرمت {export^WebM} و زیرنویس SRT خروجی بگیر.",
+  "l8a": "قدم هشتم: اپ دسکتاپ صدای {any^هر برنامه‌ای} را ترجمه می‌کند؛ روی {os^Windows}، macOS و Linux.",
+  "l8b": "در {studio|استودیوی فایل} یک فایل {drop^رها کن} و هر چهار خروجی را در {zip^یک ZIP} بگیر.",
+  "l9": "Avorythm {free^رایگان و اوپن‌سورس} است. اگر به کارت آمد، در GitHub {star^به آن ستاره بده}."
+ },
+ "text": {
+  "eyebrow": "آموزش",
+  "introTitle": "Avorythm را در ۸ قدم راه بینداز",
+  "introSub": "از نصب تا اولین ویدیوی دوبله‌شده",
+  "step": "قدم {n}",
+  "of": "{n} از ۸",
+  "titles": [
+   "نصب اکستنشن",
+   "کلید رایگان Gemini",
+   "اتصال و اجازه",
+   "انتخاب زبان و حالت",
+   "شروع ترجمه",
+   "به سلیقهٔ خودت",
+   "پلیر هماهنگ",
+   "اپ دسکتاپ"
+  ],
+  "takeaways": [
+   "پین شد؛ یک کلیک فاصله · Edge هم",
+   "رایگان · Google AI Studio",
+   "کلیدت در مرورگر خودت می‌ماند",
+   "۷۹ زبان · ۲ حالت",
+   "دوبلهٔ زنده، روی همین صفحه",
+   "۴ خروجی · میکسر · کاهش هوشمند",
+   "خروجی WebM + SRT",
+   "هر برنامه · هر فایل · یک ZIP"
+  ],
+  "languages": "زبان",
+  "fastest": "سریع‌ترین",
+  "pauseSeekExport": "مکث · جابه‌جایی · خروجی",
+  "drag": "جابه‌جا کن",
+  "resize": "اندازه بده",
+  "ducking": "کاهش هوشمند",
+  "pause": "مکث",
+  "seek": "جابه‌جایی",
+  "fullscreen": "تمام‌صفحه",
+  "anyProgram": "هر برنامه، زنده",
+  "anyFile": "فایل صوتی و ویدیویی",
+  "outroTitle": "رایگان و اوپن‌سورس",
+  "outroStar": "ستاره در GitHub",
+  "outroMit": "مجوز MIT",
+  "copied": "Copied",
+  "fileVideo": "ویدیوی شخصی‌سازی‌شده"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "هر مسیر تازه، داستان تازه‌ای آغاز می‌کند.",
+   "با دقت گوش کن؛ کوه‌ها حرف می‌زنند."
+  ]
+ }
+}

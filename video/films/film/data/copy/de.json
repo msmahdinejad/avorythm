@@ -1,0 +1,60 @@
+{
+  "lang": "de",
+  "dir": "ltr",
+  "title": "Avorythm — Verstehst du mich jetzt?",
+  "say": {
+    "hero1": "Ich rede schon die ganze Zeit mit dir…",
+    "hero2": "Verstehst du mich jetzt?",
+    "dub_pod": "Hallo zusammen, willkommen zurück!",
+    "dub_doc": "In der Tiefe des Ozeans gibt es kein Licht.",
+    "dub_lec": "Heute sehen wir, wie neuronale Netze lernen.",
+    "tagline": "Jede Stimme in Ihrer Sprache."
+  },
+  "screen": {
+    "a": "So viele Stimmen.",
+    "b": "Und Sie {verstehen} keine davon.",
+    "drop1": "Jetzt spricht die ganze Welt",
+    "drop2": "{Ihre Sprache}.",
+    "browserH": "Live-Vertonung. Doppelte Untertitel.",
+    "browserS": "Für jedes Video in Chrome und Edge.",
+    "desktopH": "Auch auf dem Desktop.",
+    "desktopS": "Jede App. Jede Audio- und Videodatei.",
+    "langsN": "79",
+    "langsW": "Sprachen",
+    "free1": "Kostenlos.",
+    "free2": "Open Source.",
+    "freeS": "Keine Werbung, kein Tracking — Ihre Schlüssel gehören Ihnen.",
+    "tagline": "Jede Stimme in Ihrer Sprache.",
+    "cta": "Gratis zu Chrome hinzufügen",
+    "gh": "Open Source auf GitHub",
+    "desktopCta": "Desktop-App · Windows · macOS · Linux",
+    "dubbed": "Vertont · Deutsch",
+    "appOriginal": "Originalton",
+    "appTranslation": "Übersetzung"
+  },
+  "kinds": {
+    "film": "Film",
+    "lecture": "Vorlesung",
+    "podcast": "Podcast",
+    "news": "Nachrichten",
+    "tutorial": "Tutorial",
+    "documentary": "Doku",
+    "stream": "Livestream",
+    "talkshow": "Talkshow",
+    "cooking": "Kochen",
+    "football": "Fußball",
+    "talk": "Vortrag"
+  },
+  "cards": {
+    "lecture": "Heute sehen wir, wie neuronale Netze lernen.",
+    "podcast": "Hallo zusammen, willkommen zurück!",
+    "news": "Guten Abend. Die wichtigsten Nachrichten der Stunde.",
+    "tutorial": "Heute zeige ich es euch — in nur fünf Minuten.",
+    "documentary": "In der Tiefe des Ozeans gibt es kein Licht.",
+    "stream": "Leute, die Runde gewinnen wir!",
+    "talkshow": "Willkommen zu einer neuen Folge unserer Sendung.",
+    "cooking": "Jetzt geben wir eine Prise Salz dazu.",
+    "football": "Tor! Was für ein Tor, Leute!",
+    "talk": "Heute Abend möchte ich Ihnen eine Geschichte erzählen."
+  }
+}

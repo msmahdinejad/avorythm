@@ -1,0 +1,15 @@
+{
+  "comment": "Language names in their own scripts for the 79-languages roll (only scripts the film fonts cover). `lang` picks the font.",
+  "list": [
+    { "code": "it", "name": "Italiano", "lang": "en" }, { "code": "ja", "name": "日本語", "lang": "ja" }, { "code": "pl", "name": "Polski", "lang": "en" },
+    { "code": "ar", "name": "العربية", "lang": "ar" }, { "code": "vi", "name": "Tiếng Việt", "lang": "en" }, { "code": "de", "name": "Deutsch", "lang": "en" },
+    { "code": "hi", "name": "हिन्दी", "lang": "hi" }, { "code": "uk", "name": "Українська", "lang": "en" }, { "code": "es", "name": "Español", "lang": "en" },
+    { "code": "zh", "name": "中文", "lang": "zh" }, { "code": "el", "name": "Ελληνικά", "lang": "en" }, { "code": "tr", "name": "Türkçe", "lang": "en" },
+    { "code": "fa", "name": "فارسی", "lang": "fa" }, { "code": "id", "name": "Bahasa Indonesia", "lang": "en" }, { "code": "ru", "name": "Русский", "lang": "en" },
+    { "code": "sw", "name": "Kiswahili", "lang": "en" }, { "code": "ur", "name": "اردو", "lang": "fa" }, { "code": "fr", "name": "Français", "lang": "en" },
+    { "code": "nl", "name": "Nederlands", "lang": "en" }, { "code": "mr", "name": "मराठी", "lang": "hi" }, { "code": "pt", "name": "Português", "lang": "en" },
+    { "code": "sv", "name": "Svenska", "lang": "en" }, { "code": "kk", "name": "Қазақ тілі", "lang": "en" }, { "code": "ro", "name": "Română", "lang": "en" },
+    { "code": "bg", "name": "Български", "lang": "en" }, { "code": "cs", "name": "Čeština", "lang": "en" }, { "code": "fil", "name": "Filipino", "lang": "en" },
+    { "code": "en", "name": "English", "lang": "en" }
+  ]
+}

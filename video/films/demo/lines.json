@@ -1,0 +1,213 @@
+{
+ "comment": "The three sentences of the 'Coastlines' video inside the demo. 'src' is the original narration (Japanese; Korean for Japanese viewers), 'dub' the viewer's language. Spoken by Gemini 3.8 Live and shown in the subtitle card / player captions.",
+ "voice": "Charon",
+ "style": "a warm, calm travel-documentary narrator; unhurried, intimate and clear, like the voice-over of a beautiful coastal road film; natural pace, no long pauses",
+ "src": {
+  "ja": {
+   "name": "日本語",
+   "L1": "新しい道には、新しい物語がある。",
+   "L2": "この道は、海までずっと続いている。",
+   "L3": "耳を澄ませて。ここまで波の音が聞こえる。"
+  },
+  "ko": {
+   "name": "한국어",
+   "L1": "새로운 길에는 새로운 이야기가 있다.",
+   "L2": "이 길은 바다까지 계속 이어져 있다.",
+   "L3": "귀 기울여 봐. 여기까지 파도 소리가 들려."
+  }
+ },
+ "dub": {
+  "en": {
+   "L1": "Every new path tells a new story.",
+   "L2": "This road runs all the way to the sea.",
+   "L3": "Listen — you can hear the waves from here."
+  },
+  "fa": {
+   "L1": "هر مسیر تازه، داستان تازه‌ای دارد.",
+   "L2": "این جاده تا خود دریا ادامه دارد.",
+   "L3": "گوش کن؛ صدای موج‌ها تا اینجا می‌رسد."
+  },
+  "ru": {
+   "L1": "У каждой новой дороги — своя история.",
+   "L2": "Эта дорога ведёт до самого моря.",
+   "L3": "Послушайте — отсюда слышен шум волн."
+  },
+  "ar": {
+   "L1": "لكل طريق جديد حكاية جديدة.",
+   "L2": "هذا الطريق يمتد حتى البحر.",
+   "L3": "أنصِت، يمكنك سماع صوت الموج من هنا."
+  },
+  "zh": {
+   "L1": "每一条新路，都有一个新故事。",
+   "L2": "这条路一直通向大海。",
+   "L3": "听，从这里就能听见海浪声。"
+  },
+  "hi": {
+   "L1": "हर नया रास्ता एक नई कहानी कहता है।",
+   "L2": "यह सड़क सीधे समुद्र तक जाती है।",
+   "L3": "सुनिए, यहाँ से लहरों की आवाज़ आती है।"
+  },
+  "es": {
+   "L1": "Cada nuevo camino cuenta una historia.",
+   "L2": "Este camino llega hasta el mar.",
+   "L3": "Escucha: desde aquí se oyen las olas."
+  },
+  "pt": {
+   "L1": "Todo novo caminho conta uma nova história.",
+   "L2": "Esta estrada vai até o mar.",
+   "L3": "Escute: daqui dá para ouvir as ondas."
+  },
+  "fr": {
+   "L1": "Chaque nouveau chemin raconte une histoire.",
+   "L2": "Cette route mène jusqu’à la mer.",
+   "L3": "Écoutez : on entend les vagues d’ici."
+  },
+  "de": {
+   "L1": "Jeder neue Weg erzählt eine neue Geschichte.",
+   "L2": "Diese Straße führt bis ans Meer.",
+   "L3": "Hören Sie? Von hier hört man die Wellen."
+  },
+  "tr": {
+   "L1": "Her yeni yol, yeni bir hikâye anlatır.",
+   "L2": "Bu yol ta denize kadar uzanıyor.",
+   "L3": "Dinle; dalgaların sesi buraya kadar geliyor."
+  },
+  "ja": {
+   "L1": "新しい道には、新しい物語がある。",
+   "L2": "この道は、海までずっと続いている。",
+   "L3": "耳を澄ませて。ここまで波の音が聞こえる。"
+  }
+ },
+ "montage": [
+  [
+   "es",
+   "Español",
+   "Cada nuevo camino cuenta una historia."
+  ],
+  [
+   "fr",
+   "Français",
+   "Chaque nouveau chemin raconte une histoire."
+  ],
+  [
+   "hi",
+   "हिन्दी",
+   "हर नया रास्ता एक नई कहानी कहता है।"
+  ],
+  [
+   "de",
+   "Deutsch",
+   "Jeder neue Weg erzählt eine Geschichte."
+  ],
+  [
+   "ar",
+   "العربية",
+   "لكل طريق جديد حكاية جديدة."
+  ],
+  [
+   "zh-Hans",
+   "中文",
+   "每一条新路，都有一个新故事。"
+  ],
+  [
+   "ru",
+   "Русский",
+   "У каждой новой дороги — своя история."
+  ],
+  [
+   "pt-BR",
+   "Português",
+   "Todo novo caminho conta uma nova história."
+  ],
+  [
+   "tr",
+   "Türkçe",
+   "Her yeni yol, yeni bir hikâye anlatır."
+  ],
+  [
+   "ko",
+   "한국어",
+   "새로운 길에는 새로운 이야기가 있다."
+  ],
+  [
+   "fa",
+   "فارسی",
+   "هر مسیر تازه، داستان تازه‌ای دارد."
+  ],
+  [
+   "it",
+   "Italiano",
+   "Ogni nuova strada racconta una storia."
+  ],
+  [
+   "uk",
+   "Українська",
+   "Кожна нова дорога розповідає свою історію."
+  ],
+  [
+   "vi",
+   "Tiếng Việt",
+   "Mỗi con đường mới kể một câu chuyện mới."
+  ],
+  [
+   "ja",
+   "日本語",
+   "新しい道には、新しい物語がある。"
+  ],
+  [
+   "el",
+   "Ελληνικά",
+   "Κάθε νέος δρόμος λέει μια νέα ιστορία."
+  ],
+  [
+   "id",
+   "Indonesia",
+   "Setiap jalan baru menyimpan cerita baru."
+  ],
+  [
+   "pl",
+   "Polski",
+   "Każda nowa droga opowiada nową historię."
+  ],
+  [
+   "en",
+   "English",
+   "Every new path tells a new story."
+  ],
+  [
+   "nl",
+   "Nederlands",
+   "Elk nieuw pad vertelt een nieuw verhaal."
+  ],
+  [
+   "sv",
+   "Svenska",
+   "Varje ny väg berättar en ny historia."
+  ],
+  [
+   "ro",
+   "Română",
+   "Fiecare drum nou spune o poveste nouă."
+  ],
+  [
+   "cs",
+   "Čeština",
+   "Každá nová cesta vypráví nový příběh."
+  ],
+  [
+   "sw",
+   "Kiswahili",
+   "Kila njia mpya ina hadithi mpya."
+  ],
+  [
+   "hu",
+   "Magyar",
+   "Minden új út új történetet mesél."
+  ],
+  [
+   "da",
+   "Dansk",
+   "Hver ny vej fortæller en ny historie."
+  ]
+ ]
+}

@@ -1,0 +1,83 @@
+{
+ "lang": "ar",
+ "dir": "rtl",
+ "ui": "en",
+ "target": "ar",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "إليك كيف تُعِدّ Avorythm في ثماني خطوات سريعة.",
+  "l1": "الخطوة الأولى: في Chrome Web Store اضغط {add|Add to Chrome}، ثم {pin^ثبّته} في شريط الأدوات. ويعمل على Edge أيضًا.",
+  "l2": "الخطوة الثانية: في Google AI Studio {create^أنشئ مفتاح API مجانيًا} ثم {copy^انسخه}.",
+  "l3a": "الخطوة الثالثة: افتح {opens^إعدادات} Avorythm.",
+  "l3b": "{paste^الصق المفتاح} في {connect|Connect to Gemini} واضغط {save|Save}. يبقى المفتاح في متصفحك.",
+  "l3c": "ثم {tick^فعّل خانة الموافقة} الخاصة بـ Google Gemini.",
+  "l4a": "الخطوة الرابعة: على أي فيديو {icon^اضغط أيقونة Avorythm} ثم {pick^اختر لغتك}، فهناك {n79^تسع وسبعون} لغة.",
+  "l4b": "{onpage|On this page} هو الوضع الأسرع، أما {sync|Synchronized recorder & player} فيضيف الإيقاف المؤقت والتنقل والتصدير.",
+  "l5": "الخطوة الخامسة: اضغط {start|Start translating}، {speaks^فيتحدث الفيديو بلغتك}.",
+  "l6a": "الخطوة السادسة: شغّل كل مخرج أو أوقفه: {o1^الصوت الأصلي}، و{o2^صوت الدبلجة}، و{o3^الترجمتان النصيتان}.",
+  "l6b": "{card^تظهر الترجمة النصية} على بطاقة زجاجية. {drag^اسحبها} إلى أي مكان، و{resize^غيّر حجمها}.",
+  "l6c": "{balance^وازن بين الصوت الأصلي والدبلجة}؛ {duck^فالخفض الذكي} يُخفض الأصلي أثناء كلام الدبلجة.",
+  "l7a": "الخطوة السابعة: يتيح لك المشغّل المتزامن {pause^الإيقاف المؤقت}، و{seek^التنقل}، و{full^ملء الشاشة}.",
+  "l7b": "ثم {export^صدّر} فيديو WebM مع ترجمة SRT.",
+  "l8a": "الخطوة الثامنة: يترجم تطبيق سطح المكتب صوت {any^أي برنامج}، على {os^Windows} وmacOS وLinux.",
+  "l8b": "في {studio|File studio} {drop^أفلِت ملفًا}، واحصل على المخرجات الأربعة في {zip^ملف ZIP واحد}.",
+  "l9": "Avorythm {free^مجاني ومفتوح المصدر}. وإن أفادك، {star^امنحه نجمة} على GitHub."
+ },
+ "text": {
+  "eyebrow": "درس تعليمي",
+  "introTitle": "أعِدّ Avorythm في 8 خطوات",
+  "introSub": "من التثبيت إلى أول فيديو مدبلج",
+  "step": "الخطوة {n}",
+  "of": "{n} من 8",
+  "titles": [
+   "ثبّت الإضافة",
+   "مفتاح Gemini مجاني",
+   "الاتصال والموافقة",
+   "اللغة والوضع",
+   "ابدأ الترجمة",
+   "على ذوقك",
+   "المشغّل المتزامن",
+   "تطبيق سطح المكتب"
+  ],
+  "takeaways": [
+   "مثبّتة على بُعد نقرة · وتعمل على Edge",
+   "مجاني · Google AI Studio",
+   "مفتاحك يبقى في متصفحك",
+   "79 لغة · وضعان",
+   "دبلجة مباشرة على الصفحة نفسها",
+   "4 مخرجات · مازج · خفض ذكي",
+   "تصدير WebM + SRT",
+   "أي برنامج · أي ملف · ZIP واحد"
+  ],
+  "languages": "لغة",
+  "fastest": "الأسرع",
+  "pauseSeekExport": "إيقاف · تنقل · تصدير",
+  "drag": "اسحب",
+  "resize": "غيّر الحجم",
+  "ducking": "خفض ذكي",
+  "anyProgram": "أي برنامج، مباشرةً",
+  "outroTitle": "مجاني ومفتوح المصدر",
+  "outroStar": "نجمة على GitHub",
+  "outroMit": "رخصة MIT",
+  "fileVideo": "فيديو مخصّص",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "كل طريق جديد يبدأ قصة جديدة.",
+   "أنصت جيدًا. الجبال تتكلم."
+  ]
+ },
+ "say": {
+  "l4b": "On this page هو الوضع الأسرع، أما Synchronized recorder and player فيضيف الإيقاف المؤقت والتنقل والتصدير."
+ }
+}

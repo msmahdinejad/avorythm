@@ -1,0 +1,83 @@
+{
+ "lang": "ru",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "ru",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "Вот как настроить Avorythm за восемь быстрых шагов.",
+  "l1": "Шаг первый. В Chrome Web Store нажмите {add|Add to Chrome}, а затем {pin^закрепите значок} на панели инструментов. В Edge тоже работает.",
+  "l2": "Шаг второй. В Google AI Studio {create^создайте бесплатный ключ API} и {copy^скопируйте его}.",
+  "l3a": "Шаг третий. Откройте {opens^настройки} Avorythm.",
+  "l3b": "{paste^Вставьте ключ} в разделе {connect|Connect to Gemini} и нажмите {save|Save}. Он остаётся в вашем браузере.",
+  "l3c": "Затем {tick^отметьте согласие} для Google Gemini.",
+  "l4a": "Шаг четвёртый. На любом видео {icon^нажмите значок Avorythm} и {pick^выберите язык}. Их {n79^семьдесят девять}.",
+  "l4b": "{onpage|On this page} — самый быстрый режим. {sync|Synchronized recorder & player} добавляет паузу, перемотку и экспорт.",
+  "l5": "Шаг пятый. Нажмите {start|Start translating} — и {speaks^видео заговорит на вашем языке}.",
+  "l6a": "Шаг шестой. Включайте и отключайте каждый канал: {o1^оригинальный звук}, {o2^озвучку} и {o3^оба вида субтитров}.",
+  "l6b": "{card^Субтитры} появляются на карточке из матового стекла. {drag^Перетащите её} куда угодно и {resize^измените размер}.",
+  "l6c": "{balance^Настройте баланс оригинала и озвучки}: {duck^умное приглушение} делает оригинал тише, пока звучит озвучка.",
+  "l7a": "Шаг седьмой. В синхронизированном плеере можно {pause^поставить паузу}, {seek^перемотать} и {full^развернуть на весь экран}.",
+  "l7b": "Затем {export^экспортируйте} видео в WebM с субтитрами SRT.",
+  "l8a": "Шаг восьмой. Приложение для компьютера переводит звук {any^любой программы} — в {os^Windows}, macOS и Linux.",
+  "l8b": "В {studio|File studio} {drop^перетащите файл} и получите все четыре канала {zip^одним ZIP-архивом}.",
+  "l9": "Avorythm {free^бесплатный и с открытым кодом}. Если он вам помог, {star^поставьте звезду} на GitHub."
+ },
+ "text": {
+  "eyebrow": "Видеоурок",
+  "introTitle": "Настройка Avorythm за 8 шагов",
+  "introSub": "От установки до первого видео с озвучкой",
+  "step": "Шаг {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Установите расширение",
+   "Бесплатный ключ Gemini",
+   "Подключение и согласие",
+   "Язык и режим",
+   "Запуск перевода",
+   "Настройте под себя",
+   "Синхронизированный плеер",
+   "Приложение для компьютера"
+  ],
+  "takeaways": [
+   "Закреплено — в один клик · и в Edge",
+   "Бесплатно · Google AI Studio",
+   "Ключ остаётся в вашем браузере",
+   "79 языков · 2 режима",
+   "Озвучка вживую, прямо на странице",
+   "4 канала · микшер · приглушение",
+   "Экспорт WebM + SRT",
+   "Любая программа · любой файл · один ZIP"
+  ],
+  "languages": "языков",
+  "fastest": "Самый быстрый",
+  "pauseSeekExport": "Пауза · перемотка · экспорт",
+  "drag": "Перетащить",
+  "resize": "Изменить размер",
+  "ducking": "Умное приглушение",
+  "anyProgram": "Любая программа, вживую",
+  "outroTitle": "Бесплатно и с открытым кодом",
+  "outroStar": "Звезда на GitHub",
+  "outroMit": "Лицензия MIT",
+  "fileVideo": "Своё видео",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "Каждый новый путь начинает новую историю.",
+   "Прислушайся. Горы говорят."
+  ]
+ },
+ "say": {
+  "l4b": "On this page — самый быстрый режим. Synchronized recorder and player добавляет паузу, перемотку и экспорт."
+ }
+}

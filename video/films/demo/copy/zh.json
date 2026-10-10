@@ -1,0 +1,56 @@
+{
+ "lang": "zh",
+ "dir": "ltr",
+ "title": "Avorythm — 产品演示",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "任何视频，*都用你的语言。*",
+  "sub": "实时 AI 配音与双语字幕，就在你的浏览器里。"
+ },
+ "h2": {
+  "title": "选择语言，*点击开始。*",
+  "sub": "在 Chrome 或 Edge 中一键启用。"
+ },
+ "h3": {
+  "title": "听配音，*看双语。*",
+  "sub": "毛玻璃字幕卡片可以拖动、缩放，还能调节透明度。"
+ },
+ "h4": {
+  "num": "79",
+  "title": "种语言"
+ },
+ "h5": {
+  "title": "暂停、跳转，*始终同步。*",
+  "sub": "同步播放器提前录制，并可导出 WebM 和 SRT。"
+ },
+ "h6": {
+  "title": "四路输出，*由你混音。*",
+  "sub": "原声、配音和两种字幕各自独立开关，还能智能压低原声。"
+ },
+ "h7": {
+  "title": "任何应用，*任何文件。*",
+  "sub": "桌面应用支持 Windows、macOS 和 Linux。"
+ },
+ "h8": {
+  "words": [
+   "免费。",
+   "开源。",
+   "私密。"
+  ],
+  "sub": "使用你自己的免费 Gemini 密钥。无广告、无分析、无服务器。"
+ },
+ "end": {
+  "tagline": "用你的语言，听懂*每一种声音*。",
+  "cta": "免费添加到 Chrome",
+  "github": "GitHub",
+  "desktop": "桌面应用",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "原文",
+  "yours": "你的语言",
+  "languageName": "中文",
+  "dubbedLive": "实时配音"
+ }
+}

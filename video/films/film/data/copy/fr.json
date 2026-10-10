@@ -1,0 +1,60 @@
+{
+  "lang": "fr",
+  "dir": "ltr",
+  "title": "Avorythm — Tu me comprends, maintenant ?",
+  "say": {
+    "hero1": "Je te parle depuis tout ce temps…",
+    "hero2": "Tu me comprends, maintenant ?",
+    "dub_pod": "Salut tout le monde, bon retour !",
+    "dub_doc": "Au fond de l’océan, il n’y a aucune lumière.",
+    "dub_lec": "Aujourd’hui, on voit comment apprennent les réseaux de neurones.",
+    "tagline": "Écoutez chaque voix dans votre langue."
+  },
+  "screen": {
+    "a": "Tant de voix.",
+    "b": "Et vous n’en {comprenez} aucune.",
+    "drop1": "Désormais, le monde entier",
+    "drop2": "parle {votre langue}.",
+    "browserH": "Doublage en direct. Double sous-titrage.",
+    "browserS": "Pour toutes les vidéos dans Chrome et Edge.",
+    "desktopH": "Sur votre ordinateur aussi.",
+    "desktopS": "N’importe quelle app. N’importe quel fichier audio ou vidéo.",
+    "langsN": "79",
+    "langsW": "langues",
+    "free1": "Gratuit.",
+    "free2": "Open source.",
+    "freeS": "Sans pub ni pistage — vos clés restent chez vous.",
+    "tagline": "Écoutez chaque voix dans votre langue.",
+    "cta": "Ajouter à Chrome — gratuit",
+    "gh": "Open source sur GitHub",
+    "desktopCta": "App de bureau · Windows · macOS · Linux",
+    "dubbed": "Doublé · français",
+    "appOriginal": "Audio original",
+    "appTranslation": "Traduction"
+  },
+  "kinds": {
+    "film": "Film",
+    "lecture": "Cours",
+    "podcast": "Podcast",
+    "news": "Journal",
+    "tutorial": "Tutoriel",
+    "documentary": "Documentaire",
+    "stream": "Live",
+    "talkshow": "Talk-show",
+    "cooking": "Cuisine",
+    "football": "Football",
+    "talk": "Conférence"
+  },
+  "cards": {
+    "lecture": "Aujourd’hui, on voit comment apprennent les réseaux de neurones.",
+    "podcast": "Salut tout le monde, bon retour !",
+    "news": "Bonsoir. Voici les principaux titres de l’heure.",
+    "tutorial": "Aujourd’hui, je vous apprends — en cinq minutes chrono.",
+    "documentary": "Au fond de l’océan, il n’y a aucune lumière.",
+    "stream": "Les gars, celle-là, on la gagne !",
+    "talkshow": "Bienvenue dans un nouvel épisode de notre émission.",
+    "cooking": "Maintenant, on ajoute une pincée de sel.",
+    "football": "But ! Quel but, mes amis !",
+    "talk": "Ce soir, je veux vous raconter une histoire."
+  }
+}

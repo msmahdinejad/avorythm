@@ -1,0 +1,56 @@
+{
+ "lang": "ja",
+ "dir": "ltr",
+ "title": "Avorythm — 製品デモ",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "どんな動画も、*あなたの言葉で。*",
+  "sub": "AIによるリアルタイム吹き替えと二言語字幕を、ブラウザでそのまま。"
+ },
+ "h2": {
+  "title": "言語を選んで、*Startを押すだけ。*",
+  "sub": "ChromeでもEdgeでも、ワンクリック。"
+ },
+ "h3": {
+  "title": "吹き替えを聴いて、*二つの言語を読む。*",
+  "sub": "すりガラス風のカードは、移動もサイズ変更も透明度の調整も自在。"
+ },
+ "h4": {
+  "num": "79",
+  "title": "言語"
+ },
+ "h5": {
+  "title": "一時停止、シーク、*ずっと同期。*",
+  "sub": "同期プレーヤーは先行して録画し、WebMとSRTで書き出せます。"
+ },
+ "h6": {
+  "title": "4つの出力。*思いのままのミックス。*",
+  "sub": "元の音声、吹き替え、二つの字幕を個別にオン・オフ。スマートダッキングも。"
+ },
+ "h7": {
+  "title": "どのアプリも。*どのファイルも。*",
+  "sub": "Windows・macOS・Linux 対応のデスクトップアプリ。"
+ },
+ "h8": {
+  "words": [
+   "無料。",
+   "オープンソース。",
+   "プライベート。"
+  ],
+  "sub": "あなた自身の無料Geminiキーで。広告なし、分析なし、サーバーなし。"
+ },
+ "end": {
+  "tagline": "*あらゆる声*を、あなたの言葉で。",
+  "cta": "Chrome に無料で追加",
+  "github": "GitHub",
+  "desktop": "デスクトップアプリ",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "原文",
+  "yours": "あなたの言語",
+  "languageName": "日本語",
+  "dubbedLive": "リアルタイム吹き替え"
+ }
+}

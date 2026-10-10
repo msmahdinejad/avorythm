@@ -1,0 +1,451 @@
+{
+ "comment": "BASE timeline (English design, seconds local to each scene). fit.py re-times it per language from the measured narration: lines keep their anchor unless the previous line is still speaking; cues with 'at' land on that spoken anchor (+off real seconds); everything else is warped piecewise-linearly. Scene lengths are rounded up to whole beats.",
+ "fps": 60,
+ "bpm": 100,
+ "gap": 0.3,
+ "scenes": [
+  {
+   "id": "intro",
+   "dur": 5.4,
+   "tail": 0.5,
+   "lines": [
+    [
+     "l0",
+     1.1
+    ]
+   ],
+   "cues": {
+    "logo": 1.15,
+    "word": 1.45,
+    "title": 1.95,
+    "out": 4.55
+   }
+  },
+  {
+   "id": "install",
+   "dur": 10.2,
+   "tail": 1.0,
+   "lines": [
+    [
+     "l1",
+     0.45
+    ]
+   ],
+   "cues": {
+    "add": {
+     "t": 3.42,
+     "at": "add",
+     "off": 0.25
+    },
+    "ok": {
+     "t": 4.2
+    },
+    "puzzle": {
+     "t": 4.81,
+     "at": "pin",
+     "off": 0.3
+    },
+    "pin": {
+     "t": 5.51,
+     "at": "pin",
+     "off": 1.0
+    },
+    "take": {
+     "t": 6.6
+    },
+    "end": {
+     "t": 9.6
+    }
+   }
+  },
+  {
+   "id": "key",
+   "dur": 7.8,
+   "tail": 1.0,
+   "lines": [
+    [
+     "l2",
+     0.45
+    ]
+   ],
+   "cues": {
+    "create": {
+     "t": 3.08,
+     "at": "create",
+     "off": 0.35
+    },
+    "take": {
+     "t": 3.9
+    },
+    "copy": {
+     "t": 5.26,
+     "at": "copy",
+     "off": 0.25
+    },
+    "lift": {
+     "t": 5.85
+    },
+    "end": {
+     "t": 7.25
+    }
+   }
+  },
+  {
+   "id": "settings",
+   "dur": 13.2,
+   "tail": 0.9,
+   "lines": [
+    [
+     "l3a",
+     0.45
+    ],
+    [
+     "l3b",
+     3.75
+    ],
+    [
+     "l3c",
+     8.7
+    ]
+   ],
+   "cues": {
+    "icon": 1.9,
+    "opens": {
+     "t": 2.76,
+     "at": "opens",
+     "off": 0.15
+    },
+    "page": {
+     "t": 3.3
+    },
+    "paste": {
+     "t": 4.2,
+     "at": "paste",
+     "off": 0.45
+    },
+    "save": {
+     "t": 6.42,
+     "at": "save",
+     "off": 0.15
+    },
+    "take": {
+     "t": 7.25
+    },
+    "crane": {
+     "t": 8.1
+    },
+    "tick": {
+     "t": 9.421,
+     "at": "tick",
+     "off": 0.5
+    },
+    "end": {
+     "t": 12.6
+    }
+   }
+  },
+  {
+   "id": "lang",
+   "dur": 15.0,
+   "tail": 0.8,
+   "lines": [
+    [
+     "l4a",
+     0.45
+    ],
+    [
+     "l4b",
+     7.2
+    ]
+   ],
+   "cues": {
+    "icon": {
+     "t": 3.0,
+     "at": "icon",
+     "off": 0.45
+    },
+    "pick": {
+     "t": 4.71,
+     "at": "pick",
+     "off": 0.3
+    },
+    "choose": {
+     "t": 5.75
+    },
+    "n79": {
+     "t": 5.85,
+     "at": "n79",
+     "off": 0.0
+    },
+    "onpage": {
+     "t": 7.421,
+     "at": "onpage",
+     "off": 0.15
+    },
+    "sync": {
+     "t": 9.951,
+     "at": "sync",
+     "off": 0.2
+    },
+    "radio": {
+     "t": 12.4
+    },
+    "take": {
+     "t": 12.9
+    },
+    "end": {
+     "t": 14.6
+    }
+   }
+  },
+  {
+   "id": "start",
+   "dur": 6.6,
+   "tail": 1.0,
+   "lines": [
+    [
+     "l5",
+     0.45
+    ]
+   ],
+   "cues": {
+    "start": {
+     "t": 2.29,
+     "at": "start",
+     "off": 0.3
+    },
+    "live": {
+     "t": 2.65
+    },
+    "swing": {
+     "t": 3.1
+    },
+    "speaks": {
+     "t": 3.81,
+     "at": "speaks",
+     "off": 0.0
+    },
+    "take": {
+     "t": 4.4
+    },
+    "end": {
+     "t": 6.2
+    }
+   }
+  },
+  {
+   "id": "outputs",
+   "dur": 19.2,
+   "tail": 0.9,
+   "lines": [
+    [
+     "l6a",
+     0.45
+    ],
+    [
+     "l6b",
+     7.3
+    ],
+    [
+     "l6c",
+     12.55
+    ]
+   ],
+   "cues": {
+    "o1": {
+     "t": 3.57,
+     "at": "o1",
+     "off": 0.2
+    },
+    "o2": {
+     "t": 4.75,
+     "at": "o2",
+     "off": 0.2
+    },
+    "o3": {
+     "t": 5.94,
+     "at": "o3",
+     "off": 0.15
+    },
+    "o4": {
+     "t": 6.4
+    },
+    "card": {
+     "t": 7.45
+    },
+    "drag": {
+     "t": 10.105,
+     "at": "drag",
+     "off": 0.15
+    },
+    "dragEnd": {
+     "t": 10.9
+    },
+    "resize": {
+     "t": 11.575,
+     "at": "resize",
+     "off": 0.1
+    },
+    "resizeEnd": {
+     "t": 12.3
+    },
+    "balance": {
+     "t": 13.01,
+     "at": "balance",
+     "off": 0.35
+    },
+    "balanceEnd": {
+     "t": 14.0
+    },
+    "duck": {
+     "t": 15.02,
+     "at": "duck",
+     "off": 0.1
+    },
+    "take": {
+     "t": 16.2
+    },
+    "end": {
+     "t": 18.8
+    }
+   }
+  },
+  {
+   "id": "player",
+   "dur": 11.4,
+   "tail": 0.9,
+   "lines": [
+    [
+     "l7a",
+     0.45
+    ],
+    [
+     "l7b",
+     5.6
+    ]
+   ],
+   "cues": {
+    "pause": {
+     "t": 2.99,
+     "at": "pause",
+     "off": 0.1
+    },
+    "seek": {
+     "t": 3.52,
+     "at": "seek",
+     "off": 0.05
+    },
+    "seekEnd": {
+     "t": 4.15
+    },
+    "full": {
+     "t": 4.51,
+     "at": "full",
+     "off": 0.3
+    },
+    "fullEnd": {
+     "t": 5.5
+    },
+    "build": {
+     "t": 6.483,
+     "at": "export",
+     "off": 0.6
+    },
+    "files": {
+     "t": 6.9
+    },
+    "take": {
+     "t": 7.6
+    },
+    "end": {
+     "t": 11.0
+    },
+    "complete": {
+     "t": 5.83
+    }
+   }
+  },
+  {
+   "id": "desktop",
+   "dur": 13.2,
+   "tail": 0.9,
+   "lines": [
+    [
+     "l8a",
+     0.5
+    ],
+    [
+     "l8b",
+     6.6
+    ]
+   ],
+   "cues": {
+    "lid": 0.6,
+    "any": {
+     "t": 2.72,
+     "at": "any",
+     "off": 0.0
+    },
+    "os": {
+     "t": 4.06,
+     "at": "os",
+     "off": 0.0
+    },
+    "studio": {
+     "t": 6.76,
+     "at": "studio",
+     "off": 0.0
+    },
+    "drop": {
+     "t": 8.17,
+     "at": "drop",
+     "off": 0.45
+    },
+    "ready": {
+     "t": 10.4
+    },
+    "zip": {
+     "t": 11.26,
+     "at": "zip",
+     "off": 0.2
+    },
+    "take": {
+     "t": 11.6
+    },
+    "end": {
+     "t": 12.8
+    }
+   }
+  },
+  {
+   "id": "outro",
+   "dur": 7.8,
+   "tail": 1.6,
+   "lines": [
+    [
+     "l9",
+     0.5
+    ]
+   ],
+   "cues": {
+    "logo": 0.5,
+    "free": {
+     "t": 1.32,
+     "at": "free",
+     "off": 0.0
+    },
+    "star": {
+     "t": 4.45,
+     "at": "star",
+     "off": 0.35
+    },
+    "url": {
+     "t": 4.95
+    },
+    "end": {
+     "t": 7.8
+    }
+   }
+  }
+ ]
+}

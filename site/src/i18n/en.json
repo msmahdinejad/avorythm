@@ -1,0 +1,477 @@
+{
+  "meta": {
+    "title": "Avorythm — Live AI dubbing & subtitles for any video",
+    "description": "Hear every voice in your language. Avorythm dubs and subtitles any video live in Chrome and on your desktop. 79 languages, bilingual captions, free and open source.",
+    "ogTitle": "Hear every voice in your language — Avorythm",
+    "ogDescription": "Live AI dubbing and bilingual subtitles for any video. Free, open source and private by design.",
+    "imageAlt": "Avorythm: live AI dubbing and bilingual subtitles in your browser"
+  },
+  "a11y": {
+    "skip": "Skip to content",
+    "home": "Avorythm — home",
+    "menu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "theme": "Switch between light and dark theme",
+    "primaryNav": "Primary",
+    "up": "Back to top",
+    "newTab": "(opens in a new tab)"
+  },
+  "nav": {
+    "features": "Features",
+    "how": "How it works",
+    "videos": "Videos",
+    "guide": "Guide",
+    "download": "Download",
+    "faq": "FAQ"
+  },
+  "header": {
+    "star": "Star",
+    "starAria": "Star Avorythm on GitHub",
+    "get": "Get started"
+  },
+  "hero": {
+    "badge": "Free & open source",
+    "title": "Hear <em>every voice</em> in your language.",
+    "lead": "Live AI dubbing and bilingual subtitles for any video — in your browser, on your desktop or from a file. Understand courses, films, podcasts and streams in the language you think in.",
+    "ctaChrome": "Add to Chrome — it’s free",
+    "ctaDesktop": "Download desktop app",
+    "ctaFilm": "Watch the film",
+    "trustNoTracking": "No ads, no analytics",
+    "trustKeys": "Your keys stay with you",
+    "trustLangs": "79 target languages",
+    "trustPlatforms": "Chrome · Edge · Windows · macOS · Linux"
+  },
+  "demo": {
+    "label": "Interactive demo",
+    "url": "lecture.example.com/neural-networks",
+    "original": "Original",
+    "dubbed": "Dubbed",
+    "chips": "Translate into",
+    "hint": "Tap a language and watch the voice switch.",
+    "soundOn": "Sound on",
+    "soundOff": "Sound off",
+    "replay": "Replay",
+    "waiting": "Waiting for audio…",
+    "spokenIn": "Speaking {language}"
+  },
+  "uses": {
+    "label": "Made for",
+    "items": [
+      "Online courses",
+      "Films & series",
+      "Podcasts",
+      "Lectures",
+      "Livestreams",
+      "Documentaries",
+      "Audio & video files"
+    ]
+  },
+  "features": {
+    "eyebrow": "Features",
+    "title": "Everything you need to understand any video",
+    "lead": "Dub it, caption it, mix it, export it — every piece works on its own.",
+    "dubbing": {
+      "title": "Live dubbing",
+      "text": "Hear any video spoken in your language while it plays. Natural AI voices keep up with the speaker."
+    },
+    "captions": {
+      "title": "Dual subtitles",
+      "text": "Original and translated captions side by side, on a frosted-glass card you can drag, resize and fade."
+    },
+    "outputs": {
+      "title": "Four independent outputs",
+      "text": "Original audio, dubbed audio, source subtitles, translated subtitles — switch each one on or off.",
+      "labels": [
+        "Original audio",
+        "Dubbed audio",
+        "Source subtitles",
+        "Translated subtitles"
+      ]
+    },
+    "mixer": {
+      "title": "A mixer you control",
+      "text": "Balance the original against the dub, with smart ducking that lowers the original while the dub speaks.",
+      "original": "Original",
+      "dub": "Dub"
+    },
+    "sync": {
+      "title": "Synchronized player",
+      "text": "Capture runs ahead while an independent player pauses, seeks and goes fullscreen. Export WebM and SRT.",
+      "ahead": "+20 s ahead"
+    },
+    "desktop": {
+      "title": "Desktop app & files",
+      "text": "Translate any program’s audio live, or drop in an audio or video file and get a synced player, subtitles and a ZIP."
+    },
+    "languages": {
+      "title": "79 languages",
+      "text": "Choose your target language from the full Gemini set — the most popular ones come first."
+    },
+    "private": {
+      "title": "Private by design",
+      "text": "No analytics, no ads, no relay servers. Audio goes straight to the AI provider you choose."
+    },
+    "open": {
+      "title": "Free & open source",
+      "text": "MIT-licensed. Bring your own free API keys, read every line, make it yours."
+    }
+  },
+  "how": {
+    "eyebrow": "How it works",
+    "title": "From install to dubbed in three steps",
+    "steps": [
+      {
+        "title": "Install & add your key",
+        "text": "Add Avorythm to Chrome or Edge, paste a free Gemini API key from Google AI Studio and give consent."
+      },
+      {
+        "title": "Choose language & mode",
+        "text": "Pick your target language, then watch right on the page for the lowest delay or in the synchronized player for steady sync."
+      },
+      {
+        "title": "Press “Start translating”",
+        "text": "Hear the dub and read both captions in real time. Mix, move, pause and export whenever you like."
+      }
+    ]
+  },
+  "videos": {
+    "eyebrow": "Watch",
+    "title": "See it in action",
+    "lead": "A short film, a product demo and a step-by-step tutorial — in your language.",
+    "film": "The film",
+    "demo": "Product demo",
+    "tutorial": "Tutorial",
+    "filmText": "Intro · {duration}",
+    "demoText": "Product tour · {duration}",
+    "tutorialText": "Step by step · {duration}",
+    "watchIn": "Watch in",
+    "transcript": "Read the transcript",
+    "download": "Download video",
+    "share": "Share",
+    "play": "Play video",
+    "soon": "This video is coming soon.",
+    "english": "Showing the English video."
+  },
+  "products": {
+    "eyebrow": "Two ways to use it",
+    "title": "In your browser or on your desktop",
+    "lead": "The extension and the desktop app are independent — use either one, or both.",
+    "extension": {
+      "tag": "Browser extension",
+      "title": "Translate any tab",
+      "text": "Add it to Chrome or Edge and dub the video you’re watching. It stands alone — no desktop app, Python, FFmpeg or virtual audio cable.",
+      "bullets": [
+        "“On this page”: the lowest-delay path",
+        "Synchronized player: seek, fullscreen, export WebM + SRT",
+        "Movable frosted-glass subtitles"
+      ],
+      "cta": "Add to Chrome"
+    },
+    "desktop": {
+      "tag": "Desktop app",
+      "title": "Translate anything you hear",
+      "text": "Dub audio from any desktop program, or drop in an audio or video file and get a synchronized player, subtitles and a ZIP of every output.",
+      "bullets": [
+        "Live translation of any program’s audio",
+        "File Studio for audio and video up to 8 GB",
+        "Windows, macOS and Linux"
+      ],
+      "cta": "Download"
+    }
+  },
+  "guide": {
+    "eyebrow": "Tutorial",
+    "title": "Up and running in minutes",
+    "lead": "Follow along here, or watch the tutorial video above.",
+    "tabs": {
+      "extension": "Browser extension",
+      "desktop": "Desktop app",
+      "files": "Audio & video files"
+    },
+    "extension": [
+      {
+        "title": "Install the extension",
+        "text": "Add Avorythm from the Chrome Web Store and pin it to your toolbar. In Edge, use the same listing — or load the ZIP from the release page."
+      },
+      {
+        "title": "Add your free Gemini key",
+        "text": "Create a key in Google AI Studio, then open Avorythm → Settings → “Connect to Gemini”, paste it and press Save. Finally tick the consent box so audio can be sent to Google Gemini — nothing is captured before you press Start."
+      },
+      {
+        "title": "Choose language and mode",
+        "text": "Open the popup and pick a target language, then “On this page” (lowest delay) or “Synchronized recorder & player” (steady sync, seeking and export)."
+      },
+      {
+        "title": "Press Start on any video",
+        "text": "Open a normal video tab and press Start translating. Hear the dub, read both captions and drag the glass card wherever you like."
+      },
+      {
+        "title": "Make it yours",
+        "text": "Switch the four outputs on or off, balance the original against the dub, and set the subtitle size and opacity in Settings."
+      }
+    ],
+    "desktop": [
+      {
+        "title": "Download the installer",
+        "text": "Get the build for your system from Releases. The Windows installer already includes FFmpeg."
+      },
+      {
+        "title": "Add your keys",
+        "text": "Open Advanced settings and save a Gemini key (plus a Groq key for file processing). Keys live in your operating system’s keyring."
+      },
+      {
+        "title": "Route the audio",
+        "text": "To translate another program live, send its sound to a loopback device — AMM Virtual Audio on Windows, BlackHole on macOS, a monitor source on Linux — and pick it as the app’s audio input."
+      },
+      {
+        "title": "Press Start translation",
+        "text": "Choose your language and output mix, then press Start translation. Keep the listening output on your real headphones."
+      }
+    ],
+    "files": [
+      {
+        "title": "Open File Studio",
+        "text": "In the desktop app, open File Studio and drop in an audio or video file (up to 8 GB)."
+      },
+      {
+        "title": "Pick language, voice and mode",
+        "text": "Choose the target language and a voice. “Precise” gives tighter sync; “Fast” finishes sooner."
+      },
+      {
+        "title": "Start processing",
+        "text": "Leave Avorythm running while it transcribes, translates, narrates and aligns your file."
+      },
+      {
+        "title": "Play or download",
+        "text": "Watch in the synchronized player, or download original.wav, dubbed.wav, source.srt and translated.srt — or everything as one ZIP."
+      }
+    ],
+    "copy": "Copy",
+    "copied": "Copied",
+    "fullGuide": "Full user guide",
+    "installGuide": "Installation & audio setup",
+    "step": "Step {n}"
+  },
+  "languages": {
+    "eyebrow": "Languages",
+    "title": "79 languages, one click",
+    "lead": "Pick your target language from the full Gemini set — popular ones first, from Arabic and Chinese to Swahili and Zulu.",
+    "more": "…and 54 more",
+    "ui": "The interface is available in English, Persian and Simplified Chinese; dubbing and captions work in all 79 languages."
+  },
+  "privacy": {
+    "eyebrow": "Privacy",
+    "title": "Private by design",
+    "lead": "Avorythm is built so that nobody — including us — sits between you and your media.",
+    "items": [
+      {
+        "title": "No analytics, ads or telemetry",
+        "text": "There is no tracking code in the app, the extension or this website."
+      },
+      {
+        "title": "Your keys, your device",
+        "text": "API keys stay in your browser session by default, or in your operating system’s keyring on desktop."
+      },
+      {
+        "title": "Straight to the AI provider",
+        "text": "Audio goes directly from your device to Google Gemini — and, in precise mode, short windows to Groq Whisper. Never to a server of ours."
+      },
+      {
+        "title": "Consent first",
+        "text": "Capture starts only after you give consent and press Start, and you can stop at any moment."
+      },
+      {
+        "title": "Open source (MIT)",
+        "text": "Every line is public. Read it, audit it, improve it."
+      }
+    ],
+    "diagram": {
+      "you": "Your device",
+      "provider": "AI provider",
+      "ours": "Avorythm servers",
+      "none": "none",
+      "audio": "audio"
+    },
+    "note": "Avorythm relies on preview AI services. Accuracy, voices, latency and quotas can change — double-check anything important.",
+    "policy": "Read the privacy policy"
+  },
+  "download": {
+    "eyebrow": "Download",
+    "title": "Get Avorythm",
+    "lead": "Free and open source. Choose your platform — you only need your own free Gemini API key.",
+    "recommended": "Recommended for your device",
+    "version": "Version {version}",
+    "chrome": {
+      "title": "Chrome & Edge",
+      "text": "Install from the Chrome Web Store. Edge users can add it from the same listing.",
+      "cta": "Add to Chrome"
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "64-bit installer with FFmpeg included.",
+      "cta": "Download installer",
+      "ctaZip": "Portable ZIP"
+    },
+    "mac": {
+      "title": "macOS",
+      "text": "Native builds for Apple Silicon and Intel.",
+      "ctaArm": "Apple Silicon",
+      "ctaIntel": "Intel"
+    },
+    "linux": {
+      "title": "Linux",
+      "text": "x64 build. Choose your PipeWire or PulseAudio monitor source in the app.",
+      "cta": "Download ZIP"
+    },
+    "zip": {
+      "title": "Extension ZIP",
+      "text": "Manual install for Chrome or Edge with Developer mode.",
+      "cta": "Download ZIP"
+    },
+    "unsigned": "The Windows installer is unsigned while code-signing approval is pending, so Windows may warn about an unrecognized publisher. Verify your download against SHA256SUMS.txt from the same release.",
+    "checksums": "SHA256SUMS",
+    "all": "All releases",
+    "changelog": "Changelog"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Good questions",
+    "items": [
+      {
+        "q": "Is Avorythm really free?",
+        "a": "Yes. The extension and the desktop app are free and open source (MIT). They use your own API keys: Google AI Studio offers a free Gemini tier, and Groq’s free tier powers Whisper for files. Provider limits and quotas apply and can change."
+      },
+      {
+        "q": "Do I need the desktop app to use the extension?",
+        "a": "No. The extension is fully standalone — no desktop app, Python, FFmpeg, localhost or virtual audio cable. The desktop app is for translating other programs’ audio and for processing files."
+      },
+      {
+        "q": "Which sites does it work on?",
+        "a": "Any normal web page that plays audio or video in Chrome or Edge 116+. DRM-protected streams and browser-internal pages (such as chrome://) can block capture; use the “On this page” mode when video capture isn’t possible."
+      },
+      {
+        "q": "How much delay is there?",
+        "a": "Live translation has to hear a phrase before it can speak it, so a small delay is unavoidable. “On this page” is the lowest-delay path. The synchronized player records ahead (20 seconds by default) so audio, video and captions stay on one timeline."
+      },
+      {
+        "q": "Is my audio private?",
+        "a": "Capture starts only after you give consent and press Start. Audio goes straight from your browser to Google Gemini — and, in precise mode, short windows to Groq Whisper — never to servers of ours. There are no ads, analytics or telemetry, and keys stay in your browser session unless you choose to remember them."
+      },
+      {
+        "q": "Which languages are supported?",
+        "a": "79 target languages, from English, Persian, Arabic and Chinese to Swahili and Zulu. The interface itself is in English, Persian and Simplified Chinese, with more planned."
+      },
+      {
+        "q": "How accurate is it?",
+        "a": "Avorythm uses preview AI services. Accuracy, voices, latency and quotas can change, and no AI translation is perfect — double-check anything important."
+      },
+      {
+        "q": "Does it work in Firefox or Safari?",
+        "a": "Not yet. Avorythm supports Chrome and Edge (Chromium 116 or newer). Edge users can install it from the Chrome Web Store listing; a dedicated Microsoft Edge Add-ons listing is on the roadmap."
+      },
+      {
+        "q": "Why is the Windows installer “unsigned”?",
+        "a": "A code-signing application with the SignPath Foundation is pending. Until it’s approved, Windows SmartScreen may show an unrecognized-publisher warning. Verify your download against SHA256SUMS.txt from the same release."
+      },
+      {
+        "q": "How can I help?",
+        "a": "Star the repository, share the videos, report bugs, suggest features or send a pull request — everything happens in the open on GitHub."
+      }
+    ]
+  },
+  "share": {
+    "eyebrow": "Spread the word",
+    "title": "Help more people hear the world",
+    "lead": "A star and a share are the best way to support an open-source project — it’s how other people find it.",
+    "star": {
+      "title": "Star Avorythm on GitHub",
+      "text": "It’s free, takes two seconds and helps more people discover the project.",
+      "cta": "Star on GitHub",
+      "stars": "stars",
+      "forks": "forks",
+      "modalTitle": "Star Avorythm in two clicks",
+      "modalStep1": "GitHub just opened in a new tab.",
+      "modalStep2": "Press <strong>★ Star</strong> at the top right of the page.",
+      "modalThanks": "Thank you — it really helps.",
+      "modalOpen": "Open GitHub again",
+      "modalClose": "Done"
+    },
+    "post": {
+      "title": "Share it — with the video",
+      "text": "Pick a video, tweak the message and post it where your people are.",
+      "video": "Video",
+      "message": "Your message",
+      "native": "Share…",
+      "nativeFile": "Share with video",
+      "networks": "Or post on",
+      "download": "Download video",
+      "copyText": "Copy message",
+      "copyLink": "Copy link",
+      "copied": "Copied!",
+      "tip": "Networks don’t accept video files from a web page, so download the video and attach it to your post — the link preview will show the poster.",
+      "qr": "Scan to open on your phone",
+      "preparing": "Preparing the video…",
+      "failed": "Sharing isn’t available here — download the video and post it manually."
+    },
+    "text": "Hear every voice in your language 🎧 Avorythm dubs and subtitles any video, live — free and open source.",
+    "hashtags": "#Avorythm #AI #Translation #OpenSource"
+  },
+  "client": {
+    "langSwitch": "This page is also available in {language}.",
+    "switch": "Switch",
+    "dismiss": "Dismiss",
+    "copied": "Copied",
+    "copyFailed": "Couldn’t copy — select the text and copy it manually.",
+    "starsLabel": "stars on GitHub",
+    "latest": "Latest release"
+  },
+  "footer": {
+    "tagline": "Hear every voice in your language.",
+    "product": "Product",
+    "resources": "Resources",
+    "project": "Project",
+    "links": {
+      "github": "GitHub",
+      "releases": "Releases",
+      "guide": "User guide",
+      "install": "Installation guide",
+      "privacy": "Privacy policy",
+      "security": "Security",
+      "contributing": "Contributing",
+      "changelog": "Changelog",
+      "license": "MIT license",
+      "issues": "Report an issue",
+      "support": "Support",
+      "roadmap": "Roadmap"
+    },
+    "legal": "Avorythm is an independent open-source project under the MIT license. It is not affiliated with Google, Groq or Chrome; Gemini, Chrome and Google AI Studio are trademarks of Google LLC.",
+    "made": "Made by {author} and contributors.",
+    "noTracking": "This website uses no cookies and no analytics."
+  },
+  "notFound": {
+    "title": "This page lost its voice",
+    "text": "The page you’re looking for doesn’t exist — but every other voice does.",
+    "home": "Back to the home page"
+  },
+  "ui": {
+    "tagline": "Translate this tab live",
+    "ready": "Ready to translate",
+    "connected": "Live translation is active",
+    "language": "Target language",
+    "playbackMode": "Playback",
+    "lowLatency": "On this page",
+    "lowLatencyHelp": "Fastest live audio and subtitle path",
+    "synchronized": "Synchronized recorder & player",
+    "connection": "Connect to Gemini",
+    "saveKey": "Save",
+    "consentTitle": "I allow audio from my selected tab to be sent to Google Gemini",
+    "start": "Start translating",
+    "stop": "Stop translation",
+    "yourOutput": "Selected output",
+    "originalAudio": "Original audio",
+    "dubbedAudio": "Dubbed audio",
+    "sourceSubtitles": "Source subtitles",
+    "translatedSubtitles": "Translated subtitles"
+  }
+}

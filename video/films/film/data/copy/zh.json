@@ -1,0 +1,60 @@
+{
+  "lang": "zh",
+  "dir": "ltr",
+  "title": "Avorythm — 现在，你听懂了吗？",
+  "say": {
+    "hero1": "这段时间，我一直在跟你说话……",
+    "hero2": "现在，你听懂了吗？",
+    "dub_pod": "大家好，欢迎回来！",
+    "dub_doc": "在深海里，没有一丝光。",
+    "dub_lec": "今天我们来看看，神经网络是怎么学习的。",
+    "tagline": "用你的语言，听懂每一种声音。"
+  },
+  "screen": {
+    "a": "这么多声音。",
+    "b": "却一句也{听不懂}。",
+    "drop1": "现在，整个世界",
+    "drop2": "都在说{你的语言}。",
+    "browserH": "实时配音，双语字幕。",
+    "browserS": "适用于 Chrome 和 Edge 中的任何视频。",
+    "desktopH": "电脑上也能用。",
+    "desktopS": "任何应用，任何音视频文件。",
+    "langsN": "79",
+    "langsW": "种语言",
+    "free1": "免费。",
+    "free2": "开源。",
+    "freeS": "无广告，不追踪——密钥由你自己保管。",
+    "tagline": "用你的语言，听懂每一种声音。",
+    "cta": "免费添加到 Chrome",
+    "gh": "在 GitHub 上开源",
+    "desktopCta": "桌面应用 · Windows · macOS · Linux",
+    "dubbed": "中文配音",
+    "appOriginal": "原始音频",
+    "appTranslation": "翻译"
+  },
+  "kinds": {
+    "film": "电影",
+    "lecture": "讲座",
+    "podcast": "播客",
+    "news": "新闻",
+    "tutorial": "教程",
+    "documentary": "纪录片",
+    "stream": "直播",
+    "talkshow": "访谈节目",
+    "cooking": "烹饪",
+    "football": "足球",
+    "talk": "演讲"
+  },
+  "cards": {
+    "lecture": "今天我们来看看，神经网络是怎么学习的。",
+    "podcast": "大家好，欢迎回来！",
+    "news": "晚上好，以下是本时段的重要新闻。",
+    "tutorial": "今天我来教你——只要五分钟。",
+    "documentary": "在深海里，没有一丝光。",
+    "stream": "兄弟们，这把我们一定能赢！",
+    "talkshow": "欢迎收看新一期节目。",
+    "cooking": "现在加入一小撮盐。",
+    "football": "进球了！太漂亮了，朋友们！",
+    "talk": "今晚，我想给大家讲一个故事。"
+  }
+}

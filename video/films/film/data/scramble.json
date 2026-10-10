@@ -1,0 +1,8 @@
+{
+  "comment": "The word 'understand' in many languages; headline B scrambles through them (minus the viewer's own) before it settles.",
+  "words": [
+    { "lang": "ja", "w": "わかる" }, { "lang": "de", "w": "verstehen" }, { "lang": "ru", "w": "понимать" }, { "lang": "hi", "w": "समझना" },
+    { "lang": "fa", "w": "فهمیدن" }, { "lang": "es", "w": "entender" }, { "lang": "zh", "w": "听懂" }, { "lang": "fr", "w": "comprendre" },
+    { "lang": "ar", "w": "يفهم" }, { "lang": "tr", "w": "anlamak" }, { "lang": "pt", "w": "compreender" }, { "lang": "en", "w": "understand" }
+  ]
+}

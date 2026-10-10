@@ -1,0 +1,15 @@
+{
+ "lang": "en",
+ "dir": "ltr",
+ "title": "Avorythm — product demo",
+ "h1": { "eyebrow": "Avorythm", "title": "Any video. *In your language.*", "sub": "Live AI dubbing and bilingual subtitles, right in your browser." },
+ "h2": { "title": "Pick a language. *Press Start.*", "sub": "One click, in Chrome or Edge." },
+ "h3": { "title": "Hear the dub. *Read both languages.*", "sub": "On a frosted-glass card you can drag, resize and fade." },
+ "h4": { "num": "79", "title": "languages" },
+ "h5": { "title": "Pause. Seek. *Stay in sync.*", "sub": "The synchronized player records ahead and exports WebM + SRT." },
+ "h6": { "title": "Four outputs. *Your mix.*", "sub": "Original audio, dub and both subtitles — each on or off, with smart ducking." },
+ "h7": { "title": "Any app. *Any file.*", "sub": "The desktop app for Windows, macOS and Linux." },
+ "h8": { "words": ["Free.", "Open source.", "Private."], "sub": "Your own free Gemini key. No ads, no analytics, no servers." },
+ "end": { "tagline": "Hear *every voice* in your language.", "cta": "Add to Chrome — it’s free", "github": "GitHub", "desktop": "Desktop app", "url": "msmahdinejad.github.io/avorythm", "platforms": "Chrome · Edge · Windows · macOS · Linux" },
+ "labels": { "original": "Original", "yours": "Your language", "languageName": "English", "dubbedLive": "dubbed live" }
+}
