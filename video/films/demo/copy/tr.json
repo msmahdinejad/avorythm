@@ -1,0 +1,56 @@
+{
+ "lang": "tr",
+ "dir": "ltr",
+ "title": "Avorythm — ürün tanıtımı",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "Her video. *Kendi dilinizde.*",
+  "sub": "Yapay zekâ ile canlı seslendirme ve iki dilli altyazı, doğrudan tarayıcınızda."
+ },
+ "h2": {
+  "title": "Dilinizi seçin. *Start’a basın.*",
+  "sub": "Chrome veya Edge’de tek tık."
+ },
+ "h3": {
+  "title": "Seslendirmeyi dinleyin. *İki dili birden okuyun.*",
+  "sub": "Sürükleyip boyutlandırabileceğiniz, saydamlığını ayarlayabileceğiniz buzlu cam bir kartta."
+ },
+ "h4": {
+  "num": "79",
+  "title": "dil"
+ },
+ "h5": {
+  "title": "Duraklat. Sar. *Hep senkron.*",
+  "sub": "Senkronize oynatıcı önceden kaydeder ve WebM + SRT olarak dışa aktarır."
+ },
+ "h6": {
+  "title": "Dört kanal. *Sizin miksiniz.*",
+  "sub": "Özgün ses, seslendirme ve iki altyazı, her biri ayrı ayrı; akıllı ses kısma ile."
+ },
+ "h7": {
+  "title": "Her uygulama. *Her dosya.*",
+  "sub": "Windows, macOS ve Linux için masaüstü uygulaması."
+ },
+ "h8": {
+  "words": [
+   "Ücretsiz.",
+   "Açık kaynak.",
+   "Gizli."
+  ],
+  "sub": "Kendi ücretsiz Gemini anahtarınız. Reklam yok, analiz yok, sunucu yok."
+ },
+ "end": {
+  "tagline": "*Her sesi* kendi dilinizde duyun.",
+  "cta": "Chrome’a ekle — ücretsiz",
+  "github": "GitHub",
+  "desktop": "Masaüstü uygulaması",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "Özgün",
+  "yours": "Sizin diliniz",
+  "languageName": "Türkçe",
+  "dubbedLive": "canlı seslendirme"
+ }
+}

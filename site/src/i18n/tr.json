@@ -1,0 +1,457 @@
+{
+  "meta": {
+    "title": "Avorythm — Her video için yapay zekâ ile canlı seslendirme ve altyazı",
+    "description": "Her sesi kendi dilinizde duyun. Avorythm videoları Chrome’da ve masaüstünde canlı seslendirir: iki dilli altyazı, bağımsız ses mikseri, 79 dil. Ücretsiz ve açık kaynak.",
+    "ogTitle": "Her sesi kendi dilinizde duyun — Avorythm",
+    "ogDescription": "Her video için yapay zekâ ile canlı seslendirme ve iki dilli altyazı. Ücretsiz, açık kaynak ve tasarım gereği gizli.",
+    "imageAlt": "Avorythm: tarayıcınızda yapay zekâ ile canlı seslendirme ve iki dilli altyazı"
+  },
+  "a11y": {
+    "skip": "İçeriğe geç",
+    "home": "Avorythm — ana sayfa",
+    "menu": "Menüyü aç",
+    "closeMenu": "Menüyü kapat",
+    "language": "Dil",
+    "theme": "Açık ve koyu tema arasında geçiş yap",
+    "primaryNav": "Ana gezinme",
+    "up": "Başa dön",
+    "newTab": "(yeni sekmede açılır)"
+  },
+  "nav": {
+    "features": "Özellikler",
+    "how": "Nasıl çalışır",
+    "videos": "Videolar",
+    "guide": "Rehber",
+    "download": "İndir",
+    "faq": "SSS"
+  },
+  "header": {
+    "star": "Yıldız",
+    "starAria": "Avorythm’e GitHub’da yıldız verin",
+    "get": "Başlayın"
+  },
+  "hero": {
+    "badge": "Ücretsiz ve açık kaynak",
+    "title": "<em>Her sesi</em> kendi dilinizde duyun.",
+    "lead": "Her video için yapay zekâ ile canlı seslendirme ve iki dilli altyazı — tarayıcıda, masaüstünde ya da bir dosya üzerinde. Kursları, filmleri, podcast’leri ve canlı yayınları düşündüğünüz dilde anlayın.",
+    "ctaChrome": "Chrome’a ekle — ücretsiz",
+    "ctaDesktop": "Masaüstü uygulamasını indir",
+    "ctaFilm": "Filmi izle",
+    "trustNoTracking": "Reklam yok, analiz yok",
+    "trustKeys": "Anahtarlarınız sizde kalır",
+    "trustLangs": "79 hedef dil",
+    "trustPlatforms": "Chrome · Edge · Windows · macOS · Linux"
+  },
+  "demo": {
+    "label": "Etkileşimli demo",
+    "url": "lecture.example.com/neural-networks",
+    "original": "Özgün",
+    "dubbed": "Seslendirilmiş",
+    "chips": "Şu dile çevir",
+    "hint": "Bir dile dokunun, sesin değiştiğini izleyin.",
+    "soundOn": "Ses açık",
+    "soundOff": "Ses kapalı",
+    "replay": "Yeniden oynat",
+    "waiting": "Ses bekleniyor…",
+    "spokenIn": "Konuşulan dil: {language}"
+  },
+  "uses": {
+    "label": "Şunlar için ideal",
+    "items": [
+      "Çevrimiçi kurslar",
+      "Filmler ve diziler",
+      "Podcast’ler",
+      "Dersler",
+      "Canlı yayınlar",
+      "Belgeseller",
+      "Ses ve video dosyaları"
+    ]
+  },
+  "features": {
+    "eyebrow": "Özellikler",
+    "title": "Her videoyu anlamak için ihtiyacınız olan her şey",
+    "lead": "Seslendirin, altyazı ekleyin, karıştırın, dışa aktarın — her parça kendi başına çalışır.",
+    "dubbing": {
+      "title": "Canlı seslendirme",
+      "text": "Her videoyu, oynarken kendi dilinizde dinleyin. Doğal yapay zekâ sesleri konuşmacıya ayak uydurur."
+    },
+    "captions": {
+      "title": "İki dilli altyazı",
+      "text": "Özgün ve çevrilmiş altyazılar yan yana, buzlu cam bir kartta. Kartı sürükleyebilir, yeniden boyutlandırabilir ve saydamlığını ayarlayabilirsiniz."
+    },
+    "outputs": {
+      "title": "Dört bağımsız kanal",
+      "text": "Özgün ses, seslendirilmiş ses, kaynak altyazıları, çevrilmiş altyazılar — her birini ayrı ayrı açıp kapatın.",
+      "labels": [
+        "Özgün ses",
+        "Seslendirilmiş ses",
+        "Kaynak altyazıları",
+        "Çevrilmiş altyazılar"
+      ]
+    },
+    "mixer": {
+      "title": "Kontrol sizde: ses mikseri",
+      "text": "Özgün ses ile seslendirme arasındaki dengeyi ayarlayın; akıllı kısma, seslendirme konuşurken özgün sesi otomatik olarak kısar.",
+      "original": "Özgün",
+      "dub": "Dublaj"
+    },
+    "sync": {
+      "title": "Senkronize oynatıcı",
+      "text": "Yakalama önceden ilerlerken bağımsız oynatıcı duraklatır, ileri veya geri sarar ve tam ekrana geçer. WebM ve SRT dışa aktarın.",
+      "ahead": "+20 sn önde"
+    },
+    "desktop": {
+      "title": "Masaüstü ve dosyalar",
+      "text": "Herhangi bir programın sesini canlı çevirin ya da bir ses veya video dosyası bırakın; senkronize oynatıcı, altyazılar ve bir ZIP elde edin."
+    },
+    "languages": {
+      "title": "79 dil",
+      "text": "Hedef dilinizi Gemini’nin tam listesinden seçin — en popüler olanlar başta gelir."
+    },
+    "private": {
+      "title": "Tasarım gereği gizli",
+      "text": "Analiz yok, reklam yok, aktarma sunucusu yok. Ses, seçtiğiniz yapay zekâ sağlayıcısına doğrudan gider."
+    },
+    "open": {
+      "title": "Ücretsiz ve açık kaynak",
+      "text": "MIT lisanslı. Kendi ücretsiz API anahtarlarınızı getirin, her satırı okuyun, projeyi kendinize göre şekillendirin."
+    }
+  },
+  "how": {
+    "eyebrow": "Nasıl çalışır",
+    "title": "Kurulumdan seslendirmeye üç adımda",
+    "steps": [
+      {
+        "title": "Kurun ve anahtarınızı ekleyin",
+        "text": "Avorythm’i Chrome’a veya Edge’e ekleyin, Google AI Studio’dan aldığınız ücretsiz Gemini API anahtarını yapıştırın ve izin verin."
+      },
+      {
+        "title": "Dil ve modu seçin",
+        "text": "Hedef dilinizi seçin; en düşük gecikme için doğrudan sayfada, istikrarlı senkron için senkronize oynatıcıda izleyin."
+      },
+      {
+        "title": "Çeviriyi başlatın",
+        "text": "Seslendirmeyi dinleyin, iki altyazıyı da gerçek zamanlı okuyun. Dilediğiniz zaman karıştırın, taşıyın, duraklatın ve dışa aktarın."
+      }
+    ]
+  },
+  "videos": {
+    "eyebrow": "İzleyin",
+    "title": "İş başında görün",
+    "lead": "Kısa bir film, bir ürün demosu ve adım adım bir eğitim — kendi dilinizde.",
+    "film": "Film",
+    "demo": "Demo",
+    "tutorial": "Eğitim",
+    "filmText": "Tanıtım · {duration}",
+    "demoText": "Ürün turu · {duration}",
+    "tutorialText": "Adım adım · {duration}",
+    "watchIn": "Video dili",
+    "transcript": "Metin dökümünü oku",
+    "download": "Videoyu indir",
+    "share": "Paylaş",
+    "play": "Videoyu oynat",
+    "soon": "Bu video yakında geliyor.",
+    "english": "İngilizce video gösteriliyor."
+  },
+  "products": {
+    "eyebrow": "Kullanmanın iki yolu",
+    "title": "Tarayıcınızda veya masaüstünüzde",
+    "lead": "Uzantı ve masaüstü uygulaması birbirinden bağımsızdır — birini ya da ikisini birden kullanın.",
+    "extension": {
+      "tag": "Tarayıcı uzantısı",
+      "title": "Her sekmeyi çevirin",
+      "text": "Chrome’a veya Edge’e ekleyin, izlediğiniz videoyu seslendirin. Tek başına çalışır — masaüstü uygulaması, Python, FFmpeg ya da sanal ses kablosu gerekmez.",
+      "bullets": [
+        "“On this page” (“Bu sayfada”): en düşük gecikmeli yol",
+        "Senkronize oynatıcı: sarma, tam ekran, WebM + SRT dışa aktarma",
+        "Sürüklenebilir buzlu cam altyazılar"
+      ],
+      "cta": "Chrome’a ekle"
+    },
+    "desktop": {
+      "tag": "Masaüstü uygulaması",
+      "title": "Duyduğunuz her şeyi çevirin",
+      "text": "Herhangi bir masaüstü programının sesini seslendirin ya da bir ses veya video dosyası bırakın; senkronize oynatıcı, altyazılar ve tüm çıktıları içeren bir ZIP alın.",
+      "bullets": [
+        "Herhangi bir programın sesinin canlı çevirisi",
+        "“File Studio” ile 8 GB’a kadar ses ve video",
+        "Windows, macOS ve Linux"
+      ],
+      "cta": "İndir"
+    }
+  },
+  "guide": {
+    "eyebrow": "Eğitim",
+    "title": "Dakikalar içinde hazır",
+    "lead": "Buradan adım adım ilerleyin ya da yukarıdaki eğitim videosunu izleyin.",
+    "tabs": {
+      "extension": "Tarayıcı uzantısı",
+      "desktop": "Masaüstü uygulaması",
+      "files": "Ses ve video dosyaları"
+    },
+    "extension": [
+      {
+        "title": "Uzantıyı kurun",
+        "text": "Avorythm’i Chrome Web Store’dan ekleyin ve araç çubuğuna sabitleyin. Edge’de aynı sayfayı kullanın — ya da sürüm sayfasındaki ZIP dosyasını yükleyin."
+      },
+      {
+        "title": "Ücretsiz Gemini anahtarı ekleyin",
+        "text": "Google AI Studio’da bir anahtar oluşturun, ardından Avorythm → “Settings” (“Ayarlar”) → “Connect to Gemini” (“Gemini’ye bağlan”) yolunu izleyin, anahtarı yapıştırıp “Save” (“Kaydet”) düğmesine basın. Son olarak, sesin Google Gemini’ye gönderilmesine izin veren kutuyu işaretleyin — siz başlatma düğmesine basana kadar hiçbir şey yakalanmaz."
+      },
+      {
+        "title": "Dil ve modu seçin",
+        "text": "Açılır pencerede bir hedef dil seçin, ardından “On this page” (“Bu sayfada”; en düşük gecikme) ya da “Synchronized recorder & player” (“Senkronize kaydedici ve oynatıcı”; istikrarlı senkron, sarma ve dışa aktarma) modunu seçin."
+      },
+      {
+        "title": "Herhangi bir videoda başlatın",
+        "text": "Normal bir video sekmesi açın ve “Start translating” (“Çeviriyi başlat”) düğmesine basın. Seslendirmeyi dinleyin, iki altyazıyı da okuyun ve cam kartı istediğiniz yere sürükleyin."
+      },
+      {
+        "title": "Size göre ayarlayın",
+        "text": "Dört kanalı açıp kapatın, özgün ses ile seslendirme arasındaki dengeyi ayarlayın; altyazı boyutunu ve saydamlığını “Settings” içinde belirleyin."
+      }
+    ],
+    "desktop": [
+      {
+        "title": "Yükleyiciyi indirin",
+        "text": "Sisteminize uygun sürümü “Releases” (“Sürümler”) sayfasından alın. Windows yükleyicisi FFmpeg’i zaten içerir."
+      },
+      {
+        "title": "Anahtarlarınızı ekleyin",
+        "text": "“Advanced settings” (“Gelişmiş ayarlar”) bölümünü açıp bir Gemini anahtarı kaydedin (dosya işleme için ayrıca bir Groq anahtarı). Anahtarlar işletim sisteminizin güvenli anahtar deposunda tutulur."
+      },
+      {
+        "title": "Sesi yönlendirin",
+        "text": "Başka bir programı canlı çevirmek için o programın sesini bir loopback (geri döngü) aygıtına yönlendirin — Windows’ta AMM Virtual Audio, macOS’ta BlackHole, Linux’ta bir monitör kaynağı — ve uygulamada ses girişi olarak seçin."
+      },
+      {
+        "title": "Çeviriyi başlatın",
+        "text": "Dilinizi ve çıkış karışımını seçin, ardından “Start translation” (“Çeviriyi başlat”) düğmesine basın. Dinleme çıkışını fiziksel kulaklığınızda bırakın."
+      }
+    ],
+    "files": [
+      {
+        "title": "“File Studio” bölümünü açın",
+        "text": "Masaüstü uygulamasında “File Studio” (“Dosya Stüdyosu”) bölümünü açın ve bir ses veya video dosyası bırakın (8 GB’a kadar)."
+      },
+      {
+        "title": "Dil, ses ve mod seçin",
+        "text": "Hedef dili ve bir ses seçin. “Precise” (“Hassas”) daha sıkı senkron sağlar; “Fast” (“Hızlı”) daha çabuk biter."
+      },
+      {
+        "title": "İşlemi başlatın",
+        "text": "Avorythm dosyanızı metne döküp çevirir, seslendirir ve hizalarken uygulamayı açık bırakın."
+      },
+      {
+        "title": "Oynatın veya indirin",
+        "text": "Senkronize oynatıcıda izleyin ya da original.wav, dubbed.wav, source.srt ve translated.srt dosyalarını indirin — ya da hepsini tek bir ZIP olarak alın."
+      }
+    ],
+    "copy": "Kopyala",
+    "copied": "Kopyalandı",
+    "fullGuide": "Tam kullanım kılavuzu",
+    "installGuide": "Kurulum ve ses ayarı",
+    "step": "Adım {n}"
+  },
+  "languages": {
+    "eyebrow": "Diller",
+    "title": "79 dil, tek tık",
+    "lead": "Hedef dilinizi Gemini’nin tam listesinden seçin — popüler olanlar başta; Arapça ve Çinceden Svahili ve Zulucaya kadar.",
+    "more": "…ve 54 dil daha",
+    "ui": "Arayüz İngilizce, Farsça ve Basitleştirilmiş Çince olarak sunulur; seslendirme ve altyazılar 79 dilin hepsinde çalışır."
+  },
+  "privacy": {
+    "eyebrow": "Gizlilik",
+    "title": "Tasarım gereği gizli",
+    "lead": "Avorythm, sizinle medyanız arasında kimsenin — biz dahil — durmayacağı şekilde tasarlandı.",
+    "items": [
+      {
+        "title": "Analiz, reklam veya telemetri yok",
+        "text": "Uygulamada, uzantıda ve bu web sitesinde hiçbir izleme kodu yoktur."
+      },
+      {
+        "title": "Anahtarlarınız, cihazınız",
+        "text": "API anahtarları varsayılan olarak tarayıcı oturumunuzda, masaüstünde ise işletim sisteminizin anahtar deposunda kalır."
+      },
+      {
+        "title": "Doğrudan yapay zekâ sağlayıcısına",
+        "text": "Ses, cihazınızdan doğrudan Google Gemini’ye — hassas modda ayrıca kısa ses parçaları hâlinde Groq Whisper’a — gider. Bizim hiçbir sunucumuza asla gitmez."
+      },
+      {
+        "title": "Önce izniniz",
+        "text": "Yakalama yalnızca siz izin verip başlattıktan sonra başlar ve istediğiniz an durdurabilirsiniz."
+      },
+      {
+        "title": "Açık kaynak (MIT)",
+        "text": "Her satır herkese açık. Okuyun, denetleyin, geliştirin."
+      }
+    ],
+    "diagram": {
+      "you": "Cihazınız",
+      "provider": "Yapay zekâ sağlayıcısı",
+      "ours": "Avorythm sunucuları",
+      "none": "yok",
+      "audio": "ses"
+    },
+    "note": "Avorythm, önizleme aşamasındaki yapay zekâ hizmetlerine dayanır. Doğruluk, sesler, gecikme ve kotalar değişebilir — önemli olan her şeyi iki kez kontrol edin.",
+    "policy": "Gizlilik politikasını okuyun"
+  },
+  "download": {
+    "eyebrow": "İndir",
+    "title": "Avorythm’i edinin",
+    "lead": "Ücretsiz ve açık kaynak. Platformunuzu seçin — tek ihtiyacınız kendi ücretsiz Gemini API anahtarınız.",
+    "recommended": "Cihazınız için önerilir",
+    "version": "Sürüm {version}",
+    "chrome": {
+      "title": "Chrome ve Edge",
+      "text": "Chrome Web Store’dan kurun. Edge kullanıcıları aynı sayfadan ekleyebilir.",
+      "cta": "Chrome’a ekle"
+    },
+    "windows": {
+      "title": "Windows",
+      "text": "64 bit yükleyici, FFmpeg dahil.",
+      "cta": "Yükleyiciyi indir",
+      "ctaZip": "Taşınabilir ZIP"
+    },
+    "mac": {
+      "title": "macOS",
+      "text": "Apple Silicon ve Intel için yerel sürümler.",
+      "ctaArm": "Apple Silicon",
+      "ctaIntel": "Intel"
+    },
+    "linux": {
+      "title": "Linux",
+      "text": "x64 sürümü. Uygulamada PipeWire veya PulseAudio monitör kaynağınızı seçin.",
+      "cta": "ZIP indir"
+    },
+    "zip": {
+      "title": "Uzantı ZIP dosyası",
+      "text": "Geliştirici modu ile Chrome veya Edge’e elle kurulum.",
+      "cta": "ZIP indir"
+    },
+    "unsigned": "Kod imzalama onayı beklendiği için Windows yükleyicisi şu anda imzasızdır; bu nedenle Windows tanınmayan bir yayıncı uyarısı verebilir. İndirdiğiniz dosyayı aynı sürümdeki SHA256SUMS.txt ile doğrulayın.",
+    "checksums": "SHA256SUMS",
+    "all": "Tüm sürümler",
+    "changelog": "Değişiklik günlüğü"
+  },
+  "faq": {
+    "eyebrow": "SSS",
+    "title": "Merak edilenler",
+    "items": [
+      {
+        "q": "Avorythm gerçekten ücretsiz mi?",
+        "a": "Evet. Uzantı da masaüstü uygulaması da ücretsiz ve açık kaynaklıdır (MIT). Kendi API anahtarlarınızı kullanırlar: Google AI Studio ücretsiz bir Gemini katmanı sunar, dosyalardaki Whisper ise Groq’un ücretsiz katmanıyla çalışır. Sağlayıcı sınırları ve kotaları geçerlidir ve değişebilir."
+      },
+      {
+        "q": "Uzantıyı kullanmak için masaüstü uygulaması gerekli mi?",
+        "a": "Hayır. Uzantı tamamen bağımsızdır — masaüstü uygulaması, Python, FFmpeg, localhost veya sanal ses kablosu gerekmez. Masaüstü uygulaması, başka programların sesini çevirmek ve dosyaları işlemek içindir."
+      },
+      {
+        "q": "Hangi sitelerde çalışır?",
+        "a": "Chrome veya Edge 116 ve üzeri sürümlerde ses ya da video oynatan her normal web sayfasında. DRM korumalı yayınlar ve tarayıcının dahili sayfaları (chrome:// gibi) yakalamayı engelleyebilir; video yakalanamadığında “On this page” (“Bu sayfada”) modunu kullanın."
+      },
+      {
+        "q": "Ne kadar gecikme olur?",
+        "a": "Canlı çeviri, bir cümleyi söyleyebilmek için önce onu duymak zorundadır; bu yüzden küçük bir gecikme kaçınılmazdır. “On this page” en düşük gecikmeli yoldur. Senkronize oynatıcı önceden kayıt yapar (varsayılan 20 saniye); böylece ses, video ve altyazılar aynı zaman çizelgesinde kalır."
+      },
+      {
+        "q": "Sesim gizli kalıyor mu?",
+        "a": "Yakalama yalnızca siz izin verip başlatma düğmesine bastıktan sonra başlar. Ses doğrudan tarayıcınızdan Google Gemini’ye — hassas modda ayrıca kısa ses parçaları hâlinde Groq Whisper’a — gider, bizim hiçbir sunucumuza gitmez. Reklam, analiz ya da telemetri yoktur; anahtarlar, hatırlamayı kendiniz seçmediğiniz sürece tarayıcı oturumunuzda kalır."
+      },
+      {
+        "q": "Hangi diller destekleniyor?",
+        "a": "İngilizce, Farsça, Arapça ve Çinceden Svahili ve Zulucaya kadar 79 hedef dil. Arayüzün kendisi İngilizce, Farsça ve Basitleştirilmiş Çince olarak sunuluyor; daha fazlası planlanıyor."
+      },
+      {
+        "q": "Ne kadar doğru?",
+        "a": "Avorythm, önizleme aşamasındaki yapay zekâ hizmetlerini kullanır. Doğruluk, sesler, gecikme ve kotalar değişebilir; hiçbir yapay zekâ çevirisi kusursuz değildir — önemli olan her şeyi iki kez kontrol edin."
+      },
+      {
+        "q": "Firefox veya Safari’de çalışır mı?",
+        "a": "Henüz değil. Avorythm, Chrome ve Edge’i (Chromium 116 veya üzeri) destekler. Edge kullanıcıları Chrome Web Store sayfasından kurabilir; ayrı bir Microsoft Edge Add-ons sayfası yol haritasında."
+      },
+      {
+        "q": "Windows yükleyicisi neden “imzasız”?",
+        "a": "SignPath Foundation ile yapılan bir kod imzalama başvurusu bekleniyor. Onaylanana kadar Windows SmartScreen tanınmayan yayıncı uyarısı gösterebilir. İndirdiğiniz dosyayı aynı sürümdeki SHA256SUMS.txt ile doğrulayın."
+      },
+      {
+        "q": "Nasıl yardımcı olabilirim?",
+        "a": "Depoya yıldız verin, videoları paylaşın, hataları bildirin, özellik önerin ya da pull request gönderin — her şey GitHub’da herkesin gözü önünde gerçekleşir."
+      }
+    ]
+  },
+  "share": {
+    "eyebrow": "Haberi yayın",
+    "title": "Daha çok kişi dünyayı duysun",
+    "lead": "Bir yıldız ve bir paylaşım, açık kaynaklı bir projeyi desteklemenin en iyi yoludur — başkaları projeyi böyle keşfeder.",
+    "star": {
+      "title": "Avorythm’e GitHub’da yıldız verin",
+      "text": "Ücretsiz, iki saniye sürer ve projenin daha çok kişi tarafından keşfedilmesine yardımcı olur.",
+      "cta": "GitHub’da yıldız ver",
+      "stars": "yıldız",
+      "forks": "fork",
+      "modalTitle": "Avorythm’e iki tıkla yıldız verin",
+      "modalStep1": "GitHub yeni bir sekmede açıldı.",
+      "modalStep2": "Sayfanın sağ üstündeki <strong>★ Star</strong> düğmesine basın.",
+      "modalThanks": "Teşekkürler — gerçekten çok yardımı oluyor.",
+      "modalOpen": "GitHub’ı yeniden aç",
+      "modalClose": "Tamam"
+    },
+    "post": {
+      "title": "Videoyla birlikte paylaşın",
+      "text": "Bir video seçin, mesajı düzenleyin ve çevrenizdeki insanların olduğu yerde paylaşın.",
+      "video": "Video",
+      "message": "Mesajınız",
+      "native": "Paylaş…",
+      "nativeFile": "Videoyla paylaş",
+      "networks": "Ya da sosyal ağlarda paylaşın",
+      "download": "Videoyu indir",
+      "copyText": "Mesajı kopyala",
+      "copyLink": "Bağlantıyı kopyala",
+      "copied": "Kopyalandı!",
+      "tip": "Sosyal ağlar bir web sayfasından video dosyası kabul etmez; bu yüzden videoyu indirip gönderinize ekleyin — bağlantı önizlemesinde kapak görseli görünür.",
+      "qr": "Telefonda açmak için tarayın",
+      "preparing": "Video hazırlanıyor…",
+      "failed": "Paylaşım burada kullanılamıyor — videoyu indirip elle paylaşın."
+    },
+    "text": "Her sesi kendi dilinizde duyun 🎧 Avorythm her videoyu canlı seslendirir, altyazısını da hazırlar — ücretsiz ve açık kaynak.",
+    "hashtags": "#Avorythm #AI #Çeviri #AçıkKaynak"
+  },
+  "client": {
+    "langSwitch": "Bu sayfa {language} dilinde de mevcut.",
+    "switch": "Değiştir",
+    "dismiss": "Kapat",
+    "copied": "Kopyalandı",
+    "copyFailed": "Kopyalanamadı — metni seçip elle kopyalayın.",
+    "starsLabel": "GitHub yıldızı",
+    "latest": "Son sürüm"
+  },
+  "footer": {
+    "tagline": "Her sesi kendi dilinizde duyun.",
+    "product": "Ürün",
+    "resources": "Kaynaklar",
+    "project": "Proje",
+    "links": {
+      "github": "GitHub",
+      "releases": "Sürümler",
+      "guide": "Kullanım kılavuzu",
+      "install": "Kurulum kılavuzu",
+      "privacy": "Gizlilik politikası",
+      "security": "Güvenlik",
+      "contributing": "Katkıda bulunun",
+      "changelog": "Değişiklik günlüğü",
+      "license": "MIT lisansı",
+      "issues": "Sorun bildirin",
+      "support": "Destek",
+      "roadmap": "Yol haritası"
+    },
+    "legal": "Avorythm, MIT lisansı altında bağımsız bir açık kaynak projesidir. Google, Groq veya Chrome ile bağlantılı değildir; Gemini, Chrome ve Google AI Studio, Google LLC’nin ticari markalarıdır.",
+    "made": "{author} ve katkıda bulunanlar tarafından yapıldı.",
+    "noTracking": "Bu web sitesi çerez ve analiz kullanmaz."
+  },
+  "notFound": {
+    "title": "Bu sayfanın sesi kayboldu",
+    "text": "Aradığınız sayfa yok — ama diğer tüm sesler var.",
+    "home": "Ana sayfaya dön"
+  }
+}

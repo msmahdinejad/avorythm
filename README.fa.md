@@ -13,6 +13,10 @@
 </p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/fa/"><img alt="سایت، ویدیوها و دموی زنده" src="https://img.shields.io/badge/%F0%9F%8C%90_%D8%B3%D8%A7%DB%8C%D8%AA%D8%8C_%D9%88%DB%8C%D8%AF%DB%8C%D9%88%D9%87%D8%A7_%D9%88_%D8%AF%D9%85%D9%88%DB%8C_%D8%B2%D9%86%D8%AF%D9%87-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-fa.png" alt="دوبلهٔ زنده با هوش مصنوعی، دو زیرنویس و پخش هماهنگ در Avorythm" width="100%">
 </p>
 
@@ -32,7 +36,8 @@
   <a href="README.fr.md">Français</a> ·
   <a href="README.it.md">Italiano</a> ·
   <a href="README.ru.md">Русский</a> ·
-  <a href="https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmmoidamdaodjbhjje">نصب اکستنشن از Chrome Web Store</a> ·
+  <a href="https://msmahdinejad.github.io/avorythm/fa/">سایت و ویدیوها</a> ·
+  <a href="https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje">نصب اکستنشن از Chrome Web Store</a> ·
   <a href="docs/HELP.fa.md">راهنمای کامل</a> ·
   <a href="docs/INSTALLATION.fa.md">نصب و تنظیم صدا</a> ·
   <a href="PRIVACY.md">حریم خصوصی</a> ·

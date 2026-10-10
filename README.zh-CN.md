@@ -4,6 +4,10 @@
 
 <p align="center"><strong>用自己的语言，听懂正在看的内容。</strong></p>
 
+<p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/zh/"><img alt="网站、视频与在线演示" src="https://img.shields.io/badge/%F0%9F%8C%90_%E7%BD%91%E7%AB%99%E3%80%81%E8%A7%86%E9%A2%91%E4%B8%8E%E5%9C%A8%E7%BA%BF%E6%BC%94%E7%A4%BA-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
 <p align="center"><img src="assets/branding/readme-cover-zh-CN.png" width="100%" alt="Avorythm 浏览器扩展与 AI 配音"></p>
 
 <p align="center">

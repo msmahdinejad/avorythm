@@ -1,0 +1,56 @@
+{
+ "lang": "es",
+ "dir": "ltr",
+ "title": "Avorythm — demo del producto",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "Cualquier video. *En tu idioma.*",
+  "sub": "Doblaje con IA en vivo y subtítulos bilingües, directo en tu navegador."
+ },
+ "h2": {
+  "title": "Elige tu idioma. *Pulsa Start.*",
+  "sub": "Un clic en Chrome o Edge."
+ },
+ "h3": {
+  "title": "Escucha el doblaje. *Lee ambos idiomas.*",
+  "sub": "En una tarjeta de cristal esmerilado que puedes arrastrar, redimensionar y atenuar."
+ },
+ "h4": {
+  "num": "79",
+  "title": "idiomas"
+ },
+ "h5": {
+  "title": "Pausa. Avanza. *Siempre sincronizado.*",
+  "sub": "El reproductor sincronizado graba por adelantado y exporta WebM + SRT."
+ },
+ "h6": {
+  "title": "Cuatro salidas. *Tu mezcla.*",
+  "sub": "Audio original, doblaje y ambos subtítulos, cada uno por separado, con atenuación inteligente."
+ },
+ "h7": {
+  "title": "Cualquier app. *Cualquier archivo.*",
+  "sub": "La app de escritorio para Windows, macOS y Linux."
+ },
+ "h8": {
+  "words": [
+   "Gratis.",
+   "Código abierto.",
+   "Privado."
+  ],
+  "sub": "Tu propia clave gratuita de Gemini. Sin anuncios, sin analítica, sin servidores."
+ },
+ "end": {
+  "tagline": "Escucha *cada voz* en tu idioma.",
+  "cta": "Instalar en Chrome — es gratis",
+  "github": "GitHub",
+  "desktop": "App de escritorio",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "Original",
+  "yours": "Tu idioma",
+  "languageName": "Español",
+  "dubbedLive": "doblaje en vivo"
+ }
+}

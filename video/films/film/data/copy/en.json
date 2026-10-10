@@ -1,0 +1,60 @@
+{
+  "lang": "en",
+  "dir": "ltr",
+  "title": "Avorythm — Do you understand me now?",
+  "say": {
+    "hero1": "I've been talking to you this whole time…",
+    "hero2": "Do you understand me now?",
+    "dub_pod": "Hey everyone, welcome back!",
+    "dub_doc": "In the deep ocean, there is no light.",
+    "dub_lec": "Today, we'll see how neural networks learn.",
+    "tagline": "Hear every voice in your language."
+  },
+  "screen": {
+    "a": "So many voices.",
+    "b": "Not one you {understand}.",
+    "drop1": "Now the whole world",
+    "drop2": "speaks {your language}.",
+    "browserH": "Live dubbing. Dual subtitles.",
+    "browserS": "For any video in Chrome and Edge.",
+    "desktopH": "On your desktop, too.",
+    "desktopS": "Any app. Any audio or video file.",
+    "langsN": "79",
+    "langsW": "languages",
+    "free1": "Free.",
+    "free2": "Open source.",
+    "freeS": "No ads, no tracking — your keys stay with you.",
+    "tagline": "Hear every voice in your language.",
+    "cta": "Add to Chrome — it’s free",
+    "gh": "Open source on GitHub",
+    "desktopCta": "Desktop app · Windows · macOS · Linux",
+    "dubbed": "Dubbed · English",
+    "appOriginal": "Original audio",
+    "appTranslation": "Translation"
+  },
+  "kinds": {
+    "film": "Film",
+    "lecture": "Lecture",
+    "podcast": "Podcast",
+    "news": "News",
+    "tutorial": "Tutorial",
+    "documentary": "Documentary",
+    "stream": "Livestream",
+    "talkshow": "Talk show",
+    "cooking": "Cooking",
+    "football": "Football",
+    "talk": "Talk"
+  },
+  "cards": {
+    "lecture": "Today, we'll see how neural networks learn.",
+    "podcast": "Hey everyone, welcome back!",
+    "news": "Good evening. Here are the top stories of the hour.",
+    "tutorial": "Today I'll teach you — in just five minutes.",
+    "documentary": "In the deep ocean, there is no light.",
+    "stream": "Guys, we're winning this one!",
+    "talkshow": "Welcome to a new episode of our show.",
+    "cooking": "Now we add a pinch of salt.",
+    "football": "Goal! What a goal, everyone!",
+    "talk": "Tonight, I want to tell you a story."
+  }
+}

@@ -9,6 +9,10 @@
 <p align="center">Перевод и озвучка звука в реальном времени, синхронизированные субтитры и обработка аудио- и видеофайлов.</p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/ru/"><img alt="Сайт, видео и живое демо" src="https://img.shields.io/badge/%F0%9F%8C%90_%D0%A1%D0%B0%D0%B9%D1%82%2C_%D0%B2%D0%B8%D0%B4%D0%B5%D0%BE_%D0%B8_%D0%B6%D0%B8%D0%B2%D0%BE%D0%B5_%D0%B4%D0%B5%D0%BC%D0%BE-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-ru.png" alt="Avorythm: живая ИИ-озвучка, двуязычные субтитры и синхронный просмотр" width="100%">
 </p>
 

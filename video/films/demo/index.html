@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Avorythm — product demo</title>
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/inter/index.css">
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/vazirmatn/index.css">
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/jetbrains-mono/index.css">
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/noto-sans-devanagari/index.css">
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/noto-sans-sc/index.css">
+<link rel="stylesheet" href="/node_modules/@fontsource-variable/noto-sans-jp/index.css">
+<link rel="stylesheet" href="film.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="mblur" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feGaussianBlur id="mblurG" stdDeviation="0 0" edgeMode="duplicate"/></filter>
+    <filter id="mblurL" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB"><feGaussianBlur id="mblurLG" stdDeviation="0 0"/></filter>
+    <linearGradient id="gBrand" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a493ff"/><stop offset="1" stop-color="#5ff3ee"/></linearGradient>
+  </defs>
+</svg>
+<div id="stage">
+  <canvas id="bg" width="1920" height="1080"></canvas>
+  <div id="world"><div id="rig"></div></div>
+  <div id="lapLayer"><div id="lapCam"></div></div>
+  <div id="spot"></div>
+  <div id="over"></div>
+  <div id="hud"></div>
+  <div id="endLayer"></div>
+  <div id="flash"></div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+  <div id="black"></div>
+</div>
+<script src="engine.js"></script>
+<script src="film.js"></script>
+</body>
+</html>

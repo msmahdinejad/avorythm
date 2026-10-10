@@ -12,6 +12,10 @@
 </p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/"><img alt="Website, videos and live demo" src="https://img.shields.io/badge/%F0%9F%8C%90_Website%2C_videos_and_live_demo-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-en.png" alt="Avorythm AI live dubbing, dual captions and synchronized playback" width="100%">
 </p>
 
@@ -31,6 +35,7 @@
   <a href="README.fr.md">Français</a> ·
   <a href="README.it.md">Italiano</a> ·
   <a href="README.ru.md">Русский</a> ·
+  <a href="https://msmahdinejad.github.io/avorythm/">Website &amp; videos</a> ·
   <a href="https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje">Install the Chrome extension</a> ·
   <a href="docs/HELP.md">User guide</a> ·
   <a href="docs/INSTALLATION.md">Installation</a> ·

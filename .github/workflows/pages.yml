@@ -1,0 +1,62 @@
+name: Pages
+
+# Builds the multilingual product site (site/) and publishes it to GitHub Pages.
+# The intro/tutorial videos are large binaries and live in a release asset (tag "site-media", file "site-video.zip"),
+# not in git; if that release does not exist yet the site is built without them and shows a "coming soon" note.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "extension/manifest.json"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Fetch the site videos (optional release asset)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download site-media --repo "$GITHUB_REPOSITORY" --pattern 'site-video.zip' --dir "$RUNNER_TEMP" 2>/dev/null; then
+            mkdir -p site/public/video
+            unzip -q -o "$RUNNER_TEMP/site-video.zip" -d site/public/video
+            echo "Videos added: $(find site/public/video -name '*.mp4' | wc -l)"
+          else
+            echo "No site-media release yet; building the site without videos."
+          fi
+      - name: Build the site
+        run: node site/build.mjs --strict
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

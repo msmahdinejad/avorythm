@@ -11,6 +11,10 @@
 </p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/ar/"><img alt="الموقع والفيديوهات والعرض الحي" src="https://img.shields.io/badge/%F0%9F%8C%90_%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9_%D9%88%D8%A7%D9%84%D9%81%D9%8A%D8%AF%D9%8A%D9%88%D9%87%D8%A7%D8%AA_%D9%88%D8%A7%D9%84%D8%B9%D8%B1%D8%B6_%D8%A7%D9%84%D8%AD%D9%8A-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-ar.png" alt="Avorythm: دبلجة مباشرة بالذكاء الاصطناعي وترجمة ثنائية وتشغيل متزامن" width="100%">
 </p>
 

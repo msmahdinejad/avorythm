@@ -1,0 +1,80 @@
+{
+ "lang": "zh",
+ "dir": "ltr",
+ "ui": "zh-Hans",
+ "target": "zh",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "下面用八个简单步骤，带你设置 Avorythm。",
+  "l1": "第一步：在 Chrome Web Store 点击{add|添加至 Chrome}，然后把它{pin^固定到工具栏}。Edge 也一样能用。",
+  "l2": "第二步：在 Google AI Studio {create^创建一个免费的 API 密钥}，然后{copy^复制下来}。",
+  "l3a": "第三步：{opens^打开} Avorythm 的设置。",
+  "l3b": "{paste^把密钥}粘贴到{connect|连接到 Gemini}，再点击{save|保存}。密钥只保存在你的浏览器里。",
+  "l3c": "接着，{tick^勾选}发送音频到 Google Gemini 的授权选项。",
+  "l4a": "第四步：在任意视频页面{icon^点击 Avorythm 图标}，{pick^选择你的语言}，一共有{n79^七十九}种。",
+  "l4b": "{onpage|在本页}速度最快；{sync|同步录制器与播放器}还能暂停、跳转和导出。",
+  "l5": "第五步：点击{start|开始翻译}，{speaks^视频就会说你的语言}。",
+  "l6a": "第六步：每一路输出都能单独开关：{o1^原始音频}、{o2^配音}，以及{o3^两种字幕}。",
+  "l6b": "{card^字幕}显示在一张毛玻璃卡片上，{drag^可以随意拖动}，{resize^也能调整大小}。",
+  "l6c": "{balance^调节原声和配音的比例}；{duck^智能压低原声}会在配音说话时自动降低原声。",
+  "l7a": "第七步：在同步播放器里，可以{pause^暂停}、{seek^跳转}，还能{full^全屏观看}。",
+  "l7b": "然后{export^导出}带 SRT 字幕的 WebM 视频。",
+  "l8a": "第八步：桌面应用可以翻译{any^任何程序}的声音，支持 {os^Windows}、macOS 和 Linux。",
+  "l8b": "在{studio|文件工作室}里{drop^拖入一个文件}，四路输出会打包成{zip^一个 ZIP}。",
+  "l9": "Avorythm {free^免费开源}。如果它帮到了你，请在 GitHub 上{star^给它一颗星}。"
+ },
+ "text": {
+  "eyebrow": "使用教程",
+  "introTitle": "8 步设置 Avorythm",
+  "introSub": "从安装到第一个配音视频",
+  "step": "第 {n} 步",
+  "of": "{n} / 8",
+  "titles": [
+   "安装扩展",
+   "免费的 Gemini 密钥",
+   "连接并授权",
+   "选择语言和模式",
+   "开始翻译",
+   "按你的喜好",
+   "同步播放器",
+   "桌面应用"
+  ],
+  "takeaways": [
+   "已固定，一键即达 · Edge 也行",
+   "免费 · Google AI Studio",
+   "密钥只留在你的浏览器里",
+   "79 种语言 · 2 种模式",
+   "页面上的实时配音",
+   "4 路输出 · 混音 · 智能压低",
+   "导出 WebM + SRT",
+   "任何程序 · 任何文件 · 一个 ZIP"
+  ],
+  "languages": "种语言",
+  "fastest": "最快",
+  "pauseSeekExport": "暂停 · 跳转 · 导出",
+  "drag": "拖动",
+  "resize": "调整大小",
+  "ducking": "智能压低原声",
+  "anyProgram": "任何程序，实时翻译",
+  "outroTitle": "免费且开源",
+  "outroStar": "在 GitHub 上点星",
+  "outroMit": "MIT 许可证",
+  "fileVideo": "定制视频",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "每一条新路，都开启一个新故事。",
+   "仔细听，群山在说话。"
+  ]
+ }
+}

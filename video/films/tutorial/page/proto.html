@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>proto</title>
+<style>
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#06071a}
+#stage{position:absolute;inset:0;perspective:2200px;overflow:hidden}
+.rig{position:absolute;left:0;top:0;transform-style:preserve-3d}
+.lbl{position:absolute;left:10px;top:10px;color:#fff;font:20px sans-serif;z-index:9}
+</style></head>
+<body><div id="stage"><div class="rig" id="r1"></div><div class="rig" id="r2"></div><div class="rig" id="r3"></div><div class="lbl" id="lbl"></div></div>
+<script src="lib.js"></script>
+<script>
+(async()=>{
+ V.ui=await V.getJSON('/src/data/ui.json');
+ const loc='en';
+ const p=await V.embedExt('popup',loc,{width:390,height:600,parent:document.getElementById('r1')});
+ p.doc.querySelector('#setupNotice').hidden=false;
+ const Z=2.4;
+ const p2=await V.embedExt('popup',loc,{width:390*Z,height:600*Z,parent:document.getElementById('r2'),css:`html{zoom:${Z}}`});
+ p2.doc.querySelector('#setupNotice').hidden=false;
+ const zw=document.createElement('div');zw.style.zoom='2.4';document.getElementById('r3').appendChild(zw);
+ const p3=await V.embedExt('popup',loc,{width:390,height:600,parent:zw});p3.doc.querySelector('#setupNotice').hidden=false;
+ const d=document.createElement('div');d.innerHTML='<div style="font:600 14px Inter, sans-serif;color:#fff;width:300px">DOM text: Open settings · Quick setup required</div>';zw.appendChild(d);
+ window.renderFrame=(t)=>{
+  const R=['r1','r2','r3'].map(i=>document.getElementById(i));
+  const mode=Math.floor(t);
+  R.forEach(r=>r.style.display='none');
+  const L=document.getElementById('lbl');
+  if(mode===0){R[0].style.display='block';R[0].style.transformOrigin='0 0';R[0].style.transform=`translate(300px,-200px) scale(2.4)`;L.textContent='iframe 2D scale 2.4';}
+  if(mode===1){R[0].style.display='block';R[0].style.transformOrigin='0 0';R[0].style.transform=`translate(300px,-200px) rotateY(-12deg) rotateX(6deg) scale(2.4)`;L.textContent='iframe 3D scale 2.4';}
+  if(mode===2){R[1].style.display='block';R[1].style.transformOrigin='0 0';R[1].style.transform=`translate(300px,-200px) rotateY(-12deg) rotateX(6deg) scale(1)`;L.textContent='iframe zoom 2.4 inside, 3D scale 1';}
+  if(mode===3){R[2].style.display='block';R[2].style.transformOrigin='0 0';R[2].style.transform=`translate(300px,-200px) rotateY(-12deg) rotateX(6deg) scale(1)`;L.textContent='zoom container 2.4 with iframe + DOM, 3D scale 1';}
+ };
+ window.__film={duration:4,fps:30};
+ renderFrame(0);window.__ready=true;
+})().catch(e=>{window.__err=String(e.stack||e)});
+</script></body></html>

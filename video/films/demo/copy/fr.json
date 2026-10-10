@@ -1,0 +1,56 @@
+{
+ "lang": "fr",
+ "dir": "ltr",
+ "title": "Avorythm — démo du produit",
+ "h1": {
+  "eyebrow": "Avorythm",
+  "title": "Toutes vos vidéos. *Dans votre langue.*",
+  "sub": "Doublage IA en direct et sous-titres bilingues, directement dans votre navigateur."
+ },
+ "h2": {
+  "title": "Choisissez une langue. *Cliquez sur Start.*",
+  "sub": "Un seul clic, dans Chrome ou Edge."
+ },
+ "h3": {
+  "title": "Écoutez le doublage. *Lisez les deux langues.*",
+  "sub": "Sur une carte en verre dépoli que vous pouvez déplacer, redimensionner et estomper."
+ },
+ "h4": {
+  "num": "79",
+  "title": "langues"
+ },
+ "h5": {
+  "title": "Pause. Recherche. *Toujours synchro.*",
+  "sub": "Le lecteur synchronisé enregistre en avance et exporte en WebM + SRT."
+ },
+ "h6": {
+  "title": "Quatre sorties. *Votre mix.*",
+  "sub": "Audio d’origine, doublage et les deux sous-titres, chacun à part, avec atténuation intelligente."
+ },
+ "h7": {
+  "title": "Toutes les apps. *Tous les fichiers.*",
+  "sub": "L’application de bureau pour Windows, macOS et Linux."
+ },
+ "h8": {
+  "words": [
+   "Gratuit.",
+   "Open source.",
+   "Privé."
+  ],
+  "sub": "Votre propre clé Gemini gratuite. Sans pub, sans outil d’analyse, sans serveur."
+ },
+ "end": {
+  "tagline": "Écoutez *chaque voix* dans votre langue.",
+  "cta": "Ajouter à Chrome — gratuit",
+  "github": "GitHub",
+  "desktop": "Application de bureau",
+  "url": "msmahdinejad.github.io/avorythm",
+  "platforms": "Chrome · Edge · Windows · macOS · Linux"
+ },
+ "labels": {
+  "original": "Original",
+  "yours": "Votre langue",
+  "languageName": "Français",
+  "dubbedLive": "doublage en direct"
+ }
+}

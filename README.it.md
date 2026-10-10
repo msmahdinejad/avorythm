@@ -9,6 +9,10 @@
 <p align="center">Traduzione e doppiaggio in tempo reale per browser e desktop, con elaborazione sincronizzata dei file audio e video.</p>
 
 <p align="center">
+  <a href="https://msmahdinejad.github.io/avorythm/"><img alt="Sito, video e demo dal vivo" src="https://img.shields.io/badge/%F0%9F%8C%90_Sito%2C_video_e_demo_dal_vivo-msmahdinejad.github.io%2Favorythm-652AFB?style=for-the-badge"></a>
+</p>
+
+<p align="center">
   <img src="assets/branding/readme-cover-it.png" alt="Avorythm: doppiaggio IA live, sottotitoli bilingui e riproduzione sincronizzata" width="100%">
 </p>
 

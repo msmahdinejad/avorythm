@@ -1,0 +1,83 @@
+{
+ "lang": "tr",
+ "dir": "ltr",
+ "ui": "en",
+ "target": "tr",
+ "voice": {
+  "name": "Sulafat",
+  "style": "warm, friendly and clear, like a calm expert showing a friend; natural native pronunciation; a natural, lightly brisk conversational pace, never rushed and never dragging; short natural pauses only (no long silences between sentences); a gentle smile in the voice; no dramatic emphasis; English product and button names in the text are pronounced in English",
+  "pace": 0.07
+ },
+ "lines": {
+  "l0": "Avorythm’i sekiz kısa adımda nasıl kuracağınıza bakalım.",
+  "l1": "Birinci adım. Chrome Web Store’da {add|Add to Chrome} düğmesine tıklayın, ardından {pin^araç çubuğuna sabitleyin}. Edge’de de çalışır.",
+  "l2": "İkinci adım. Google AI Studio’da {create^ücretsiz bir API anahtarı oluşturun} ve {copy^kopyalayın}.",
+  "l3a": "Üçüncü adım. Avorythm’in {opens^ayarlarını açın}.",
+  "l3b": "{paste^Anahtarı} {connect|Connect to Gemini} bölümüne yapıştırın ve {save|Save} düğmesine basın. Anahtar tarayıcınızda kalır.",
+  "l3c": "Ardından Google Gemini için {tick^onay kutusunu işaretleyin}.",
+  "l4a": "Dördüncü adım. Herhangi bir videoda {icon^Avorythm simgesine tıklayın} ve {pick^dilinizi seçin}. Tam {n79^yetmiş dokuz} dil var.",
+  "l4b": "{onpage|On this page} en hızlı moddur. {sync|Synchronized recorder & player} ise duraklatma, sarma ve dışa aktarma ekler.",
+  "l5": "Beşinci adım. {start|Start translating} düğmesine basın; {speaks^video artık sizin dilinizde konuşur}.",
+  "l6a": "Altıncı adım. Her çıkışı ayrı ayrı açıp kapatın: {o1^özgün ses}, {o2^seslendirme} ve {o3^iki altyazı}.",
+  "l6b": "{card^Altyazılar} buzlu cam bir kartta görünür. {drag^Kartı istediğiniz yere sürükleyin} ve {resize^boyutunu değiştirin}.",
+  "l6c": "{balance^Özgün ses ile seslendirmeyi dengeleyin}; {duck^akıllı kısma}, seslendirme konuşurken özgün sesi kısar.",
+  "l7a": "Yedinci adım. Senkronize oynatıcıda {pause^duraklatabilir}, {seek^ileri geri sarabilir} ve {full^tam ekrana geçebilirsiniz}.",
+  "l7b": "Sonra {export^WebM} videosunu SRT altyazılarıyla dışa aktarın.",
+  "l8a": "Sekizinci adım. Masaüstü uygulaması {any^her programın sesini} çevirir; {os^Windows}, macOS ve Linux’ta.",
+  "l8b": "{studio|File studio} bölümüne {drop^bir dosya bırakın} ve dört çıkışın hepsini {zip^tek bir ZIP} olarak alın.",
+  "l9": "Avorythm {free^ücretsiz ve açık kaynaklı}. İşinize yaradıysa GitHub’da {star^ona bir yıldız verin}."
+ },
+ "text": {
+  "eyebrow": "Eğitim",
+  "introTitle": "Avorythm’i 8 adımda kurun",
+  "introSub": "Kurulumdan ilk seslendirilmiş videonuza",
+  "step": "Adım {n}",
+  "of": "{n} / 8",
+  "titles": [
+   "Uzantıyı kurun",
+   "Ücretsiz Gemini anahtarı",
+   "Bağlanın ve onaylayın",
+   "Dil ve mod",
+   "Çeviriyi başlatın",
+   "Size göre",
+   "Senkronize oynatıcı",
+   "Masaüstü uygulaması"
+  ],
+  "takeaways": [
+   "Sabitlendi, bir tık uzakta · Edge de",
+   "Ücretsiz · Google AI Studio",
+   "Anahtarınız tarayıcınızda kalır",
+   "79 dil · 2 mod",
+   "Canlı seslendirme, aynı sayfada",
+   "4 çıkış · mikser · akıllı kısma",
+   "WebM + SRT dışa aktarın",
+   "Her program · her dosya · tek ZIP"
+  ],
+  "languages": "dil",
+  "fastest": "En hızlı",
+  "pauseSeekExport": "Duraklat · sar · dışa aktar",
+  "drag": "Sürükle",
+  "resize": "Boyutlandır",
+  "ducking": "Akıllı kısma",
+  "anyProgram": "Her program, canlı",
+  "outroTitle": "Ücretsiz ve açık kaynak",
+  "outroStar": "GitHub’da yıldız ver",
+  "outroMit": "MIT lisansı",
+  "fileVideo": "Özel video",
+  "copied": "Copied"
+ },
+ "demo": {
+  "sourceLang": "en",
+  "source": [
+   "Every new path begins a new story.",
+   "Listen closely. The mountains are speaking."
+  ],
+  "translated": [
+   "Her yeni yol, yeni bir hikâye başlatır.",
+   "Dikkatle dinle. Dağlar konuşuyor."
+  ]
+ },
+ "say": {
+  "l4b": "On this page en hızlı moddur. Synchronized recorder and player ise duraklatma, sarma ve dışa aktarma ekler."
+ }
+}
