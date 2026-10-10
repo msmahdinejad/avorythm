@@ -75,7 +75,7 @@ Avorythm دو محصول مستقل دارد. اپ دسکتاپ برای صدا�
 
 ### نصب
 
-نسخهٔ منتشرشده را از [Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmmoidamdaodjbhjje) نصب کن. برای نصب دستی هم می‌توانی `Avorythm-Extension.zip` را Extract کنی، به `chrome://extensions` بروی، **Developer mode** را روشن کنی، **Load unpacked** را بزنی و پوشهٔ Extractشده را انتخاب کنی. بهتر است Avorythm را Pin کنی.
+نسخهٔ منتشرشده را از [Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje) نصب کن. برای نصب دستی هم می‌توانی `Avorythm-Extension.zip` را Extract کنی، به `chrome://extensions` بروی، **Developer mode** را روشن کنی، **Load unpacked** را بزنی و پوشهٔ Extractشده را انتخاب کنی. بهتر است Avorythm را Pin کنی.
 
 ### راه‌اندازی اول — این مرحله اجباری است
 

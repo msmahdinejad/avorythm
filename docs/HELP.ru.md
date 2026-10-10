@@ -19,7 +19,7 @@ Avorythm состоит из двух независимых продуктов:
 
 ## Расширение браузера
 
-Установите [Avorythm из Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmmoidamdaodjbhjje) или включите Developer mode на `chrome://extensions` и выберите Load unpacked после распаковки ZIP.
+Установите [Avorythm из Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje) или включите Developer mode на `chrome://extensions` и выберите Load unpacked после распаковки ZIP.
 
 При первом запуске откройте Settings, введите ключ Gemini и явно подтвердите отправку аудио выбранной вкладки в Google Gemini. Выберите язык и режим:
 

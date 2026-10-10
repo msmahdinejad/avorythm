@@ -19,7 +19,7 @@ I quattro canali sono indipendenti: puoi combinare audio originale, doppiaggio, 
 
 ## Estensione
 
-Installa [Avorythm dal Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmmoidamdaodjbhjje), oppure abilita Developer mode in `chrome://extensions` e scegli Load unpacked dopo aver estratto lo ZIP.
+Installa [Avorythm dal Chrome Web Store](https://chromewebstore.google.com/detail/avorythm-live-translation/kbdbbedijheicmmnmoidamdaodjbhjje), oppure abilita Developer mode in `chrome://extensions` e scegli Load unpacked dopo aver estratto lo ZIP.
 
 Al primo avvio apri Settings, inserisci la chiave Gemini e conferma esplicitamente l’invio dell’audio della scheda selezionata a Google Gemini. Scegli una lingua e una modalità:
 
