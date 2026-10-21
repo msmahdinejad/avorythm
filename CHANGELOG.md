@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.19] - 2026-10-21
+
+### Added
+
+- Update notices: when Chrome has downloaded a new version the toolbar icon shows a badge and the popup offers **Update and restart**. After an update the popup shows what is new for 14 days. Updating is blocked while a translation is running or the synchronized player is open, so a recording or export is never interrupted. No new permission or network request is involved; Chrome's own update check is used.
+- Optional automated Chrome Web Store publishing: `scripts/publish-webstore.mjs` and a `webstore` job in the release workflow upload the extension ZIP and submit it for review with the Chrome Web Store API v2. Setup is in `docs/WEBSTORE_PUBLISHING.md`.
+
+### Tests
+
+- Cover update-state handling, the service-worker update messages, and the publish script against a mocked Web Store API.
+
 ## [1.1.18] - 2026-10-21
 
 ### Fixed
@@ -497,7 +508,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.18...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.19...HEAD
+[1.1.19]: https://github.com/msmahdinejad/avorythm/compare/v1.1.18...v1.1.19
 [1.1.18]: https://github.com/msmahdinejad/avorythm/compare/v1.1.17...v1.1.18
 [1.1.17]: https://github.com/msmahdinejad/avorythm/compare/v1.1.16...v1.1.17
 [1.1.16]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...v1.1.16

@@ -34,9 +34,6 @@ Avorythm مفت اور اوپن سورس ہے۔ بیرونی AI خدمات کے 
 
 رازداری کی پالیسی: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## ورژن 1.1.18 میں نیا کیا ہے
+## ورژن 1.1.19 میں نیا کیا ہے
 
-- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
-- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
-- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
-- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.
+- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.

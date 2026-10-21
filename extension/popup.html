@@ -30,6 +30,15 @@
       <div><b id="statusText" data-i18n="ready">آمادهٔ ترجمه</b><small id="languageBadge">AUTO → FA</small></div>
     </section>
 
+    <section id="updateNotice" class="update-notice" role="status" aria-live="polite" hidden>
+      <div><b id="updateTitle"></b><p id="updateMessage"></p></div>
+      <div class="update-actions">
+        <button id="updateButton" type="button" hidden></button>
+        <a id="whatsNewLink" href="https://github.com/msmahdinejad/avorythm/blob/main/CHANGELOG.md" target="_blank" rel="noreferrer" hidden data-i18n="whatsNew">What's new ↗</a>
+        <button id="dismissUpdate" type="button" class="quiet" data-i18n="dismiss">Dismiss</button>
+      </div>
+    </section>
+
     <section id="setupNotice" class="setup-notice" hidden>
       <div><b data-i18n="setupNeeded">راه‌اندازی کوتاه لازم است</b><p id="setupMessage" data-i18n="setupMessage">کلید Gemini و اجازهٔ پردازش را در تنظیمات وارد کن.</p></div>
       <button id="setupButton" type="button" data-i18n="openSettings">بازکردن تنظیمات</button>

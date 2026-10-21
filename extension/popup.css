@@ -24,3 +24,11 @@ footer{min-height:44px;padding:0 17px 12px;display:flex;align-items:flex-end;jus
 .success-message,.error-message,footer{font-size:11px}
 footer>div{display:flex;gap:10px}
 .mode-option em{font-size:10px}
+.update-notice{margin-top:10px;padding:12px;border:1px solid rgba(143,124,255,.34);border-radius:15px;background:linear-gradient(135deg,rgba(117,97,245,.2),rgba(84,223,218,.07));display:flex;flex-direction:column;gap:9px}
+.update-notice b{font-size:12px}
+.update-notice p{margin:2px 0 0;color:#c9c2ff;font-size:11px;line-height:1.6}
+.update-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.update-actions button{border:1px solid rgba(143,124,255,.4);border-radius:9px;background:rgba(143,124,255,.18);color:#ece9ff;padding:7px 10px;font-size:11px;cursor:pointer}
+.update-actions button:disabled{opacity:.5;cursor:not-allowed}
+.update-actions button.quiet{border-color:var(--line);background:transparent;color:var(--muted)}
+.update-actions a{color:var(--aqua);font-size:11px;text-decoration:none}
