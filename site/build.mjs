@@ -84,7 +84,7 @@ const qrSource = existsSync(join(here, 'src/vendor/qrcode.js'))
 /* ---------------------------------------------------------------- manifest */
 const manifestFile = join(here, 'public/video/manifest.json');
 const manifest = existsSync(manifestFile) ? readJson(manifestFile) : null;
-const version = (() => { try { return readJson(join(here, '../extension/manifest.json')).version; } catch { return '1.1.18'; } })();
+const version = (() => { try { return readJson(join(here, '../extension/manifest.json')).version; } catch { return '1.1.19'; } })();
 
 /* -------------------------------------------------------------------- build */
 rmSync(out, { recursive: true, force: true });

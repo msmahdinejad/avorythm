@@ -7,8 +7,10 @@ import {
   subtitlesEnabled,
   usesGroqAudio
 } from './core.mjs';
+import {createUpdateNotice} from './update-notice.mjs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
+const updates = createUpdateNotice();
 const defaultState = {
   active: false,
   status: 'idle',
@@ -409,13 +411,28 @@ function stop(requestingTabId = null, keepPlayer = false, completionReason = 'ma
   return runLifecycle(() => performStop(requestingTabId, keepPlayer, completionReason));
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   await credentialAccessReady;
   await chrome.storage.session.set({state: defaultState});
   const {settings} = await chrome.storage.local.get('settings');
   if (!settings) await chrome.storage.local.set({settings: normalizeSettings(DEFAULT_SETTINGS)});
   else await chrome.storage.local.set({settings: normalizeSettings(settings)});
+  await updates.onInstalled(details).catch(() => {});
 });
+
+// Chrome downloads updates by itself; surface a ready one so the user can apply it
+// at a moment that does not interrupt a recording.
+chrome.runtime.onUpdateAvailable?.addListener((details) => { updates.onUpdateAvailable(details).catch(() => {}); });
+chrome.runtime.onStartup?.addListener(() => { updates.paintBadge().catch(() => {}); });
+
+async function updateBlocker() {
+  if ((await getState()).active) return 'update_blocked_active';
+  if (chrome.tabs?.query) {
+    const open = await chrome.tabs.query({url: `${chrome.runtime.getURL('player.html')}*`}).catch(() => []);
+    if (open.length) return 'update_blocked_player';
+  }
+  return '';
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.target === 'offscreen') return false;
@@ -423,6 +440,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (['set-key', 'set-groq-key', 'clear-key', 'clear-groq-key', 'set-key-persistence'].includes(message.type) &&
         !sender.url?.startsWith(chrome.runtime.getURL(''))) {
       throw new Error('credential_access_denied');
+    }
+    if (['apply-update', 'dismiss-update'].includes(message.type) && !sender.url?.startsWith(chrome.runtime.getURL(''))) {
+      throw new Error('update_access_denied');
     }
     if (message.target === 'background') {
       if (message.type === 'bridge-state') {
@@ -476,6 +496,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
       if (await hasOffscreenDocument()) await chrome.runtime.sendMessage({target: 'offscreen', type: 'audio', config: nextConfig});
       sendResponse({ok: true});
+    } else if (message.type === 'update-status') {
+      sendResponse({ok: true, ...await updates.status(), blocked: await updateBlocker()});
+    } else if (message.type === 'check-update') {
+      sendResponse({ok: true, ...await updates.check(), ...await updates.status()});
+    } else if (message.type === 'dismiss-update') {
+      await updates.dismiss();
+      sendResponse({ok: true});
+    } else if (message.type === 'apply-update') {
+      const blocked = await updateBlocker();
+      if (blocked) throw new Error(blocked);
+      if (!(await updates.status()).pending) throw new Error('update_not_ready');
+      sendResponse({ok: true});
+      // Applies the downloaded version; answer first so the popup is not left waiting.
+      setTimeout(() => chrome.runtime.reload(), 150);
     } else if (message.type === 'media-control') {
       const state = await getState();
       if (!state.captureTabId) throw new Error('active_tab_missing');

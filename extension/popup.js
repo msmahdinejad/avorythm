@@ -5,9 +5,11 @@ const CONSENT_VERSION = 1;
 let settings = normalizeSettings();
 let bootstrap = null;
 let timer = null;
+let updateInfo = null;
 
 const copy = {
   fa: {
+    updateReadyTitle: (v) => `نسخهٔ ${v} آماده است`, updateReadyBody: 'برای استفاده از بهبودها، اکستنشن را به‌روز کن.', updateNow: 'به‌روزرسانی و راه‌اندازی دوباره', updatedTitle: (v) => `به نسخهٔ ${v} به‌روز شد`, updatedBody: 'تغییرات تازه را ببین.', whatsNew: 'تغییرات ↗', dismiss: 'بستن', update_blocked_active: 'برای به‌روزرسانی، اول ترجمهٔ در حال اجرا را متوقف کن.', update_blocked_player: 'برای به‌روزرسانی، اول پلیر هماهنگ را ببند.', update_not_ready: 'نسخهٔ جدید هنوز دانلود نشده است.',
     tagline: 'ترجمهٔ زندهٔ همین تب', ready: 'آمادهٔ ترجمه', connecting: 'در حال اتصال…', connected: 'ترجمهٔ زنده فعال است', error: 'خطا در اتصال',
     setupNeeded: 'راه‌اندازی کوتاه لازم است', setupMessage: 'کلید Gemini را وارد کن و حتماً اجازهٔ ارسال صدای تب به Google Gemini را تأیید کن.', openSettings: 'بازکردن تنظیمات',
     language: 'زبان مقصد', playbackMode: 'روش پخش', lowLatency: 'داخل همین صفحه', lowLatencyHelp: 'سریع‌ترین حالت برای صدا و زیرنویس زنده', synchronized: 'ضبط و پلیر هماهنگ', synchronizedHelp: 'ضبط جلوتر ادامه دارد؛ پلیر مستقل Seek و Fullscreen دارد', bestSync: 'سینک پایدار',
@@ -21,6 +23,7 @@ const copy = {
     active_tab_missing: 'تب فعالی پیدا نشد.', capture_failed: 'دریافت صدا از این تب ممکن نشد.', source_resume_failed:'ویدیوی تب منبع خودکار پخش نشد؛ پخش را یک‌بار دستی شروع کن و دوباره امتحان کن.', synchronized_player_unavailable: 'این تب امکان ساخت پلیر هماهنگ را نمی‌دهد؛ حالت داخل صفحه را انتخاب کن.', synchronized_player_failed: 'بافر ویدئو ساخته نشد؛ حالت داخل صفحه را امتحان کن.', downloads_permission_missing: 'برای ذخیرهٔ چهار خروجی، دسترسی Downloads لازم است.'
   },
   en: {
+    updateReadyTitle: (v) => `Version ${v} is ready`, updateReadyBody: 'Update the extension to get the latest improvements.', updateNow: 'Update and restart', updatedTitle: (v) => `Updated to version ${v}`, updatedBody: 'See what changed.', whatsNew: 'What’s new ↗', dismiss: 'Dismiss', update_blocked_active: 'Stop the running translation before updating.', update_blocked_player: 'Close the synchronized player before updating.', update_not_ready: 'The new version has not finished downloading yet.',
     tagline: 'Translate this tab live', ready: 'Ready to translate', connecting: 'Connecting…', connected: 'Live translation is active', error: 'Connection error',
     setupNeeded: 'Quick setup required', setupMessage: 'Add your Gemini key and explicitly confirm permission to send selected-tab audio to Google Gemini.', openSettings: 'Open settings',
     language: 'Target language', playbackMode: 'Playback', lowLatency: 'On this page', lowLatencyHelp: 'Fastest live audio and subtitle path', synchronized: 'Synchronized recorder & player', synchronizedHelp: 'Capture runs ahead; the independent player can seek and fullscreen', bestSync: 'Stable sync',
@@ -34,6 +37,7 @@ const copy = {
     active_tab_missing: 'No active tab was found.', capture_failed: 'Could not capture audio from this tab.', source_resume_failed:'The source video could not resume automatically. Play it once, then try again.', synchronized_player_unavailable: 'This tab cannot provide synchronized video; use on-page mode.', synchronized_player_failed: 'The video buffer could not start; try on-page mode.', downloads_permission_missing: 'Downloads access is required to save four outputs.'
   },
   'zh-Hans': {
+    updateReadyTitle: (v) => `版本 ${v} 已就绪`, updateReadyBody: '更新扩展以获得最新改进。', updateNow: '更新并重新启动', updatedTitle: (v) => `已更新到版本 ${v}`, updatedBody: '查看更新内容。', whatsNew: '更新内容 ↗', dismiss: '关闭', update_blocked_active: '更新前请先停止正在运行的翻译。', update_blocked_player: '更新前请先关闭同步播放器。', update_not_ready: '新版本尚未下载完成。',
     tagline: '实时翻译当前标签页', ready: '准备就绪', connecting: '连接中…', connected: '实时翻译已开启', error: '连接出错',
     setupNeeded: '需要简单设置', setupMessage: '请填入 Gemini 密钥,并明确确认允许将所选标签页的音频发送到 Google Gemini。', openSettings: '打开设置',
     language: '目标语言', playbackMode: '播放方式', lowLatency: '在本页', lowLatencyHelp: '最快的实时音频与字幕方案', synchronized: '同步录制器与播放器', synchronizedHelp: '录制会先行;独立播放器可跳转和全屏', bestSync: '稳定同步',
@@ -120,6 +124,7 @@ function renderSettings() {
   $('#setupMessage').textContent = readinessError ? t(readinessError) : t('setupMessage');
   $('#toggleButton').disabled = Boolean(readinessError);
   $('#privacyText').textContent = t(usesGroqAudio(settings) ? 'privacyPrecise' : 'privacyGoogle');
+  renderUpdate();
   $('#languageBadge').textContent = `AUTO → ${settings.targetLanguage.toUpperCase()}`;
 }
 
@@ -132,6 +137,32 @@ function showError(message) {
   const box = $('#errorMessage');
   box.textContent = t(message) || message;
   box.hidden = !message;
+}
+
+function renderUpdate() {
+  const box = $('#updateNotice');
+  const pending = updateInfo?.pending;
+  const whatsNew = updateInfo?.whatsNew;
+  box.hidden = !pending && !whatsNew;
+  if (box.hidden) return;
+  $('#updateTitle').textContent = pending ? t('updateReadyTitle')(pending.version) : t('updatedTitle')(whatsNew.version);
+  $('#updateMessage').textContent = pending
+    ? (updateInfo.blocked ? t(updateInfo.blocked) : t('updateReadyBody'))
+    : t('updatedBody');
+  $('#updateButton').hidden = !pending;
+  $('#updateButton').textContent = t('updateNow');
+  $('#updateButton').disabled = Boolean(updateInfo?.blocked);
+  $('#whatsNewLink').hidden = Boolean(pending);
+  $('#dismissUpdate').hidden = Boolean(pending);
+}
+
+async function refreshUpdate(check = false) {
+  try {
+    if (check) await send({type: 'check-update'});
+    const response = await send({type: 'update-status'});
+    if (response?.ok) updateInfo = {...response, playerOpen: response.blocked === 'update_blocked_player'};
+  } catch { /* the notice is optional */ }
+  renderUpdate();
 }
 
 function renderState(state) {
@@ -149,6 +180,10 @@ function renderState(state) {
   $('#languageBadge').textContent = `${(state.sourceLanguage || 'AUTO').toUpperCase()} → ${settings.targetLanguage.toUpperCase()}`;
   $('#downloadReady').hidden = !state.recordingReady;
   showError(state.error || '');
+  if (updateInfo) {
+    const blocked = active ? 'update_blocked_active' : updateInfo.playerOpen ? 'update_blocked_player' : '';
+    if (updateInfo.blocked !== blocked) { updateInfo.blocked = blocked; renderUpdate(); }
+  }
 }
 
 async function refresh() {
@@ -175,6 +210,20 @@ document.querySelectorAll('input[name="playbackMode"]').forEach((input) => input
   settings.playbackMode = input.value;
   await saveSettings();
 }));
+$('#updateButton').addEventListener('click', async () => {
+  $('#updateButton').disabled = true;
+  const response = await send({type: 'apply-update'});
+  if (!response?.ok) {
+    updateInfo = {...updateInfo, blocked: response?.error || ''};
+    showError(response?.error || 'error');
+    renderUpdate();
+  }
+});
+$('#dismissUpdate').addEventListener('click', async () => {
+  await send({type: 'dismiss-update'});
+  updateInfo = {...updateInfo, whatsNew: null};
+  renderUpdate();
+});
 $('#toggleButton').addEventListener('click', async () => {
   $('#toggleButton').disabled = true;
   showError('');
@@ -193,8 +242,11 @@ $('#toggleButton').addEventListener('click', async () => {
   bootstrap = response.data;
   settings = normalizeSettings({...stored, ...stored?.settings, ...bootstrap.settings});
   renderSettings();
+  await refreshUpdate();
   await refresh();
   timer = setInterval(refresh, 750);
+  // Chrome throttles update checks itself, so asking on every open is cheap.
+  void refreshUpdate(true);
 })().catch((error) => showError(error.message));
 
 window.addEventListener('unload', () => clearInterval(timer));

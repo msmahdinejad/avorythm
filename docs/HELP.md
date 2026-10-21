@@ -114,6 +114,10 @@ The player cannot capture DRM-protected video or Chrome-internal pages. Use **On
 
 Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle card to another corner, resize it, and scroll longer content. In Settings → Subtitle card choose **Scrolling lines** (the latest lines stay and scroll up) or **One sentence at a time** (the next sentence waits until the current one has been readable), how many lines to show, and how long each line stays. The card fades away while nothing is being said.
 
+### Extension updates
+
+Chrome updates Avorythm automatically. When a new version has been downloaded, the toolbar icon shows a small badge and the popup offers **Update and restart**; after an update the popup shows a **What’s new** link for two weeks. Updating is disabled while a translation is running or the synchronized player is open, so recordings and exports are never interrupted.
+
 ### Extension troubleshooting
 
 - **Start is disabled:** save a Gemini key and complete the Gemini consent. In precise mode, also save a Groq key, grant the optional `api.groq.com` permission, and confirm the separate Groq-audio consent; the message beside Start names the missing step.

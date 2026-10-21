@@ -37,9 +37,6 @@ Vollständige Anleitung auf Englisch: https://github.com/msmahdinejad/avorythm/b
 
 Datenschutzerklärung: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Neu in 1.1.18
+## Neu in 1.1.19
 
-- Synchronisierter Player: Gepufferte Videodaten werden nicht mehr verworfen, wenn Chrome einen Decoder-Stall meldet; die Wiedergabe überspringt Lücken im Live-Puffer und baut ihn erst nach wiederholtem Stillstand neu auf.
-- Neue manuelle Regler für **Untertitel-Timing** und **Timing der synchronisierten Stimme** im Player, wirksam für Wiedergabe, exportiertes Video und heruntergeladene SRT-Dateien.
-- Flüssigere Aufnahmen: VP8-Aufnahme mit höherer Bitrate und Mindest-Framerate sowie ein Export ohne Frame-Verluste.
-- Untertitel auf der Seite bleiben lesbar: scrollende Zeilen oder ein Satz nach dem anderen, Zeilenanzahl und Anzeigedauer sind einstellbar.
+- Ein Hinweis und ein Symbol-Badge zeigen jetzt an, wenn eine neue Version heruntergeladen oder gerade installiert wurde. Ein bereites Update lässt sich im Popup anwenden, sobald keine Übersetzung und kein synchronisierter Player läuft.

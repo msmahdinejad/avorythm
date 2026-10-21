@@ -243,3 +243,41 @@ jobs:
             dist/Avorythm-*.zip
             dist/Avorythm-Setup-x64*.exe
             dist/SHA256SUMS.txt
+
+  # Optional: upload the Chrome extension to the Chrome Web Store and submit it for
+  # review. Enable by setting the repository variable CWS_AUTO_PUBLISH=true and adding
+  # the CWS_* secrets (see docs/WEBSTORE_PUBLISHING.md). Set CWS_PUBLISH_TYPE to
+  # STAGED_PUBLISH to approve the final publish step by hand.
+  webstore:
+    needs: publish
+    if: ${{ vars.CWS_AUTO_PUBLISH == 'true' }}
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: release-windows*
+          path: dist
+          merge-multiple: true
+      - name: Check the package matches the tag
+        run: |
+          version=$(unzip -p dist/Avorythm-Extension.zip manifest.json | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).version))')
+          test "$version" = "${RELEASE_TAG#v}" || { echo "Package version $version does not match $RELEASE_TAG"; exit 1; }
+      - name: Upload and submit for review
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CWS_PUBLISH_TYPE: ${{ vars.CWS_PUBLISH_TYPE || 'DEFAULT_PUBLISH' }}
+        run: node scripts/publish-webstore.mjs dist/Avorythm-Extension.zip
