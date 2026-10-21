@@ -58,7 +58,9 @@ function createExportVideo(videoBlob, environment) {
   video.src = url;
   video.muted = true;
   video.playsInline = true;
-  video.style.cssText = 'position:fixed;width:2px;height:2px;left:-10px;top:-10px;opacity:.01;pointer-events:none';
+  // Must stay inside the viewport: an off-screen element makes Chromium render (and
+  // captureStream) far fewer frames, which produced a visibly low-fps export.
+  video.style.cssText = 'position:fixed;width:2px;height:2px;left:0;top:0;opacity:.01;pointer-events:none';
   environment.document.body?.append?.(video);
   return {video, url};
 }
@@ -194,7 +196,7 @@ function scheduleDuck(gain, {baseTime, volume, duration, intervals}) {
   }
 }
 
-async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals, durationSeconds, onProgress, environment}) {
+async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals, dubOffsetSeconds = 0, durationSeconds, onProgress, environment}) {
   if (!environment.AudioContext) throw new Error('mixed_export_unsupported');
   const {video, url} = createExportVideo(videoBlob, environment);
   const context = new environment.AudioContext();
@@ -219,6 +221,7 @@ async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals
       if (!dubbedBuffer?.length) throw new Error('mixed_export_invalid_wav');
     }
     const duration = exportDuration(durationSeconds, video.duration, dubbedBuffer?.duration);
+    const dubOffset = Number.isFinite(Number(dubOffsetSeconds)) ? Number(dubOffsetSeconds) : 0;
 
     if (originalVolume > 0) {
       const originalSource = context.createMediaElementSource(video);
@@ -261,14 +264,15 @@ async function buildWebAudioRecording({videoBlob, dubbedBlob, mix, duckIntervals
             baseTime: timelineOrigin,
             volume: originalVolume,
             duration,
-            intervals: duckIntervals
+            intervals: normalizedIntervals(duckIntervals).map(({start, end}) => ({start: start + dubOffset, end: end + dubOffset}))
           });
         }
+        // A positive offset delays the dub; a negative one skips into it.
         const dubbedOffset = Math.min(
-          playbackOffset,
+          Math.max(0, playbackOffset - dubOffset),
           Math.max(0, Number(dubbedBuffer?.duration) - 0.001)
         );
-        dubbedSource?.start?.(now, dubbedOffset);
+        dubbedSource?.start?.(now + Math.max(0, dubOffset - playbackOffset), dubbedOffset);
       },
       onProgress,
       environment
@@ -328,6 +332,7 @@ export async function buildMixedRecording({
   dubbedBlob,
   mix,
   duckIntervals = [],
+  dubOffsetSeconds = 0,
   durationSeconds = 0,
   onProgress = () => {},
   environment = globalThis
@@ -348,6 +353,7 @@ export async function buildMixedRecording({
         dubbedBlob,
         mix: {...mix, originalVolume, dubbedVolume},
         duckIntervals,
+        dubOffsetSeconds,
         durationSeconds,
         onProgress,
         environment

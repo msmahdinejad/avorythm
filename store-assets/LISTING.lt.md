@@ -34,8 +34,9 @@ Naudotojo vadovas (anglų kalba): https://github.com/msmahdinejad/avorythm/blob/
 
 Privatumo politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Kas naujo 1.1.17 versijoje
+## Kas naujo 1.1.18 versijoje
 
-- Paprastesnis kalbos pasirinkimas: populiarios kalbos rodomos pirmiausia, aiškiai atskirti kinų ir portugalų kalbų variantai.
-- Nauja projekto dokumentacija ir ištekliai vokiečių, prancūzų, italų, rusų ir arabų kalbomis.
-- Atnaujinti parduotuvės vaizdai, sukurti pagal tikrąją produkto sąsają.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

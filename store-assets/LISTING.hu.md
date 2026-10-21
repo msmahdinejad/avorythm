@@ -34,8 +34,9 @@ Felhasználói útmutató (angolul): https://github.com/msmahdinejad/avorythm/bl
 
 Adatvédelmi szabályzat: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Újdonságok az 1.1.17-ös verzióban
+## Újdonságok az 1.1.18-ös verzióban
 
-- Egyszerűbb nyelvválasztás: a népszerű nyelvek kerültek előre, a kínai és a portugál változatok egyértelmű megjelölésével.
-- Új német, francia, olasz, orosz és arab nyelvű projektdokumentáció és segédanyagok.
-- Frissített áruházi képek a termék valódi kezelőfelülete alapján.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

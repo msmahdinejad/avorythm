@@ -75,6 +75,9 @@
             <label class="range-field"><span><b data-i18n="fontSize">اندازهٔ متن</b><output id="subtitleFontSizeValue">24px</output></span><input id="subtitleFontSize" type="range" min="14" max="52" step="1"></label>
             <label class="range-field"><span><b data-i18n="width">عرض کادر</b><output id="subtitleWidthValue">680px</output></span><input id="subtitleWidth" type="range" min="280" max="1200" step="20"></label>
             <label class="range-field"><span><b data-i18n="opacity">شفافیت پس‌زمینه</b><output id="subtitleOpacityValue">88%</output></span><input id="subtitleOpacity" type="range" min="45" max="98" step="1"></label>
+            <label class="field"><span data-i18n="subtitleMode">Display style</span><select id="subtitleMode"><option value="scroll" data-i18n="modeScroll">Scrolling lines</option><option value="sentence" data-i18n="modeSentence">One sentence at a time</option></select><small data-i18n="subtitleModeHelp">Scrolling keeps the latest lines on screen; one sentence at a time waits until the current one has been readable before showing the next.</small></label>
+            <label class="range-field"><span><b data-i18n="subtitleLines">Lines shown</b><output id="subtitleLinesValue">3</output></span><input id="subtitleLines" type="range" min="1" max="6" step="1"></label>
+            <label class="range-field"><span><b data-i18n="subtitleHold">Keep each line for</b><output id="subtitleHoldSecondsValue">6s</output></span><input id="subtitleHoldSeconds" type="range" min="2" max="30" step="1"><small data-i18n="subtitleHoldHelp">How long a line stays after its last update. Longer values leave more time to read.</small></label>
           </div>
         </section>
 

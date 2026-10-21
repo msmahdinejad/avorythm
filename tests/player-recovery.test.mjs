@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import {normalizeSettings, outputMix, updateOutputMix} from '../extension/core.mjs';
+import {captionReadingSeconds, clampOffset, normalizeSettings, outputMix, shiftSrt, updateOutputMix} from '../extension/core.mjs';
 
 const playerSource = readFileSync(new URL('../extension/player.js', import.meta.url), 'utf8')
   .replace(/^import .*;\r?\n/gm, '');
@@ -82,7 +82,7 @@ async function createPlayer(config = {}) {
     runtime: {sendMessage: async () => ({ok: true, state: {active: true}}), openOptionsPage: async () => {}}
   };
   const context = vm.createContext({
-    normalizeSettings, outputMix, updateOutputMix, console, Blob, ArrayBuffer, Int16Array, Float32Array,
+    captionReadingSeconds, clampOffset, normalizeSettings, outputMix, shiftSrt, updateOutputMix, console, Blob, ArrayBuffer, Int16Array, Float32Array,
     DOMException, queueMicrotask, MediaSource, AudioContext, document, window: {close() {}}, chrome,
     performance: {now: () => clock}, URL: {createObjectURL: () => 'blob:test', revokeObjectURL() {}},
     setTimeout(callback, delay) { timers.set(++nextTimer, {callback, at: clock + delay}); return nextTimer; },
@@ -258,9 +258,12 @@ test('a failed finish-recording request leaves the button retryable', async () =
   assert.match(p.element('#warningText').textContent, /finish recording/i);
 });
 
-test('a frozen decode clock triggers automatic recovery even without a waiting event', async () => {
+test('a frozen decode clock is nudged first and only rebuilt after repeated failures', async () => {
   const p = await createPlayer();
   await p.tick(5000);
+  await p.tick(5000);
+  assert.equal(p.messages.filter((message) => message.replay).length, 0, 'buffered media must survive the first stalls');
+  assert.equal(p.element('#rebufferNotice').hidden, true);
   await p.tick(5000);
   assert.equal(p.messages.filter((message) => message.replay).length, 1);
   assert.equal(p.video.paused, true, 'audio and video must wait together during recovery');
@@ -293,6 +296,7 @@ test('recovery still times out when the producer resets but sends no usable medi
 
 test('late suspend completion cannot undo a user Pause during rebuffering', async () => {
   const p = await createPlayer();
+  p.buffers[0].buffered = {length: 1, start: () => 0, end: () => .5};
   let finishSuspend;
   p.contexts[0].suspend = () => new Promise((resolve) => { finishSuspend = resolve; });
   const waiting = p.video.emit('waiting');
@@ -308,7 +312,7 @@ test('late suspend completion cannot undo a user Pause during rebuffering', asyn
 test('automatic stalled-clock rebuilds stop after three unsuccessful attempts', async () => {
   const p = await createPlayer();
   for (let attempt = 0; attempt < 4; attempt++) {
-    await p.tick(5000); await p.tick(5000);
+    await p.tick(5000); await p.tick(5000); await p.tick(5000);
     if (attempt < 3) {
       await p.send({type: 'session-reset', position: 0, duration: 180});
       await p.send({type: 'media-init', mimeType: 'video/webm', bufferSeconds: 20});
@@ -333,4 +337,57 @@ test('a newer seek target wins over an older replay response', async () => {
   await p.send({type: 'media-init', mimeType: 'video/webm', bufferSeconds: 20});
   await p.send({type: 'media-chunk', data: new Blob(['fixture'])});
   assert.equal(p.video.currentTime, 140);
+});
+
+test('waiting events with plenty of buffered media never pause, rebuild or flash the buffering notice', async () => {
+  const p = await createPlayer();
+  p.video.paused = false;
+  const before = p.messages.length;
+  for (let index = 0; index < 5; index++) await p.video.emit(index % 2 ? 'stalled' : 'waiting');
+  assert.equal(p.messages.length, before, 'no replay request');
+  assert.equal(p.video.paused, false);
+  assert.equal(p.element('#rebufferNotice').hidden, true);
+});
+
+test('a hole in the live buffer is skipped instead of waited out', async () => {
+  const p = await createPlayer();
+  p.buffers[0].buffered = {length: 2, start: (index) => [0, 14][index], end: (index) => [10, 60][index]};
+  p.video.currentTime = 10;
+  p.video.paused = false;
+  const before = p.messages.length;
+  await p.video.emit('waiting');
+  assert.ok(p.video.currentTime >= 14, 'playback continues after the missing frames');
+  assert.equal(p.messages.length, before);
+  assert.equal(p.video.paused, false);
+});
+
+test('manual subtitle timing shifts both caption tracks and survives a persist', async () => {
+  const p = await createPlayer({synchronizedOutput: {translatedSubtitlesEnabled: true, sourceSubtitlesEnabled: true}});
+  await p.send({type: 'caption', id: 's1', translated: false, start: 10, end: 12, text: 'Hello there'});
+  await p.send({type: 'caption', id: 't1', translated: true, start: 10, end: 12, text: 'سلام'});
+  p.video.currentTime = 11;
+  await p.video.emit('timeupdate');
+  assert.equal(p.element('#sourceCaption').textContent, 'Hello there');
+  assert.equal(p.element('#translatedCaption').textContent, 'سلام');
+  p.element('#subtitleOffset').value = 3;
+  await p.element('#subtitleOffset').emit('input');
+  assert.equal(p.element('#translatedCaption').textContent, '', 'a later offset must delay the cue');
+  assert.equal(p.element('#subtitleOffsetValue').textContent, '+3.0s');
+  p.video.currentTime = 14;
+  await p.video.emit('timeupdate');
+  assert.equal(p.element('#translatedCaption').textContent, 'سلام');
+  await p.element('#subtitleOffset').emit('change');
+  const saved = (await p.chrome.storage.local.get('settings')).settings;
+  assert.ok(saved);
+});
+
+test('a short cue stays on screen long enough to read until the next one replaces it', async () => {
+  const p = await createPlayer({synchronizedOutput: {translatedSubtitlesEnabled: true}});
+  await p.send({type: 'caption', id: 't1', translated: true, start: 10, end: 10.4, text: 'یک جملهٔ نسبتاً بلند برای خواندن'});
+  p.video.currentTime = 11.2;
+  await p.video.emit('timeupdate');
+  assert.equal(p.element('#translatedCaption').hidden, false);
+  await p.send({type: 'caption', id: 't2', translated: true, start: 11, end: 12, text: 'جملهٔ بعدی'});
+  await p.video.emit('timeupdate');
+  assert.equal(p.element('#translatedCaption').textContent, 'جملهٔ بعدی');
 });

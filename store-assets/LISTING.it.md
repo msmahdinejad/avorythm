@@ -37,8 +37,9 @@ Guida: https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.it.md
 
 Informativa sulla privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Novità della versione 1.1.17
+## Novità della versione 1.1.18
 
-- Selezione della lingua più semplice, con le lingue comuni in cima e varianti cinesi e portoghesi ben distinte.
-- Documentazione e risorse del progetto in tedesco, francese, italiano, russo e arabo.
-- Nuove immagini dello Store basate sull’interfaccia reale del prodotto.
+- Player sincronizzato: il video già bufferizzato non viene più scartato quando Chrome segnala uno stallo del decoder; la riproduzione salta i vuoti del buffer live e lo ricostruisce solo dopo blocchi ripetuti.
+- Nuovi controlli manuali per la **sincronia dei sottotitoli** e la **sincronia della voce doppiata**, applicati a riproduzione, video esportato e file SRT scaricati.
+- Registrazioni più fluide: cattura VP8 a bitrate più alto con frame rate minimo ed esportazione senza perdita di fotogrammi.
+- Sottotitoli sulla pagina più leggibili: righe scorrevoli o una frase alla volta, con numero di righe e durata regolabili.

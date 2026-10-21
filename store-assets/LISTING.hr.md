@@ -34,8 +34,9 @@ Korisnički vodič (engleski): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Pravila o privatnosti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Što je novo u verziji 1.1.17
+## Što je novo u verziji 1.1.18
 
-- Jednostavniji odabir jezika: popularni jezici prikazani su prvi, uz jasno označene inačice kineskog i portugalskog.
-- Nova projektna dokumentacija i resursi na njemačkom, francuskom, talijanskom, ruskom i arapskom.
-- Osvježene slike za trgovinu temeljene na stvarnom sučelju proizvoda.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

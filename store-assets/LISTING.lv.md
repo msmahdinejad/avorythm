@@ -34,8 +34,9 @@ Lietotāja rokasgrāmata (angļu valodā): https://github.com/msmahdinejad/avory
 
 Privātuma politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Kas jauns versijā 1.1.17
+## Kas jauns versijā 1.1.18
 
-- Vienkāršāka valodas izvēle: populārākās valodas ir norādītas vispirms, kā arī skaidri nošķirti ķīniešu un portugāļu valodas varianti.
-- Jauna vācu, franču, itāļu, krievu un arābu valodā pieejama projekta dokumentācija un resursi.
-- Atjaunināti veikala attēli, balstoties uz produkta faktisko interfeisu.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

@@ -23,17 +23,21 @@
       }
       .grip { position:absolute; inset-inline-start:50%; top:6px; translate:-50% 0; width:44px; height:5px;
         border-radius:9px; background:rgba(255,255,255,.28); cursor:move; touch-action:none; }
-      p { margin: 5px 0 0; text-align:center; line-height:1.65; font-size:var(--size,24px);
-        font-weight:650; text-wrap:balance; unicode-bidi:plaintext; }
-      .source { color:rgba(226,232,240,.72); font-size:calc(var(--size,24px) * .68); font-weight:500; }
-      .source-only .source { color:#fff; font-size:var(--size,24px); font-weight:650; }
-      .translation { color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.75); }
+      .lines { margin: 5px 0 0; }
+      .lines p { margin: 0; text-align:center; line-height:1.65; font-size:var(--size,24px);
+        font-weight:650; text-wrap:balance; unicode-bidi:plaintext; transition:opacity .25s ease; }
+      .lines p.older { opacity:.55; }
+      .source p { color:rgba(226,232,240,.72); font-size:calc(var(--size,24px) * .68); font-weight:500; }
+      .source-only .source p { color:#fff; font-size:var(--size,24px); font-weight:650; }
+      .translation p { color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.75); }
+      .translation p.placeholder { opacity:.6; }
+      .card.quiet { opacity:0; pointer-events:none; transition:opacity .35s ease; }
       [hidden] { display:none !important; }
     </style>
     <section class="card" role="status" aria-live="polite">
       <div class="grip" title="Drag subtitles"></div>
-      <p class="source" dir="auto" hidden></p>
-      <p class="translation" dir="auto"></p>
+      <div class="lines source" dir="auto" hidden></div>
+      <div class="lines translation" dir="auto"></div>
     </section>`;
   document.documentElement.append(host);
 
@@ -41,8 +45,12 @@
   const grip = shadow.querySelector('.grip');
   const source = shadow.querySelector('.source');
   const translation = shadow.querySelector('.translation');
+  const Track = window.AvorythmCaptionTrack;
+  const tracks = {source: new Track(), translated: new Track()};
   let dragged = false;
   let lastPosition = '';
+  let timer = null;
+  let current = {active: false, sourceEnabled: false, translatedEnabled: false, placeholder: ''};
 
   function position(name) {
     if (dragged) return;
@@ -54,23 +62,67 @@
     else { host.style.left = '50%'; host.style.transform = 'translateX(-50%)'; }
   }
 
+  function paint(container, lines, placeholder = '') {
+    const signature = lines.map((line) => `${line.current ? '*' : ''}${line.text}`).join('|') || `?${placeholder}`;
+    if (container.dataset.signature === signature) return;
+    container.dataset.signature = signature;
+    container.replaceChildren(...(lines.length ? lines : [{text: placeholder, current: true, placeholder: true}]).map((line) => {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = line.text;
+      if (!line.current) paragraph.className = 'older';
+      if (line.placeholder) paragraph.className = 'placeholder';
+      return paragraph;
+    }));
+  }
+
+  // Runs on a timer so captions expire and queued sentences advance even when
+  // the extension sends no new text.
+  function refresh() {
+    const sourceLines = current.sourceEnabled ? tracks.source.visible() : [];
+    const translatedLines = current.translatedEnabled ? tracks.translated.visible() : [];
+    const empty = !sourceLines.length && !translatedLines.length;
+    const everSpoken = tracks.source.spoken || tracks.translated.spoken;
+    source.hidden = !current.sourceEnabled || !sourceLines.length;
+    paint(source, sourceLines);
+    translation.hidden = !current.translatedEnabled;
+    paint(translation, translatedLines, current.placeholder);
+    // Before the first caption the card shows a hint; afterwards it fades away
+    // while nothing is being said instead of leaving stale text behind.
+    card.classList.toggle('quiet', empty && everSpoken);
+    if (!current.active && timer !== null) { clearInterval(timer); timer = null; }
+  }
+
   function render(message) {
     const settings = message.settings || {};
     const output = message.output || settings.onPageOutput || settings;
     const sourceEnabled = Boolean(output.sourceSubtitlesEnabled);
     const translatedEnabled = Boolean(output.translatedSubtitlesEnabled);
-    host.style.display = message.active && (sourceEnabled || translatedEnabled) ? 'block' : 'none';
+    const active = Boolean(message.active);
+    host.style.display = active && (sourceEnabled || translatedEnabled) ? 'block' : 'none';
     card.classList.toggle('source-only', sourceEnabled && !translatedEnabled);
     card.style.width = `${Math.max(280, Math.min(1200, Number(settings.subtitleWidth) || 680))}px`;
     card.style.setProperty('--size', `${Math.max(14, Math.min(52, Number(settings.subtitleFontSize) || 24))}px`);
     card.style.setProperty('--opacity', String(Math.max(.45, Math.min(.98, Number(settings.subtitleOpacity || 88) / 100))));
-    source.textContent = message.sourceText || '';
-    source.hidden = !sourceEnabled || !source.textContent;
-    translation.textContent = message.translatedText || (settings.locale === 'fa' ? 'منتظر ترجمه…' : settings.locale === 'zh-Hans' ? '等待翻译…' : 'Waiting for translation…');
-    translation.hidden = !translatedEnabled;
+    const options = {
+      mode: settings.subtitleMode,
+      lines: settings.subtitleLines,
+      holdMs: (Number(settings.subtitleHoldSeconds) || 6) * 1000
+    };
+    for (const track of Object.values(tracks)) track.configure(options);
+    if (!active) { for (const track of Object.values(tracks)) track.clear(); }
+    else {
+      tracks.source.push(message.sourceText, message.sourceSeq ?? null);
+      tracks.translated.push(message.translatedText, message.translatedSeq ?? null);
+    }
+    current = {
+      active, sourceEnabled, translatedEnabled,
+      placeholder: settings.locale === 'fa' ? 'منتظر ترجمه…' : settings.locale === 'zh-Hans' ? '等待翻译…' : 'Waiting for translation…'
+    };
     const nextPosition = settings.subtitlePosition || 'bottom-center';
     if (nextPosition !== lastPosition) { dragged = false; lastPosition = nextPosition; }
     position(nextPosition);
+    if (active && timer === null) timer = setInterval(refresh, 250);
+    refresh();
   }
 
   grip.addEventListener('pointerdown', (event) => {

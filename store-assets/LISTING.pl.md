@@ -34,8 +34,9 @@ Podręcznik użytkownika (po angielsku): https://github.com/msmahdinejad/avoryth
 
 Polityka prywatności: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Co nowego w wersji 1.1.17
+## Co nowego w wersji 1.1.18
 
-- Łatwiejszy wybór języka: popularne języki na początku listy oraz wyraźnie oznaczone odmiany chińskiego i portugalskiego.
-- Nowa dokumentacja projektu i materiały w językach niemieckim, francuskim, włoskim, rosyjskim i arabskim.
-- Odświeżone grafiki w sklepie oparte na rzeczywistym interfejsie produktu.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

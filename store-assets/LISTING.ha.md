@@ -34,8 +34,9 @@ Jagorar mai amfani (Turanci): https://github.com/msmahdinejad/avorythm/blob/main
 
 Manufar sirri: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Sabbin abubuwa a 1.1.17
+## Sabbin abubuwa a 1.1.18
 
-- An sauƙaƙa zaɓin harshe: an sa harsunan da aka fi amfani da su a gaba, tare da bayyana bambance-bambancen Sinanci da Fotigal a sarari.
-- An ƙara takardun bayani da albarkatun aikin a Jamusanci, Faransanci, Italiyanci, Rashanci da Larabci.
-- An sabunta hotunan shagon bisa ainihin mu'amalar manhajar.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

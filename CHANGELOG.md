@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.18] - 2026-10-21
+
+### Fixed
+
+- Synchronized player: a `waiting` or `stalled` event while media is buffered ahead no longer pauses playback, flashes "Rebuilding the safety buffer…", or throws the buffer away. Real freezes are nudged in place twice before the buffer is rebuilt on the third, and holes in the live MSE buffer are skipped instead of waited out.
+- Recorded video no longer looks low-fps: capture prefers VP8 at 6 Mbps (realtime VP9 at 2.5 Mbps kept only about 55% of frames in a local 1080p/60 benchmark), requests a 24–60 fps range so static tabs do not leave gaps, and the export step keeps its hidden video inside the viewport (an off-screen element rendered ~30% fewer frames).
+- Subtitle and dub timestamps now start at the moment MediaRecorder starts instead of when the audio worklet was created, removing a constant start-up offset between speech cues and the recorded video.
+- Short cues stay on screen for their reading time until the next cue replaces them.
+- On-page live subtitles no longer flash for a fraction of a second: fragments of the sentence being transcribed update one line instead of replacing the whole card, and the overlay receives the full sentence rather than only its last 84 characters.
+
+### Added
+
+- Player controls for **Subtitle timing** and **Dubbed voice timing** (±10 s, 0.1 s steps, reset). They apply live, to the exported video (dub delay and ducking) and to the downloaded SRT files, and are remembered.
+- Subtitle card settings: display style (scrolling lines or one sentence at a time), lines shown (1–6) and hold time (2–30 s). The card fades out while nothing is being said.
+
+### Tests
+
+- Add regression tests for stall handling, hole skipping, manual timing, reading-time cues, the caption timeline and SRT shifting.
+
 ## [1.1.17] - 2026-10-06
 
 ### Fixed
@@ -478,7 +497,8 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Automatic audio-device detection and Windows Volume Mixer handoff.
 - Tests, static analysis, release packaging, security policy, and contributor templates.
 
-[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.17...HEAD
+[Unreleased]: https://github.com/msmahdinejad/avorythm/compare/v1.1.18...HEAD
+[1.1.18]: https://github.com/msmahdinejad/avorythm/compare/v1.1.17...v1.1.18
 [1.1.17]: https://github.com/msmahdinejad/avorythm/compare/v1.1.16...v1.1.17
 [1.1.16]: https://github.com/msmahdinejad/avorythm/compare/v1.1.15...v1.1.16
 [1.1.15]: https://github.com/msmahdinejad/avorythm/compare/v1.1.14...v1.1.15

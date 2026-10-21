@@ -34,8 +34,9 @@ Avorythm ఉచితం, ఓపెన్ సోర్స్. బాహ్య AI
 
 గోప్యతా విధానం: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.17లో కొత్తవి
+## 1.1.18లో కొత్తవి
 
-- భాష ఎంపిక మరింత సులభం: జనాదరణ పొందిన భాషలు ముందుగా కనిపిస్తాయి; చైనీస్, పోర్చుగీస్ భాషల రూపాంతరాలు స్పష్టంగా చూపబడతాయి.
-- జర్మన్, ఫ్రెంచ్, ఇటాలియన్, రష్యన్, అరబిక్ భాషల్లో కొత్త ప్రాజెక్ట్ డాక్యుమెంటేషన్, వనరులు.
-- వాస్తవ ఉత్పత్తి ఇంటర్‌ఫేస్ ఆధారంగా స్టోర్ చిత్రాలు నవీకరించబడ్డాయి.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

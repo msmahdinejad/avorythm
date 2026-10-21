@@ -34,8 +34,9 @@ Avorythm ឥតគិតថ្លៃ និងមានកូដប្រភព�
 
 គោលការណ៍ឯកជនភាព: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## អ្វីដែលថ្មីក្នុងកំណែ 1.1.17
+## អ្វីដែលថ្មីក្នុងកំណែ 1.1.18
 
-- ជ្រើសរើសភាសាបានងាយស្រួលជាងមុន៖ ភាសាពេញនិយមបង្ហាញមុន ជាមួយជម្រើសប្រភេទភាសាចិន និងភាសាព័រទុយហ្គាល់ដែលបញ្ជាក់ច្បាស់។
-- បន្ថែមឯកសារគម្រោង និងធនធានជាភាសាអាល្លឺម៉ង់ បារាំង អ៊ីតាលី រុស្ស៊ី និងអារ៉ាប់។
-- ធ្វើឱ្យរូបភាពសម្រាប់ទំព័រហាងថ្មីឡើងវិញ ដោយផ្អែកលើចំណុចប្រទាក់ពិតរបស់ផលិតផល។
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

@@ -34,8 +34,9 @@ Mənbə kodu: https://github.com/msmahdinejad/avorythm
 
 Məxfilik siyasəti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.17 versiyasında yeniliklər
+## 1.1.18 versiyasında yeniliklər
 
-- Dil seçimi asanlaşdırılıb: populyar dillər əvvəldə göstərilir, Çin və Portuqal dili variantları isə aydın şəkildə fərqləndirilir.
-- Alman, fransız, italyan, rus və ərəb dillərində yeni layihə sənədləri və resurslar əlavə edilib.
-- Mağaza şəkilləri məhsulun real interfeysi əsasında yenilənib.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

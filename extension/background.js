@@ -16,6 +16,8 @@ const defaultState = {
   sourceText: '',
   translatedText: '',
   sourceLanguage: '',
+  sourceSeq: 0,
+  translatedSeq: 0,
   recordingReady: false,
   videoRecordingReady: false,
   captureTabId: null,
@@ -109,7 +111,7 @@ function clearCredential(provider) {
 async function injectOverlay(tabId) {
   if (!chrome.scripting?.executeScript) return;
   try {
-    await chrome.scripting.executeScript({target: {tabId}, files: ['content.js']});
+    await chrome.scripting.executeScript({target: {tabId}, files: ['caption-track.js', 'content.js']});
   } catch {
     throw new Error('subtitle_overlay_unavailable');
   }
@@ -123,6 +125,8 @@ async function broadcastOverlay(state) {
       active: state.active,
       sourceText: state.sourceText,
       translatedText: state.translatedText,
+      sourceSeq: state.sourceSeq,
+      translatedSeq: state.translatedSeq,
       settings: state.config || DEFAULT_SETTINGS,
       output: outputMix(state.config || DEFAULT_SETTINGS, 'low-latency')
     });
@@ -141,7 +145,8 @@ async function getState() {
 
 function setState(update) {
   return serialize(stateQueue, async () => {
-    const state = {...await readState(), ...update};
+    const current = await readState();
+    const state = {...current, ...(typeof update === 'function' ? update(current) : update)};
     await chrome.storage.session.set({state});
     return state;
   }, (next) => { stateQueue = next; });
@@ -421,7 +426,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     if (message.target === 'background') {
       if (message.type === 'bridge-state') {
-        const state = await setState(message.update);
+        // Each transcript update gets a sequence number so the overlay can tell a
+        // repeated sentence from a re-broadcast of the one already on screen.
+        const state = await setState((current) => ({
+          ...message.update,
+          ...('sourceText' in message.update ? {sourceSeq: (current.sourceSeq || 0) + 1} : {}),
+          ...('translatedText' in message.update ? {translatedSeq: (current.translatedSeq || 0) + 1} : {})
+        }));
         await broadcastOverlay(state);
       }
       else if (message.type === 'download') {
