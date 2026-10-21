@@ -34,8 +34,9 @@ Avorythm нь үнэгүй, нээлттэй эхийн програм. Гадн
 
 Нууцлалын бодлого: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.17 хувилбарын шинэ зүйлс
+## 1.1.18 хувилбарын шинэ зүйлс
 
-- Хэл сонгохыг хялбаршуулж, түгээмэл хэлнүүдийг эхэнд байрлуулан хятад болон португал хэлний хувилбаруудыг тодорхой ялгасан.
-- Төслийн герман, франц, итали, орос, араб хэл дээрх шинэ баримт бичиг, нөөцүүдийг нэмсэн.
-- Бүтээгдэхүүний бодит интерфэйст тулгуурлан дэлгүүрийн зургуудыг шинэчилсэн.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

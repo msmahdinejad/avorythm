@@ -34,8 +34,9 @@ Gabay sa paggamit (English): https://github.com/msmahdinejad/avorythm/blob/main/
 
 Patakaran sa privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Ano ang bago sa 1.1.17
+## Ano ang bago sa 1.1.18
 
-- Mas madaling pumili ng wika: nauuna ang mga sikat na wika, at malinaw ang mga variant ng Chinese at Portuguese.
-- Bagong dokumentasyon at mga resource ng proyekto sa German, French, Italian, Russian at Arabic.
-- Mga na-update na larawan sa store na batay sa aktuwal na interface ng produkto.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

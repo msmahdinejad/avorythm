@@ -112,7 +112,7 @@ The player cannot capture DRM-protected video or Chrome-internal pages. Use **On
 
 ![Translated subtitle overlay](images/extension/subtitles-en.png)
 
-Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle card to another corner, resize it, and scroll longer content. Completed sentences replace the current live line instead of building one endless paragraph.
+Enable Source subtitles, Translated subtitles, or both. Drag the glass subtitle card to another corner, resize it, and scroll longer content. In Settings → Subtitle card choose **Scrolling lines** (the latest lines stay and scroll up) or **One sentence at a time** (the next sentence waits until the current one has been readable), how many lines to show, and how long each line stays. The card fades away while nothing is being said.
 
 ### Extension troubleshooting
 

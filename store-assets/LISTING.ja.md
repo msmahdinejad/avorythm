@@ -34,8 +34,9 @@ Avorythm は無料のオープンソースソフトウェアです。外部AIサ
 
 プライバシーポリシー: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.17 の新機能
+## 1.1.18 の新機能
 
-- 言語を選びやすくしました。よく使われる言語を先に表示し、中国語とポルトガル語の各バリエーションを分かりやすく区別しています。
-- ドイツ語、フランス語、イタリア語、ロシア語、アラビア語のプロジェクト文書とリソースを新たに追加しました。
-- 実際の製品インターフェースに基づいてストア掲載画像を更新しました。
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

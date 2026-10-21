@@ -34,8 +34,9 @@ Notendaleiðbeiningar (enska): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Persónuverndarstefna: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Hvað er nýtt í 1.1.17
+## Hvað er nýtt í 1.1.18
 
-- Einfaldara tungumálaval: vinsæl tungumál eru efst og kínverskar og portúgalskar útgáfur eru skýrt aðgreindar.
-- Ný skjöl og úrræði fyrir verkefnið á þýsku, frönsku, ítölsku, rússnesku og arabísku.
-- Myndir verslunarinnar uppfærðar með hliðsjón af raunverulegu viðmóti vörunnar.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

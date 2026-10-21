@@ -111,7 +111,7 @@ test('keeps the key session-only and starts tab capture without the desktop app'
         if (files?.[0] === 'source-bridge.js') sourceBridgeTab = target.tabId;
         else {
           injectedTab = target.tabId;
-          assert.deepEqual(files, ['content.js']);
+          assert.deepEqual(files, ['caption-track.js', 'content.js']);
         }
       }
     },

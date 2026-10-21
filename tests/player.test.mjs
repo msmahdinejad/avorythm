@@ -212,10 +212,10 @@ test('buffers media and keeps player controls independent from the source produc
   );
   const messagesBeforeRepeatedStall = playerMessages.length;
   await video.listeners.waiting();
-  assert.deepEqual(
+  assert.equal(
     playerMessages.slice(messagesBeforeRepeatedStall).find((message) => message.replay),
-    {type: 'ready', position: video.currentTime, replay: true, replayId: 2},
-    'a repeated no-progress stall must rebuild playback from the local recording automatically'
+    undefined,
+    'buffered media must not be thrown away just because the browser reports a stall'
   );
   channel.onmessage({data: {type: 'session-reset', position: video.currentTime, duration: 250}});
   channel.onmessage({data: {type: 'media-init', mimeType: 'video/webm', bufferSeconds: 4.5}});

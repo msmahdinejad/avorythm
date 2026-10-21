@@ -34,8 +34,9 @@ Avorythm مفت ۽ کليل ذريعو آهي. ٻاهرين AI خدمتن جون
 
 رازداري جي پاليسي: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## نسخو 1.1.17 ۾ نئون ڇا آهي
+## نسخو 1.1.18 ۾ نئون ڇا آهي
 
-- ٻولي چونڊڻ وڌيڪ سولو: مشهور ٻوليون پهرين، ۽ چيني ۽ پرتگالي جا قسم واضح نموني ڏيکاريل.
-- پروجيڪٽ جا نوان جرمن، فرينچ، اطالوي، روسي ۽ عربي دستاويز ۽ وسيلا.
-- حقيقي پراڊڪٽ انٽرفيس تي ٻڌل اسٽور جون تصويرون نئين سر تيار ڪيون ويون.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

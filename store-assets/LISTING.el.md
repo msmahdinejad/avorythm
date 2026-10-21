@@ -34,8 +34,9 @@ Avorythm — Ζωντανή μεταγλώττιση και υπότιτλοι �
 
 Πολιτική απορρήτου: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Τι νέο υπάρχει στην 1.1.17
+## Τι νέο υπάρχει στην 1.1.18
 
-- Ευκολότερη επιλογή γλώσσας: οι δημοφιλείς γλώσσες εμφανίζονται πρώτες, με σαφείς διακρίσεις για τις παραλλαγές των κινεζικών και των πορτογαλικών.
-- Νέα τεκμηρίωση και πόροι του έργου στα γερμανικά, γαλλικά, ιταλικά, ρωσικά και αραβικά.
-- Ανανεωμένες εικόνες καταχώρισης βασισμένες στην πραγματική διεπαφή του προϊόντος.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

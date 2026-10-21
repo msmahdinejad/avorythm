@@ -4,11 +4,11 @@ These are **listing assets**, not extension-package files. In each localized lis
 
 ## Update the package and listing
 
-Upload `Avorythm-Extension-v1.1.17.zip` under **Package → Upload new package**. It includes 51 supported store locales and the current localized **Title from package** and **Summary from package**. These fields come from `_locales/*/messages.json` and match the Name and Short description fields in the listing files.
+Upload `Avorythm-Extension-v1.1.18.zip` under **Package → Upload new package**. It includes 51 supported store locales and the current localized **Title from package** and **Summary from package**. These fields come from `_locales/*/messages.json` and match the Name and Short description fields in the listing files.
 
 The **Detailed description** and screenshots are separate dashboard fields: uploading the extension ZIP does not update them. Select each listing language, paste the Detailed description from its linked `LISTING.<language>.md`, add matching screenshots, and save. The 79 translation targets, 51 packaged store locales, and three interface languages are separate counts. Chrome does not offer a separate store locale for every translation target.
 
-فایل `Avorythm-Extension-v1.1.17.zip` را در **Package → Upload new package** بارگذاری کن. این بسته ۵۱ زبان پشتیبانی‌شدهٔ فروشگاه دارد و نام و توضیح کوتاه هر زبان را از متن‌های جدید میخواند. برای توضیح بلند باید زبان موردنظر را در **Store listing** انتخاب کنی و بخش «توضیح کامل» فایل همان زبان را در فرم قرار بدهی؛ عکس‌ها هم جدا بارگذاری میشوند. تعداد زبان‌های ترجمه ۷۹، زبان‌های صفحهٔ فروشگاه ۵۱ و زبان‌های رابط برنامه ۳ است.
+فایل `Avorythm-Extension-v1.1.18.zip` را در **Package → Upload new package** بارگذاری کن. این بسته ۵۱ زبان پشتیبانی‌شدهٔ فروشگاه دارد و نام و توضیح کوتاه هر زبان را از متن‌های جدید میخواند. برای توضیح بلند باید زبان موردنظر را در **Store listing** انتخاب کنی و بخش «توضیح کامل» فایل همان زبان را در فرم قرار بدهی؛ عکس‌ها هم جدا بارگذاری میشوند. تعداد زبان‌های ترجمه ۷۹، زبان‌های صفحهٔ فروشگاه ۵۱ و زبان‌های رابط برنامه ۳ است.
 
 Sources: [localized listing fields](https://developer.chrome.com/docs/webstore/cws-dashboard-listing#localize-your-listing) and [supported locales](https://developer.chrome.com/docs/extensions/reference/api/i18n#locales).
 
@@ -16,7 +16,7 @@ Sources: [localized listing fields](https://developer.chrome.com/docs/webstore/c
 
 **[All 79 languages — complete index / متن تمام ۷۹ زبان](ALL-LANGUAGES.md)**
 
-Every destination-language entry has a localized name, short description, full description, and release notes for version 1.1.17. The complete index maps language codes to files and to officially supported Chrome Web Store locales. Some translation targets have no independent store locale; their copy is provided for reuse but cannot be published under a nonexistent language option.
+Every destination-language entry has a localized name, short description, full description, and release notes for version 1.1.18. The complete index maps language codes to files and to officially supported Chrome Web Store locales. Some translation targets have no independent store locale; their copy is provided for reuse but cannot be published under a nonexistent language option.
 
 Copy only the text under the relevant heading into the Web Store form; do not paste the file heading or upload instructions as part of the description. Listing languages do not imply additional interface languages: the current extension UI is English, Persian, and Simplified Chinese. The following eight languages have matching artwork; other listings can use the verified English product captures without claiming a localized UI.
 

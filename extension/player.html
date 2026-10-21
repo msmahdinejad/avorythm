@@ -69,6 +69,28 @@
         <label><span><b data-i18n="dubbedAudio">صدای دوبله</b><output id="dubVolumeValue">100%</output></span><input id="dubVolume" type="range" min="0" max="1.5" step="0.05"></label>
       </div>
       <label class="duck-control"><input id="autoDuck" type="checkbox"><span data-i18n="autoDuck">کاهش هوشمند صدای اصلی</span></label>
+      <div class="timing-grid">
+        <div class="timing-row">
+          <span class="timing-label"><b data-i18n="subtitleTiming">Subtitle timing</b><small data-i18n="subtitleTimingHelp">If subtitles appear after the voice, drag left (negative); if they appear early, drag right.</small></span>
+          <div class="nudge">
+            <button type="button" data-offset-field="syncSubtitleOffset" data-nudge="-0.1" data-i18n-aria="timingEarlier" aria-label="0.1 s earlier">−</button>
+            <input id="subtitleOffset" type="range" min="-10" max="10" step="0.1" value="0" aria-labelledby="subtitleOffsetValue">
+            <button type="button" data-offset-field="syncSubtitleOffset" data-nudge="0.1" data-i18n-aria="timingLater" aria-label="0.1 s later">+</button>
+            <output id="subtitleOffsetValue">0.0s</output>
+            <button type="button" class="reset" data-offset-field="syncSubtitleOffset" data-offset-reset data-i18n="timingReset">Reset</button>
+          </div>
+        </div>
+        <div class="timing-row">
+          <span class="timing-label"><b data-i18n="dubTiming">Dubbed voice timing</b><small data-i18n="dubTimingHelp">Move the dubbed voice earlier or later relative to the picture.</small></span>
+          <div class="nudge">
+            <button type="button" data-offset-field="syncDubOffset" data-nudge="-0.1" data-i18n-aria="timingEarlier" aria-label="0.1 s earlier">−</button>
+            <input id="dubOffset" type="range" min="-10" max="10" step="0.1" value="0" aria-labelledby="dubOffsetValue">
+            <button type="button" data-offset-field="syncDubOffset" data-nudge="0.1" data-i18n-aria="timingLater" aria-label="0.1 s later">+</button>
+            <output id="dubOffsetValue">0.0s</output>
+            <button type="button" class="reset" data-offset-field="syncDubOffset" data-offset-reset data-i18n="timingReset">Reset</button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
   <script type="module" src="player.js"></script>

@@ -34,8 +34,9 @@ Foydalanuvchi qo‘llanmasi (ingliz tilida): https://github.com/msmahdinejad/avo
 
 Maxfiylik siyosati: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.17 versiyasidagi yangiliklar
+## 1.1.18 versiyasidagi yangiliklar
 
-- Til tanlash osonlashdi: ommabop tillar birinchi ko‘rsatiladi, xitoy va portugal tillarining variantlari esa aniq ajratilgan.
-- Nemis, fransuz, italyan, rus va arab tillaridagi loyiha hujjatlari va resurslari qo‘shildi.
-- Do‘kon rasmlari mahsulotning haqiqiy interfeysi asosida yangilandi.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

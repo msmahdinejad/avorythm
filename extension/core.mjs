@@ -51,6 +51,11 @@ export const DEFAULT_SETTINGS = Object.freeze({
   subtitleFontSize: 24,
   subtitleWidth: 680,
   subtitleOpacity: 88,
+  subtitleMode: 'scroll',
+  subtitleLines: 3,
+  subtitleHoldSeconds: 6,
+  syncSubtitleOffset: 0,
+  syncDubOffset: 0,
   playbackMode: 'low-latency',
   syncBufferSeconds: 20,
   syncCaptionEngine: 'gemini',
@@ -92,6 +97,14 @@ export function detectSystemLocale() {
   return 'en';
 }
 
+export const MAX_SYNC_OFFSET_SECONDS = 10;
+
+export function clampOffset(value) {
+  const seconds = Number(value);
+  if (!Number.isFinite(seconds)) return 0;
+  return Math.round(Math.max(-MAX_SYNC_OFFSET_SECONDS, Math.min(MAX_SYNC_OFFSET_SECONDS, seconds)) * 10) / 10;
+}
+
 export function normalizeSettings(input = {}) {
   const legacy = legacyOutputMix(input);
   const settings = {
@@ -109,6 +122,11 @@ export function normalizeSettings(input = {}) {
   settings.groqAudioConsentVersion = settings.groqAudioConsentVersion === GROQ_AUDIO_CONSENT_VERSION
     ? GROQ_AUDIO_CONSENT_VERSION
     : 0;
+  settings.subtitleMode = settings.subtitleMode === 'sentence' ? 'sentence' : 'scroll';
+  settings.subtitleLines = Math.max(1, Math.min(6, Math.round(Number(settings.subtitleLines)) || DEFAULT_SETTINGS.subtitleLines));
+  settings.subtitleHoldSeconds = Math.max(2, Math.min(30, Number(settings.subtitleHoldSeconds) || DEFAULT_SETTINGS.subtitleHoldSeconds));
+  settings.syncSubtitleOffset = clampOffset(settings.syncSubtitleOffset);
+  settings.syncDubOffset = clampOffset(settings.syncDubOffset);
   settings.syncBufferSeconds = Math.max(8, Math.min(60, Number(settings.syncBufferSeconds) || 20));
   settings.syncCaptionEngine = settings.syncCaptionEngine === 'whisper' ? 'whisper' : 'gemini';
   settings.syncVoiceName = VOICE_NAMES.includes(settings.syncVoiceName) ? settings.syncVoiceName : 'Kore';
@@ -267,6 +285,24 @@ export function wavHeader(dataBytes, sampleRate) {
   view.setUint32(24, sampleRate, true); view.setUint32(28, sampleRate * 2, true);
   view.setUint16(32, 2, true); view.setUint16(34, 16, true); text(36, 'data'); view.setUint32(40, dataBytes, true);
   return new Uint8Array(header);
+}
+
+/** Time a caption needs on screen so it can actually be read (seconds). */
+export function captionReadingSeconds(text) {
+  return Math.max(1.2, Math.min(6, String(text || '').length * 0.07));
+}
+
+/** Shifts every timestamp of an SRT document by `seconds` (negative = earlier). */
+export function shiftSrt(text, seconds) {
+  const offset = Math.round((Number(seconds) || 0) * 1000);
+  if (!offset) return text;
+  const stamp = /(\d{2}):(\d{2}):(\d{2})[,.](\d{3})/gu;
+  const shifted = (match, hours, minutes, secs, millis) => {
+    const total = Math.max(0, ((Number(hours) * 60 + Number(minutes)) * 60 + Number(secs)) * 1000 + Number(millis) + offset);
+    const pad = (value, size = 2) => String(value).padStart(size, '0');
+    return `${pad(Math.floor(total / 3600000))}:${pad(Math.floor(total / 60000) % 60)}:${pad(Math.floor(total / 1000) % 60)},${pad(total % 1000, 3)}`;
+  };
+  return text.replace(/^(.*-->.*)$/gmu, (line) => line.replace(stamp, shifted));
 }
 
 export function srt(entries) {

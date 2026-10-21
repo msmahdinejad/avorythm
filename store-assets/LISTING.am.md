@@ -34,8 +34,9 @@ Avorythm ነፃ እና ክፍት ምንጭ ነው። የውጭ AI አገልግ�
 
 የግላዊነት ፖሊሲ: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## በ1.1.17 ምን አዲስ ነገር አለ
+## በ1.1.18 ምን አዲስ ነገር አለ
 
-- ቋንቋ መምረጥ ቀላል ሆኗል፦ ታዋቂ ቋንቋዎች ቀድመው ይታያሉ፣ የቻይንኛ እና የፖርቹጋልኛ ዝርያዎችም በግልጽ ተለይተዋል።
-- አዲስ የጀርመንኛ፣ የፈረንሳይኛ፣ የጣሊያንኛ፣ የሩሲያኛ እና የዐረብኛ የፕሮጀክት ሰነዶች እና ግብዓቶች ተጨምረዋል።
-- በእውነተኛው የምርቱ በይነገጽ ላይ የተመሠረቱ የመደብሩ ምስሎች ታድሰዋል።
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

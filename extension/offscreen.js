@@ -4,7 +4,6 @@ import {
   base64ToBytes,
   captionSegments,
   liveUrl,
-  latestCaption,
   mergeTranscript,
   normalizeSettings,
   outputMix,
@@ -45,6 +44,9 @@ let syncQueue = [];
 let players = new Set();
 let speech = {active: false, started: 0, silentFor: 0, completed: []};
 let captureTimeline = 0;
+// Synchronized mode counts samples only from the moment MediaRecorder starts, so
+// speech timestamps and the recorded video share the same zero.
+let captureOpen = true;
 const emptySyncLiveTurn = () => ({
   audio: [],
   source: [],
@@ -82,6 +84,26 @@ const SYNC_TURN_MAX_MS = 3000;
 const MEDIA_RECORDER_STOP_MS = 10000;
 const DUB_OUTPUT_RATE = 24000;
 const AUDIBLE_SAMPLE_THRESHOLD = 64;
+const VIDEO_BITS_PER_SECOND = 6_000_000;
+const AUDIO_BITS_PER_SECOND = 128_000;
+
+// A static or slowly changing tab emits very few video frames. Asking for a
+// minimum frame rate keeps the recorded WebM free of multi-second holes that the
+// player would otherwise treat as an empty buffer.
+async function openTabStream(streamId, withVideo) {
+  const tab = {chromeMediaSource: 'tab', chromeMediaSourceId: streamId};
+  const audio = {mandatory: tab};
+  if (!withVideo) return navigator.mediaDevices.getUserMedia({audio, video: false});
+  try {
+    return await navigator.mediaDevices.getUserMedia({
+      audio,
+      video: {mandatory: {...tab, maxWidth: 1920, maxHeight: 1080, minFrameRate: 24, maxFrameRate: 60}}
+    });
+  } catch (error) {
+    if (!['OverconstrainedError', 'TypeError'].includes(error?.name)) throw error;
+    return navigator.mediaDevices.getUserMedia({audio, video: {mandatory: tab}});
+  }
+}
 
 function report(update) {
   return chrome.runtime.sendMessage({target: 'background', type: 'bridge-state', update});
@@ -187,13 +209,21 @@ async function startMediaBridge() {
     throw new Error('synchronized_player_unavailable');
   }
   openSyncBridge();
+  // VP8 first: realtime VP9 at 2.5 Mbps kept only ~55% of 60 fps frames in a
+  // local 1080p benchmark, which looked like a low-fps recording. VP8 at a
+  // higher bitrate keeps ~90% and is decodable by MSE and the export step.
   const candidates = [
-    'video/webm;codecs=vp9,opus',
     'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=vp9,opus',
     'video/webm'
   ];
-  const mimeType = candidates.find((type) => MediaRecorder.isTypeSupported(type)) || '';
-  mediaRecorder = new MediaRecorder(stream, mimeType ? {mimeType, videoBitsPerSecond: 2_500_000} : undefined);
+  const playable = (type) => MediaRecorder.isTypeSupported(type) &&
+    (typeof MediaSource !== 'function' || MediaSource.isTypeSupported?.(type) !== false);
+  const mimeType = candidates.find(playable) || candidates.find((type) => MediaRecorder.isTypeSupported(type)) || '';
+  mediaRecorder = new MediaRecorder(
+    stream,
+    mimeType ? {mimeType, videoBitsPerSecond: VIDEO_BITS_PER_SECOND, audioBitsPerSecond: AUDIO_BITS_PER_SECOND} : undefined
+  );
   const resolvedType = mediaRecorder.mimeType || mimeType || 'video/webm';
   capturedVideo = await CapturedVideo.create(resolvedType);
   postSync({type: 'media-init', mimeType: resolvedType, bufferSeconds: config.syncBufferSeconds});
@@ -213,6 +243,8 @@ async function startMediaBridge() {
     };
   });
   mediaRecorder.start(250);
+  captureTimeline = 0;
+  captureOpen = true;
 }
 
 async function stopMediaCapture() {
@@ -257,7 +289,7 @@ async function persistSyncArtifacts(video) {
   const translatedName=await writeOpfsFile(root,`${token}-translated.srt`,new Blob(['\ufeff',srt(translated)],{type:'application/x-subrip'}));
   const metadataName=`${token}-timeline.json`;
   const artifacts={videoFileName:video.fileName,dubbedFileName:dubbedName,sourceSubtitleFileName:sourceName,translatedSubtitleFileName:translatedName,metadataFileName:metadataName,mimeType:syncInit?.mimeType||'video/webm',duration:Number(video.duration)||0};
-  await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:2,artifacts,duration:artifacts.duration,source,translated})],{type:'application/json'}));
+  await writeOpfsFile(root,metadataName,new Blob([JSON.stringify({version:2,artifacts,duration:artifacts.duration,source,translated,dubs:syncDubHistory.map((chunk)=>({start:chunk.start,duration:chunk.duration})).sort((left,right)=>left.start-right.start)})],{type:'application/json'}));
   return artifacts;
 }
 
@@ -634,7 +666,7 @@ function clearDubPlayback() {
 async function handleTranscript(translated, transcription) {
   const tracker = translated ? translatedTracker : sourceTracker;
   const completed = mergeTranscript(tracker, transcription.text || '', transcription.finished, elapsed());
-  const text = latestCaption(completed?.text || tracker.partial);
+  const text = (completed?.text || tracker.partial || '').trim();
   if (completed && !(config.playbackMode === 'synchronized' && (translated || config.syncCaptionEngine === 'whisper'))) {
     recorder?.addSubtitle(translated, completed);
   }
@@ -826,10 +858,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
     });
     await report({status:'connected',active:true,error:''});
   }
-  stream = await navigator.mediaDevices.getUserMedia({
-    audio: {mandatory: {chromeMediaSource: 'tab', chromeMediaSourceId: streamId}},
-    video: synchronized ? {mandatory: {chromeMediaSource: 'tab', chromeMediaSourceId: streamId}} : false
-  });
+  stream = await openTabStream(streamId, synchronized);
   sessionStartedAt = performance.now();
   context = new AudioContext({latencyHint: 'interactive'});
   await context.audioWorklet.addModule('pcm-worklet.js');
@@ -842,12 +871,9 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
   source.connect(sourceGain).connect(context.destination);
   source.connect(captureNode).connect(silent).connect(context.destination);
   dubGain.connect(context.destination);
-  if (synchronized) await startMediaBridge();
-  contextStartedAt = context.currentTime;
-  nextDubTime = context.currentTime;
-  applyVolumes();
+  captureOpen = !synchronized;
   captureNode.port.onmessage = ({data}) => {
-    if (stopping) return;
+    if (stopping || !captureOpen) return;
     recorder?.original.append(data);
     const pcm = data instanceof Uint8Array ? data : new Uint8Array(data);
     captureTimeline += pcm.byteLength / 2 / 16000;
@@ -861,6 +887,10 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
       if (audioBacklog.length > RECONNECT_BUFFER_CHUNKS) audioBacklog.shift();
     }
   };
+  if (synchronized) await startMediaBridge();
+  contextStartedAt = context.currentTime;
+  nextDubTime = context.currentTime;
+  applyVolumes();
   await context.resume();
 }
 

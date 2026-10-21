@@ -37,8 +37,9 @@ Guide complet en anglais : https://github.com/msmahdinejad/avorythm/blob/main/do
 
 Politique de confidentialité : https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nouveautés de la version 1.1.17
+## Nouveautés de la version 1.1.18
 
-- Sélection des langues facilitée, avec les langues courantes en premier et des variantes chinoises et portugaises clairement identifiées.
-- Documentation et ressources du projet en allemand, français, italien, russe et arabe.
-- Visuels du Store renouvelés à partir de l’interface réelle du produit.
+- Lecteur synchronisé : la vidéo mise en tampon n'est plus jetée quand Chrome signale un blocage du décodeur ; la lecture saute les trous du tampon en direct et ne le reconstruit qu'après plusieurs blocages durables.
+- Nouveaux réglages manuels du **décalage des sous-titres** et du **décalage de la voix doublée**, appliqués à la lecture, à la vidéo exportée et aux fichiers SRT téléchargés.
+- Enregistrements plus fluides : capture VP8 à débit plus élevé avec cadence minimale, et export sans perte d'images.
+- Sous-titres sur la page plus lisibles : lignes défilantes ou une phrase à la fois, nombre de lignes et durée d'affichage réglables.

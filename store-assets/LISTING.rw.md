@@ -34,8 +34,9 @@ Igitabo cy'umukoresha (mu Cyongereza): https://github.com/msmahdinejad/avorythm/
 
 Politiki y'ibanga: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Ibishya muri 1.1.17
+## Ibishya muri 1.1.18
 
-- Guhitamo ururimi byarorohejwe: indimi zikoreshwa cyane ziza mbere, kandi ubwoko bw'Igishinwa n'Igiporutugali bugaragazwa neza.
-- Hiyongereyeho inyandiko n'ibindi bikoresho by'umushinga mu Kidage, Igifaransa, Igitaliyani, Ikirusiya n'Icyarabu.
-- Amashusho yo mu bubiko bw'inyongera yavuguruwe hashingiwe ku mugaragarire nyayo y'igicuruzwa.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.

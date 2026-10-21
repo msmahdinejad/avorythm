@@ -34,8 +34,9 @@ Avorythm е безплатен проект с отворен код. Безпл
 
 Политика за поверителност: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Какво ново във версия 1.1.17
+## Какво ново във версия 1.1.18
 
-- По-лесен избор на език: популярните езици са показани първи, с ясно разграничени варианти на китайски и португалски.
-- Нова документация и ресурси за проекта на немски, френски, италиански, руски и арабски.
-- Обновени изображения в магазина, базирани на реалния интерфейс на продукта.
+- Synchronized player: buffered video is no longer thrown away when Chrome reports a decoder stall; playback skips holes in the live buffer and rebuilds only after repeated hard freezes.
+- New manual **Subtitle timing** and **Dubbed voice timing** controls in the player, applied to playback, the exported video, and the downloaded SRT files.
+- Smoother recordings: VP8 capture at a higher bitrate with a minimum frame rate, and an export step that no longer drops frames.
+- On-page subtitles stay readable: choose scrolling lines or one sentence at a time, how many lines to show, and how long each line stays.
