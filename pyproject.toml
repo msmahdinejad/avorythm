@@ -19,29 +19,29 @@ classifiers = [
   "Topic :: Multimedia :: Sound/Audio",
 ]
 dependencies = [
-  "fastapi==0.141.1",
-  "google-genai==2.25.0",
+  "fastapi==0.162.0",
+  "google-genai==2.34.0",
   "httpx==0.28.1",
   "keyring==25.7.0",
   "numpy==2.4.6",
-  "PyAudioWPatch==0.2.12.8; platform_system == 'Windows'",
+  "PyAudioWPatch==0.2.12.9; platform_system == 'Windows'",
   "sounddevice==0.5.6; platform_system != 'Windows'",
   "pywebview==6.2.1; platform_system != 'Linux'",
   "pywebview[qt]==6.2.1; platform_system == 'Linux'",
-  "python-dotenv==1.2.3",
+  "python-dotenv==1.2.4",
   "uvicorn==0.54.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "mypy==2.3.1",
-  "pytest==9.1.1",
-  "pytest-asyncio==1.4.0",
-  "ruff==0.16.9",
+  "mypy==2.4.1",
+  "pytest==9.2.0",
+  "pytest-asyncio==1.4.1",
+  "ruff==0.17.3",
 ]
 build = ["pyinstaller==6.22.3"]
-browser = ["playwright==1.63.0"]
-artwork = ["Pillow>=10.2,<13"]
+browser = ["playwright==1.64.1"]
+artwork = ["Pillow>=10.2,<14"]
 
 [project.urls]
 Homepage = "https://github.com/msmahdinejad/avorythm"
