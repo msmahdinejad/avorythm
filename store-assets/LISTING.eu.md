@@ -18,7 +18,7 @@ Kontrolatu lau kanalak modu independentean: jatorrizko audioa, bikoiztutako audi
 
 Luzapenak modu independentean funtzionatzen du, mahaigaineko aplikaziorik, Python, FFmpeg, localhost edo audio-gailu birtualik gabe. Luzapenaren interfazea ingelesez, persieraz eta txinera sinplifikatuan dago; itzulpenaren xede-hizkuntza 79 hizkuntzako zerrendatik hautatzen da modu independentean.
 
-Konfigurazioa: sartu Google AI Studio-ko zure Gemini API gakoa Ezarpenetan, eman berariazko baimena hautatutako fitxako audioa Google Gemini-ra bidaltzeko, aukeratu hizkuntza bat eta sakatu Hasi. Aukerako doitasun-moduak Groq Whisper erabiltzen du transkripziorako, Gemini testu-itzulpenerako eta Gemini 3.1 Flash Live hizketarako. Groq gako bat, aukerako ostalari-baimena eta audiorako beste baimen bat behar ditu.
+Konfigurazioa: sartu Google AI Studio-ko zure Gemini API gakoa Ezarpenetan, eman berariazko baimena hautatutako fitxako audioa Google Gemini-ra bidaltzeko, aukeratu hizkuntza bat eta sakatu Hasi. Aukerako doitasun-moduak Groq Whisper erabiltzen du transkripziorako, Gemini testu-itzulpenerako eta Gemini 3.8 Flash TTS hizketarako. Groq gako bat, aukerako ostalari-baimena eta audiorako beste baimen bat behar ditu.
 
 Pribatutasuna: kaptura baimena eman eta Hasi sakatu ondoren bakarrik hasten da. Hautatutako fitxako audioa eta transkripzioak eskatutako prozesamendurako behar diren AI-hornitzaileengana bidaltzen dira zuzenean, eta inoiz ez Avorythm-en mantentzaileari. Ez dago iragarkirik, analitikarik edo garatzaileak kudeatutako errelebo-zerbitzaririk.
 
@@ -34,6 +34,7 @@ Erabiltzaile-gida (ingelesez): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Pribatutasun-politika: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Zer berri: version 1.1.19
+## Zer berri: version 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

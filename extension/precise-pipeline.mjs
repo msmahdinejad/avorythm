@@ -1,9 +1,11 @@
 import {
   base64ToBytes,
   captionSegments,
-  fileVoiceSetupMessage,
+  DEFAULT_VOICE_MODEL,
   latestCaption,
-  liveUrl,
+  pcmFromAudio,
+  speechRequest,
+  VOICE_MODELS,
   wavHeader
 } from './core.mjs';
 
@@ -12,12 +14,12 @@ const OUTPUT_RATE = 24000;
 const WINDOW_BYTES = 12 * INPUT_RATE * 2;
 const OVERLAP_BYTES = 1.5 * INPUT_RATE * 2;
 const OVERLAP_SECONDS = OVERLAP_BYTES / (INPUT_RATE * 2);
-const NARRATION_IDLE_MS = 600;
-const NARRATION_MAX_MS = 12000;
+const NARRATION_REQUEST_MS = 30000;
 const GROQ_REQUEST_MS = 30000;
 const TRANSLATION_REQUEST_MS = 30000;
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const TRANSLATION_MODELS = [
+  ['gemini-3.8-flash', 5, 20, true],
   ['gemini-3.6-flash', 5, 20, true],
   ['gemini-3.5-flash', 5, 20, true],
   ['gemini-3-flash-preview', 5, 20, true],
@@ -132,32 +134,29 @@ export class PreciseDubbingPipeline {
     groqKey,
     targetLanguage,
     voiceName,
+    voiceModel = DEFAULT_VOICE_MODEL,
     onCaption,
     onDub,
     onFrontier,
     onSourceText,
     onWarning,
     fetchImpl = fetch,
-    WebSocketImpl = WebSocket,
     timeouts = {}
   }) {
     this.geminiKey = geminiKey;
     this.groqKey = groqKey;
     this.targetLanguage = targetLanguage;
     this.voiceName = voiceName;
+    this.voiceModel = VOICE_MODELS.includes(voiceModel) ? voiceModel : DEFAULT_VOICE_MODEL;
     this.onCaption = onCaption;
     this.onDub = onDub;
     this.onFrontier = onFrontier;
     this.onSourceText = onSourceText;
     this.onWarning = onWarning;
     this.fetch = (...args) => fetchImpl(...args);
-    this.WebSocket = WebSocketImpl;
-    this.narrationIdleMs = Number.isFinite(timeouts.narrationIdleMs)
-      ? Math.max(1, timeouts.narrationIdleMs)
-      : NARRATION_IDLE_MS;
-    this.narrationMaxMs = Number.isFinite(timeouts.narrationMaxMs)
-      ? Math.max(this.narrationIdleMs, timeouts.narrationMaxMs)
-      : NARRATION_MAX_MS;
+    this.narrationRequestMs = Number.isFinite(timeouts.narrationRequestMs)
+      ? Math.max(1, timeouts.narrationRequestMs)
+      : NARRATION_REQUEST_MS;
     this.groqRequestMs = Number.isFinite(timeouts.groqRequestMs)
       ? Math.max(1, timeouts.groqRequestMs)
       : GROQ_REQUEST_MS;
@@ -178,8 +177,6 @@ export class PreciseDubbingPipeline {
     this.busy = Promise.resolve();
     this.usage = new Map();
     this.unavailableModels = new Set();
-    this.narratorSession = null;
-    this.narratorTurn = null;
   }
 
   push(pcm) {
@@ -188,12 +185,8 @@ export class PreciseDubbingPipeline {
 
   async flush() {
     this.#queue(null, true);
-    try {
-      await this.busy;
-      if (this.failure) throw this.failure;
-    } finally {
-      this.#closeNarrator();
-    }
+    await this.busy;
+    if (this.failure) throw this.failure;
   }
 
   #queue(pcm, flush) {
@@ -338,185 +331,40 @@ export class PreciseDubbingPipeline {
     }
   }
 
-  #protocolError(value) {
-    const status = Number(value?.code || value?.status || 0);
-    const detail = String(value?.message || value?.status || '').toLowerCase();
-    if ([401, 403].includes(status) || /(?:api key|unauth|permission|forbidden)/u.test(detail)) {
-      return this.#narratorError('gemini_voice_auth_failed', status || 401);
-    }
-    if (status === 429 || /(?:quota|rate limit|resource exhausted)/u.test(detail)) {
-      return this.#narratorError('gemini_voice_quota_exceeded', 429);
-    }
+  #voiceHttpError(status) {
+    if ([401, 403].includes(status)) return this.#narratorError('gemini_voice_auth_failed', status);
+    if (status === 429) return this.#narratorError('gemini_voice_quota_exceeded', 429);
     return this.#narratorError('gemini_voice_failed', status);
   }
 
-  #closeNarrator(session = this.narratorSession) {
-    if (!session || session.closed) return;
-    session.closed = true;
-    session.intentional = true;
-    clearTimeout(session.setupTimer);
-    if (this.narratorSession === session) this.narratorSession = null;
-    try { session.socket.close(); } catch {}
-  }
-
-  #finishNarratorTurn(turn, error = null, recycle = false) {
-    if (!turn || turn.settled || this.narratorTurn !== turn) return;
-    turn.settled = true;
-    clearTimeout(turn.timeout);
-    clearTimeout(turn.idleTimer);
-    clearTimeout(turn.maxTimer);
-    this.narratorTurn = null;
-    if (recycle) this.#closeNarrator(turn.session);
-    if (error) {
-      turn.reject(error);
-      return;
+  // One request per utterance: the Gemini 3.8 TTS models read the text verbatim,
+  // so there is no session to keep alive and no transcript to reconcile.
+  async #narrateOnce(text) {
+    const {response, result} = await this.#fetchJson(
+      `https://generativelanguage.googleapis.com/v1beta/models/${this.voiceModel}:generateContent?key=${encodeURIComponent(this.geminiKey)}`,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(speechRequest(text, this.voiceName))
+      },
+      this.narrationRequestMs,
+      'gemini_voice_timeout'
+    );
+    if (!response.ok) throw this.#voiceHttpError(response.status);
+    const chunks = [];
+    for (const candidate of result?.candidates || []) {
+      for (const part of candidate.content?.parts || []) {
+        const inline = part.inlineData || part.inline_data;
+        if (inline?.data) chunks.push(pcmFromAudio(base64ToBytes(inline.data)));
+      }
     }
-    const size = turn.chunks.reduce((total, item) => total + item.byteLength, 0);
-    const audio = new Uint8Array(size);
+    const audio = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.byteLength, 0));
     let offset = 0;
-    for (const chunk of turn.chunks) {
+    for (const chunk of chunks) {
       audio.set(chunk, offset);
       offset += chunk.byteLength;
     }
-    turn.resolve(trimNarration(audio));
-  }
-
-  #disconnectNarrator(session, error) {
-    if (!session || session.closed) return;
-    session.closed = true;
-    session.intentional = true;
-    clearTimeout(session.setupTimer);
-    if (this.narratorSession === session) this.narratorSession = null;
-    if (!session.ready) session.rejectReady(error);
-    if (this.narratorTurn?.session === session) {
-      this.#finishNarratorTurn(this.narratorTurn, error);
-    }
-    try { session.socket.close(); } catch {}
-  }
-
-  #scheduleNarratorIdle(turn) {
-    clearTimeout(turn.idleTimer);
-    turn.idleTimer = setTimeout(
-      () => this.#finishNarratorTurn(turn, null, true),
-      this.narrationIdleMs
-    );
-    turn.maxTimer ||= setTimeout(
-      () => this.#finishNarratorTurn(turn, null, true),
-      this.narrationMaxMs
-    );
-  }
-
-  #openNarrator() {
-    if (this.narratorSession && !this.narratorSession.closed) {
-      return this.narratorSession.readyPromise;
-    }
-    const socket = new this.WebSocket(liveUrl(this.geminiKey));
-    const session = {
-      socket,
-      ready: false,
-      closed: false,
-      intentional: false,
-      messages: Promise.resolve(),
-      setupTimer: null,
-      resolveReady: null,
-      rejectReady: null,
-      readyPromise: null
-    };
-    session.readyPromise = new Promise((resolve, reject) => {
-      session.resolveReady = resolve;
-      session.rejectReady = reject;
-    });
-    session.setupTimer = setTimeout(() => this.#disconnectNarrator(
-      session,
-      this.#narratorError('gemini_voice_timeout')
-    ), 30000);
-    this.narratorSession = session;
-    socket.onopen = () => {
-      try {
-        socket.send(JSON.stringify(fileVoiceSetupMessage(this.targetLanguage, this.voiceName)));
-      } catch {
-        this.#disconnectNarrator(session, this.#narratorError('gemini_voice_closed'));
-      }
-    };
-    socket.onmessage = (event) => {
-      session.messages = session.messages.then(async () => {
-        if (session.closed) return;
-        const payload = typeof Blob !== 'undefined' && event.data instanceof Blob
-          ? await event.data.text()
-          : event.data;
-        const message = JSON.parse(payload);
-        if (message.error) throw this.#protocolError(message.error);
-        if (message.setupComplete && !session.ready) {
-          session.ready = true;
-          clearTimeout(session.setupTimer);
-          session.resolveReady(session);
-        }
-        if (message.goAway) {
-          throw this.#narratorError('gemini_voice_go_away');
-        }
-        const content = message.serverContent;
-        const turn = this.narratorTurn?.session === session ? this.narratorTurn : null;
-        for (const part of content?.modelTurn?.parts || []) {
-          const inline = part.inlineData || part.inline_data;
-          if (turn && inline?.data) {
-            turn.chunks.push(base64ToBytes(inline.data));
-            turn.hasAudio = true;
-            this.#scheduleNarratorIdle(turn);
-          }
-        }
-        if (turn?.hasAudio && content?.turnComplete) {
-          this.#finishNarratorTurn(turn);
-        } else if (turn?.hasAudio && content?.generationComplete) {
-          this.#finishNarratorTurn(turn);
-        }
-      }).catch((error) => this.#disconnectNarrator(
-        session,
-        error instanceof Error ? error : this.#narratorError('gemini_voice_failed')
-      ));
-    };
-    socket.onerror = () => this.#disconnectNarrator(
-      session,
-      this.#narratorError('gemini_voice_failed')
-    );
-    socket.onclose = () => {
-      if (!session.intentional) this.#disconnectNarrator(
-        session,
-        this.#narratorError(session.ready ? 'gemini_voice_closed' : 'gemini_voice_setup_closed')
-      );
-    };
-    return session.readyPromise;
-  }
-
-  async #narrateOnce(text) {
-    const session = await this.#openNarrator();
-    if (session.closed || this.narratorSession !== session) {
-      throw this.#narratorError('gemini_voice_closed');
-    }
-    if (this.narratorTurn) throw this.#narratorError('gemini_voice_busy');
-    return new Promise((resolve, reject) => {
-      const turn = {
-        session,
-        chunks: [],
-        resolve,
-        reject,
-        settled: false,
-        hasAudio: false,
-        idleTimer: null,
-        maxTimer: null,
-        timeout: null
-      };
-      turn.timeout = setTimeout(() => this.#finishNarratorTurn(
-        turn,
-        this.#narratorError('gemini_voice_timeout'),
-        true
-      ), 30000);
-      this.narratorTurn = turn;
-      try {
-        session.socket.send(JSON.stringify({realtimeInput: {text}}));
-      } catch {
-        this.#finishNarratorTurn(turn, this.#narratorError('gemini_voice_closed'), true);
-      }
-    });
+    return trimNarration(audio);
   }
 
   async #narrate(text) {
@@ -528,7 +376,6 @@ export class PreciseDubbingPipeline {
         return narration;
       } catch (error) {
         lastError = error;
-        this.#closeNarrator();
         if (this.#isFatalPipelineError(error) || attempt === 1) break;
         await wait(400);
       }

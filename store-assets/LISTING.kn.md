@@ -18,7 +18,7 @@ Avorythm — AI ನೇರ ಡಬ್ಬಿಂಗ್ ಮತ್ತು ಉಪಶೀ�
 
 ಡೆಸ್ಕ್‌ಟಾಪ್ ಆ್ಯಪ್, Python, FFmpeg, localhost ಅಥವಾ ವರ್ಚುವಲ್ ಆಡಿಯೊ ಸಾಧನದ ಅಗತ್ಯವಿಲ್ಲದೆ ಈ ವಿಸ್ತರಣೆ ಸ್ವತಂತ್ರವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ. ಪ್ರಸ್ತುತ ಇಂಟರ್‌ಫೇಸ್ ಇಂಗ್ಲಿಷ್, ಪರ್ಷಿಯನ್ ಮತ್ತು ಸರಳೀಕೃತ ಚೈನೀಸ್ ಭಾಷೆಗಳಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯವಿದೆ; ಅನುವಾದದ ಗುರಿ ಭಾಷೆಯನ್ನು 79 ಭಾಷಾ ಆಯ್ಕೆಗಳಿಂದ ಪ್ರತ್ಯೇಕವಾಗಿ ಆರಿಸಬಹುದು.
 
-ಸೆಟಪ್: ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Google AI Studio ನಿಂದ ಪಡೆದ ನಿಮ್ಮದೇ Gemini API ಕೀಲಿಯನ್ನು ನಮೂದಿಸಿ, ಆಯ್ದ ಟ್ಯಾಬ್‌ನ ಆಡಿಯೊವನ್ನು Google Gemini ಗೆ ಕಳುಹಿಸಲು ಸ್ಪಷ್ಟ ಒಪ್ಪಿಗೆ ನೀಡಿ, ಭಾಷೆಯನ್ನು ಆರಿಸಿ ಮತ್ತು Start ಒತ್ತಿರಿ. ಐಚ್ಛಿಕ ನಿಖರ ಮೋಡ್ ಲಿಪ್ಯಂತರಕ್ಕೆ Groq Whisper, ಪಠ್ಯ ಅನುವಾದಕ್ಕೆ Gemini ಮತ್ತು ಮಾತಿನ ಉತ್ಪಾದನೆಗೆ Gemini 3.1 Flash Live ಬಳಸುತ್ತದೆ. ಇದಕ್ಕೆ Groq ಕೀಲಿ, ಐಚ್ಛಿಕ ಹೋಸ್ಟ್ ಅನುಮತಿ ಮತ್ತು ಪ್ರತ್ಯೇಕ ಆಡಿಯೊ ಒಪ್ಪಿಗೆ ಅಗತ್ಯ.
+ಸೆಟಪ್: ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Google AI Studio ನಿಂದ ಪಡೆದ ನಿಮ್ಮದೇ Gemini API ಕೀಲಿಯನ್ನು ನಮೂದಿಸಿ, ಆಯ್ದ ಟ್ಯಾಬ್‌ನ ಆಡಿಯೊವನ್ನು Google Gemini ಗೆ ಕಳುಹಿಸಲು ಸ್ಪಷ್ಟ ಒಪ್ಪಿಗೆ ನೀಡಿ, ಭಾಷೆಯನ್ನು ಆರಿಸಿ ಮತ್ತು Start ಒತ್ತಿರಿ. ಐಚ್ಛಿಕ ನಿಖರ ಮೋಡ್ ಲಿಪ್ಯಂತರಕ್ಕೆ Groq Whisper, ಪಠ್ಯ ಅನುವಾದಕ್ಕೆ Gemini ಮತ್ತು ಮಾತಿನ ಉತ್ಪಾದನೆಗೆ Gemini 3.8 Flash TTS ಬಳಸುತ್ತದೆ. ಇದಕ್ಕೆ Groq ಕೀಲಿ, ಐಚ್ಛಿಕ ಹೋಸ್ಟ್ ಅನುಮತಿ ಮತ್ತು ಪ್ರತ್ಯೇಕ ಆಡಿಯೊ ಒಪ್ಪಿಗೆ ಅಗತ್ಯ.
 
 ಗೌಪ್ಯತೆ: ಒಪ್ಪಿಗೆ ನೀಡಿ Start ಒತ್ತಿದ ನಂತರವೇ ಸೆರೆಹಿಡಿಯುವಿಕೆ ಆರಂಭವಾಗುತ್ತದೆ. ಆಯ್ದ ಟ್ಯಾಬ್‌ನ ಆಡಿಯೊ ಮತ್ತು ಲಿಪ್ಯಂತರಗಳು ನೀವು ವಿನಂತಿಸಿದ ಪ್ರಕ್ರಿಯೆಗೆ ಅಗತ್ಯವಿರುವ AI ಸೇವಾ ಪೂರೈಕೆದಾರರಿಗೆ ನೇರವಾಗಿ ಹೋಗುತ್ತವೆ; Avorythm ನಿರ್ವಹಣಾಕಾರರಿಗೆ ಎಂದಿಗೂ ಹೋಗುವುದಿಲ್ಲ. ಜಾಹೀರಾತುಗಳು, ವಿಶ್ಲೇಷಣಾ ಟ್ರ್ಯಾಕಿಂಗ್ ಅಥವಾ ಡೆವಲಪರ್ ನಡೆಸುವ ಮಧ್ಯವರ್ತಿ ಸರ್ವರ್ ಇಲ್ಲ.
 
@@ -34,6 +34,7 @@ Avorythm ಉಚಿತ ಮತ್ತು ಮುಕ್ತ ಮೂಲದ ಯೋಜನ�
 
 ಗೌಪ್ಯತಾ ನೀತಿ: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19ರಲ್ಲಿ ಹೊಸದೇನು
+## 1.1.20ರಲ್ಲಿ ಹೊಸದೇನು
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

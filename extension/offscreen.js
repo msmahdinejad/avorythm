@@ -847,6 +847,7 @@ async function begin(streamId, nextConfig, nextApiKey, nextGroqApiKey) {
       groqKey:groqApiKey,
       targetLanguage:config.targetLanguage,
       voiceName:config.syncVoiceName,
+      voiceModel:config.syncVoiceModel,
       onCaption:(translated,cue)=>publishSynchronizedCaption(translated,cue),
       onDub:(chunk)=>{recorder?.dubbed.appendAt(new Uint8Array(chunk.data),chunk.start);postSync({type:'dub-chunk',...chunk});},
       onFrontier:(seconds)=>postSync({type:'processing-frontier',seconds}),

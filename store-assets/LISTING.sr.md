@@ -18,7 +18,7 @@ Avorythm — синхронизација уживо и титлови уз ве
 
 Екстензија ради самостално, без десктоп апликације, Python-а, FFmpeg-а, localhost-а или виртуелног аудио-уређаја. Тренутни интерфејс доступан је на енглеском, персијском и поједностављеном кинеском; циљни језик превода бира се засебно међу 79 језичких опција.
 
-Подешавање: унесите свој Gemini API кључ из Google AI Studio у подешавањима, изричито пристаните на слање звука из изабране картице услузи Google Gemini, изаберите језик и притисните „Покрени“. Опциони прецизни режим користи Groq Whisper за транскрипцију, Gemini за превод текста и Gemini 3.1 Flash Live за говор. За њега су потребни Groq кључ, опционална дозвола за приступ серверу и посебна сагласност за слање звука.
+Подешавање: унесите свој Gemini API кључ из Google AI Studio у подешавањима, изричито пристаните на слање звука из изабране картице услузи Google Gemini, изаберите језик и притисните „Покрени“. Опциони прецизни режим користи Groq Whisper за транскрипцију, Gemini за превод текста и Gemini 3.8 Flash TTS за говор. За њега су потребни Groq кључ, опционална дозвола за приступ серверу и посебна сагласност за слање звука.
 
 Приватност: снимање почиње тек након давања сагласности и притиска на „Покрени“. Звук из изабране картице и транскрипти шаљу се директно пружаоцима услуга вештачке интелигенције потребним за тражену обраду, а никада одржаваоцу Avorythm-а. Нема огласа, аналитике ни посредничког сервера којим управља програмер.
 
@@ -34,6 +34,7 @@ Avorythm је бесплатан и отвореног кода. Бесплат�
 
 Политика приватности: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Шта је ново у верзији 1.1.19
+## Шта је ново у верзији 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

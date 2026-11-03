@@ -18,7 +18,7 @@ Kendalikan empat saluran secara terpisah: audio asli, audio sulih suara, subtitl
 
 Ekstensi ini bekerja secara mandiri tanpa aplikasi desktop, Python, FFmpeg, localhost, atau perangkat audio virtual. Antarmukanya mendukung English, Persian, dan Simplified Chinese; bahasa terjemahan dipilih secara terpisah dari 79 pilihan bahasa.
 
-Penyiapan: masukkan kunci API Gemini Anda sendiri dari Google AI Studio di Setelan, berikan persetujuan secara eksplisit untuk mengirim audio dari tab yang dipilih ke Google Gemini, pilih bahasa, lalu tekan Mulai. Mode presisi opsional menggunakan Groq Whisper untuk transkripsi, Gemini untuk terjemahan teks, dan Gemini 3.1 Flash Live untuk ucapan. Mode ini memerlukan kunci Groq, izin host opsional, dan persetujuan audio terpisah.
+Penyiapan: masukkan kunci API Gemini Anda sendiri dari Google AI Studio di Setelan, berikan persetujuan secara eksplisit untuk mengirim audio dari tab yang dipilih ke Google Gemini, pilih bahasa, lalu tekan Mulai. Mode presisi opsional menggunakan Groq Whisper untuk transkripsi, Gemini untuk terjemahan teks, dan Gemini 3.8 Flash TTS untuk ucapan. Mode ini memerlukan kunci Groq, izin host opsional, dan persetujuan audio terpisah.
 
 Privasi: perekaman hanya dimulai setelah persetujuan dan tombol Mulai diberikan. Audio dan transkrip dari tab yang dipilih dikirim langsung ke penyedia AI yang diperlukan untuk pemrosesan yang diminta, bukan kepada pengelola Avorythm. Tidak ada iklan, analitik, atau server relai yang dioperasikan pengembang.
 
@@ -34,6 +34,7 @@ Panduan pengguna (English): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Kebijakan privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yang baru di 1.1.19
+## Yang baru di 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

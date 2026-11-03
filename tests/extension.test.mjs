@@ -8,19 +8,22 @@ import {
   base64ToBytes,
   captionSegments,
   detectSystemLocale,
-  fileVoiceSetupMessage,
   groqReadinessError,
   latestCaption,
   liveUrl,
   mergeTranscript,
   normalizeSettings,
   outputMix,
+  pcmFromAudio,
   setupMessage,
+  speechRequest,
   srt,
   subtitlesEnabled,
   updateOutputMix,
+  DEFAULT_VOICE_MODEL,
   GROQ_AUDIO_CONSENT_VERSION,
   LIVE_ENDPOINT,
+  VOICE_MODELS,
   wavHeader
 } from '../extension/core.mjs';
 
@@ -182,16 +185,30 @@ test('builds the documented Gemini Live Translate protocol', () => {
   assert.match(liveUrl('AIza/a+b'), /\?key=AIza%2Fa%2Bb$/);
 });
 
-test('builds the Gemini 3.1 Live speech renderer used by the precise sync pipeline', () => {
-  const setup = fileVoiceSetupMessage('fa', 'Kore').setup;
-  assert.equal(setup.model, 'models/gemini-3.1-flash-live-preview');
-  assert.deepEqual(setup.generationConfig.responseModalities, ['AUDIO']);
-  assert.equal(setup.generationConfig.speechConfig.languageCode, 'fa');
-  assert.equal(setup.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Kore');
-  assert.equal(setup.generationConfig.thinkingConfig.thinkingLevel, 'minimal');
-  assert.equal(setup.generationConfig.thinkingConfig.thinkingBudget, undefined);
-  assert.match(setup.systemInstruction.parts[0].text, /exactly the supplied text/i);
+test('builds the Gemini 3.8 text-to-speech request used by the precise sync pipeline', () => {
+  const request = speechRequest('سلام', 'Kore');
+  assert.deepEqual(request.contents, [{role: 'user', parts: [{text: 'سلام'}]}]);
+  assert.deepEqual(request.generationConfig.responseModalities, ['AUDIO']);
+  assert.equal(request.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Kore');
+  assert.equal(request.generationConfig.speechConfig.languageCode, undefined, 'the TTS model detects the language');
+  assert.deepEqual(VOICE_MODELS, ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts']);
+  assert.equal(DEFAULT_VOICE_MODEL, 'gemini-3.8-flash-tts');
+});
 
+test('only offers supported voice models', () => {
+  assert.equal(normalizeSettings({syncVoiceModel: 'gemini-3.8-flash-lite-tts'}).syncVoiceModel, 'gemini-3.8-flash-lite-tts');
+  assert.equal(normalizeSettings({syncVoiceModel: 'gemini-3.8-flash-tts'}).syncVoiceModel, DEFAULT_VOICE_MODEL);
+  assert.equal(normalizeSettings({}).syncVoiceModel, DEFAULT_VOICE_MODEL);
+});
+
+test('extracts PCM from a WAV container and leaves raw PCM alone', () => {
+  const pcm = Uint8Array.from([1, 0, 2, 0, 3, 0]);
+  const header = new Uint8Array(wavHeader(pcm.length, 24000));
+  const wav = new Uint8Array(header.length + pcm.length);
+  wav.set(header); wav.set(pcm, header.length);
+  assert.deepEqual([...pcmFromAudio(wav)], [...pcm]);
+  assert.deepEqual([...pcmFromAudio(pcm)], [...pcm]);
+  assert.equal(pcmFromAudio(new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x41, 0x56, 0x45])).length, 0);
 });
 
 test('keeps live captions sentence-sized', () => {

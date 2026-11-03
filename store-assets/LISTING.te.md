@@ -18,7 +18,7 @@ Avorythm — AI ప్రత్యక్ష డబ్బింగ్, ఉపశ�
 
 ఈ ఎక్స్‌టెన్షన్ డెస్క్‌టాప్ యాప్, Python, FFmpeg, localhost లేదా వర్చువల్ ఆడియో పరికరం లేకుండానే స్వతంత్రంగా పనిచేస్తుంది. ప్రస్తుత ఇంటర్‌ఫేస్‌కు ఇంగ్లీష్, పర్షియన్, సరళీకృత చైనీస్ భాషల్లో మాత్రమే మద్దతు ఉంది; అనువాదం కోసం లక్ష్య భాషను 79 భాషా ఎంపికల నుంచి విడిగా ఎంచుకోవచ్చు.
 
-సెటప్: సెట్టింగ్‌లలో Google AI Studio నుంచి పొందిన మీ స్వంత Gemini API కీని నమోదు చేయండి, మీరు ఎంచుకున్న ట్యాబ్‌లోని ఆడియోను Google Geminiకి పంపడానికి స్పష్టంగా సమ్మతించండి, భాషను ఎంచుకుని ప్రారంభించు నొక్కండి. ఐచ్ఛిక ఖచ్చితమైన మోడ్‌లో ట్రాన్స్‌క్రిప్షన్ కోసం Groq Whisper, పాఠ్య అనువాదం కోసం Gemini, మాటల కోసం Gemini 3.1 Flash Live ఉపయోగించబడతాయి. దీనికి Groq కీ, ఐచ్ఛిక హోస్ట్ అనుమతి, ఆడియోకు విడిగా సమ్మతి అవసరం.
+సెటప్: సెట్టింగ్‌లలో Google AI Studio నుంచి పొందిన మీ స్వంత Gemini API కీని నమోదు చేయండి, మీరు ఎంచుకున్న ట్యాబ్‌లోని ఆడియోను Google Geminiకి పంపడానికి స్పష్టంగా సమ్మతించండి, భాషను ఎంచుకుని ప్రారంభించు నొక్కండి. ఐచ్ఛిక ఖచ్చితమైన మోడ్‌లో ట్రాన్స్‌క్రిప్షన్ కోసం Groq Whisper, పాఠ్య అనువాదం కోసం Gemini, మాటల కోసం Gemini 3.8 Flash TTS ఉపయోగించబడతాయి. దీనికి Groq కీ, ఐచ్ఛిక హోస్ట్ అనుమతి, ఆడియోకు విడిగా సమ్మతి అవసరం.
 
 గోప్యత: మీరు సమ్మతించి ప్రారంభించు నొక్కిన తర్వాత మాత్రమే క్యాప్చర్ మొదలవుతుంది. మీరు ఎంచుకున్న ట్యాబ్‌లోని ఆడియో, ట్రాన్స్‌క్రిప్ట్‌లు కోరిన ప్రాసెసింగ్‌కు అవసరమైన AI సేవాదారులకే నేరుగా వెళ్తాయి; Avorythm నిర్వహణదారుకు ఎప్పుడూ వెళ్లవు. ప్రకటనలు, విశ్లేషణలు లేదా డెవలపర్ నిర్వహించే మధ్యవర్తి సర్వర్ లేవు.
 
@@ -34,6 +34,7 @@ Avorythm ఉచితం, ఓపెన్ సోర్స్. బాహ్య AI
 
 గోప్యతా విధానం: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19లో కొత్తవి
+## 1.1.20లో కొత్తవి
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

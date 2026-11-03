@@ -18,7 +18,7 @@ Neovisno upravljajte četirima kanalima: izvornim zvukom, sinkroniziranim zvukom
 
 Proširenje radi samostalno, bez aplikacije za računalo, programa Python ili FFmpeg, adrese localhost ili virtualnog audiouređaja. Sučelje je trenutačno dostupno na engleskom, perzijskom i pojednostavljenom kineskom; ciljni jezik prijevoda bira se zasebno među 79 jezičnih stavki.
 
-Postavljanje: u Postavkama unesite vlastiti API ključ za Gemini iz usluge Google AI Studio, izričito pristanite na slanje zvuka s odabrane kartice usluzi Google Gemini, odaberite jezik i pritisnite Start. Neobavezni precizni način rada upotrebljava Groq Whisper za transkripciju, Gemini za prijevod teksta i Gemini 3.1 Flash Live za govor. Za njega su potrebni ključ za Groq, neobavezno dopuštenje za pristup poslužitelju i zaseban pristanak za slanje zvuka.
+Postavljanje: u Postavkama unesite vlastiti API ključ za Gemini iz usluge Google AI Studio, izričito pristanite na slanje zvuka s odabrane kartice usluzi Google Gemini, odaberite jezik i pritisnite Start. Neobavezni precizni način rada upotrebljava Groq Whisper za transkripciju, Gemini za prijevod teksta i Gemini 3.8 Flash TTS za govor. Za njega su potrebni ključ za Groq, neobavezno dopuštenje za pristup poslužitelju i zaseban pristanak za slanje zvuka.
 
 Privatnost: snimanje počinje tek nakon pristanka i pritiska na Start. Zvuk s odabrane kartice i transkripti šalju se izravno pružateljima AI usluga potrebnima za zatraženu obradu, nikad održavatelju proširenja Avorythm. Nema oglasa, analitike ni posredničkog poslužitelja kojim upravlja razvojni programer.
 
@@ -34,6 +34,7 @@ Korisnički vodič (engleski): https://github.com/msmahdinejad/avorythm/blob/mai
 
 Pravila o privatnosti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Što je novo u verziji 1.1.19
+## Što je novo u verziji 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

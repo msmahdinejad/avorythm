@@ -18,7 +18,7 @@ Avorythm — พากย์สดและคำบรรยายด้วย 
 
 ส่วนขยายนี้ทำงานได้ด้วยตัวเอง โดยไม่ต้องใช้แอปเดสก์ท็อป Python, FFmpeg, localhost หรืออุปกรณ์เสียงเสมือน อินเทอร์เฟซปัจจุบันรองรับภาษาอังกฤษ เปอร์เซีย และจีนตัวย่อ ส่วนภาษาเป้าหมายของการแปลเลือกแยกต่างหากได้จากรายการภาษา 79 รายการ
 
-การตั้งค่า: ป้อนคีย์ Gemini API ของคุณเองจาก Google AI Studio ในหน้าการตั้งค่า ให้ความยินยอมอย่างชัดเจนในการส่งเสียงจากแท็บที่เลือกไปยัง Google Gemini เลือกภาษา แล้วกดเริ่ม โหมดแม่นยำซึ่งเป็นตัวเลือกเพิ่มเติมใช้ Groq Whisper ถอดเสียง ใช้ Gemini แปลข้อความ และใช้ Gemini 3.1 Flash Live สร้างเสียงพูด โหมดนี้ต้องใช้คีย์ Groq การอนุญาตให้เข้าถึงโฮสต์ซึ่งเป็นทางเลือก และความยินยอมในการส่งเสียงแยกต่างหาก
+การตั้งค่า: ป้อนคีย์ Gemini API ของคุณเองจาก Google AI Studio ในหน้าการตั้งค่า ให้ความยินยอมอย่างชัดเจนในการส่งเสียงจากแท็บที่เลือกไปยัง Google Gemini เลือกภาษา แล้วกดเริ่ม โหมดแม่นยำซึ่งเป็นตัวเลือกเพิ่มเติมใช้ Groq Whisper ถอดเสียง ใช้ Gemini แปลข้อความ และใช้ Gemini 3.8 Flash TTS สร้างเสียงพูด โหมดนี้ต้องใช้คีย์ Groq การอนุญาตให้เข้าถึงโฮสต์ซึ่งเป็นทางเลือก และความยินยอมในการส่งเสียงแยกต่างหาก
 
 ความเป็นส่วนตัว: การจับเสียงจะเริ่มขึ้นหลังจากคุณให้ความยินยอมและกดเริ่มเท่านั้น เสียงจากแท็บที่เลือกและข้อความถอดเสียงจะส่งตรงไปยังผู้ให้บริการ AI ที่จำเป็นต่อการประมวลผลตามที่ร้องขอ โดยไม่ส่งไปยังผู้ดูแล Avorythm ไม่มีโฆษณา การวิเคราะห์ข้อมูล หรือเซิร์ฟเวอร์ส่งต่อที่ผู้พัฒนาดำเนินการ
 
@@ -34,6 +34,7 @@ Avorythm ใช้งานได้ฟรีและเป็นโอเพ�
 
 นโยบายความเป็นส่วนตัว: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## มีอะไรใหม่ใน 1.1.19
+## มีอะไรใหม่ใน 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

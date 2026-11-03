@@ -18,7 +18,7 @@ Kontrolloni në mënyrë të pavarur katër kanale: audion origjinale, audion e 
 
 Shtesa funksionon në mënyrë të pavarur, pa aplikacionin për desktop, Python, FFmpeg, localhost ose pajisje virtuale audio. Ndërfaqja aktualisht është në anglisht, persisht dhe kinezisht të thjeshtuar; gjuha e synuar e përkthimit zgjidhet veçmas nga 79 gjuhë të disponueshme.
 
-Konfigurimi: te Settings, vendosni çelësin tuaj API të Gemini nga Google AI Studio, jepni pëlqimin e shprehur për dërgimin e audios së skedës së zgjedhur te Google Gemini, zgjidhni një gjuhë dhe shtypni Start. Modaliteti opsional i saktë përdor Groq Whisper për transkriptimin, Gemini për përkthimin e tekstit dhe Gemini 3.1 Flash Live për të folurën. Kërkon një çelës Groq, leje opsionale për hostin dhe pëlqim të veçantë për audion.
+Konfigurimi: te Settings, vendosni çelësin tuaj API të Gemini nga Google AI Studio, jepni pëlqimin e shprehur për dërgimin e audios së skedës së zgjedhur te Google Gemini, zgjidhni një gjuhë dhe shtypni Start. Modaliteti opsional i saktë përdor Groq Whisper për transkriptimin, Gemini për përkthimin e tekstit dhe Gemini 3.8 Flash TTS për të folurën. Kërkon një çelës Groq, leje opsionale për hostin dhe pëlqim të veçantë për audion.
 
 Privatësia: regjistrimi fillon vetëm pas dhënies së pëlqimit dhe shtypjes së Start. Audion e skedës së zgjedhur dhe transkriptet u dërgohen drejtpërdrejt ofruesve të AI të nevojshëm për përpunimin e kërkuar, dhe asnjëherë mirëmbajtësit të Avorythm. Nuk ka reklama, analiza përdorimi ose server ndërmjetësues të operuar nga zhvilluesi.
 
@@ -34,6 +34,7 @@ Udhëzuesi i përdoruesit (anglisht): https://github.com/msmahdinejad/avorythm/b
 
 Politika e privatësisë: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Çfarë ka të re në versionin 1.1.19
+## Çfarë ka të re në versionin 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

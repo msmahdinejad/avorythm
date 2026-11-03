@@ -48,7 +48,7 @@ Sie können unabhängig pausieren, im Video springen und den Player im Vollbild 
 Originalton, Vertonung und beide Untertitelspuren folgen dabei derselben aufgezeichneten Zeitleiste.
 
 Für den schnelleren synchronisierten Modus steht Gemini 3.5 Live bereit.
-Der präzise Modus verwendet Groq Whisper → Gemini-Textmodelle → Gemini 3.1 Flash Live.
+Der präzise Modus verwendet Groq Whisper → Gemini-Textmodelle → Gemini 3.8 Flash TTS.
 Er benötigt zusätzlich einen [Groq-API-Schlüssel](https://console.groq.com/keys), die Chrome-Berechtigung für `api.groq.com`
 und eine separate Einwilligung, kurze Audioabschnitte aus dem ausgewählten Tab direkt an Groq Whisper zu senden.
 Groq liefert Transkripte und Zeitstempel; der Text geht anschließend zur Übersetzung und Spracherzeugung an Google Gemini.

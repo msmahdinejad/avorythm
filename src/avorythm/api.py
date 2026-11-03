@@ -17,7 +17,13 @@ from fastapi.staticfiles import StaticFiles
 from . import __version__
 from .audio import DeviceCatalog
 from .config import ConfigStore
-from .constants import LANGUAGE_ORDER, RTL_LANGUAGES, VOICE_NAMES
+from .constants import (
+    DEFAULT_VOICE_MODEL,
+    LANGUAGE_ORDER,
+    RTL_LANGUAGES,
+    VOICE_MODELS,
+    VOICE_NAMES,
+)
 from .jobs import OUTPUT_NAMES, MediaJob, MediaJobManager
 from .models import ApiKeyInput, Settings
 from .routing import open_windows_volume_mixer
@@ -138,6 +144,7 @@ def create_app(
             "devices": DeviceCatalog.scan().to_dict(),
             "languages": list(LANGUAGE_ORDER),
             "voices": sorted(VOICE_NAMES),
+            "voice_models": list(VOICE_MODELS),
             "settings": runtime.settings.model_dump(),
             "api_key_set": bool(config.get_api_key()),
             "gemini_key_set": bool(config.get_api_key("gemini")),
@@ -244,6 +251,7 @@ def create_app(
         target_language: str = Query(default="fa"),
         mode: Literal["precise", "fast"] = Query(default="precise"),
         voice_name: str = Query(default="Kore"),
+        voice_model: str = Query(default=DEFAULT_VOICE_MODEL),
     ) -> dict[str, object]:
         nonlocal upload_in_progress
         async with operation_lock:
@@ -263,6 +271,7 @@ def create_app(
                 request.stream(),
                 length,
                 voice_name,
+                voice_model,
             )
         except ValueError as error:
             raise HTTPException(400, str(error)) from error

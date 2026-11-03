@@ -18,7 +18,7 @@ Avorythm — AI සජීවී හඬකැවීම සහ උපසිරැ�
 
 මෙම දිගුව ඩෙස්ක්ටොප් යෙදුම, Python, FFmpeg, localhost හෝ අතථ්‍ය ශ්‍රව්‍ය උපාංගයක් නොමැතිව ස්වාධීනව ක්‍රියා කරයි. දැනට අතුරුමුහුණත සහාය දක්වන්නේ ඉංග්‍රීසි, පර්සියානු සහ සරල කළ චීන භාෂාවලට පමණි; පරිවර්තනය කළ යුතු භාෂාව භාෂා ඇතුළත් කිරීම් 79කින් වෙනම තෝරාගත හැකිය.
 
-සැකසීම: Settings තුළ Google AI Studio වෙතින් ලබාගත් ඔබේම Gemini API යතුර ඇතුළත් කරන්න, තෝරාගත් ටැබයේ ශ්‍රව්‍ය Google Gemini වෙත යැවීමට පැහැදිලිව කැමැත්ත දෙන්න, භාෂාවක් තෝරා Start ඔබන්න. විකල්ප වඩාත් නිවැරදි මාදිලිය, ශ්‍රව්‍ය පෙළට හැරවීමට Groq Whisper ද, පෙළ පරිවර්තනයට Gemini ද, කථනය සඳහා Gemini 3.1 Flash Live ද භාවිත කරයි. එයට Groq යතුරක්, විකල්ප ධාරක අවසරයක් සහ ශ්‍රව්‍ය සඳහා වෙනම කැමැත්තක් අවශ්‍ය වේ.
+සැකසීම: Settings තුළ Google AI Studio වෙතින් ලබාගත් ඔබේම Gemini API යතුර ඇතුළත් කරන්න, තෝරාගත් ටැබයේ ශ්‍රව්‍ය Google Gemini වෙත යැවීමට පැහැදිලිව කැමැත්ත දෙන්න, භාෂාවක් තෝරා Start ඔබන්න. විකල්ප වඩාත් නිවැරදි මාදිලිය, ශ්‍රව්‍ය පෙළට හැරවීමට Groq Whisper ද, පෙළ පරිවර්තනයට Gemini ද, කථනය සඳහා Gemini 3.8 Flash TTS ද භාවිත කරයි. එයට Groq යතුරක්, විකල්ප ධාරක අවසරයක් සහ ශ්‍රව්‍ය සඳහා වෙනම කැමැත්තක් අවශ්‍ය වේ.
 
 පෞද්ගලිකත්වය: ශ්‍රව්‍ය ග්‍රහණය ආරම්භ වන්නේ ඔබ කැමැත්ත දී Start එබීමෙන් පසුව පමණි. තෝරාගත් ටැබයේ ශ්‍රව්‍ය සහ පිටපත්, ඉල්ලූ සැකසුමට අවශ්‍ය AI සේවා සපයන්නන් වෙත සෘජුවම යැවේ; Avorythm නඩත්තුකරු වෙත කිසිවිටෙක නොයැවේ. දැන්වීම්, විශ්ලේෂණ දත්ත රැස් කිරීම හෝ සංවර්ධකයා ක්‍රියාත්මක කරන අතරමැදි සේවාදායකයක් නොමැත.
 
@@ -34,6 +34,7 @@ Avorythm නොමිලේ ලබාගත හැකි විවෘත මූ�
 
 පෞද්ගලිකත්ව ප්‍රතිපත්තිය: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 හි අලුත් දේ
+## 1.1.20 හි අලුත් දේ
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

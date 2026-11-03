@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 LIVE_MODEL = "gemini-3.5-live-translate-preview"
-FILE_VOICE_MODEL = "gemini-3.1-flash-live-preview"
+# Gemini 3.8 Flash TTS shuts down on 2026-11-17 and 3.8 Live answers a script instead of
+# reading it, so file dubbing uses the Gemini 3.8 text-to-speech models, which read the
+# supplied text verbatim in any language.
+VOICE_MODELS = ("gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts")
+DEFAULT_VOICE_MODEL = VOICE_MODELS[0]
 GROQ_PRECISE_MODEL = "whisper-large-v3"
 GROQ_FAST_MODEL = "whisper-large-v3-turbo"
 INPUT_RATE = 16_000
@@ -139,6 +143,7 @@ VOICE_NAMES = {
 # Strongest-first free-tier text-output pool. Limits mirror the user's active
 # Google AI Studio project and remain local guardrails; Google is authoritative.
 TRANSLATION_MODELS = (
+    ("gemini-3.8-flash", 5, 20, True),
     ("gemini-3.6-flash", 5, 20, True),
     ("gemini-3.5-flash", 5, 20, True),
     ("gemini-3-flash-preview", 5, 20, True),

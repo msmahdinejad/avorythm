@@ -18,7 +18,7 @@ Avorythm — AI ਨਾਲ ਲਾਈਵ ਡਬਿੰਗ ਅਤੇ ਉਪਸਿਰ
 
 ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਡੈਸਕਟਾਪ ਐਪ, Python, FFmpeg, localhost ਜਾਂ ਵਰਚੁਅਲ ਆਡੀਓ ਡਿਵਾਈਸ ਤੋਂ ਬਿਨਾਂ ਸੁਤੰਤਰ ਤੌਰ ’ਤੇ ਕੰਮ ਕਰਦੀ ਹੈ। ਮੌਜੂਦਾ ਇੰਟਰਫੇਸ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ, ਫ਼ਾਰਸੀ ਅਤੇ ਸਰਲ ਚੀਨੀ ਵਿੱਚ ਹੈ; ਅਨੁਵਾਦ ਲਈ ਨਿਸ਼ਾਨਾ ਭਾਸ਼ਾ 79 ਭਾਸ਼ਾਵਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚੋਂ ਵੱਖਰੇ ਤੌਰ ’ਤੇ ਚੁਣੀ ਜਾਂਦੀ ਹੈ।
 
-ਸੈੱਟਅੱਪ: ਸੈਟਿੰਗਾਂ ਵਿੱਚ Google AI Studio ਤੋਂ ਪ੍ਰਾਪਤ ਆਪਣੀ Gemini API ਕੁੰਜੀ ਦਰਜ ਕਰੋ, ਚੁਣੇ ਟੈਬ ਦੀ ਆਡੀਓ Google Gemini ਨੂੰ ਭੇਜਣ ਲਈ ਸਪਸ਼ਟ ਸਹਿਮਤੀ ਦਿਓ, ਭਾਸ਼ਾ ਚੁਣੋ ਅਤੇ ਸ਼ੁਰੂ ਕਰੋ ਦਬਾਓ। ਵਿਕਲਪਿਕ ਵਧੇਰੇ ਸਟੀਕ ਮੋਡ ਵਿੱਚ ਬੋਲੀ ਨੂੰ ਲਿਖਤ ਵਿੱਚ ਬਦਲਣ ਲਈ Groq Whisper, ਲਿਖਤ ਦੇ ਅਨੁਵਾਦ ਲਈ Gemini ਅਤੇ ਬੋਲੀ ਲਈ Gemini 3.1 Flash Live ਵਰਤੇ ਜਾਂਦੇ ਹਨ। ਇਸ ਲਈ Groq ਕੁੰਜੀ, ਵਿਕਲਪਿਕ ਹੋਸਟ ਇਜਾਜ਼ਤ ਅਤੇ ਆਡੀਓ ਲਈ ਵੱਖਰੀ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।
+ਸੈੱਟਅੱਪ: ਸੈਟਿੰਗਾਂ ਵਿੱਚ Google AI Studio ਤੋਂ ਪ੍ਰਾਪਤ ਆਪਣੀ Gemini API ਕੁੰਜੀ ਦਰਜ ਕਰੋ, ਚੁਣੇ ਟੈਬ ਦੀ ਆਡੀਓ Google Gemini ਨੂੰ ਭੇਜਣ ਲਈ ਸਪਸ਼ਟ ਸਹਿਮਤੀ ਦਿਓ, ਭਾਸ਼ਾ ਚੁਣੋ ਅਤੇ ਸ਼ੁਰੂ ਕਰੋ ਦਬਾਓ। ਵਿਕਲਪਿਕ ਵਧੇਰੇ ਸਟੀਕ ਮੋਡ ਵਿੱਚ ਬੋਲੀ ਨੂੰ ਲਿਖਤ ਵਿੱਚ ਬਦਲਣ ਲਈ Groq Whisper, ਲਿਖਤ ਦੇ ਅਨੁਵਾਦ ਲਈ Gemini ਅਤੇ ਬੋਲੀ ਲਈ Gemini 3.8 Flash TTS ਵਰਤੇ ਜਾਂਦੇ ਹਨ। ਇਸ ਲਈ Groq ਕੁੰਜੀ, ਵਿਕਲਪਿਕ ਹੋਸਟ ਇਜਾਜ਼ਤ ਅਤੇ ਆਡੀਓ ਲਈ ਵੱਖਰੀ ਸਹਿਮਤੀ ਲੋੜੀਂਦੀ ਹੈ।
 
 ਪਰਦੇਦਾਰੀ: ਕੈਪਚਰ ਸਹਿਮਤੀ ਦੇਣ ਅਤੇ ਸ਼ੁਰੂ ਕਰੋ ਦਬਾਉਣ ਤੋਂ ਬਾਅਦ ਹੀ ਸ਼ੁਰੂ ਹੁੰਦੀ ਹੈ। ਚੁਣੇ ਟੈਬ ਦੀ ਆਡੀਓ ਅਤੇ ਉਸ ਤੋਂ ਤਿਆਰ ਲਿਖਤ ਬੇਨਤੀ ਕੀਤੀ ਪ੍ਰਕਿਰਿਆ ਲਈ ਲੋੜੀਂਦੇ AI ਪ੍ਰਦਾਤਾਵਾਂ ਨੂੰ ਸਿੱਧੇ ਭੇਜੇ ਜਾਂਦੇ ਹਨ, Avorythm ਦੇ ਸੰਭਾਲਕ ਨੂੰ ਕਦੇ ਨਹੀਂ। ਕੋਈ ਇਸ਼ਤਿਹਾਰ, ਵਿਸ਼ਲੇਸ਼ਣ ਜਾਂ ਡਿਵੈਲਪਰ ਵੱਲੋਂ ਚਲਾਇਆ ਰੀਲੇ ਸਰਵਰ ਨਹੀਂ ਹੈ।
 
@@ -34,6 +34,7 @@ Avorythm ਮੁਫ਼ਤ ਅਤੇ ਓਪਨ ਸੋਰਸ ਹੈ। ਬਾਹਰ
 
 ਪਰਦੇਦਾਰੀ ਨੀਤੀ: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 ਵਿੱਚ ਨਵਾਂ ਕੀ ਹੈ
+## 1.1.20 ਵਿੱਚ ਨਵਾਂ ਕੀ ਹੈ
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

@@ -23,7 +23,7 @@ L’audio d’origine, le doublage, les sous-titres d’origine et les sous-titr
 
 L’extension est autonome : pas besoin d’application de bureau, de Python, de FFmpeg, de localhost ni de périphérique audio virtuel. L’interface actuelle est disponible en anglais, en persan et en chinois simplifié. La langue de traduction se choisit indépendamment.
 
-Pour commencer, saisissez votre propre clé API Gemini de Google AI Studio dans les paramètres, autorisez explicitement l’envoi de l’audio de l’onglet sélectionné à Google Gemini, choisissez une langue et cliquez sur Démarrer. Le parcours précis facultatif utilise Groq Whisper pour la transcription, Gemini pour la traduction du texte et Gemini 3.1 Flash Live pour générer la voix. Il nécessite une clé Groq, une autorisation facultative pour les sites (permission d’hôte) et un consentement distinct pour le traitement audio.
+Pour commencer, saisissez votre propre clé API Gemini de Google AI Studio dans les paramètres, autorisez explicitement l’envoi de l’audio de l’onglet sélectionné à Google Gemini, choisissez une langue et cliquez sur Démarrer. Le parcours précis facultatif utilise Groq Whisper pour la transcription, Gemini pour la traduction du texte et Gemini 3.8 Flash TTS pour générer la voix. Il nécessite une clé Groq, une autorisation facultative pour les sites (permission d’hôte) et un consentement distinct pour le traitement audio.
 
 Confidentialité : la capture ne commence qu’après votre consentement et un clic sur Démarrer. L’audio et les transcriptions de l’onglet choisi sont envoyés directement aux services d’IA nécessaires, jamais au développeur d’Avorythm. Il n’y a ni publicité, ni outil d’analyse, ni serveur relais exploité par le développeur. Par défaut, les clés ne sont conservées que pour la session du navigateur. Vous pouvez choisir de mémoriser séparément chaque clé sur cet appareil. Les copies enregistrées ne sont ni synchronisées ni chiffrées par l’extension. Désactiver cette option supprime la copie locale ; effacer une clé supprime à la fois la copie locale et celle de la session.
 
@@ -37,6 +37,7 @@ Guide complet en anglais : https://github.com/msmahdinejad/avorythm/blob/main/do
 
 Politique de confidentialité : https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nouveautés de la version 1.1.19
+## Nouveautés de la version 1.1.20
 
-- Une bannière et un badge sur l'icône signalent désormais qu'une nouvelle version est téléchargée ou vient d'être installée. Vous pouvez appliquer une mise à jour prête depuis la fenêtre contextuelle dès qu'aucune traduction ni aucun lecteur synchronisé n'est ouvert.
+- Le doublage utilise désormais Gemini 3.8 Flash TTS, avec une option Flash-Lite dans les réglages, car Gemini 3.1 Flash Live sera arrêté le 17 novembre 2026. Le mode précis et le doublage de fichiers continuent de fonctionner.
+- Un message clair remplace l'erreur cryptique lorsqu'une clé API contient des caractères non autorisés, par exemple un point copié depuis un champ masqué.

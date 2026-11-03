@@ -6,7 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>Avorythm</title>
   <link rel="icon" href="/assets/avorythm-logo.png" type="image/png">
-  <link rel="stylesheet" href="/styles.css?v=1.1.19">
+  <link rel="stylesheet" href="/styles.css?v=1.1.20">
 </head>
 <body>
   <div class="aurora" aria-hidden="true"></div>
@@ -166,6 +166,7 @@
           <div class="media-file-options">
             <label class="field"><span data-i18n="fileTargetLanguage">زبان دوبلهٔ فایل</span><select id="mediaTargetLanguage"></select></label>
             <label class="field"><span data-i18n="speaker">گویندهٔ فایل</span><select id="mediaVoice"></select><small data-i18n="nativeVoiceHelp">فقط برای فایل‌های صوتی و ویدئویی</small></label>
+            <label class="field"><span data-i18n="voiceModel">Dubbing voice model</span><select id="mediaVoiceModel"></select><small data-i18n="voiceModelHelp">Flash has the best quality; Flash-Lite is faster and lighter on quota.</small></label>
           </div>
           <button id="processMediaButton" class="button primary wide" type="button" disabled data-i18n="processVideo">شروع پردازش فایل</button>
           <p class="privacy-note" data-i18n="mediaPrivacy">فایل روی لپ‌تاپ می‌ماند؛ قطعه‌های صوتی به Groq Whisper، متن به Gemini و متن ترجمه‌شده برای تولید صدا به Gemini Live فرستاده می‌شود.</p>
@@ -225,6 +226,6 @@
 
   <div id="shutdownScreen" class="shutdown-screen" hidden><img src="/assets/avorythm-logo.png" alt=""><strong data-i18n="appClosed">Avorythm بسته شد.</strong><span data-i18n="closeTab">اکنون می‌توانی این پنجره را ببندی.</span></div>
   <footer><span>Avorythm · Open source</span><a href="https://github.com/msmahdinejad/avorythm" target="_blank" rel="noreferrer" data-i18n="projectHomepage">صفحهٔ پروژه و امکانات بیشتر ↗</a></footer>
-  <script src="/app.js?v=1.1.19" defer></script>
+  <script src="/app.js?v=1.1.20" defer></script>
 </body>
 </html>

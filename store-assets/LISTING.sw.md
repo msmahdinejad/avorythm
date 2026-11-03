@@ -18,7 +18,7 @@ Dhibiti vipengele vinne kila kimoja kivyake: sauti asili, sauti iliyodubiwa, man
 
 Kiendelezi hiki hufanya kazi chenyewe, bila programu ya kompyuta, Python, FFmpeg, localhost au kifaa pepe cha sauti. Kiolesura cha sasa kinapatikana kwa Kiingereza, Kiajemi na Kichina Kilichorahisishwa pekee; lugha lengwa ya tafsiri huchaguliwa kando kutoka kwenye orodha ya lugha 79.
 
-Ili kuanza: weka ufunguo wako mwenyewe wa API ya Gemini kutoka Google AI Studio katika Mipangilio, toa idhini ya wazi ya kutuma sauti ya kichupo ulichochagua kwa Google Gemini, chagua lugha kisha ubonyeze Start. Hali ya hiari yenye usahihi zaidi hutumia Groq Whisper kunukuu sauti, Gemini kutafsiri maandishi na Gemini 3.1 Flash Live kuzalisha matamshi. Inahitaji ufunguo wa Groq, ruhusa ya hiari ya kufikia seva husika na idhini tofauti ya kutuma sauti.
+Ili kuanza: weka ufunguo wako mwenyewe wa API ya Gemini kutoka Google AI Studio katika Mipangilio, toa idhini ya wazi ya kutuma sauti ya kichupo ulichochagua kwa Google Gemini, chagua lugha kisha ubonyeze Start. Hali ya hiari yenye usahihi zaidi hutumia Groq Whisper kunukuu sauti, Gemini kutafsiri maandishi na Gemini 3.8 Flash TTS kuzalisha matamshi. Inahitaji ufunguo wa Groq, ruhusa ya hiari ya kufikia seva husika na idhini tofauti ya kutuma sauti.
 
 Faragha: kunasa huanza tu baada ya kutoa idhini na kubonyeza Start. Sauti na maandishi yaliyonukuliwa kutoka kwenye kichupo ulichochagua hutumwa moja kwa moja kwa watoa huduma wa AI wanaohitajika kwa uchakataji ulioomba, si kwa msimamizi wa Avorythm. Hakuna matangazo, uchanganuzi wa matumizi wala seva ya kupitishia data inayoendeshwa na msanidi programu.
 
@@ -34,6 +34,7 @@ Mwongozo wa mtumiaji (Kiingereza): https://github.com/msmahdinejad/avorythm/blob
 
 Sera ya faragha: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yaliyomo mapya katika 1.1.19
+## Yaliyomo mapya katika 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

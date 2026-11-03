@@ -18,7 +18,7 @@ Avorythm — AI 即時配音與字幕
 
 此擴充功能可獨立運作，無需桌面應用程式、Python、FFmpeg、localhost 或虛擬音訊裝置。目前介面僅支援英文、波斯文及簡體中文；翻譯的目標語言則可另外從 79 個語言選項中選擇。
 
-設定方式：在設定中輸入你自行從 Google AI Studio 取得的 Gemini API 金鑰，明確同意將所選分頁的音訊傳送至 Google Gemini，選擇語言，然後按下「Start」。選用的精確模式使用 Groq Whisper 進行語音轉錄、Gemini 進行文字翻譯，並使用 Gemini 3.1 Flash Live 產生語音。此模式需要 Groq 金鑰、選用的主機權限，以及另行取得的音訊傳送同意。
+設定方式：在設定中輸入你自行從 Google AI Studio 取得的 Gemini API 金鑰，明確同意將所選分頁的音訊傳送至 Google Gemini，選擇語言，然後按下「Start」。選用的精確模式使用 Groq Whisper 進行語音轉錄、Gemini 進行文字翻譯，並使用 Gemini 3.8 Flash TTS 產生語音。此模式需要 Groq 金鑰、選用的主機權限，以及另行取得的音訊傳送同意。
 
 隱私：只有在你同意並按下「Start」後，才會開始擷取。所選分頁的音訊和逐字稿會直接傳送至處理你所要求內容所需的 AI 服務提供者，絕不會傳送給 Avorythm 的維護者。沒有廣告、分析追蹤或由開發者營運的中繼伺服器。
 
@@ -34,6 +34,7 @@ Avorythm 免費且開放原始碼。外部 AI 服務的免費額度與模型供�
 
 隱私權政策: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 更新內容
+## 1.1.20 更新內容
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

@@ -18,7 +18,7 @@ Avorythm — एआई प्रत्यक्ष डबिङ र उपशी
 
 यो एक्सटेन्सन डेस्कटप एप, Python, FFmpeg, localhost वा भर्चुअल अडियो उपकरणबिना स्वतन्त्र रूपमा काम गर्छ। इन्टरफेसले English, Persian र Simplified Chinese मात्र समर्थन गर्छ; अनुवादको लक्ष्य 79 वटा भाषाको सूचीबाट स्वतन्त्र रूपमा चयन गरिन्छ।
 
-सेटअप: Settings मा Google AI Studio बाट प्राप्त आफ्नो Gemini API key प्रविष्ट गर्नुहोस्, चयन गरिएको ट्याबको अडियो Google Gemini मा पठाउन स्पष्ट सहमति दिनुहोस्, भाषा छान्नुहोस् र Start थिच्नुहोस्। वैकल्पिक सटीक मोडले ट्रान्सक्रिप्सनका लागि Groq Whisper, पाठ अनुवादका लागि Gemini र बोलीका लागि Gemini 3.1 Flash Live प्रयोग गर्छ। यसका लागि Groq key, वैकल्पिक host permission र छुट्टै अडियो सहमति आवश्यक हुन्छ।
+सेटअप: Settings मा Google AI Studio बाट प्राप्त आफ्नो Gemini API key प्रविष्ट गर्नुहोस्, चयन गरिएको ट्याबको अडियो Google Gemini मा पठाउन स्पष्ट सहमति दिनुहोस्, भाषा छान्नुहोस् र Start थिच्नुहोस्। वैकल्पिक सटीक मोडले ट्रान्सक्रिप्सनका लागि Groq Whisper, पाठ अनुवादका लागि Gemini र बोलीका लागि Gemini 3.8 Flash TTS प्रयोग गर्छ। यसका लागि Groq key, वैकल्पिक host permission र छुट्टै अडियो सहमति आवश्यक हुन्छ।
 
 गोपनीयता: सहमति र Start दिएपछि मात्र क्याप्चर सुरु हुन्छ। चयन गरिएको ट्याबको अडियो र ट्रान्सक्रिप्ट अनुरोध गरिएको प्रशोधनका लागि आवश्यक एआई प्रदायकहरूकहाँ सिधै पठाइन्छ, Avorythm का अनुरक्षककहाँ कहिल्यै पठाइँदैन। विज्ञापन, विश्लेषण वा विकासकर्ताद्वारा सञ्चालित रिले सर्भर छैन।
 
@@ -34,6 +34,7 @@ Avorythm निःशुल्क र खुला स्रोत हो। ब
 
 गोपनीयता नीति: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 मा नयाँ के छ
+## 1.1.20 मा नयाँ के छ
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

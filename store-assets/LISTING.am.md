@@ -18,7 +18,7 @@ Avorythm — በAI ቀጥታ ድምፅ ትርጉም እና ንዑስ ርዕሶ�
 
 ቅጥያው ያለ ዴስክቶፕ መተግበሪያ፣ Python፣ FFmpeg፣ localhost ወይም ምናባዊ የድምፅ መሣሪያ በተናጠል ይሰራል። አሁን ያለው በይነገጽ እንግሊዝኛ፣ ፋርስኛ እና ቀለል ያለ ቻይንኛ ብቻ ይደግፋል፤ የትርጉም መዳረሻ ቋንቋ ግን ከ79 የቋንቋ አማራጮች በተናጠል ይመረጣል።
 
-ማዋቀር፦ ከGoogle AI Studio ያገኙትን የራስዎን Gemini API ቁልፍ በቅንብሮች ውስጥ ያስገቡ፣ ከተመረጠው ትር የሚወጣው ድምፅ ወደ Google Gemini እንዲላክ በግልጽ ፈቃድ ይስጡ፣ ቋንቋ ይምረጡ እና Start ን ይጫኑ። አማራጭ የሆነው ትክክለኛ ሁኔታ ንግግርን ወደ ጽሑፍ ለመቀየር Groq Whisper፣ ጽሑፍን ለመተርጎም Gemini፣ ንግግር ለማመንጨትም Gemini 3.1 Flash Live ይጠቀማል። ይህ ሁኔታ የGroq ቁልፍ፣ አማራጭ የአስተናጋጅ መዳረሻ ፈቃድ እና የተለየ የድምፅ ፈቃድ ይፈልጋል።
+ማዋቀር፦ ከGoogle AI Studio ያገኙትን የራስዎን Gemini API ቁልፍ በቅንብሮች ውስጥ ያስገቡ፣ ከተመረጠው ትር የሚወጣው ድምፅ ወደ Google Gemini እንዲላክ በግልጽ ፈቃድ ይስጡ፣ ቋንቋ ይምረጡ እና Start ን ይጫኑ። አማራጭ የሆነው ትክክለኛ ሁኔታ ንግግርን ወደ ጽሑፍ ለመቀየር Groq Whisper፣ ጽሑፍን ለመተርጎም Gemini፣ ንግግር ለማመንጨትም Gemini 3.8 Flash TTS ይጠቀማል። ይህ ሁኔታ የGroq ቁልፍ፣ አማራጭ የአስተናጋጅ መዳረሻ ፈቃድ እና የተለየ የድምፅ ፈቃድ ይፈልጋል።
 
 ግላዊነት፦ ቀረጻ የሚጀምረው ፈቃድ ከተሰጠ እና Start ከተጫነ በኋላ ብቻ ነው። ከተመረጠው ትር የሚወጣው ድምፅ እና ወደ ጽሑፍ የተቀየረው ንግግር ለተጠየቀው ሂደት አስፈላጊ ወደሆኑት የAI አቅራቢዎች በቀጥታ ይላካሉ፤ ወደ Avorythm አስተዳዳሪ ፈጽሞ አይላኩም። ማስታወቂያዎች፣ የአጠቃቀም ትንታኔ ወይም በገንቢው የሚተዳደር መካከለኛ አገልጋይ የሉም።
 
@@ -34,6 +34,7 @@ Avorythm ነፃ እና ክፍት ምንጭ ነው። የውጭ AI አገልግ�
 
 የግላዊነት ፖሊሲ: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## በ1.1.19 ምን አዲስ ነገር አለ
+## በ1.1.20 ምን አዲስ ነገር አለ
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

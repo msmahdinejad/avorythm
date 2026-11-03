@@ -18,7 +18,7 @@ Avorythm — AI লাইভ ডাবিং ও সাবটাইটেল
 
 ডেস্কটপ অ্যাপ, Python, FFmpeg, localhost বা ভার্চুয়াল অডিও ডিভাইস ছাড়াই এক্সটেনশনটি স্বতন্ত্রভাবে কাজ করে। বর্তমান ইন্টারফেস কেবল ইংরেজি, ফারসি ও সরলীকৃত চীনা ভাষা সমর্থন করে; অনুবাদের লক্ষ্যভাষা 79টি ভাষার তালিকা থেকে আলাদাভাবে নির্বাচন করা যায়।
 
-সেটআপ: সেটিংসে Google AI Studio থেকে নেওয়া আপনার নিজের Gemini API কী লিখুন, নির্বাচিত ট্যাবের অডিও Google Gemini-তে পাঠানোর জন্য স্পষ্ট সম্মতি দিন, একটি ভাষা বেছে নিন এবং শুরু করুন বোতাম চাপুন। ঐচ্ছিক নির্ভুল মোডে কথাকে লেখায় রূপান্তরের জন্য Groq Whisper, পাঠ্য অনুবাদের জন্য Gemini এবং কথা তৈরির জন্য Gemini 3.1 Flash Live ব্যবহার করা হয়। এই মোডে একটি Groq কী, ঐচ্ছিক হোস্ট অনুমতি এবং অডিওর জন্য আলাদা সম্মতি প্রয়োজন।
+সেটআপ: সেটিংসে Google AI Studio থেকে নেওয়া আপনার নিজের Gemini API কী লিখুন, নির্বাচিত ট্যাবের অডিও Google Gemini-তে পাঠানোর জন্য স্পষ্ট সম্মতি দিন, একটি ভাষা বেছে নিন এবং শুরু করুন বোতাম চাপুন। ঐচ্ছিক নির্ভুল মোডে কথাকে লেখায় রূপান্তরের জন্য Groq Whisper, পাঠ্য অনুবাদের জন্য Gemini এবং কথা তৈরির জন্য Gemini 3.8 Flash TTS ব্যবহার করা হয়। এই মোডে একটি Groq কী, ঐচ্ছিক হোস্ট অনুমতি এবং অডিওর জন্য আলাদা সম্মতি প্রয়োজন।
 
 গোপনীয়তা: সম্মতি দেওয়া ও শুরু করুন বোতাম চাপার পরেই অডিও সংগ্রহ শুরু হয়। নির্বাচিত ট্যাবের অডিও ও প্রতিলিপি অনুরোধ করা প্রক্রিয়াকরণের জন্য প্রয়োজনীয় AI সেবাদাতাদের কাছেই সরাসরি যায়; Avorythm-এর রক্ষণাবেক্ষণকারীর কাছে কখনো যায় না। কোনো বিজ্ঞাপন, বিশ্লেষণমূলক তথ্য সংগ্রহ বা ডেভেলপার পরিচালিত মধ্যবর্তী সার্ভার নেই।
 
@@ -34,6 +34,7 @@ Avorythm বিনামূল্যে ব্যবহার করা যা�
 
 গোপনীয়তা নীতি: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 সংস্করণে নতুন যা আছে
+## 1.1.20 সংস্করণে নতুন যা আছে
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

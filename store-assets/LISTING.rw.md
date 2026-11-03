@@ -18,7 +18,7 @@ Genzura ibintu bine ukwabyo: amajwi y'umwimerere, amajwi yahinduwe, amagambo y'u
 
 Iyi nyongera ikora yigenga, idakeneye porogaramu yo kuri mudasobwa, Python, FFmpeg, localhost cyangwa igikoresho cy'amajwi kigana ikindi. Imigaragarire iriho iboneka mu Cyongereza, Igiperesi n'Igishinwa cyorohejwe gusa; ururimi rw'ubuhinduzi rwo ruhitwamo ukwaryo mu mahitamo 79 y'indimi.
 
-Kuyitegura: shyiramo muri Settings urufunguzo rwawe rwa Gemini API ruvuye muri Google AI Studio, wemere ku bushake bwawe ko amajwi ya tabu wahisemo yoherezwa kuri Google Gemini, uhitemo ururimi maze ukande Start. Uburyo bw'inyongera bwo kunoza ubunyangamugayo bukoresha Groq Whisper mu kwandika ibivugwa, Gemini mu guhindura inyandiko na Gemini 3.1 Flash Live mu gutanga amajwi. Busaba urufunguzo rwa Groq, uruhushya rwo kugera ku rubuga rushobora gusabwa, n'ubwumvikane butandukanye bwo kohereza amajwi.
+Kuyitegura: shyiramo muri Settings urufunguzo rwawe rwa Gemini API ruvuye muri Google AI Studio, wemere ku bushake bwawe ko amajwi ya tabu wahisemo yoherezwa kuri Google Gemini, uhitemo ururimi maze ukande Start. Uburyo bw'inyongera bwo kunoza ubunyangamugayo bukoresha Groq Whisper mu kwandika ibivugwa, Gemini mu guhindura inyandiko na Gemini 3.8 Flash TTS mu gutanga amajwi. Busaba urufunguzo rwa Groq, uruhushya rwo kugera ku rubuga rushobora gusabwa, n'ubwumvikane butandukanye bwo kohereza amajwi.
 
 Ibanga: gufata ibiriho bitangira gusa umaze gutanga uburenganzira no gukanda Start. Amajwi ya tabu wahisemo n'inyandiko z'ibyavuzwe byoherezwa mu buryo butaziguye ku batanga serivisi za AI zikenewe kugira ngo ibyo wasabye bikorwe; ntibyoherezwa ku ukora Avorythm. Nta matangazo, isesengura ry'imikoreshereze cyangwa seriveri y'ubuhuza ikoreshwa n'uwakoze iyi nyongera.
 
@@ -34,6 +34,7 @@ Igitabo cy'umukoresha (mu Cyongereza): https://github.com/msmahdinejad/avorythm/
 
 Politiki y'ibanga: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Ibishya muri 1.1.19
+## Ibishya muri 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

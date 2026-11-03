@@ -18,7 +18,7 @@ Hwɛ akwan anan no mu biara wɔ ne ho: ɔdio mfitiase, ɔdio a wɔadub no, mfiti
 
 Extension no yɛ adwuma ne ho, a desktop app, Python, FFmpeg, localhost anaa virtual audio device ho nhia. Interface no yɛ English, Persian ne Simplified Chinese nko ara; wopaw translation target no ne no ho wɔ kasa ahorow 79 mu.
 
-Siesie: fa Google AI Studio mu Gemini API key a ɛyɛ wo dea hyɛ Settings mu, ma kwan pefee sɛ wɔde ɔdio a ɛfiri tab a woapaw no bɛkɔ Google Gemini, paw kasa bi na mia Start. Sɛ wopɛ mode a ɛyɛ pɛpɛɛpɛ a, ɛde Groq Whisper yɛ transcription, Gemini yɛ nsɛm nkyerɛase, na Gemini 3.1 Flash Live yɛ kasa. Ɛhia Groq key, host permission a wubetumi apaw, ne audio ho kwan a ɛyɛ soronko.
+Siesie: fa Google AI Studio mu Gemini API key a ɛyɛ wo dea hyɛ Settings mu, ma kwan pefee sɛ wɔde ɔdio a ɛfiri tab a woapaw no bɛkɔ Google Gemini, paw kasa bi na mia Start. Sɛ wopɛ mode a ɛyɛ pɛpɛɛpɛ a, ɛde Groq Whisper yɛ transcription, Gemini yɛ nsɛm nkyerɛase, na Gemini 3.8 Flash TTS yɛ kasa. Ɛhia Groq key, host permission a wubetumi apaw, ne audio ho kwan a ɛyɛ soronko.
 
 Kokoamsɛm: capture no fi ase bere a woama kwan na woamia Start nko ara. Ɔdio ne transcripts a ɛfiri tab a woapaw no kɔ AI providers a wɔhia ma processing a woabisa no nkyɛn tẽẽ, na ɛnkɔ Avorythm hwɛfo no nkyɛn da. Nnawɔtwe-mu-nna, analytics anaa relay server a developer no hwɛ so biara nni hɔ.
 
@@ -34,6 +34,7 @@ Dwumadie ho akwankyerɛ (English): https://github.com/msmahdinejad/avorythm/blob
 
 Kokoamsɛm ho nhyehyɛe: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Dɛn na ɛyɛ foforo wɔ version 1.1.19 mu
+## Dɛn na ɛyɛ foforo wɔ version 1.1.20 mu
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

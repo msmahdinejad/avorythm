@@ -1,5 +1,8 @@
 export const LIVE_MODEL = 'gemini-3.5-live-translate-preview';
-export const FILE_VOICE_MODEL = 'gemini-3.1-flash-live-preview';
+// Gemini 3.8 Flash TTS shuts down on 2026-11-17 and 3.8 Live answers a script instead of
+// reading it. The 3.8 text-to-speech models read the supplied text verbatim in any language.
+export const VOICE_MODELS = Object.freeze(['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts']);
+export const DEFAULT_VOICE_MODEL = VOICE_MODELS[0];
 export const TRANSLATED_CAPTION_DELAY_SECONDS = 2.5;
 export const GROQ_AUDIO_CONSENT_VERSION = 1;
 export const LIVE_ENDPOINT =
@@ -59,7 +62,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   playbackMode: 'low-latency',
   syncBufferSeconds: 20,
   syncCaptionEngine: 'gemini',
-  syncVoiceName: 'Kore'
+  syncVoiceName: 'Kore',
+  syncVoiceModel: DEFAULT_VOICE_MODEL
 });
 
 function normalizeOutputMix(input = {}) {
@@ -130,6 +134,7 @@ export function normalizeSettings(input = {}) {
   settings.syncBufferSeconds = Math.max(8, Math.min(60, Number(settings.syncBufferSeconds) || 20));
   settings.syncCaptionEngine = settings.syncCaptionEngine === 'whisper' ? 'whisper' : 'gemini';
   settings.syncVoiceName = VOICE_NAMES.includes(settings.syncVoiceName) ? settings.syncVoiceName : 'Kore';
+  settings.syncVoiceModel = VOICE_MODELS.includes(settings.syncVoiceModel) ? settings.syncVoiceModel : DEFAULT_VOICE_MODEL;
   return settings;
 }
 
@@ -188,22 +193,31 @@ export function setupMessage(targetLanguage) {
   };
 }
 
-export function fileVoiceSetupMessage(languageCode, voiceName = 'Kore') {
+export function speechRequest(text, voiceName = 'Kore') {
   return {
-    setup: {
-      model: `models/${FILE_VOICE_MODEL}`,
-      outputAudioTranscription: {},
-      generationConfig: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          languageCode,
-          voiceConfig: {prebuiltVoiceConfig: {voiceName}}
-        },
-        thinkingConfig: {thinkingLevel: 'minimal'}
-      },
-      systemInstruction: {parts: [{text: 'You are a precise speech renderer. Speak exactly the supplied text once in a natural pace. Do not translate, paraphrase, answer, introduce it, or add any words.'}]}
+    contents: [{role: 'user', parts: [{text}]}],
+    generationConfig: {
+      responseModalities: ['AUDIO'],
+      speechConfig: {voiceConfig: {prebuiltVoiceConfig: {voiceName}}}
     }
   };
+}
+
+/** 24 kHz mono 16-bit PCM from a WAV container; raw PCM is returned unchanged. */
+export function pcmFromAudio(bytes) {
+  const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const tag = (offset) => String.fromCharCode(...data.subarray(offset, offset + 4));
+  if (data.length < 12 || tag(0) !== 'RIFF' || tag(8) !== 'WAVE') return data;
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  for (let position = 12; position + 8 <= data.length;) {
+    const size = view.getUint32(position + 4, true);
+    if (tag(position) === 'data') {
+      const start = position + 8;
+      return data.slice(start, size > 0 && start + size <= data.length ? start + size : data.length);
+    }
+    position += 8 + size + (size & 1);
+  }
+  return new Uint8Array();
 }
 
 export function captionSegments(value, maxCharacters = 84) {

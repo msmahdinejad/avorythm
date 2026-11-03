@@ -88,7 +88,8 @@ function changeCredential(provider, {key, remember, clear = false} = {}) {
     const field = credentialFields[provider];
     if (!Object.hasOwn(credentialFields, provider)) throw new Error('credential_provider_invalid');
     if (remember !== undefined && typeof remember !== 'boolean') throw new Error('credential_preference_invalid');
-    if (key !== undefined && (typeof key !== 'string' || key.trim().length < 10 || /[\r\n]/u.test(key))) {
+    // Header values must be printable ASCII: a key pasted from a masked field (abc····xyz) would otherwise fail later with an opaque error.
+    if (key !== undefined && (typeof key !== 'string' || key.trim().length < 10 || !/^[!-~]+$/u.test(key.trim()))) {
       throw new Error('api_key_invalid');
     }
     const snapshot = await readCredentials();

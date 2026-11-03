@@ -18,7 +18,7 @@ Avorythm — AI سان لائيو ڊبنگ ۽ ذيلي عنوان
 
 هي ايڪسٽينشن ڊيسڪٽاپ ايپ، Python، FFmpeg، localhost يا ورچوئل آڊيو ڊيوائس کان سواءِ، آزاد نموني ڪم ڪري ٿي. موجوده انٽرفيس صرف انگريزي، فارسي ۽ سادي چيني ۾ آهي؛ ترجمي لاءِ گهربل ٻولي 79 ٻولين جي فهرست مان الڳ چونڊي ويندي آهي.
 
-سيٽ اپ: سيٽنگن ۾ Google AI Studio مان حاصل ڪيل پنهنجي Gemini API ڪي داخل ڪريو، چونڊيل ٽيب جو آواز Google Gemini ڏانهن موڪلڻ لاءِ واضح رضامندي ڏيو، ٻولي چونڊيو ۽ شروع ڪريو. اختياري وڌيڪ درست موڊ آواز کي متن ۾ بدلائڻ لاءِ Groq Whisper، متن جي ترجمي لاءِ Gemini ۽ ڳالهائڻ لاءِ Gemini 3.1 Flash Live استعمال ڪري ٿو. ان لاءِ Groq ڪي، اختياري ميزبان اجازت ۽ آڊيو لاءِ الڳ رضامندي گهربل آهي.
+سيٽ اپ: سيٽنگن ۾ Google AI Studio مان حاصل ڪيل پنهنجي Gemini API ڪي داخل ڪريو، چونڊيل ٽيب جو آواز Google Gemini ڏانهن موڪلڻ لاءِ واضح رضامندي ڏيو، ٻولي چونڊيو ۽ شروع ڪريو. اختياري وڌيڪ درست موڊ آواز کي متن ۾ بدلائڻ لاءِ Groq Whisper، متن جي ترجمي لاءِ Gemini ۽ ڳالهائڻ لاءِ Gemini 3.8 Flash TTS استعمال ڪري ٿو. ان لاءِ Groq ڪي، اختياري ميزبان اجازت ۽ آڊيو لاءِ الڳ رضامندي گهربل آهي.
 
 رازداري: ڪيپچر صرف رضامندي ۽ شروع ڪرڻ کان پوءِ ٿئي ٿو. چونڊيل ٽيب جو آواز ۽ ان مان تيار ٿيل متن گهربل پروسيسنگ لاءِ سڌو لاڳاپيل AI مهيا ڪندڙن ڏانهن ويندا آهن، Avorythm جي سنڀاليندڙ ڏانهن ڪڏهن به نه. نه اشتهار آهن، نه استعمال جي انگن اکرن جي گڏ ڪرڻ، ۽ نه ئي ڊولپر جو هلندڙ وچولو سرور.
 
@@ -34,6 +34,7 @@ Avorythm مفت ۽ کليل ذريعو آهي. ٻاهرين AI خدمتن جون
 
 رازداري جي پاليسي: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## نسخو 1.1.19 ۾ نئون ڇا آهي
+## نسخو 1.1.20 ۾ نئون ڇا آهي
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

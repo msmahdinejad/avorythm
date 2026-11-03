@@ -18,7 +18,7 @@ Avorythm — ພາກສຽງສົດ ແລະ ຄຳບັນຍາຍດ�
 
 ສ່ວນຂະຫຍາຍນີ້ໃຊ້ງານໄດ້ໂດຍອິດສະຫຼະ ໂດຍບໍ່ຕ້ອງມີແອັບເດັສກ໌ທັອບ, Python, FFmpeg, localhost ຫຼື ອຸປະກອນສຽງສະເໝືອນ. ປັດຈຸບັນ ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ມີພຽງພາສາອັງກິດ, ເປີເຊຍ ແລະ ຈີນຕົວຫຍໍ້; ພາສາປາຍທາງສຳລັບການແປເລືອກໄດ້ແຍກຕ່າງຫາກຈາກ 79 ລາຍການພາສາ.
 
-ການຕັ້ງຄ່າ: ປ້ອນຄີ API ຂອງ Gemini ທີ່ທ່ານໄດ້ຈາກ Google AI Studio ໃນໜ້າການຕັ້ງຄ່າ, ໃຫ້ຄວາມຍິນຍອມຢ່າງຊັດເຈນໃນການສົ່ງສຽງຈາກແທັບທີ່ເລືອກໄປຫາ Google Gemini, ເລືອກພາສາ ແລ້ວກົດ Start. ໂໝດຄວາມແມ່ນຍຳສູງທີ່ເປັນທາງເລືອກ ໃຊ້ Groq Whisper ເພື່ອຖອດສຽງເປັນຂໍ້ຄວາມ, Gemini ເພື່ອແປຂໍ້ຄວາມ ແລະ Gemini 3.1 Flash Live ເພື່ອສ້າງສຽງເວົ້າ. ໂໝດນີ້ຕ້ອງໃຊ້ຄີຂອງ Groq, ອາດຕ້ອງໃຫ້ສິດເຂົ້າເຖິງໂຮສທີ່ເປັນທາງເລືອກ ແລະ ຕ້ອງໃຫ້ຄວາມຍິນຍອມສຳລັບສຽງແຍກຕ່າງຫາກ.
+ການຕັ້ງຄ່າ: ປ້ອນຄີ API ຂອງ Gemini ທີ່ທ່ານໄດ້ຈາກ Google AI Studio ໃນໜ້າການຕັ້ງຄ່າ, ໃຫ້ຄວາມຍິນຍອມຢ່າງຊັດເຈນໃນການສົ່ງສຽງຈາກແທັບທີ່ເລືອກໄປຫາ Google Gemini, ເລືອກພາສາ ແລ້ວກົດ Start. ໂໝດຄວາມແມ່ນຍຳສູງທີ່ເປັນທາງເລືອກ ໃຊ້ Groq Whisper ເພື່ອຖອດສຽງເປັນຂໍ້ຄວາມ, Gemini ເພື່ອແປຂໍ້ຄວາມ ແລະ Gemini 3.8 Flash TTS ເພື່ອສ້າງສຽງເວົ້າ. ໂໝດນີ້ຕ້ອງໃຊ້ຄີຂອງ Groq, ອາດຕ້ອງໃຫ້ສິດເຂົ້າເຖິງໂຮສທີ່ເປັນທາງເລືອກ ແລະ ຕ້ອງໃຫ້ຄວາມຍິນຍອມສຳລັບສຽງແຍກຕ່າງຫາກ.
 
 ຄວາມເປັນສ່ວນຕົວ: ການຈັບສຽງເລີ່ມຂຶ້ນຫຼັງຈາກທ່ານໃຫ້ຄວາມຍິນຍອມແລະກົດ Start ເທົ່ານັ້ນ. ສຽງຈາກແທັບທີ່ເລືອກແລະຂໍ້ຄວາມທີ່ຖອດຈາກສຽງຈະຖືກສົ່ງໂດຍກົງໄປຫາຜູ້ໃຫ້ບໍລິການ AI ທີ່ຈຳເປັນຕໍ່ການປະມວນຜົນທີ່ທ່ານຮ້ອງຂໍ ແລະ ບໍ່ສົ່ງໄປຫາຜູ້ດູແລ Avorythm. ບໍ່ມີໂຄສະນາ, ການວິເຄາະຂໍ້ມູນ ຫຼື ເຊີບເວີສົ່ງຕໍ່ທີ່ຜູ້ພັດທະນາດຳເນີນການ.
 
@@ -34,6 +34,7 @@ Avorythm ໃຊ້ໄດ້ຟຣີ ແລະ ເປັນຊອບແວເປ
 
 ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## ມີຫຍັງໃໝ່ໃນ 1.1.19
+## ມີຫຍັງໃໝ່ໃນ 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

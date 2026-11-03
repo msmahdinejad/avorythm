@@ -18,7 +18,7 @@ Ovládejte nezávisle čtyři kanály: původní zvuk, dabovaný zvuk, titulky v
 
 Rozšíření funguje samostatně, bez aplikace pro počítač, Python, FFmpeg, localhost i virtuálního zvukového zařízení. Rozhraní je dostupné v angličtině, perštině a zjednodušené čínštině; cílový jazyk překladu se volí nezávisle z 79 jazykových položek.
 
-Nastavení: v nastavení zadejte vlastní klíč API Gemini ze služby Google AI Studio, výslovně udělte souhlas s odesíláním zvuku z vybrané karty službě Google Gemini, zvolte jazyk a stiskněte Start. Volitelný přesný režim používá Groq Whisper k přepisu, Gemini k překladu textu a Gemini 3.1 Flash Live k vytvoření řeči. Vyžaduje klíč Groq, volitelné oprávnění k přístupu k hostiteli a samostatný souhlas se zpracováním zvuku.
+Nastavení: v nastavení zadejte vlastní klíč API Gemini ze služby Google AI Studio, výslovně udělte souhlas s odesíláním zvuku z vybrané karty službě Google Gemini, zvolte jazyk a stiskněte Start. Volitelný přesný režim používá Groq Whisper k přepisu, Gemini k překladu textu a Gemini 3.8 Flash TTS k vytvoření řeči. Vyžaduje klíč Groq, volitelné oprávnění k přístupu k hostiteli a samostatný souhlas se zpracováním zvuku.
 
 Soukromí: zachytávání zvuku začne až po udělení souhlasu a stisknutí tlačítka Start. Zvuk z vybrané karty a přepisy se odesílají přímo poskytovatelům AI potřebným ke zvolenému zpracování, nikdy správci projektu Avorythm. Žádné reklamy, analytika ani zprostředkující server provozovaný vývojářem.
 
@@ -34,6 +34,7 @@ Uživatelská příručka (anglicky): https://github.com/msmahdinejad/avorythm/b
 
 Zásady ochrany soukromí: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Co je nového ve verzi 1.1.19
+## Co je nového ve verzi 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

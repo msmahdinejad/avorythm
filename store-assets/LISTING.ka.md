@@ -18,7 +18,7 @@ Avorythm — პირდაპირი დუბლირება და ს�
 
 გაფართოება დამოუკიდებლად მუშაობს — კომპიუტერის აპის, Python-ის, FFmpeg-ის, localhost-ისა და ვირტუალური აუდიომოწყობილობის გარეშე. მიმდინარე ინტერფეისი ხელმისაწვდომია მხოლოდ ინგლისურ, სპარსულ და გამარტივებულ ჩინურ ენებზე; თარგმანის სამიზნე ენა დამოუკიდებლად ირჩევა 79 ენობრივი ვარიანტიდან.
 
-დაყენება: პარამეტრებში შეიყვანეთ Google AI Studio-დან მიღებული თქვენი Gemini API გასაღები, ცალსახად დაეთანხმეთ არჩეული ჩანართის ხმის Google Gemini-სთვის გაგზავნას, აირჩიეთ ენა და დააჭირეთ დაწყებას. არჩევითი ზუსტი რეჟიმი ტრანსკრიფციისთვის იყენებს Groq Whisper-ს, ტექსტის თარგმნისთვის — Gemini-ს, ხოლო მეტყველებისთვის — Gemini 3.1 Flash Live-ს. მას სჭირდება Groq-ის გასაღები, დამატებითი წვდომის ნებართვა სურვილისამებრ და ცალკე თანხმობა ხმის გაგზავნაზე.
+დაყენება: პარამეტრებში შეიყვანეთ Google AI Studio-დან მიღებული თქვენი Gemini API გასაღები, ცალსახად დაეთანხმეთ არჩეული ჩანართის ხმის Google Gemini-სთვის გაგზავნას, აირჩიეთ ენა და დააჭირეთ დაწყებას. არჩევითი ზუსტი რეჟიმი ტრანსკრიფციისთვის იყენებს Groq Whisper-ს, ტექსტის თარგმნისთვის — Gemini-ს, ხოლო მეტყველებისთვის — Gemini 3.8 Flash TTS-ს. მას სჭირდება Groq-ის გასაღები, დამატებითი წვდომის ნებართვა სურვილისამებრ და ცალკე თანხმობა ხმის გაგზავნაზე.
 
 კონფიდენციალურობა: ხმის ჩაწერა იწყება მხოლოდ თანხმობისა და დაწყების შემდეგ. არჩეული ჩანართის ხმა და ტრანსკრიპტები უშუალოდ ეგზავნება მოთხოვნილი დამუშავებისთვის საჭირო ხელოვნური ინტელექტის სერვისების მომწოდებლებს და არასდროს — Avorythm-ის შემქმნელს. არ არის რეკლამები, ანალიტიკა ან შემქმნელის მიერ მართული შუამავალი სერვერი.
 
@@ -34,6 +34,7 @@ Avorythm უფასოა და მისი საწყისი კოდ�
 
 კონფიდენციალურობის პოლიტიკა: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## რა არის ახალი 1.1.19-ში
+## რა არის ახალი 1.1.20-ში
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

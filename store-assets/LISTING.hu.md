@@ -18,7 +18,7 @@ Négy csatornát szabályozhat egymástól függetlenül: az eredeti hangot, a s
 
 A bővítmény önállóan működik: nincs szüksége asztali alkalmazásra, Pythonra, FFmpegre, localhostra vagy virtuális hangeszközre. A jelenlegi kezelőfelület angol, perzsa és egyszerűsített kínai nyelvű; a fordítás célnyelvét ettől függetlenül, 79 nyelvi lehetőség közül választhatja ki.
 
-Beállítás: adja meg a Google AI Studióban beszerzett saját Gemini API-kulcsát a Beállításokban, kifejezetten járuljon hozzá a kiválasztott lap hangjának a Google Gemini részére történő továbbításához, válasszon nyelvet, majd nyomja meg az Indítás gombot. Az opcionális precíz mód a Groq Whisper szolgáltatást használja az átíráshoz, a Geminit a szöveg fordításához, a Gemini 3.1 Flash Live szolgáltatást pedig a beszédhez. Ehhez Groq-kulcs, opcionális gazdagépi engedély és külön hozzájárulás szükséges a hang továbbításához.
+Beállítás: adja meg a Google AI Studióban beszerzett saját Gemini API-kulcsát a Beállításokban, kifejezetten járuljon hozzá a kiválasztott lap hangjának a Google Gemini részére történő továbbításához, válasszon nyelvet, majd nyomja meg az Indítás gombot. Az opcionális precíz mód a Groq Whisper szolgáltatást használja az átíráshoz, a Geminit a szöveg fordításához, a Gemini 3.8 Flash TTS szolgáltatást pedig a beszédhez. Ehhez Groq-kulcs, opcionális gazdagépi engedély és külön hozzájárulás szükséges a hang továbbításához.
 
 Adatvédelem: a hangrögzítés csak a hozzájárulás megadása és az Indítás gomb megnyomása után kezdődik. A kiválasztott lap hangja és az átiratok közvetlenül a kért feldolgozáshoz szükséges MI-szolgáltatókhoz kerülnek, az Avorythm fejlesztőjéhez soha. Nincsenek hirdetések, analitika vagy a fejlesztő által üzemeltetett közvetítőszerver.
 
@@ -34,6 +34,7 @@ Felhasználói útmutató (angolul): https://github.com/msmahdinejad/avorythm/bl
 
 Adatvédelmi szabályzat: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Újdonságok az 1.1.19-ös verzióban
+## Újdonságok az 1.1.20-ös verzióban
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

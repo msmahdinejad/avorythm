@@ -18,7 +18,7 @@ Lawula izingxenye ezine ngokuzimela: umsindo wokuqala, umsindo odabhiwe, imibhal
 
 Isandiso sisebenza ngokuzimela, ngaphandle kohlelo lokusebenza lwedeskithophu, i-Python, i-FFmpeg, i-localhost noma idivayisi yomsindo ebonakalayo. Isixhumi esibonakalayo samanje sisekela isiNgisi, isiPheresiya nesiShayina Esenziwe Lula; ulimi okuhunyushelwa kulo lukhethwa ngokuzimela ohlwini lwezilimi ezingu-79.
 
-Ukusetha: faka ukhiye wakho we-Gemini API ovela ku-Google AI Studio kokuthi Izilungiselelo, uvume ngokucacile ukuthumela umsindo wethebhu oyikhethile ku-Google Gemini, ukhethe ulimi bese ucindezela u-Start. Imodi enembile ongayikhetha isebenzisa i-Groq Whisper ukubhala okukhulunywayo, i-Gemini ukuhumusha umbhalo ne-Gemini 3.1 Flash Live ukukhiqiza inkulumo. Idinga ukhiye we-Groq, imvume yokufinyelela kumsingathi ongayikhetha kanye nemvume ehlukile yokuthumela umsindo.
+Ukusetha: faka ukhiye wakho we-Gemini API ovela ku-Google AI Studio kokuthi Izilungiselelo, uvume ngokucacile ukuthumela umsindo wethebhu oyikhethile ku-Google Gemini, ukhethe ulimi bese ucindezela u-Start. Imodi enembile ongayikhetha isebenzisa i-Groq Whisper ukubhala okukhulunywayo, i-Gemini ukuhumusha umbhalo ne-Gemini 3.8 Flash TTS ukukhiqiza inkulumo. Idinga ukhiye we-Groq, imvume yokufinyelela kumsingathi ongayikhetha kanye nemvume ehlukile yokuthumela umsindo.
 
 Ubumfihlo: ukuqopha kuqala kuphela ngemva kokuba uvumile futhi ucindezele u-Start. Umsindo wethebhu oyikhethile nemibhalo ebhalwe ngokukhulunywayo kuthunyelwa ngokuqondile kubahlinzeki be-AI abadingekayo ekucubunguleni okucelile, hhayi kumlondolozi we-Avorythm. Azikho izikhangiso, ukuhlaziywa kokusetshenziswa noma iseva yomlamuli eqhutshwa umthuthukisi.
 
@@ -34,6 +34,7 @@ Umhlahlandlela womsebenzisi (ngesiNgisi): https://github.com/msmahdinejad/avoryt
 
 Inqubomgomo yobumfihlo: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Yini entsha ku-1.1.19
+## Yini entsha ku-1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

@@ -16,11 +16,12 @@ from google.genai import types
 from pydantic import BaseModel, Field
 
 from .constants import (
-    FILE_VOICE_MODEL,
+    DEFAULT_VOICE_MODEL,
     INPUT_RATE,
     LIVE_MODEL,
     OUTPUT_RATE,
     TRANSLATION_MODELS,
+    VOICE_MODELS,
 )
 from .models import Settings
 from .transcripts import TranscriptTracker
@@ -31,6 +32,21 @@ def duration_seconds(value: object) -> float | None:
         return None
     match = re.fullmatch(r"\s*([0-9]+(?:\.[0-9]+)?)s\s*", str(value))
     return float(match.group(1)) if match else None
+
+
+def pcm_from_audio(data: bytes) -> bytes:
+    """Return 24 kHz mono 16-bit PCM from a WAV container, or the bytes unchanged."""
+
+    if data[:4] != b"RIFF" or data[8:12] != b"WAVE":
+        return data
+    position = 12
+    while position + 8 <= len(data):
+        name = data[position : position + 4]
+        size = int.from_bytes(data[position + 4 : position + 8], "little")
+        if name == b"data":
+            return data[position + 8 : position + 8 + size if size < len(data) else None]
+        position += 8 + size + (size & 1)
+    return b""
 
 
 def trim_stream_padding(
@@ -520,61 +536,49 @@ class GeminiFileGateway:
         detail = str(last_error) if last_error else "local free-tier limits reached"
         raise TranslationPoolExhausted(f"translation model pool exhausted: {detail}")
 
-    async def narrate(self, text: str, language: str, voice_name: str) -> Narration:
-        audio = bytearray()
-        transcript_parts: list[str] = []
-        total_tokens = 0
-        config = types.LiveConnectConfig(
-            response_modalities=[types.Modality.AUDIO],
-            output_audio_transcription=types.AudioTranscriptionConfig(),
+    async def narrate(
+        self,
+        text: str,
+        language: str,
+        voice_name: str,
+        voice_model: str = DEFAULT_VOICE_MODEL,
+    ) -> Narration:
+        """Speak `text` verbatim with a Gemini 3.8 TTS model (the language is detected)."""
+
+        model = voice_model if voice_model in VOICE_MODELS else DEFAULT_VOICE_MODEL
+        config = types.GenerateContentConfig(
+            response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
-                language_code=language,
                 voice_config=types.VoiceConfig(
                     prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_name)
                 ),
             ),
-            system_instruction=(
-                "You are a precise speech renderer. Speak exactly the supplied text once in a "
-                "natural pace. Do not translate, paraphrase, answer, introduce it, or add any "
-                "words."
-            ),
-            thinking_config=types.ThinkingConfig(thinking_budget=0),
         )
-        async with self.client.aio.live.connect(model=FILE_VOICE_MODEL, config=config) as session:
-            await session.send_realtime_input(text=text)
-            responses = aiter(session.receive())
-            while True:
-                try:
-                    response = await asyncio.wait_for(
-                        anext(responses),
-                        timeout=self.narration_receive_timeout,
-                    )
-                except StopAsyncIteration:
-                    break
-                except TimeoutError as error:
-                    raise NoTranslationError(
-                        "Gemini Live narration response timed out"
-                    ) from error
-                content = getattr(response, "server_content", None)
-                model_turn = getattr(content, "model_turn", None) if content else None
-                for part in getattr(model_turn, "parts", None) or []:
-                    inline = getattr(part, "inline_data", None)
-                    if inline and isinstance(inline.data, bytes):
-                        audio.extend(inline.data)
-                transcription = getattr(content, "output_transcription", None) if content else None
-                if transcription and getattr(transcription, "text", ""):
-                    transcript_parts.append(transcription.text)
-                usage = getattr(response, "usage_metadata", None)
-                total_tokens = max(
-                    total_tokens,
-                    int(getattr(usage, "total_token_count", 0) or 0),
-                )
-                if content and getattr(content, "turn_complete", False):
-                    break
+        try:
+            response = await asyncio.wait_for(
+                self.client.aio.models.generate_content(
+                    model=model,
+                    contents=text,
+                    config=config,
+                ),
+                timeout=self.narration_receive_timeout,
+            )
+        except TimeoutError as error:
+            raise NoTranslationError("Gemini narration response timed out") from error
+        audio = bytearray()
+        for candidate in getattr(response, "candidates", None) or []:
+            content = getattr(candidate, "content", None)
+            for part in getattr(content, "parts", None) or []:
+                inline = getattr(part, "inline_data", None)
+                if inline and isinstance(inline.data, bytes):
+                    audio.extend(pcm_from_audio(inline.data))
+        usage = getattr(response, "usage_metadata", None)
+        total_tokens = int(getattr(usage, "total_token_count", 0) or 0)
         rendered = trim_stream_padding(bytes(audio), threshold=64, padding_seconds=0.12)
         if not rendered:
-            raise NoTranslationError("Gemini Live returned no narrated audio")
-        return Narration(rendered, "".join(transcript_parts).strip(), total_tokens)
+            raise NoTranslationError("Gemini returned no narrated audio")
+        # A TTS model reads the supplied text exactly, so there is no separate transcript.
+        return Narration(rendered, "", total_tokens)
 
     async def close(self) -> None:
         await self.client.aio.aclose()

@@ -61,6 +61,7 @@ class FakeWhisper:
 class FakeFileGateway:
     narrations = 0
     voices: list[str] = []
+    models: list[str] = []
 
     def __init__(self, api_key: str) -> None:
         self.api_key = api_key
@@ -72,9 +73,12 @@ class FakeFileGateway:
         assert target_language == "fa"
         return TextTranslation(["هنگام خرید شارژ کنید."], 200)
 
-    async def narrate(self, text: str, language: str, voice: str) -> Narration:
+    async def narrate(
+        self, text: str, language: str, voice: str, voice_model: str = ""
+    ) -> Narration:
         type(self).narrations += 1
         type(self).voices.append(voice)
+        type(self).models.append(voice_model)
         return Narration(b"\1\0" * 24_000, text, 300)
 
     async def close(self) -> None:
@@ -121,8 +125,14 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
     await manager.start()
     try:
         FakeFileGateway.voices.clear()
+        FakeFileGateway.models.clear()
         job = await manager.create_upload(
-            "lesson.mp3", "fa", "precise", chunks(), voice_name="Puck"
+            "lesson.mp3",
+            "fa",
+            "precise",
+            chunks(),
+            voice_name="Puck",
+            voice_model="gemini-3.8-flash-lite-tts",
         )
         await asyncio.wait_for(manager.queue.join(), 2)
         result = manager.get(job.id)
@@ -131,6 +141,8 @@ async def test_media_job_creates_four_outputs_and_player_tracks(
         assert result.quality_score == 1.0
         assert result.voice_name == "Puck"
         assert FakeFileGateway.voices == ["Puck"]
+        assert result.voice_model == "gemini-3.8-flash-lite-tts"
+        assert FakeFileGateway.models == ["gemini-3.8-flash-lite-tts"]
         assert "Charge while you shop." in manager.path(job.id, "source.srt").read_text(
             encoding="utf-8-sig"
         )
@@ -162,7 +174,9 @@ async def test_precise_mode_retries_mismatched_live_narration(
     class RetryingGateway(FakeFileGateway):
         calls = 0
 
-        async def narrate(self, text: str, language: str, voice: str) -> Narration:
+        async def narrate(
+            self, text: str, language: str, voice: str, voice_model: str = ""
+        ) -> Narration:
             type(self).calls += 1
             transcript = "متنی کاملا نامرتبط" if type(self).calls == 1 else text
             return Narration(b"\1\0" * 24_000, transcript, 300)

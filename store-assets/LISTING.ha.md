@@ -18,7 +18,7 @@ Sarrafa hanyoyi huɗu daban-daban: sautin asali, sautin da aka fassara, rubutun 
 
 Tsawaitawar tana aiki da kanta, ba tare da manhajar kwamfuta, Python, FFmpeg, localhost ko na'urar sauti ta kama-da-wane ba. Harshen mu'amalar manhajar a halin yanzu ya takaita ga Turanci, Farisanci da Sinanci Sauƙaƙƙe; ana zaɓar harshen da za a fassara zuwa gare shi daban daga jerin zaɓuɓɓukan harsuna 79.
 
-Farawa: shigar da mabuɗin Gemini API naka daga Google AI Studio a Saituna, amince a fili a aika sautin shafin da ka zaɓa zuwa Google Gemini, zaɓi harshe sannan danna Fara. Yanayin ƙarin daidaito na zaɓi yana amfani da Groq Whisper don maida magana rubutu, Gemini don fassara rubutu, da Gemini 3.1 Flash Live don samar da murya. Yana buƙatar mabuɗin Groq, izinin shiga rukunin yanar gizo na zaɓi, da amincewa dabam game da sauti.
+Farawa: shigar da mabuɗin Gemini API naka daga Google AI Studio a Saituna, amince a fili a aika sautin shafin da ka zaɓa zuwa Google Gemini, zaɓi harshe sannan danna Fara. Yanayin ƙarin daidaito na zaɓi yana amfani da Groq Whisper don maida magana rubutu, Gemini don fassara rubutu, da Gemini 3.8 Flash TTS don samar da murya. Yana buƙatar mabuɗin Groq, izinin shiga rukunin yanar gizo na zaɓi, da amincewa dabam game da sauti.
 
 Sirri: ɗaukar sauti yana farawa ne kawai bayan ka ba da amincewa kuma ka danna Fara. Ana aika sautin shafin da ka zaɓa da rubutun maganarsa kai tsaye ga masu samar da AI da ake buƙata don aikin da ka nema, ba a taɓa aika su ga mai kula da Avorythm ba. Babu tallace-tallace, nazarin yadda ake amfani da manhajar ko uwar garken isar da bayanai da mai haɓakawa ke gudanarwa.
 
@@ -34,6 +34,7 @@ Jagorar mai amfani (Turanci): https://github.com/msmahdinejad/avorythm/blob/main
 
 Manufar sirri: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Sabbin abubuwa a 1.1.19
+## Sabbin abubuwa a 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.
