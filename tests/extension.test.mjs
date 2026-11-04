@@ -23,6 +23,7 @@ import {
   DEFAULT_VOICE_MODEL,
   GROQ_AUDIO_CONSENT_VERSION,
   LIVE_ENDPOINT,
+  liveVoiceSetupMessage,
   VOICE_MODELS,
   wavHeader
 } from '../extension/core.mjs';
@@ -191,7 +192,12 @@ test('builds the Gemini 3.8 text-to-speech request used by the precise sync pipe
   assert.deepEqual(request.generationConfig.responseModalities, ['AUDIO']);
   assert.equal(request.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Kore');
   assert.equal(request.generationConfig.speechConfig.languageCode, undefined, 'the TTS model detects the language');
-  assert.deepEqual(VOICE_MODELS, ['gemini-3.8-flash-tts', 'gemini-3.8-flash-lite-tts']);
+  assert.deepEqual(VOICE_MODELS, ['gemini-3.8-flash-tts', 'gemini-3.8-live', 'gemini-3.8-flash-lite-tts']);
+  const live = liveVoiceSetupMessage('Kore').setup;
+  assert.equal(live.model, 'models/gemini-3.8-live');
+  assert.deepEqual(live.generationConfig.responseModalities, ['AUDIO']);
+  assert.equal(live.generationConfig.thinkingConfig, undefined, '3.8 Live rejects thinking config');
+  assert.match(live.systemInstruction.parts[0].text, /do NOT answer it/u);
   assert.equal(DEFAULT_VOICE_MODEL, 'gemini-3.8-flash-tts');
 });
 

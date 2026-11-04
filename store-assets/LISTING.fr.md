@@ -39,5 +39,5 @@ Politique de confidentialité : https://github.com/msmahdinejad/avorythm/blob/ma
 
 ## Nouveautés de la version 1.1.20
 
-- Le doublage utilise désormais Gemini 3.8 Flash TTS, avec une option Flash-Lite dans les réglages, car Gemini 3.1 Flash Live sera arrêté le 17 novembre 2026. Le mode précis et le doublage de fichiers continuent de fonctionner.
+- Le doublage ne dépend plus de Gemini 3.1 Flash Live, que Google arrête le 17 novembre 2026. Le mode précis et le doublage de fichiers utilisent désormais Gemini 3.8, et vous choisissez le modèle de voix dans les réglages : Flash TTS (par défaut), Live (voix la plus naturelle) ou Flash-Lite (le plus rapide).
 - Un message clair remplace l'erreur cryptique lorsqu'une clé API contient des caractères non autorisés, par exemple un point copié depuis un champ masqué.

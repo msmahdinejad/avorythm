@@ -4,13 +4,14 @@
 
 ### Fixed
 
-- **Dubbing no longer depends on Gemini 3.1 Flash Live**, which Google shuts down on 2026-11-17. The extension's precise mode and the desktop Media Studio now speak the translated text with **Gemini 3.8 Flash TTS** (one request per utterance, any language detected automatically). A local test showed Gemini 3.8 Live answers a script instead of reading it, so a Live model was not used. Thanks to @MahdiPixel for asking for Gemini 3.8 support in [#18](https://github.com/msmahdinejad/avorythm/issues/18).
+- **Dubbing no longer depends on Gemini 3.1 Flash Live**, which Google shuts down on 2026-11-17. Precise mode in the extension and the desktop Media Studio now narrate with **Gemini 3.8**. Thanks to @MahdiPixel for asking for Gemini 3.8 support in [#18](https://github.com/msmahdinejad/avorythm/issues/18).
 - An API key containing a character that cannot be sent in an HTTP header (for example the `·` copied from a masked field) now produces a clear "not allowed characters" message when saving or processing, instead of `'ascii' codec can't encode character '\xb7'` and a job stuck at 12%. Thanks to @amduser2025 for reporting this in [#20](https://github.com/msmahdinejad/avorythm/issues/20).
 
 ### Added
 
-- Choose the dubbing voice model: **Gemini 3.8 Flash TTS** (best quality) or **Gemini 3.8 Flash-Lite TTS** (faster, lighter on quota), in the extension settings (precise mode) and for each Media Studio file.
+- Choose the dubbing voice model: **Gemini 3.8 Flash TTS** (default, reads the text exactly), **Gemini 3.8 Live** (the most natural voice) or **Gemini 3.8 Flash-Lite TTS** (fastest, lightest on quota), in the extension settings (precise mode) and for each Media Studio file. 3.8 Live uses a strict voice-over instruction so it reads the script instead of answering it (verified against the live API), and falls back to Flash TTS for an utterance if its session fails.
 - `gemini-3.8-flash` is tried first in the free text-translation pool, with the existing models as fallbacks.
+- The faster live engine (Gemini 3.5 Live Translate) is unchanged; no newer live-translate model exists.
 
 ### Changed
 
@@ -18,7 +19,7 @@
 
 ### Tests
 
-- Cover TTS narration, WAV extraction, model selection and fallback, retries and error codes, and rejection of invalid keys in the extension and desktop app.
+- Cover TTS and Live narration, the Live-to-TTS fallback, WAV extraction, model selection, retries and error codes, and rejection of invalid keys in the extension and desktop app.
 
 ## [1.1.19] - 2026-10-21
 

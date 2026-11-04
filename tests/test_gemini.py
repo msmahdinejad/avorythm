@@ -398,3 +398,125 @@ def test_pcm_from_audio_handles_wav_containers_and_raw_pcm() -> None:
     assert pcm_from_audio(wav_bytes(pcm)) == pcm
     assert pcm_from_audio(pcm) == pcm
     assert pcm_from_audio(b"RIFF\x00\x00\x00\x00WAVE") == b""
+
+
+class LiveNarrationSession:
+    """Stands in for a Gemini 3.8 Live session that reads the script aloud."""
+
+    def __init__(self, *, silent: bool = False) -> None:
+        self.sent_text = ""
+        self.silent = silent
+
+    async def send_realtime_input(self, *, text: str) -> None:
+        self.sent_text = text
+
+    async def receive(self) -> AsyncIterator[object]:
+        if self.silent:
+            await asyncio.Event().wait()
+        audio = b"\xe8\x03" * 480
+        yield SimpleNamespace(
+            server_content=SimpleNamespace(
+                model_turn=SimpleNamespace(
+                    parts=[SimpleNamespace(inline_data=SimpleNamespace(data=audio))]
+                ),
+                output_transcription=SimpleNamespace(text="سلام "),
+                turn_complete=False,
+            ),
+            usage_metadata=SimpleNamespace(total_token_count=5),
+        )
+        yield SimpleNamespace(
+            server_content=SimpleNamespace(
+                model_turn=None,
+                output_transcription=SimpleNamespace(text="دنیا"),
+                turn_complete=True,
+            ),
+            usage_metadata=SimpleNamespace(total_token_count=7),
+        )
+
+
+class LiveConnection:
+    def __init__(self, session: LiveNarrationSession) -> None:
+        self.session = session
+        self.exited = False
+
+    async def __aenter__(self) -> LiveNarrationSession:
+        return self.session
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.exited = True
+
+
+def live_gateway(session: LiveNarrationSession, models: object, timeout: float = 0.2):
+    captured: dict[str, object] = {}
+
+    def connect(**kwargs: object) -> LiveConnection:
+        captured.update(kwargs)
+        captured["connection"] = LiveConnection(session)
+        return captured["connection"]  # type: ignore[return-value]
+
+    gateway = GeminiFileGateway.__new__(GeminiFileGateway)
+    live = SimpleNamespace(connect=connect)
+    gateway.client = SimpleNamespace(aio=SimpleNamespace(live=live, models=models))
+    gateway.narration_receive_timeout = timeout
+    return gateway, captured
+
+
+class TtsModels:
+    def __init__(self) -> None:
+        self.used: list[str] = []
+
+    async def generate_content(self, *, model: str, **_: object) -> object:
+        self.used.append(model)
+        part = SimpleNamespace(inline_data=SimpleNamespace(data=b"\x10\x27" * 480))
+        return SimpleNamespace(
+            candidates=[SimpleNamespace(content=SimpleNamespace(parts=[part]))],
+            usage_metadata=None,
+        )
+
+
+@pytest.mark.asyncio
+async def test_gemini_3_8_live_reads_the_script_with_a_strict_voice_over_instruction() -> None:
+    from avorythm.constants import VOICE_READER_INSTRUCTION
+
+    session = LiveNarrationSession()
+    models = TtsModels()
+    gateway, captured = live_gateway(session, models)
+
+    result = await gateway.narrate("سلام دنیا", "fa", "Kore", "gemini-3.8-live")
+
+    assert captured["model"] == "gemini-3.8-live"
+    config = captured["config"]
+    assert config.system_instruction == VOICE_READER_INSTRUCTION  # type: ignore[attr-defined]
+    assert config.output_audio_transcription is None  # type: ignore[attr-defined]
+    assert config.thinking_config is None  # type: ignore[attr-defined]
+    assert config.speech_config.language_code is None  # type: ignore[attr-defined]
+    assert session.sent_text == "سلام دنیا"
+    assert result.audio == b"\xe8\x03" * 480
+    assert result.transcript == "", "3.8 Live transcripts are unreliable and are not used"
+    assert result.total_tokens == 7
+    assert models.used == [], "a working Live session must not spend a TTS request"
+
+
+@pytest.mark.asyncio
+async def test_a_failed_or_silent_live_session_falls_back_to_flash_tts() -> None:
+    models = TtsModels()
+    gateway, _ = live_gateway(LiveNarrationSession(silent=True), models, timeout=0.01)
+    result = await gateway.narrate("سلام", "fa", "Kore", "gemini-3.8-live")
+    assert models.used == ["gemini-3.8-flash-tts"]
+    assert result.audio
+
+    def broken(**_: object) -> object:
+        raise ConnectionError("socket closed")
+
+    models = TtsModels()
+    gateway = GeminiFileGateway.__new__(GeminiFileGateway)
+    live = SimpleNamespace(connect=broken)
+    gateway.client = SimpleNamespace(aio=SimpleNamespace(live=live, models=models))
+    gateway.narration_receive_timeout = 0.1
+    await gateway.narrate("سلام", "fa", "Kore", "gemini-3.8-live")
+    assert models.used == ["gemini-3.8-flash-tts"]

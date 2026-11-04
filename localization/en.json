@@ -67,7 +67,7 @@
     "subtitleWaiting": "Waiting for translation…",
     "nativeVoiceHelp": "Used only for uploaded audio and video files.",
     "voiceModel": "Dubbing voice model",
-    "voiceModelHelp": "Flash has the best quality; Flash-Lite is faster and lighter on quota.",
+    "voiceModelHelp": "Flash TTS reads the text exactly (default); Live sounds the most natural; Flash-Lite is the fastest and lightest on quota.",
     "captureDevice": "Application audio input",
     "outputDevice": "Listening output",
     "originalSound": "Original audio",

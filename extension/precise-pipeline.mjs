@@ -3,6 +3,9 @@ import {
   captionSegments,
   DEFAULT_VOICE_MODEL,
   latestCaption,
+  liveUrl,
+  liveVoiceSetupMessage,
+  LIVE_VOICE_MODEL,
   pcmFromAudio,
   speechRequest,
   VOICE_MODELS,
@@ -141,6 +144,7 @@ export class PreciseDubbingPipeline {
     onSourceText,
     onWarning,
     fetchImpl = fetch,
+    WebSocketImpl = globalThis.WebSocket,
     timeouts = {}
   }) {
     this.geminiKey = geminiKey;
@@ -154,6 +158,7 @@ export class PreciseDubbingPipeline {
     this.onSourceText = onSourceText;
     this.onWarning = onWarning;
     this.fetch = (...args) => fetchImpl(...args);
+    this.WebSocket = WebSocketImpl;
     this.narrationRequestMs = Number.isFinite(timeouts.narrationRequestMs)
       ? Math.max(1, timeouts.narrationRequestMs)
       : NARRATION_REQUEST_MS;
@@ -337,11 +342,33 @@ export class PreciseDubbingPipeline {
     return this.#narratorError('gemini_voice_failed', status);
   }
 
-  // One request per utterance: the Gemini 3.8 TTS models read the text verbatim,
-  // so there is no session to keep alive and no transcript to reconcile.
-  async #narrateOnce(text) {
+  #protocolError(value) {
+    const status = Number(value?.code || value?.status || 0);
+    const detail = String(value?.message || value?.status || '').toLowerCase();
+    if ([401, 403].includes(status) || /(?:api key|unauth|permission|forbidden)/u.test(detail)) {
+      return this.#narratorError('gemini_voice_auth_failed', status || 401);
+    }
+    if (status === 429 || /(?:quota|rate limit|resource exhausted)/u.test(detail)) {
+      return this.#narratorError('gemini_voice_quota_exceeded', 429);
+    }
+    return this.#narratorError('gemini_voice_failed', status);
+  }
+
+  #joinAudio(chunks) {
+    const audio = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.byteLength, 0));
+    let offset = 0;
+    for (const chunk of chunks) {
+      audio.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    return trimNarration(audio);
+  }
+
+  // One text-to-speech request per utterance: the Gemini 3.8 TTS models read the text
+  // verbatim, so there is no session to keep alive and no transcript to reconcile.
+  async #narrateTts(text, model) {
     const {response, result} = await this.#fetchJson(
-      `https://generativelanguage.googleapis.com/v1beta/models/${this.voiceModel}:generateContent?key=${encodeURIComponent(this.geminiKey)}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(this.geminiKey)}`,
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -358,20 +385,77 @@ export class PreciseDubbingPipeline {
         if (inline?.data) chunks.push(pcmFromAudio(base64ToBytes(inline.data)));
       }
     }
-    const audio = new Uint8Array(chunks.reduce((total, chunk) => total + chunk.byteLength, 0));
-    let offset = 0;
-    for (const chunk of chunks) {
-      audio.set(chunk, offset);
-      offset += chunk.byteLength;
-    }
-    return trimNarration(audio);
+    return this.#joinAudio(chunks);
+  }
+
+  // Gemini 3.8 Live: a short-lived session per utterance. The strict voice-over
+  // instruction makes it read the script instead of answering it.
+  #narrateLive(text) {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      let socket = null;
+      let ready = false;
+      let settled = false;
+      let messages = Promise.resolve();
+      const finish = (error = null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        try { socket?.close(); } catch {}
+        if (error) reject(error);
+        else resolve(this.#joinAudio(chunks));
+      };
+      const timer = setTimeout(
+        () => finish(this.#narratorError('gemini_voice_timeout')),
+        this.narrationRequestMs
+      );
+      try {
+        socket = new this.WebSocket(liveUrl(this.geminiKey));
+      } catch {
+        finish(this.#narratorError('gemini_voice_failed'));
+        return;
+      }
+      socket.onopen = () => {
+        try { socket.send(JSON.stringify(liveVoiceSetupMessage(this.voiceName))); }
+        catch { finish(this.#narratorError('gemini_voice_setup_closed')); }
+      };
+      socket.onmessage = (event) => {
+        messages = messages.then(async () => {
+          if (settled) return;
+          const payload = typeof Blob !== 'undefined' && event.data instanceof Blob
+            ? await event.data.text()
+            : event.data;
+          const message = JSON.parse(payload);
+          if (message.error) { finish(this.#protocolError(message.error)); return; }
+          if (message.goAway) { finish(this.#narratorError('gemini_voice_go_away')); return; }
+          if (message.setupComplete && !ready) {
+            ready = true;
+            socket.send(JSON.stringify({clientContent: {turns: [{role: 'user', parts: [{text}]}], turnComplete: true}}));
+            return;
+          }
+          const content = message.serverContent;
+          for (const part of content?.modelTurn?.parts || []) {
+            const inline = part.inlineData || part.inline_data;
+            if (inline?.data) chunks.push(base64ToBytes(inline.data));
+          }
+          if (content?.turnComplete) finish();
+        }).catch((error) => finish(error instanceof Error ? error : this.#narratorError('gemini_voice_failed')));
+      };
+      socket.onerror = () => finish(this.#narratorError('gemini_voice_failed'));
+      socket.onclose = () => finish(chunks.length
+        ? null
+        : this.#narratorError(ready ? 'gemini_voice_closed' : 'gemini_voice_setup_closed'));
+    });
   }
 
   async #narrate(text) {
     let lastError = this.#narratorError('gemini_voice_failed');
     for (let attempt = 0; attempt < 2; attempt += 1) {
       try {
-        const narration = await this.#narrateOnce(text);
+        // Live is tried once; if its session fails the retry uses the Flash TTS model.
+        const live = this.voiceModel === LIVE_VOICE_MODEL && attempt === 0;
+        const model = this.voiceModel === LIVE_VOICE_MODEL ? DEFAULT_VOICE_MODEL : this.voiceModel;
+        const narration = live ? await this.#narrateLive(text) : await this.#narrateTts(text, model);
         if (!narration.length) throw this.#narratorError('gemini_voice_empty');
         return narration;
       } catch (error) {

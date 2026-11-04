@@ -19,9 +19,11 @@ from .constants import (
     DEFAULT_VOICE_MODEL,
     INPUT_RATE,
     LIVE_MODEL,
+    LIVE_VOICE_MODEL,
     OUTPUT_RATE,
     TRANSLATION_MODELS,
     VOICE_MODELS,
+    VOICE_READER_INSTRUCTION,
 )
 from .models import Settings
 from .transcripts import TranscriptTracker
@@ -543,9 +545,17 @@ class GeminiFileGateway:
         voice_name: str,
         voice_model: str = DEFAULT_VOICE_MODEL,
     ) -> Narration:
-        """Speak `text` verbatim with a Gemini 3.8 TTS model (the language is detected)."""
+        """Speak `text` verbatim (the language is detected). Live falls back to TTS."""
 
         model = voice_model if voice_model in VOICE_MODELS else DEFAULT_VOICE_MODEL
+        if model == LIVE_VOICE_MODEL:
+            try:
+                return await self._narrate_live(text, voice_name)
+            except Exception:  # a failed Live session must never leave the job without audio
+                model = DEFAULT_VOICE_MODEL
+        return await self._narrate_tts(text, voice_name, model)
+
+    async def _narrate_tts(self, text: str, voice_name: str, model: str) -> Narration:
         config = types.GenerateContentConfig(
             response_modalities=["AUDIO"],
             speech_config=types.SpeechConfig(
@@ -578,6 +588,53 @@ class GeminiFileGateway:
         if not rendered:
             raise NoTranslationError("Gemini returned no narrated audio")
         # A TTS model reads the supplied text exactly, so there is no separate transcript.
+        return Narration(rendered, "", total_tokens)
+
+    async def _narrate_live(self, text: str, voice_name: str) -> Narration:
+        audio = bytearray()
+        total_tokens = 0
+        config = types.LiveConnectConfig(
+            response_modalities=[types.Modality.AUDIO],
+            speech_config=types.SpeechConfig(
+                voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_name)
+                ),
+            ),
+            system_instruction=VOICE_READER_INSTRUCTION,
+        )
+        async with self.client.aio.live.connect(model=LIVE_VOICE_MODEL, config=config) as session:
+            await session.send_realtime_input(text=text)
+            responses = aiter(session.receive())
+            while True:
+                try:
+                    response = await asyncio.wait_for(
+                        anext(responses),
+                        timeout=self.narration_receive_timeout,
+                    )
+                except StopAsyncIteration:
+                    break
+                except TimeoutError as error:
+                    raise NoTranslationError(
+                        "Gemini Live narration response timed out"
+                    ) from error
+                content = getattr(response, "server_content", None)
+                model_turn = getattr(content, "model_turn", None) if content else None
+                for part in getattr(model_turn, "parts", None) or []:
+                    inline = getattr(part, "inline_data", None)
+                    if inline and isinstance(inline.data, bytes):
+                        audio.extend(inline.data)
+                usage = getattr(response, "usage_metadata", None)
+                total_tokens = max(
+                    total_tokens,
+                    int(getattr(usage, "total_token_count", 0) or 0),
+                )
+                if content and getattr(content, "turn_complete", False):
+                    break
+        rendered = trim_stream_padding(bytes(audio), threshold=64, padding_seconds=0.12)
+        if not rendered:
+            raise NoTranslationError("Gemini Live returned no narrated audio")
+        # 3.8 Live's output transcript is often empty or a placeholder such as
+        # "<no speech detected>", so it is not used to second-guess the audio.
         return Narration(rendered, "", total_tokens)
 
     async def close(self) -> None:

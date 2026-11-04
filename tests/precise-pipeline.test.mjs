@@ -150,6 +150,85 @@ test('narrates each translated utterance with one Gemini 3.8 TTS request using t
   assert.equal(dubs.length, 2);
 });
 
+class FakeLiveSocket {
+  static OPEN = 1;
+  static instances = [];
+  readyState = 0;
+  sent = [];
+  constructor(url) {
+    this.url = url;
+    FakeLiveSocket.instances.push(this);
+    queueMicrotask(() => { this.readyState = 1; this.onopen(); });
+  }
+  send(payload) {
+    const message = JSON.parse(payload);
+    this.sent.push(message);
+    if (message.setup) queueMicrotask(() => this.onmessage({data: JSON.stringify({setupComplete: {}})}));
+    else if (message.clientContent) {
+      const audio = pcmOf(24000, 1200).toString('base64');
+      queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {modelTurn: {parts: [{inlineData: {data: audio}}]}}})}));
+      queueMicrotask(() => this.onmessage({data: JSON.stringify({serverContent: {turnComplete: true}})}));
+    }
+  }
+  close() { this.readyState = 3; queueMicrotask(() => this.onclose?.()); }
+}
+
+function liveFetch(extra = {}) {
+  return async (url, options) => {
+    if (String(url).includes('api.groq.com')) return {ok: true, async json() { return {segments: [{start: 0, end: 1, text: 'One.'}]}; }};
+    if (isVoice(url)) { extra.ttsUrls?.push(String(url)); return voiceResponse(pcmOf(2400)); }
+    return {ok: true, async json() { return {candidates: [{content: {parts: [{text: '[{"id":0,"text":"یک."}]'}]}}]}; }};
+  };
+}
+
+test('Gemini 3.8 Live reads the script through a short session with the voice-over instruction', async () => {
+  FakeLiveSocket.instances.length = 0;
+  const dubs = [];
+  const ttsUrls = [];
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Puck', voiceModel: 'gemini-3.8-live',
+    fetchImpl: liveFetch({ttsUrls}), WebSocketImpl: FakeLiveSocket,
+    onCaption() {}, onDub: (chunk) => dubs.push(chunk), onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => { throw error; }
+  });
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  await pipeline.busy;
+  const [socket] = FakeLiveSocket.instances;
+  assert.match(socket.url, /BidiGenerateContent\?key=gemini$/u);
+  const setup = socket.sent[0].setup;
+  assert.equal(setup.model, 'models/gemini-3.8-live');
+  assert.match(setup.systemInstruction.parts[0].text, /voice-over engine/u);
+  assert.equal(setup.generationConfig.thinkingConfig, undefined);
+  assert.equal(setup.generationConfig.speechConfig.languageCode, undefined);
+  assert.equal(setup.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, 'Puck');
+  assert.equal(socket.sent[1].clientContent.turns[0].parts[0].text, 'یک.');
+  assert.equal(dubs.length, 1);
+  assert.equal(new Int16Array(dubs[0].data)[0], 1200);
+  assert.deepEqual(ttsUrls, [], 'a working Live session must not spend a TTS request');
+  assert.equal(socket.readyState, 3, 'the session is closed after each utterance');
+});
+
+test('a Live session that cannot start falls back to Flash TTS instead of losing the dub', async () => {
+  const ttsUrls = [];
+  const dubs = [];
+  class BrokenSocket {
+    constructor() { queueMicrotask(() => this.onerror()); }
+    send() {}
+    close() {}
+  }
+  const pipeline = new PreciseDubbingPipeline({
+    geminiKey: 'gemini', groqKey: 'groq', targetLanguage: 'fa', voiceName: 'Kore', voiceModel: 'gemini-3.8-live',
+    timeouts: {retryDelayMs: 0}, fetchImpl: liveFetch({ttsUrls}), WebSocketImpl: BrokenSocket,
+    onCaption() {}, onDub: (chunk) => dubs.push(chunk), onFrontier() {}, onSourceText: async () => {},
+    onWarning: (error) => { throw error; }
+  });
+  pipeline.push(new Uint8Array(12 * 16000 * 2));
+  await pipeline.busy;
+  assert.equal(ttsUrls.length, 1);
+  assert.match(ttsUrls[0], /models\/gemini-3\.8-flash-tts:generateContent/u);
+  assert.equal(dubs.length, 1);
+});
+
 test('strips the WAV header and ignores unknown voice models', async () => {
   const urls = [];
   const dubs = [];

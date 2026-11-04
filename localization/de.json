@@ -67,7 +67,7 @@
     "subtitleWaiting": "Warten auf Übersetzung…",
     "nativeVoiceHelp": "Wird nur für hochgeladene Audio- und Videodateien verwendet.",
     "voiceModel": "Modell für die Sprachausgabe",
-    "voiceModelHelp": "Flash bietet die beste Qualität; Flash-Lite ist schneller und schont das Kontingent.",
+    "voiceModelHelp": "Flash TTS liest den Text exakt vor (Standard); Live klingt am natürlichsten; Flash-Lite ist am schnellsten und schont das Kontingent.",
     "captureDevice": "Audioeingang für Anwendungen",
     "outputDevice": "Wiedergabegerät",
     "originalSound": "Originalton",

@@ -41,5 +41,5 @@ Avorythm 免费且开源。受 DRM 保护的视频或 Chrome 内部页面可能�
 
 ## 1.1.20 更新内容
 
-- 配音现在使用 Gemini 3.8 Flash TTS,并可在设置中选择 Flash-Lite;因为 Gemini 3.1 Flash Live 将于 2026 年 11 月 17 日停用。精准模式和文件配音继续可用。
+- 配音不再依赖 Gemini 3.1 Flash Live(Google 将于 2026 年 11 月 17 日停用)。精准模式和文件配音现在使用 Gemini 3.8,并可在设置中选择语音模型:Flash TTS(默认)、Live(声音最自然)或 Flash-Lite(最快)。
 - 当 API 密钥包含不允许的字符(例如从遮罩字段复制的圆点)时,现在会显示清晰的提示,而不是难懂的错误。

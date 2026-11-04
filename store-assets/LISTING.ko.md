@@ -36,5 +36,5 @@ Avorythm은 무료 오픈 소스입니다. 외부 AI 서비스의 무료 사용 
 
 ## 1.1.20의 새로운 기능
 
-- Dubbing now uses Gemini 3.8 Flash TTS, with a Flash-Lite option in Settings, because Gemini 3.1 Flash Live shuts down on 17 November 2026. Precise mode and file dubbing keep working.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
 - A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

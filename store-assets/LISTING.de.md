@@ -39,5 +39,5 @@ Datenschutzerklärung: https://github.com/msmahdinejad/avorythm/blob/main/PRIVAC
 
 ## Neu in 1.1.20
 
-- Die Vertonung nutzt jetzt Gemini 3.8 Flash TTS, in den Einstellungen mit Flash-Lite-Option, weil Gemini 3.1 Flash Live am 17. November 2026 abgeschaltet wird. Der präzise Modus und die Dateivertonung funktionieren weiter.
+- Die Vertonung hängt nicht mehr von Gemini 3.1 Flash Live ab, das Google am 17. November 2026 abschaltet. Präziser Modus und Dateivertonung nutzen jetzt Gemini 3.8; das Sprachmodell wählst du in den Einstellungen: Flash TTS (Standard), Live (natürlichste Stimme) oder Flash-Lite (am schnellsten).
 - Enthält ein API-Schlüssel unzulässige Zeichen, etwa einen aus einem maskierten Feld kopierten Punkt, erscheint eine klare Meldung statt eines kryptischen Fehlers.

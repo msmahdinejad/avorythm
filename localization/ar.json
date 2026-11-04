@@ -67,7 +67,7 @@
     "subtitleWaiting": "في انتظار الترجمة…",
     "nativeVoiceHelp": "يُستخدم فقط لملفات الصوت والفيديو المرفوعة.",
     "voiceModel": "نموذج صوت الدبلجة",
-    "voiceModelHelp": "Flash بجودة أعلى؛ Flash-Lite أسرع وأخف على الحصة.",
+    "voiceModelHelp": "Flash TTS يقرأ النص بدقة (الافتراضي)؛ Live صوته الأكثر طبيعية؛ Flash-Lite الأسرع والأخف على الحصة.",
     "captureDevice": "مدخل صوت التطبيق",
     "outputDevice": "مخرج الاستماع",
     "originalSound": "الصوت الأصلي",

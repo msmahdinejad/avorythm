@@ -67,7 +67,7 @@
     "subtitleWaiting": "In attesa della traduzione…",
     "nativeVoiceHelp": "Usata soltanto per i file audio e video caricati.",
     "voiceModel": "Modello vocale del doppiaggio",
-    "voiceModelHelp": "Flash offre la qualità migliore; Flash-Lite è più veloce e consuma meno quota.",
+    "voiceModelHelp": "Flash TTS legge il testo alla lettera (predefinito); Live suona più naturale; Flash-Lite è il più veloce e consuma meno quota.",
     "captureDevice": "Ingresso audio dell'applicazione",
     "outputDevice": "Uscita per l'ascolto",
     "originalSound": "Audio originale",
