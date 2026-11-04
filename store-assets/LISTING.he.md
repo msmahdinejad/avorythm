@@ -18,7 +18,7 @@ Avorythm — דיבוב חי וכתוביות בעזרת AI
 
 התוסף פועל באופן עצמאי, ללא יישום למחשב, Python, FFmpeg, localhost או התקן שמע וירטואלי. הממשק הנוכחי זמין באנגלית, בפרסית ובסינית מפושטת; שפת היעד לתרגום נבחרת בנפרד מתוך 79 אפשרויות שפה.
 
-הגדרה: הזינו בהגדרות מפתח API משלכם עבור Gemini, מ-Google AI Studio, אשרו במפורש את שליחת השמע מהלשונית שנבחרה אל Google Gemini, בחרו שפה ולחצו על התחלה. מצב דיוק אופציונלי משתמש ב-Groq Whisper לתמלול, ב-Gemini לתרגום טקסט וב-Gemini 3.1 Flash Live להפקת דיבור. הוא דורש מפתח Groq, הרשאת מארח אופציונלית והסכמה נפרדת לשליחת שמע.
+הגדרה: הזינו בהגדרות מפתח API משלכם עבור Gemini, מ-Google AI Studio, אשרו במפורש את שליחת השמע מהלשונית שנבחרה אל Google Gemini, בחרו שפה ולחצו על התחלה. מצב דיוק אופציונלי משתמש ב-Groq Whisper לתמלול, ב-Gemini לתרגום טקסט וב-Gemini 3.8 Flash TTS להפקת דיבור. הוא דורש מפתח Groq, הרשאת מארח אופציונלית והסכמה נפרדת לשליחת שמע.
 
 פרטיות: הלכידה מתחילה רק לאחר מתן הסכמה ולחיצה על התחלה. השמע והתמלילים מהלשונית שנבחרה נשלחים ישירות לספקי ה-AI הדרושים לעיבוד המבוקש, ולעולם לא למתחזק של Avorythm. אין פרסומות, כלי ניתוח שימוש או שרת תיווך שמפעיל המפתח.
 
@@ -34,6 +34,7 @@ Avorythm הוא חינמי ובקוד פתוח. המכסות החינמיות ו
 
 מדיניות פרטיות: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## מה חדש ב-1.1.19
+## מה חדש ב-1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

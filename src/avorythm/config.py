@@ -36,6 +36,23 @@ KEYRING_USER = "default"
 ApiProvider = Literal["gemini", "groq"]
 
 
+def api_key_problem(key: str, provider: ApiProvider = "gemini") -> str:
+    """Explain why a key cannot be sent in an HTTP header, or return an empty string.
+
+    A key pasted from a masked field (for example "gsk_abc····xyz") contains a
+    non-ASCII character that httpx rejects with an unhelpful ASCII-codec error.
+    """
+
+    if key and key.isascii() and key.isprintable() and not any(char.isspace() for char in key):
+        return ""
+    name = "Groq" if provider == "groq" else "Gemini"
+    return (
+        f"The {name} API key contains spaces or characters that are not allowed "
+        "(for example a dot or bullet copied from a masked field). Clear it in "
+        "Settings and paste the full key again."
+    )
+
+
 class ConfigStore:
     """Owns persistent settings and secrets behind one small interface."""
 
@@ -120,6 +137,8 @@ class ConfigStore:
         clean = key.strip()
         if len(clean) < 10 or "\n" in clean or "\r" in clean:
             raise ValueError("invalid API key")
+        if problem := api_key_problem(clean, provider):
+            raise ValueError(problem)
         keyring.set_password(KEYRING_SERVICES[provider], KEYRING_USER, clean)
         environment = "GEMINI_API_KEY" if provider == "gemini" else "GROQ_API_KEY"
         os.environ[environment] = clean

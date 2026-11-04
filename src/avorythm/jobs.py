@@ -17,12 +17,14 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Literal, Protocol
 
-from .config import ConfigStore
+from .config import ConfigStore, api_key_problem
 from .constants import (
+    DEFAULT_VOICE_MODEL,
     GROQ_FAST_MODEL,
     GROQ_PRECISE_MODEL,
     OUTPUT_RATE,
     SUPPORTED_LANGUAGES,
+    VOICE_MODELS,
     VOICE_NAMES,
 )
 from .gemini import GeminiFileGateway, Narration, NoTranslationError, TextTranslation
@@ -60,7 +62,9 @@ class FileGateway(Protocol):
     async def translate(
         self, texts: list[str], source_language: str, target_language: str
     ) -> TextTranslation: ...
-    async def narrate(self, text: str, language: str, voice_name: str) -> Narration: ...
+    async def narrate(
+        self, text: str, language: str, voice_name: str, voice_model: str = ...
+    ) -> Narration: ...
     async def close(self) -> None: ...
 
 
@@ -124,6 +128,7 @@ class MediaJob:
     target_language: str
     media_kind: MediaKind = "video"
     voice_name: str = "Kore"
+    voice_model: str = DEFAULT_VOICE_MODEL
     status: str = "queued"
     stage: str = "queued"
     progress: float = 0.0
@@ -144,6 +149,7 @@ class MediaJob:
         )
         payload.setdefault("quality_score", None)
         payload.setdefault("voice_name", "Kore")
+        payload.setdefault("voice_model", DEFAULT_VOICE_MODEL)
         payload.setdefault("translation_models", [])
         return cls(**payload)  # type: ignore[arg-type]
 
@@ -253,6 +259,7 @@ class MediaJobManager:
         chunks: AsyncIterator[bytes],
         content_length: int | None = None,
         voice_name: str = "Kore",
+        voice_model: str = DEFAULT_VOICE_MODEL,
     ) -> MediaJob:
         suffix = Path(filename).suffix.lower()
         media_kind = supported_media(filename)
@@ -264,6 +271,8 @@ class MediaJobManager:
             raise ValueError("unsupported processing mode")
         if voice_name not in VOICE_NAMES:
             raise ValueError("unsupported voice")
+        if voice_model not in VOICE_MODELS:
+            raise ValueError("unsupported voice model")
         if content_length is not None and content_length > self.MAX_UPLOAD_BYTES:
             raise ValueError("media file is larger than the 8 GB local limit")
         job = MediaJob(
@@ -274,6 +283,7 @@ class MediaJobManager:
             target_language,
             media_kind=media_kind,
             voice_name=voice_name,
+            voice_model=voice_model,
         )
         folder = self._folder(job.id)
         folder.mkdir(parents=True)
@@ -406,6 +416,7 @@ class MediaJobManager:
                     text,
                     job.target_language,
                     job.voice_name,
+                    job.voice_model,
                 )
             except Exception:
                 await self.governor.reconcile(charge, estimate)
@@ -447,6 +458,8 @@ class MediaJobManager:
             raise RuntimeError("set Gemini API key before processing media")
         if not groq_key:
             raise RuntimeError("set Groq API key before processing media")
+        if problem := api_key_problem(gemini_key, "gemini") or api_key_problem(groq_key, "groq"):
+            raise RuntimeError(problem)
         self.store.apply_proxy(self.store.load())
         whisper = self.whisper_factory(groq_key)
         gateway = self.file_gateway_factory(gemini_key)

@@ -18,7 +18,7 @@ Dörd kanalı müstəqil idarə edin: orijinal səs, dublyaj səsi, orijinal sub
 
 Genişlənmə masaüstü tətbiqi, Python, FFmpeg, localhost və ya virtual səs cihazı olmadan müstəqil işləyir. İnterfeys yalnız ingilis, fars və sadələşdirilmiş Çin dillərini dəstəkləyir; tərcümə dili isə ayrıca olaraq 79 dil seçimindən təyin edilir.
 
-Quraşdırma: Google AI Studio-dan aldığınız şəxsi Gemini API açarını Ayarlara daxil edin, seçilmiş vərəqdəki səsin Google Gemini-yə göndərilməsinə açıq şəkildə razılıq verin, dil seçin və Başlat düyməsini basın. İstəyə bağlı dəqiq rejim transkripsiya üçün Groq Whisper, mətn tərcüməsi üçün Gemini və nitq üçün Gemini 3.1 Flash Live istifadə edir. Bunun üçün Groq açarı, istəyə bağlı host icazəsi və səsin göndərilməsinə ayrıca razılıq tələb olunur.
+Quraşdırma: Google AI Studio-dan aldığınız şəxsi Gemini API açarını Ayarlara daxil edin, seçilmiş vərəqdəki səsin Google Gemini-yə göndərilməsinə açıq şəkildə razılıq verin, dil seçin və Başlat düyməsini basın. İstəyə bağlı dəqiq rejim transkripsiya üçün Groq Whisper, mətn tərcüməsi üçün Gemini və nitq üçün Gemini 3.8 Flash TTS istifadə edir. Bunun üçün Groq açarı, istəyə bağlı host icazəsi və səsin göndərilməsinə ayrıca razılıq tələb olunur.
 
 Məxfilik: səsin tutulması yalnız razılıq verib Başlat düyməsini basdıqdan sonra başlayır. Seçilmiş vərəqdəki səs və transkriptlər tələb olunan emal üçün lazım olan süni intellekt xidməti təminatçılarına birbaşa göndərilir, Avorythm-in tərtibatçısına isə heç vaxt göndərilmir. Reklam, analitika və ya tərtibatçının idarə etdiyi vasitəçi server yoxdur.
 
@@ -34,6 +34,7 @@ Mənbə kodu: https://github.com/msmahdinejad/avorythm
 
 Məxfilik siyasəti: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 versiyasında yeniliklər
+## 1.1.20 versiyasında yeniliklər
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

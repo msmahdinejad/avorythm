@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .audio import AudioEngine, DeviceCatalog, input_to_output_pcm, mix_pcm
-from .config import ConfigStore
+from .config import ConfigStore, api_key_problem
 from .gemini import GeminiGateway
 from .models import RuntimeState, Settings
 from .recording import SessionRecorder
@@ -63,6 +63,8 @@ class DubRuntime:
             return
         if not self.store.get_api_key():
             raise ValueError("set Gemini API key first")
+        if problem := api_key_problem(self.store.get_api_key()):
+            raise ValueError(problem)
         self.state.error = ""
         self.state.status = "connecting"
         self.task = asyncio.create_task(self._run())

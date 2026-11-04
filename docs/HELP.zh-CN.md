@@ -57,7 +57,7 @@ macOS 可以选择 BlackHole 一类的回环设备；Linux 可选择对应的 Pi
 同步模式有两种引擎：
 
 - **Gemini 3.5 Live**：较快的实时翻译路径，只需 Gemini 密钥及相应授权。
-- **Whisper + LLM + Gemini 3.1 Live**：先由 Groq Whisper 为音频分段转录并提供时间戳，再用 Gemini 翻译与生成配音。此路径还需要 Groq 密钥、Chrome 对 `api.groq.com` 的访问权限，以及单独的 Groq 音频授权。网络受限时，请确认 Chrome 本身能够通过浏览器或系统代理访问该域名；桌面应用的私有代理设置不会改变 Chrome 的网络路由。
+- **Whisper + LLM + Gemini 3.8 TTS**：先由 Groq Whisper 为音频分段转录并提供时间戳，再用 Gemini 翻译与生成配音。此路径还需要 Groq 密钥、Chrome 对 `api.groq.com` 的访问权限，以及单独的 Groq 音频授权。网络受限时，请确认 Chrome 本身能够通过浏览器或系统代理访问该域名；桌面应用的私有代理设置不会改变 Chrome 的网络路由。
 
 ### 自定义声音、字幕与导出
 

@@ -47,6 +47,7 @@ const messages = {
     outputMixer: 'خروجی دلخواه من', outputMixerHint: 'صدا و زیرنویس را آزادانه ترکیب کن',
     floatingSubtitles: 'زیرنویس شناور', floatingHint: 'قابل جابه‌جایی و تغییر اندازه', openSubtitleWindow: 'بازکردن کادر زیرنویس', closeSubtitleWindow: 'بستن کادر زیرنویس',
     subtitleSize: 'اندازهٔ متن', subtitleWidth: 'عرض کادر', subtitleOpacity: 'شفافیت پس‌زمینه', showSourceLine: 'نمایش متن اصلی بالای ترجمه', subtitlePopupBlocked: 'مرورگر بازشدن پنجرهٔ زیرنویس را مسدود کرد.', subtitleWaiting: 'منتظر ترجمه…',
+    voiceModel: 'مدل صدای دوبله', voiceModelHelp: 'Flash TTS متن را دقیق می‌خواند (پیش‌فرض)؛ Live طبیعی‌ترین صدا را دارد؛ Flash-Lite سریع‌تر است و سهمیهٔ کمتری مصرف می‌کند.',
     nativeVoiceHelp: 'فقط برای دوبلهٔ فایل‌های صوتی و ویدئویی.', captureDevice: 'ورودی صدای برنامه',
     outputDevice: 'خروجی شنیداری',
     originalSound: 'صدای اصلی', dubbedSound: 'صدای دوبله', sourceSubtitles: 'زیرنویس اصلی', translatedSubtitles: 'زیرنویس ترجمه', audioLevels: 'میکس صدا', advanced: 'تنظیمات پیشرفته', save: 'ذخیره',
@@ -108,6 +109,7 @@ const messages = {
     outputMixer: 'My output mix', outputMixerHint: 'Combine audio and subtitles freely',
     floatingSubtitles: 'Floating subtitles', floatingHint: 'Move and resize freely', openSubtitleWindow: 'Open subtitle window', closeSubtitleWindow: 'Close subtitle window',
     subtitleSize: 'Text size', subtitleWidth: 'Card width', subtitleOpacity: 'Background opacity', showSourceLine: 'Show source above translation', subtitlePopupBlocked: 'The browser blocked the subtitle window.', subtitleWaiting: 'Waiting for translation…',
+    voiceModel: 'Dubbing voice model', voiceModelHelp: 'Flash TTS reads the text exactly (default); Live sounds the most natural; Flash-Lite is the fastest and lightest on quota.',
     nativeVoiceHelp: 'Used only for uploaded audio and video files.', captureDevice: 'Application audio input',
     outputDevice: 'Listening output',
     originalSound: 'Original audio', dubbedSound: 'Dubbed audio', sourceSubtitles: 'Source subtitles', translatedSubtitles: 'Translated subtitles', audioLevels: 'Audio mix', advanced: 'Advanced settings', save: 'Save',
@@ -169,6 +171,7 @@ const messages = {
     outputMixer: '我的输出混音', outputMixerHint: '自由组合音频与字幕',
     floatingSubtitles: '悬浮字幕', floatingHint: '可自由移动与调整大小', openSubtitleWindow: '打开字幕窗口', closeSubtitleWindow: '关闭字幕窗口',
     subtitleSize: '文字大小', subtitleWidth: '卡片宽度', subtitleOpacity: '背景不透明度', showSourceLine: '在翻译上方显示原文', subtitlePopupBlocked: '浏览器拦截了字幕窗口的打开。', subtitleWaiting: '等待翻译…',
+    voiceModel: '配音语音模型', voiceModelHelp: 'Flash TTS 精确朗读文本(默认);Live 声音最自然;Flash-Lite 最快且最省配额。',
     nativeVoiceHelp: '仅用于上传的音频和视频文件。', captureDevice: '应用音频输入',
     outputDevice: '监听输出',
     originalSound: '原始音频', dubbedSound: '配音音频', sourceSubtitles: '原文字幕', translatedSubtitles: '译文字幕', audioLevels: '音频混音', advanced: '高级设置', save: '保存',
@@ -329,6 +332,12 @@ async function request(path, options = {}) {
   return response.json();
 }
 
+const VOICE_MODEL_LABELS = {
+  'gemini-3.8-flash-tts': 'Gemini 3.8 Flash TTS',
+  'gemini-3.8-live': 'Gemini 3.8 Live',
+  'gemini-3.8-flash-lite-tts': 'Gemini 3.8 Flash-Lite TTS'
+};
+
 function fillSelect(element, items, selected, label) {
   element.replaceChildren(...items.map((item) => {
     const option = document.createElement('option');
@@ -398,6 +407,7 @@ function applySettings(settings) {
   fillLanguages($('#mediaTargetLanguage'), bootstrap.languages, settings.target_language);
   fillSelect($('#captureDevice'), bootstrap.devices.captures, settings.capture_device);
   fillSelect($('#outputDevice'), bootstrap.devices.outputs, settings.output_device);
+  fillSelect($('#mediaVoiceModel'), bootstrap.voice_models, localStorage.getItem('avorythm.mediaVoiceModel') || bootstrap.voice_models[0], (model) => VOICE_MODEL_LABELS[model] || model);
   fillSelect($('#mediaVoice'), bootstrap.voices, localStorage.getItem('avorythm.mediaVoice') || localStorage.getItem('lingora.mediaVoice') || localStorage.getItem('dubira.mediaVoice') || 'Kore', (voice) => voice);
   $('#originalAudioEnabled').checked = settings.original_audio_enabled;
   $('#dubAudioEnabled').checked = settings.dub_audio_enabled;
@@ -558,7 +568,8 @@ async function processMedia() {
     filename: selectedMediaFile.name,
     target_language: $('#mediaTargetLanguage').value,
     mode,
-    voice_name: $('#mediaVoice').value
+    voice_name: $('#mediaVoice').value,
+    voice_model: $('#mediaVoiceModel').value
   });
   $('#processMediaButton').disabled = true;
   try {
@@ -748,6 +759,7 @@ $('#clearTranscript').addEventListener('click', () => {
 
 $('#mediaFile').addEventListener('change', (event) => selectMediaFile(event.target.files[0]));
 $('#mediaVoice').addEventListener('change', () => localStorage.setItem('avorythm.mediaVoice', $('#mediaVoice').value));
+$('#mediaVoiceModel').addEventListener('change', () => localStorage.setItem('avorythm.mediaVoiceModel', $('#mediaVoiceModel').value));
 ['dragenter', 'dragover'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.add('dragging'); }));
 ['dragleave', 'drop'].forEach((name) => $('#dropZone').addEventListener(name, (event) => { event.preventDefault(); $('#dropZone').classList.remove('dragging'); }));
 $('#dropZone').addEventListener('drop', (event) => selectMediaFile(event.dataTransfer.files[0]));

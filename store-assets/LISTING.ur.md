@@ -18,7 +18,7 @@ Avorythm — AI سے براہِ راست ڈبنگ اور سب ٹائٹلز
 
 یہ ایکسٹینشن ڈیسک ٹاپ ایپ، Python، FFmpeg، localhost یا ورچوئل آڈیو ڈیوائس کے بغیر آزادانہ طور پر کام کرتی ہے۔ موجودہ انٹرفیس صرف انگریزی، فارسی اور آسان چینی میں دستیاب ہے؛ ترجمے کے لیے زبان 79 زبانوں کے اندراجات میں سے الگ منتخب کی جاتی ہے۔
 
-سیٹ اپ: ترتیبات میں Google AI Studio سے حاصل کردہ اپنی Gemini API کلید درج کریں، منتخب کردہ ٹیب کی آواز Google Gemini کو بھیجنے کی واضح رضامندی دیں، زبان منتخب کریں اور Start دبائیں۔ اختیاری زیادہ درستگی والا موڈ تحریر کی صورت میں آواز منتقل کرنے کے لیے Groq Whisper، متن کے ترجمے کے لیے Gemini، اور بولی ہوئی آواز کے لیے Gemini 3.1 Flash Live استعمال کرتا ہے۔ اس کے لیے Groq کلید، اختیاری ہوسٹ اجازت اور آواز بھیجنے کی الگ رضامندی درکار ہے۔
+سیٹ اپ: ترتیبات میں Google AI Studio سے حاصل کردہ اپنی Gemini API کلید درج کریں، منتخب کردہ ٹیب کی آواز Google Gemini کو بھیجنے کی واضح رضامندی دیں، زبان منتخب کریں اور Start دبائیں۔ اختیاری زیادہ درستگی والا موڈ تحریر کی صورت میں آواز منتقل کرنے کے لیے Groq Whisper، متن کے ترجمے کے لیے Gemini، اور بولی ہوئی آواز کے لیے Gemini 3.8 Flash TTS استعمال کرتا ہے۔ اس کے لیے Groq کلید، اختیاری ہوسٹ اجازت اور آواز بھیجنے کی الگ رضامندی درکار ہے۔
 
 رازداری: آواز کی ریکارڈنگ رضامندی دینے اور Start دبانے کے بعد ہی شروع ہوتی ہے۔ منتخب کردہ ٹیب کی آواز اور اس کا تحریری متن مطلوبہ کارروائی کے لیے درکار AI فراہم کنندگان کو براہِ راست بھیجے جاتے ہیں، Avorythm کے نگہبان کو کبھی نہیں۔ نہ اشتہارات ہیں، نہ تجزیاتی ٹریکنگ، نہ ڈویلپر کے زیرِ انتظام کوئی درمیانی سرور۔
 
@@ -34,6 +34,7 @@ Avorythm مفت اور اوپن سورس ہے۔ بیرونی AI خدمات کے 
 
 رازداری کی پالیسی: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## ورژن 1.1.19 میں نیا کیا ہے
+## ورژن 1.1.20 میں نیا کیا ہے
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

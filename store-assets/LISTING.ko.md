@@ -18,7 +18,7 @@ AI로 선택한 탭의 오디오를 번역하세요. 실시간 더빙, 이중 �
 
 이 확장 프로그램은 데스크톱 앱, Python, FFmpeg, localhost 또는 가상 오디오 장치 없이 독립적으로 작동합니다. 현재 인터페이스는 영어, 페르시아어, 중국어 간체만 지원합니다. 번역 대상 언어는 별도로 제공되는 79개 언어 항목 중에서 선택합니다.
 
-설정 방법: 설정에서 Google AI Studio를 통해 발급받은 본인의 Gemini API 키를 입력하고, 선택한 탭의 오디오를 Google Gemini로 전송하는 데 명시적으로 동의한 다음 언어를 선택하고 시작을 누르세요. 선택 사항인 정밀 모드는 Groq Whisper로 음성을 전사하고, Gemini로 텍스트를 번역하며, Gemini 3.1 Flash Live로 음성을 생성합니다. 이 모드에는 Groq 키, 선택적 호스트 권한, 별도의 오디오 전송 동의가 필요합니다.
+설정 방법: 설정에서 Google AI Studio를 통해 발급받은 본인의 Gemini API 키를 입력하고, 선택한 탭의 오디오를 Google Gemini로 전송하는 데 명시적으로 동의한 다음 언어를 선택하고 시작을 누르세요. 선택 사항인 정밀 모드는 Groq Whisper로 음성을 전사하고, Gemini로 텍스트를 번역하며, Gemini 3.8 Flash TTS로 음성을 생성합니다. 이 모드에는 Groq 키, 선택적 호스트 권한, 별도의 오디오 전송 동의가 필요합니다.
 
 개인정보 보호: 캡처는 동의한 뒤 시작을 눌러야만 시작됩니다. 선택한 탭의 오디오와 전사된 텍스트는 요청한 처리에 필요한 AI 제공업체로 직접 전송되며, Avorythm 개발자에게는 전송되지 않습니다. 광고, 분석 기능 또는 개발자가 운영하는 중계 서버는 없습니다.
 
@@ -34,6 +34,7 @@ Avorythm은 무료 오픈 소스입니다. 외부 AI 서비스의 무료 사용 
 
 개인정보 처리방침: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19의 새로운 기능
+## 1.1.20의 새로운 기능
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

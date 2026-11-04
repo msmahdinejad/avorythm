@@ -18,7 +18,7 @@ Avorythm — AI लाइव डबिंग और सबटाइटल
 
 यह एक्सटेंशन डेस्कटॉप ऐप, Python, FFmpeg, localhost या वर्चुअल ऑडियो डिवाइस के बिना स्वतंत्र रूप से काम करता है। मौजूदा इंटरफ़ेस केवल अंग्रेज़ी, फ़ारसी और सरलीकृत चीनी में उपलब्ध है; अनुवाद की लक्ष्य भाषा 79 भाषा विकल्पों में से अलग से चुनी जाती है।
 
-सेटअप: सेटिंग में Google AI Studio से प्राप्त अपनी Gemini API कुंजी दर्ज करें, चुने हुए टैब का ऑडियो Google Gemini को भेजने की स्पष्ट सहमति दें, भाषा चुनें और स्टार्ट दबाएँ। वैकल्पिक सटीक मोड ट्रांसक्रिप्शन के लिए Groq Whisper, टेक्स्ट अनुवाद के लिए Gemini और बोली गई आवाज़ के लिए Gemini 3.1 Flash Live का उपयोग करता है। इसके लिए Groq कुंजी, वैकल्पिक होस्ट अनुमति और ऑडियो भेजने के लिए अलग सहमति चाहिए।
+सेटअप: सेटिंग में Google AI Studio से प्राप्त अपनी Gemini API कुंजी दर्ज करें, चुने हुए टैब का ऑडियो Google Gemini को भेजने की स्पष्ट सहमति दें, भाषा चुनें और स्टार्ट दबाएँ। वैकल्पिक सटीक मोड ट्रांसक्रिप्शन के लिए Groq Whisper, टेक्स्ट अनुवाद के लिए Gemini और बोली गई आवाज़ के लिए Gemini 3.8 Flash TTS का उपयोग करता है। इसके लिए Groq कुंजी, वैकल्पिक होस्ट अनुमति और ऑडियो भेजने के लिए अलग सहमति चाहिए।
 
 गोपनीयता: कैप्चर आपकी सहमति और स्टार्ट दबाने के बाद ही शुरू होता है। चुने हुए टैब का ऑडियो और ट्रांसक्रिप्ट अनुरोधित प्रोसेसिंग के लिए ज़रूरी AI प्रदाताओं को सीधे भेजे जाते हैं, Avorythm के रखरखावकर्ता को कभी नहीं। इसमें विज्ञापन, एनालिटिक्स या डेवलपर द्वारा संचालित रिले सर्वर नहीं हैं।
 
@@ -34,6 +34,7 @@ Avorythm मुफ़्त और ओपन सोर्स है। बाह
 
 गोपनीयता नीति: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 में नया क्या है
+## 1.1.20 में नया क्या है
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

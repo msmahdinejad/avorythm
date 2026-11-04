@@ -140,3 +140,34 @@ def test_groq_key_is_separate_from_gemini_key(
 
     assert store.get_api_key("gemini") == "gemini-secret-key"
     assert store.get_api_key("groq") == "groq-secret-key"
+
+
+@pytest.mark.parametrize(
+    "key",
+    ["gsk_abcdefghijklmnop·qrstuvwxyz", "gsk_abcdef ghijklmnop", "gsk_abcdefghijklmnopé"],
+)
+def test_keys_that_cannot_be_sent_in_an_http_header_are_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    key: str,
+) -> None:
+    saved: dict[str, str] = {}
+    monkeypatch.setattr(
+        "avorythm.config.keyring.set_password",
+        lambda service, user, value: saved.__setitem__(service, value),
+    )
+    store = ConfigStore(tmp_path)
+
+    with pytest.raises(ValueError, match="not allowed"):
+        store.set_api_key(key, "groq")
+
+    assert saved == {}
+
+
+def test_api_key_problem_names_the_provider_and_accepts_normal_keys() -> None:
+    from avorythm.config import api_key_problem
+
+    assert api_key_problem("gsk_AbC-123_xyz") == ""
+    assert "Groq" in api_key_problem("gsk_abc·def", "groq")
+    assert "Gemini" in api_key_problem("AIza abc")
+    assert api_key_problem("") != ""

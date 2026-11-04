@@ -23,7 +23,7 @@ Audio originale, doppiaggio, sottotitoli originali e sottotitoli tradotti sono q
 
 L’estensione funziona da sola: non richiede app desktop, Python, FFmpeg, localhost o dispositivi audio virtuali. L’interfaccia attuale è disponibile in inglese, persiano e cinese semplificato. La lingua della traduzione si sceglie separatamente.
 
-Per iniziare, inserisci la tua chiave API Gemini di Google AI Studio nelle impostazioni, autorizza esplicitamente l’invio dell’audio della scheda selezionata a Google Gemini, scegli una lingua e premi Avvia. Il percorso preciso facoltativo usa Groq Whisper per la trascrizione, Gemini per la traduzione del testo e Gemini 3.1 Flash Live per generare la voce. Richiede una chiave Groq, un permesso facoltativo per i siti (autorizzazione host) e un consenso separato per il trattamento dell’audio.
+Per iniziare, inserisci la tua chiave API Gemini di Google AI Studio nelle impostazioni, autorizza esplicitamente l’invio dell’audio della scheda selezionata a Google Gemini, scegli una lingua e premi Avvia. Il percorso preciso facoltativo usa Groq Whisper per la trascrizione, Gemini per la traduzione del testo e Gemini 3.8 Flash TTS per generare la voce. Richiede una chiave Groq, un permesso facoltativo per i siti (autorizzazione host) e un consenso separato per il trattamento dell’audio.
 
 Privacy: l’acquisizione inizia solo dopo il tuo consenso e la pressione di Avvia. L’audio e le trascrizioni della scheda scelta vengono inviati direttamente ai servizi IA necessari, mai allo sviluppatore di Avorythm. Non ci sono pubblicità, strumenti di analisi o server intermediari gestiti dallo sviluppatore. Per impostazione predefinita, le chiavi restano soltanto nella sessione del browser. Puoi scegliere di ricordare separatamente ogni chiave su questo dispositivo. Le copie salvate non vengono sincronizzate né cifrate dall’estensione. Disattivare l’opzione elimina la copia locale; cancellare una chiave elimina sia la copia locale sia quella della sessione.
 
@@ -37,6 +37,7 @@ Guida: https://github.com/msmahdinejad/avorythm/blob/main/docs/HELP.it.md
 
 Informativa sulla privacy: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Novità della versione 1.1.19
+## Novità della versione 1.1.20
 
-- Un banner e un badge sull'icona indicano ora quando una nuova versione è stata scaricata o appena installata. Puoi applicare un aggiornamento pronto dal popup quando non è aperta alcuna traduzione né alcun player sincronizzato.
+- Il doppiaggio non dipende più da Gemini 3.1 Flash Live, che Google chiude il 17 novembre 2026. La modalità precisa e il doppiaggio dei file usano ora Gemini 3.8 e puoi scegliere il modello vocale nelle impostazioni: Flash TTS (predefinito), Live (la voce più naturale) o Flash-Lite (il più veloce).
+- Un messaggio chiaro sostituisce l'errore criptico quando una chiave API contiene caratteri non consentiti, ad esempio un punto copiato da un campo mascherato.

@@ -46,7 +46,7 @@ Scegli **Su questa pagina** per il minor ritardo possibile. Puoi spostare e ridi
 
 Scegli **Registratore e lettore sincronizzati** per mettere in pausa, spostarti nel video e usare lo schermo intero senza interrompere la registrazione della scheda. Un anticipo di circa 20 secondi aiuta a mantenere stabile il doppiaggio.
 
-Il motore **Gemini 3.5 Live** offre un avvio più rapido. La modalità precisa usa **Groq Whisper**, i modelli Gemini gratuiti per la traduzione e **Gemini 3.1 Flash Live** per la voce. Richiede una chiave Groq, il permesso di accesso a `api.groq.com` e un consenso separato per inviare brevi segmenti audio a Groq.
+Il motore **Gemini 3.5 Live** offre un avvio più rapido. La modalità precisa usa **Groq Whisper**, i modelli Gemini gratuiti per la traduzione e **Gemini 3.8 Flash TTS** per la voce. Richiede una chiave Groq, il permesso di accesso a `api.groq.com` e un consenso separato per inviare brevi segmenti audio a Groq.
 
 Su reti con restrizioni, Chrome deve raggiungere sia Google sia `api.groq.com` tramite il proxy del browser o del sistema. Consulta la [guida completa](docs/HELP.it.md) se la connessione non parte.
 

@@ -18,7 +18,7 @@ Avorythm — ការបញ្ចូលសំឡេងបកប្រែ និ
 
 ផ្នែកបន្ថែមនេះដំណើរការដោយឯករាជ្យ ដោយមិនត្រូវការកម្មវិធីលើកុំព្យូទ័រ Python, FFmpeg, localhost ឬឧបករណ៍សំឡេងនិម្មិតឡើយ។ ចំណុចប្រទាក់បច្ចុប្បន្នគាំទ្រតែភាសាអង់គ្លេស ភាសាពែរ្ស និងភាសាចិនអក្សរកាត់។ ភាសាគោលដៅសម្រាប់ការបកប្រែត្រូវបានជ្រើសដោយឡែក ពីបញ្ជីជម្រើសភាសាចំនួន 79។
 
-ការដំឡើង៖ បញ្ចូលសោ Gemini API ផ្ទាល់ខ្លួនរបស់អ្នកពី Google AI Studio ក្នុងការកំណត់ យល់ព្រមជាក់លាក់ឱ្យផ្ញើសំឡេងពីផ្ទាំងដែលបានជ្រើសទៅ Google Gemini ជ្រើសភាសា ហើយចុច Start។ របៀបច្បាស់លាស់ដែលអាចជ្រើសបើកបាន ប្រើ Groq Whisper ដើម្បីបំប្លែងសំឡេងជាអត្ថបទ ប្រើ Gemini ដើម្បីបកប្រែអត្ថបទ និងប្រើ Gemini 3.1 Flash Live ដើម្បីបង្កើតសំឡេងនិយាយ។ របៀបនេះត្រូវការសោ Groq ការអនុញ្ញាតចូលប្រើម៉ាស៊ីនមេដែលអាចជ្រើសផ្តល់ និងការយល់ព្រមផ្ញើសំឡេងដាច់ដោយឡែក។
+ការដំឡើង៖ បញ្ចូលសោ Gemini API ផ្ទាល់ខ្លួនរបស់អ្នកពី Google AI Studio ក្នុងការកំណត់ យល់ព្រមជាក់លាក់ឱ្យផ្ញើសំឡេងពីផ្ទាំងដែលបានជ្រើសទៅ Google Gemini ជ្រើសភាសា ហើយចុច Start។ របៀបច្បាស់លាស់ដែលអាចជ្រើសបើកបាន ប្រើ Groq Whisper ដើម្បីបំប្លែងសំឡេងជាអត្ថបទ ប្រើ Gemini ដើម្បីបកប្រែអត្ថបទ និងប្រើ Gemini 3.8 Flash TTS ដើម្បីបង្កើតសំឡេងនិយាយ។ របៀបនេះត្រូវការសោ Groq ការអនុញ្ញាតចូលប្រើម៉ាស៊ីនមេដែលអាចជ្រើសផ្តល់ និងការយល់ព្រមផ្ញើសំឡេងដាច់ដោយឡែក។
 
 ឯកជនភាព៖ ការចាប់យកសំឡេងចាប់ផ្តើមតែបន្ទាប់ពីអ្នកយល់ព្រម និងចុច Start។ សំឡេងពីផ្ទាំងដែលបានជ្រើស និងអត្ថបទដែលបានបំប្លែងពីសំឡេង ត្រូវបានផ្ញើដោយផ្ទាល់ទៅអ្នកផ្តល់សេវា AI ដែលចាំបាច់សម្រាប់ដំណើរការដែលអ្នកស្នើសុំ មិនដែលផ្ញើទៅអ្នកថែទាំ Avorythm ឡើយ។ គ្មានការផ្សាយពាណិជ្ជកម្ម ការវិភាគទិន្នន័យ ឬម៉ាស៊ីនមេបញ្ជូនបន្តដែលដំណើរការដោយអ្នកអភិវឌ្ឍទេ។
 
@@ -34,6 +34,7 @@ Avorythm ឥតគិតថ្លៃ និងមានកូដប្រភព�
 
 គោលការណ៍ឯកជនភាព: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## អ្វីដែលថ្មីក្នុងកំណែ 1.1.19
+## អ្វីដែលថ្មីក្នុងកំណែ 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

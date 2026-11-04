@@ -18,7 +18,7 @@ Avorythm — дубляж і субтытры ў рэальным часе на 
 
 Пашырэнне працуе незалежна, без настольнай праграмы, Python, FFmpeg, localhost або віртуальнай аўдыяпрылады. Інтэрфейс даступны на англійскай, персідскай і спрошчанай кітайскай мовах; мову перакладу можна выбраць незалежна з 79 варыянтаў.
 
-Наладжванне: увядзіце ў Settings свой ключ Gemini API з Google AI Studio, відавочна дайце згоду на адпраўку аўдыя выбранай укладкі ў Google Gemini, выберыце мову і націсніце Start. Дадатковы дакладны рэжым выкарыстоўвае Groq Whisper для транскрыпцыі, Gemini для перакладу тэксту і Gemini 3.1 Flash Live для маўлення. Для яго патрэбны ключ Groq, дадатковы дазвол хоста і асобная згода на апрацоўку аўдыя.
+Наладжванне: увядзіце ў Settings свой ключ Gemini API з Google AI Studio, відавочна дайце згоду на адпраўку аўдыя выбранай укладкі ў Google Gemini, выберыце мову і націсніце Start. Дадатковы дакладны рэжым выкарыстоўвае Groq Whisper для транскрыпцыі, Gemini для перакладу тэксту і Gemini 3.8 Flash TTS для маўлення. Для яго патрэбны ключ Groq, дадатковы дазвол хоста і асобная згода на апрацоўку аўдыя.
 
 Прыватнасць: захоп пачынаецца толькі пасля згоды і націскання Start. Аўдыя выбранай укладкі і транскрыпцыі накіроўваюцца непасрэдна пастаўшчыкам ШІ, неабходным для запытанай апрацоўкі, і ніколі не перадаюцца распрацоўшчыку Avorythm. Няма рэкламы, аналітыкі або рэтрансляцыйнага сервера, якім кіруюць распрацоўшчыкі.
 
@@ -34,6 +34,7 @@ Avorythm — бясплатнае праграмнае забеспячэнне 
 
 Палітыка прыватнасці: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Што новага ў версіі 1.1.19
+## Што новага ў версіі 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

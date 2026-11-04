@@ -18,7 +18,7 @@ Styr fire kanaler hver for sig: original lyd, oversat tale, undertekster på ori
 
 Udvidelsen fungerer selvstændigt uden desktopappen, Python, FFmpeg, localhost eller en virtuel lydenhed. Brugerfladen findes på engelsk, persisk og forenklet kinesisk; oversættelsens målsprog vælges separat blandt 79 sprogposter.
 
-Opsætning: Indtast din egen Gemini API-nøgle fra Google AI Studio under Indstillinger, giv udtrykkeligt samtykke til at sende lyd fra den valgte fane til Google Gemini, vælg et sprog, og tryk på Start. Den valgfrie præcisionstilstand bruger Groq Whisper til transskription, Gemini til tekstoversættelse og Gemini 3.1 Flash Live til tale. Den kræver en Groq-nøgle, valgfri tilladelse til værtsadgang og særskilt samtykke til behandling af lyd.
+Opsætning: Indtast din egen Gemini API-nøgle fra Google AI Studio under Indstillinger, giv udtrykkeligt samtykke til at sende lyd fra den valgte fane til Google Gemini, vælg et sprog, og tryk på Start. Den valgfrie præcisionstilstand bruger Groq Whisper til transskription, Gemini til tekstoversættelse og Gemini 3.8 Flash TTS til tale. Den kræver en Groq-nøgle, valgfri tilladelse til værtsadgang og særskilt samtykke til behandling af lyd.
 
 Privatliv: Optagelse begynder først efter samtykke og et tryk på Start. Lyd og transskriptioner fra den valgte fane sendes direkte til de AI-udbydere, der er nødvendige for den ønskede behandling, aldrig til udvikleren af Avorythm. Ingen annoncer, analyseværktøjer eller relayserver drevet af udvikleren.
 
@@ -34,6 +34,7 @@ Brugervejledning (engelsk): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Privatlivspolitik: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nyheder i 1.1.19
+## Nyheder i 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

@@ -23,7 +23,7 @@ Originalton, vertonte Übersetzung, Originaluntertitel und übersetzte Untertite
 
 Die Erweiterung funktioniert eigenständig: keine Desktop-App, kein Python, FFmpeg, localhost oder virtuelles Audiogerät erforderlich. Die aktuelle Bedienoberfläche ist auf Englisch, Persisch und vereinfachtem Chinesisch verfügbar. Die Zielsprache der Übersetzung wählen Sie unabhängig davon.
 
-So starten Sie: Hinterlegen Sie Ihren eigenen Gemini-API-Schlüssel aus Google AI Studio in den Einstellungen, erlauben Sie ausdrücklich die Übermittlung des ausgewählten Tab-Audios an Google Gemini, wählen Sie eine Sprache und klicken Sie auf Start. Der optionale präzise Weg verwendet Groq Whisper zur Transkription, Gemini zur Textübersetzung und Gemini 3.1 Flash Live zur Spracherzeugung. Dafür benötigen Sie einen Groq-Schlüssel, eine optionale Website-/Host-Berechtigung und eine separate Einwilligung zur Audioverarbeitung.
+So starten Sie: Hinterlegen Sie Ihren eigenen Gemini-API-Schlüssel aus Google AI Studio in den Einstellungen, erlauben Sie ausdrücklich die Übermittlung des ausgewählten Tab-Audios an Google Gemini, wählen Sie eine Sprache und klicken Sie auf Start. Der optionale präzise Weg verwendet Groq Whisper zur Transkription, Gemini zur Textübersetzung und Gemini 3.8 Flash TTS zur Spracherzeugung. Dafür benötigen Sie einen Groq-Schlüssel, eine optionale Website-/Host-Berechtigung und eine separate Einwilligung zur Audioverarbeitung.
 
 Datenschutz: Die Erfassung beginnt erst nach Ihrer Einwilligung und einem Klick auf Start. Audio und Transkripte des ausgewählten Tabs gehen direkt an die benötigten KI-Dienste, niemals an den Avorythm-Entwickler. Es gibt keine Werbung, Nutzungsanalyse oder vom Entwickler betriebenen Vermittlungsserver. API-Schlüssel bleiben standardmäßig nur für die Browsersitzung gespeichert. Sie können jeden Anbieterschlüssel optional auf diesem Gerät merken lassen. Gespeicherte Kopien werden weder synchronisiert noch von der Erweiterung verschlüsselt. Das Deaktivieren löscht die Gerätekopie; das Löschen des Schlüssels entfernt sowohl die Geräte- als auch die Sitzungskopie.
 
@@ -37,6 +37,7 @@ Vollständige Anleitung auf Englisch: https://github.com/msmahdinejad/avorythm/b
 
 Datenschutzerklärung: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Neu in 1.1.19
+## Neu in 1.1.20
 
-- Ein Hinweis und ein Symbol-Badge zeigen jetzt an, wenn eine neue Version heruntergeladen oder gerade installiert wurde. Ein bereites Update lässt sich im Popup anwenden, sobald keine Übersetzung und kein synchronisierter Player läuft.
+- Die Vertonung hängt nicht mehr von Gemini 3.1 Flash Live ab, das Google am 17. November 2026 abschaltet. Präziser Modus und Dateivertonung nutzen jetzt Gemini 3.8; das Sprachmodell wählst du in den Einstellungen: Flash TTS (Standard), Live (natürlichste Stimme) oder Flash-Lite (am schnellsten).
+- Enthält ein API-Schlüssel unzulässige Zeichen, etwa einen aus einem maskierten Feld kopierten Punkt, erscheint eine klare Meldung statt eines kryptischen Fehlers.

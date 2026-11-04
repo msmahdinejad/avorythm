@@ -18,7 +18,7 @@ Atur opat saluran sacara mandiri: audio asli, audio hasil dubbing, takarir basa 
 
 Éksténsi ieu jalan sacara mandiri, tanpa aplikasi desktop, Python, FFmpeg, localhost, atawa alat audio virtual. Antarbeungeutna ayeuna ngan ngarojong basa Inggris, Pérsia, jeung Cina Saderhana; basa tujuan tarjamahan dipilih sacara misah tina 79 pilihan basa.
 
-Pikeun nyetél: asupkeun konci API Gemini anjeun sorangan ti Google AI Studio dina Setélan, pasihan idin sacara écés pikeun ngirim audio tina tab pilihan ka Google Gemini, pilih basa, tuluy pencét Start. Modeu présisi nu opsional ngagunakeun Groq Whisper pikeun nyalin ucapan jadi téks, Gemini pikeun narjamahkeun téks, jeung Gemini 3.1 Flash Live pikeun ngahasilkeun sora. Modeu ieu merlukeun konci Groq, idin aksés ka host nu opsional, jeung idin audio anu misah.
+Pikeun nyetél: asupkeun konci API Gemini anjeun sorangan ti Google AI Studio dina Setélan, pasihan idin sacara écés pikeun ngirim audio tina tab pilihan ka Google Gemini, pilih basa, tuluy pencét Start. Modeu présisi nu opsional ngagunakeun Groq Whisper pikeun nyalin ucapan jadi téks, Gemini pikeun narjamahkeun téks, jeung Gemini 3.8 Flash TTS pikeun ngahasilkeun sora. Modeu ieu merlukeun konci Groq, idin aksés ka host nu opsional, jeung idin audio anu misah.
 
 Privasi: ngarékam kakara dimimitian sanggeus anjeun méré idin jeung mencét Start. Audio jeung transkrip tina tab pilihan dikirim langsung ka panyadia AI nu diperlukeun pikeun pamrosésan nu dipénta, henteu kungsi ka pangurus Avorythm. Henteu aya iklan, analitik, atawa sérver panganteur nu dijalankeun ku pamekar.
 
@@ -34,6 +34,7 @@ Pituduh pamaké (basa Inggris): https://github.com/msmahdinejad/avorythm/blob/ma
 
 Kawijakan privasi: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Nu anyar dina 1.1.19
+## Nu anyar dina 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

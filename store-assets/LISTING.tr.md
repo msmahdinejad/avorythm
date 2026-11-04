@@ -18,7 +18,7 @@ Dört kanalı bağımsız olarak yönetin: özgün ses, seslendirilmiş ses, kay
 
 Uzantı; masaüstü uygulaması, Python, FFmpeg, localhost veya sanal ses aygıtı olmadan bağımsız çalışır. Arayüz yalnızca İngilizce, Farsça ve Basitleştirilmiş Çince dillerini destekler; çeviri hedefi ise 79 dil seçeneği arasından bağımsız olarak belirlenir.
 
-Kurulum: Ayarlar bölümünde Google AI Studio'dan kendi Gemini API anahtarınızı girin, seçtiğiniz sekmenin sesinin Google Gemini'ye gönderilmesine açıkça izin verin, bir dil seçin ve Başlat'a basın. İsteğe bağlı hassas mod, konuşmayı metne dönüştürmek için Groq Whisper'ı, metin çevirisi için Gemini'yi ve konuşma için Gemini 3.1 Flash Live'ı kullanır. Bu mod için bir Groq anahtarı, isteğe bağlı ana makine izni ve ayrı bir ses izni gerekir.
+Kurulum: Ayarlar bölümünde Google AI Studio'dan kendi Gemini API anahtarınızı girin, seçtiğiniz sekmenin sesinin Google Gemini'ye gönderilmesine açıkça izin verin, bir dil seçin ve Başlat'a basın. İsteğe bağlı hassas mod, konuşmayı metne dönüştürmek için Groq Whisper'ı, metin çevirisi için Gemini'yi ve konuşma için Gemini 3.8 Flash TTS'ı kullanır. Bu mod için bir Groq anahtarı, isteğe bağlı ana makine izni ve ayrı bir ses izni gerekir.
 
 Gizlilik: Yakalama yalnızca izin verilip Başlat'a basıldıktan sonra başlar. Seçilen sekmenin sesi ve metin dökümleri, istenen işlemi gerçekleştirmek için gereken yapay zekâ sağlayıcılarına doğrudan gönderilir; Avorythm geliştiricisine hiçbir zaman gönderilmez. Reklam, analiz veya geliştirici tarafından işletilen aktarma sunucusu yoktur.
 
@@ -34,6 +34,7 @@ Kullanım kılavuzu (İngilizce): https://github.com/msmahdinejad/avorythm/blob/
 
 Gizlilik politikası: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## 1.1.19 sürümündeki yenilikler
+## 1.1.20 sürümündeki yenilikler
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.

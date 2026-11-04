@@ -18,7 +18,7 @@ Styr fire kanaler hver for seg: originallyd, dubbet lyd, undertekster på origin
 
 Utvidelsen fungerer selvstendig, uten skrivebordsappen, Python, FFmpeg, localhost eller en virtuell lydenhet. Grensesnittet støtter engelsk, persisk og forenklet kinesisk. Oversettelsesspråket velges uavhengig blant 79 språkalternativer.
 
-Oppsett: Skriv inn din egen Gemini API-nøkkel fra Google AI Studio i innstillingene, gi uttrykkelig samtykke til å sende lyd fra den valgte fanen til Google Gemini, velg språk og trykk på Start. Valgfri presisjonsmodus bruker Groq Whisper til transkripsjon, Gemini til tekstoversettelse og Gemini 3.1 Flash Live til tale. Den krever en Groq-nøkkel, valgfri vertstillatelse og eget samtykke til lydbehandling.
+Oppsett: Skriv inn din egen Gemini API-nøkkel fra Google AI Studio i innstillingene, gi uttrykkelig samtykke til å sende lyd fra den valgte fanen til Google Gemini, velg språk og trykk på Start. Valgfri presisjonsmodus bruker Groq Whisper til transkripsjon, Gemini til tekstoversettelse og Gemini 3.8 Flash TTS til tale. Den krever en Groq-nøkkel, valgfri vertstillatelse og eget samtykke til lydbehandling.
 
 Personvern: Opptak starter først etter samtykke og når du trykker på Start. Lyd og transkripsjoner fra den valgte fanen sendes direkte til AI-leverandørene som trengs for den ønskede behandlingen, aldri til vedlikeholderen av Avorythm. Ingen annonser, analyseverktøy eller videresendingsserver drevet av utvikleren.
 
@@ -34,6 +34,7 @@ Brukerveiledning (engelsk): https://github.com/msmahdinejad/avorythm/blob/main/d
 
 Personvernerklæring: https://github.com/msmahdinejad/avorythm/blob/main/PRIVACY.md
 
-## Hva er nytt i 1.1.19
+## Hva er nytt i 1.1.20
 
-- A banner and toolbar badge now tell you when a new version has been downloaded or just installed. You can apply a ready update from the popup whenever no translation or synchronized player is open.
+- Dubbing no longer depends on Gemini 3.1 Flash Live, which Google shuts down on 17 November 2026. Precise mode and file dubbing now use Gemini 3.8, and you can pick the voice model in Settings: Flash TTS (default), Live (the most natural voice) or Flash-Lite (fastest).
+- A clear message replaces the cryptic error when an API key contains characters that are not allowed, such as a dot copied from a masked field.
